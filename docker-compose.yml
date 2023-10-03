@@ -28,6 +28,41 @@ services:
       - "15672:15672"
     networks:
       - microservices-network
+  group:
+    build:
+      context: .
+      dockerfile: ./docker/Dockerfile-group
+    image: go-microservices-group
+    environment:
+      APP_NAME: 'group-service in docker'
+      IN_DOCKER: "true"
+      PG_URL: postgres://postgres:P@ssw0rd@postgres:5432/postgres
+      PG_DSN_URL: host=postgres user=postgres password=P@ssw0rd dbname=postgres sslmode=disable
+      ATTACHMENT_CLIENT_URL: product:5001
+    ports:
+      - 5001:5001
+    depends_on:
+      postgres:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    networks:
+      - microservices-network
+  proxy:
+    build:
+      context: .
+      dockerfile: ./docker/Dockerfile-proxy
+    image: go-microservices-proxy
+    environment:
+      APP_NAME: 'proxy-service in docker'
+      GRPC_PRODUCT_HOST: 'group'
+      GRPC_PRODUCT_PORT: 5001
+    ports:
+      - 5000:5000
+    depends_on:
+      - group
+    networks:
+      - microservices-network
   web:
     build:
       context: .

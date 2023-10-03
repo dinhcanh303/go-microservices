@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/golang/glog"
 	"github.com/labstack/echo/v4"
 )
 
@@ -16,11 +17,11 @@ var embededFiles embed.FS
 func main() {
 	reverseProxyURL, ok := os.LookupEnv("REVERSE_PROXY_URL")
 	if !ok || reverseProxyURL == "" {
-		golog.Fatalf("Web: environment variable not declared: reverseProxyURL")
+		glog.Fatalf("Web: environment variable not declared: reverseProxyURL")
 	}
 	webPort, ok := os.LookupEnv("WEB_PORT")
 	if !ok || webPort == "" {
-		golog.Fatalf("Web: environment variable not declared: webPort")
+		glog.Fatalf("Web: environment variable not declared: webPort")
 	}
 	e := echo.New()
 	useOs := len(os.Args) > 1 && os.Args[1] == "live"

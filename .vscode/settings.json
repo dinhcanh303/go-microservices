@@ -1,6 +1,9 @@
 {
     "cSpell.words": [
         "amqp",
+        "cleanenv",
+        "fsys",
+        "glog",
         "Logrus",
         "rabbitmq"
     ]
