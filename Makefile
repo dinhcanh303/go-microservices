@@ -14,7 +14,19 @@ test:
 
 clean:
 	go clean
-	
+
+linter-golangci: ### check by golangci linter
+	golangci-lint run
+.PHONY: linter-golangci
+
+proto:
+	rm -f proto/gen/*go
+	protoc --proto_path=proto --go_out=proto/gen --go_opt=paths=source_relative \
+	--go-grpc_out=proto/gen --go-grpc_opt=paths=source_relative \
+	--grpc-gateway_out=proto/gen --grpc-gateway_opt=paths=source_relative \
+	proto/*.proto
+.PHONY: proto
+
 docker-compose: docker-compose-stop docker-compose-start
 .PHONY: docker-compose
 
