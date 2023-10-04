@@ -1,20 +1,18 @@
--- name: GetPost
-SELECT * FROM posts WHERE uuid = $1;
+-- name: GetPost :one
+SELECT * FROM post.posts WHERE id = $1;
 
 -- name: CreatePost :one
 INSERT INTO
     post.posts (
-        uuid,
+        id,
         status,
         title,
         content,
         user_id,
         group_id,
-        created_at,
-        updated_at,
         deleted_at
     )
-VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING *;
+VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *;
 
 -- name: UpdatePost :one
 UPDATE post.posts 
@@ -22,23 +20,23 @@ SET
     title = $2 ,
     content = $3,
     status = $4,
-    deleted_at = $5,
-WHERE uuid = $1 RETURNING *;
+    deleted_at = $5
+WHERE id = $1 RETURNING *;
 
--- name: UpdatePostWithUnscoped
-UPDATE posts 
+-- name: UpdatePostWithUnscoped :one
+UPDATE post.posts 
 SET 
     title = $2, 
     content = $3, 
-    status = $4, 
-WHERE uuid = $1 AND deleted_at NOT NULL RETURNING *;
+    status = $4
+WHERE id = $1 AND deleted_at IS NOT NULL RETURNING *;
 
--- name: DeletePost
-DELETE FROM posts WHERE uuid = $1;
+-- name: DeletePost :exec
+DELETE FROM post.posts WHERE id = $1;
 
--- name: ListPosts
-SELECT * FROM posts OFFSET $1 LIMIT $2;
+-- name: ListPosts :many
+SELECT * FROM post.posts OFFSET $1 LIMIT $2;
 
--- name: CountPosts
-SELECT COUNT(*) FROM posts;
+-- name: CountPosts :one
+SELECT COUNT(*) FROM post.posts;
 

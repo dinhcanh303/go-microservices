@@ -2,8 +2,8 @@ package main
 
 import (
 	"context"
-	"go-microservices/cmd/proxy/config"
-	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
+
+	"github.com/dinhcanh303/go-microservices/cmd/proxy/config"
 )
 
 func newGateway(ctx context.Context, cfg *config.Config, opts []runtime)

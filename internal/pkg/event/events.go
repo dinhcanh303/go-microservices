@@ -1,6 +1,6 @@
 package event
 
-import shared "go-microservices/internal/pkg/shared_kernel"
+import shared "github.com/dinhcanh303/go-microservices/internal/pkg/shared_kernel"
 
 type AttachmentUpload struct {
 	shared.DomainEvent

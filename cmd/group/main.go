@@ -2,9 +2,10 @@ package config
 
 import (
 	"fmt"
-	configs "go-microservices/pkg/config"
 	"log"
 	"os"
+
+	configs "github.com/dinhcanh303/go-microservices/pkg/config"
 
 	"github.com/ilyakaznacheev/cleanenv"
 )

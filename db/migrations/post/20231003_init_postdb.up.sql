@@ -10,16 +10,11 @@ CREATE TABLE
         group_id uuid NULL,
         title text NOT NULL,
         content text NOT NULL,
-        status int NOT NULL,
-        with
-            time zone NOT NULL,
-            created_at timestamp
-        with
-            time zone NOT NULL DEFAULT (now()),
-            updated_at timestamp
-        with
-            time zone NULL,
-            CONSTRAINT pk_posts PRIMARY KEY (id)
+        status integer NOT NULL,
+        created_at timestamp with time zone NOT NULL DEFAULT current_timestamp,
+        updated_at timestamp with time zone NOT NULL DEFAULT (now()),
+        deleted_at timestamp with time zone NULL,
+        CONSTRAINT pk_posts PRIMARY KEY (id)
     );
 
 CREATE INDEX ix_user_id ON post.posts (user_id);

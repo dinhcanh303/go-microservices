@@ -1,31 +1,28 @@
--- name: Get
-SELECT * FROM "group".groups WHERE uuid = $1;
+-- name: Get :one
+SELECT * FROM "group".groups WHERE id = $1;
 
 -- name: Create :one
 INSERT INTO
     "group".groups (
-        uuid,
+        id,
         status,
-        title,
-        content,
+        name,
+        description,
         user_id,
-        group_id,
-        created_at,
-        updated_at,
         deleted_at
     )
-VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING *;
+VALUES ($1, $2, $3, $4, $5, $6) RETURNING *;
 
 -- name: Update :one
 UPDATE "group".groups 
 SET
-    title = $2 ,
-    content = $3,
+    name = $2 ,
+    description = $3,
     status = $4,
-    deleted_at = $5,
-WHERE uuid = $1 RETURNING *;
+    deleted_at = $5
+WHERE id = $1 RETURNING *;
 
--- name: Delete
-DELETE FROM "group".groups WHERE uuid = $1;
+-- name: Delete :exec
+DELETE FROM "group".groups WHERE id = $1;
 
 

@@ -1,0 +1,25 @@
+syntax="proto3";
+
+package go.microservices.proto.common;
+
+import "google/api/annotations.proto";
+import "protoc-gen-openapiv2/options/annotations.proto";
+
+option go_package = "github.com/dinhcanh303/go-microservices/proto/gen";
+
+option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_swagger) = {
+    info: {
+        version: "1.0";
+    };
+    external_docs: {
+        url: "https://github.com/dinhcanh303/go-microservices";
+        description: "go-microservices repository";
+    }
+    schemes: HTTPS;
+};
+
+enum Status {
+    PRIVATE = 0;
+    PUBLIC = 1;
+}
+

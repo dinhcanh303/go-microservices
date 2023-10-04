@@ -1,0 +1,73 @@
+syntax="proto3";
+
+package go.microsevices.proto.groupapi;
+
+import "google/api/annotations.proto";
+import "protoc-gen-openapiv2/options/annotations.proto";
+import "common.proto";
+
+option go_package = "github.com/dinhcanh303/go-microsevices/proto/gen";
+
+service GroupService {
+    rpc CreateGroup(CreateGroupRequest) returns (CreateGroupResponse){
+        option(google.api.http) = {
+            post: "/v1/api/groups"
+            body: "*"
+        };
+        option(grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+            summary: "Create group"
+            description: ""
+            tags: "Group"
+        };
+    }
+    rpc GetGroup(GetGroupRequest) returns (GetGroupResponse){
+        option(google.api.http) = {
+            get: "/v1/api/groups/{uuid}"
+        };
+        option(grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+            summary: "Get group"
+            description: ""
+            tags: "Group"
+        };
+    }
+    rpc UpdateGroup(UpdateGroupRequest) returns (UpdateGroupResponse){
+        option(google.api.http) = {
+            put: "/v1/api/groups/{group.uuid}"
+            body: "*"
+        };
+        option(grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+            summary: "Update group"
+            description: ""
+            tags: "Group"
+        };
+    }
+
+}
+
+message CreateGroupRequest {
+    Group group = 1;
+}
+message CreateGroupResponse {
+    Group group = 1;
+}
+message GetGroupRequest {
+    string uuid = 1;
+}
+message GetGroupResponse {
+    Group group = 1;
+}
+message UpdateGroupRequest {
+    Group group = 1;
+}
+message UpdateGroupResponse {
+    Group group = 1;
+}
+
+message Group {
+    string uuid = 1;
+    string name = 2;
+    string description = 3;
+    int32 status = 4;
+    string user_id = 5;
+}
+

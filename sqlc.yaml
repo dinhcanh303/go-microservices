@@ -1,0 +1,19 @@
+version: "2"
+sql:
+  - engine: "postgresql"
+    queries: "internal/group/infras/postgresql/query/query.sql"
+    schema: "db/migrations/group/20231003_init_groupdb.up.sql"
+    gen:
+      go:
+        package: "postgresql"
+        out: "internal/group/infras/postgresql"
+        emit_json_tags: true
+
+  - engine: "postgresql"
+    queries: "internal/post/infras/postgresql/query/query.sql"
+    schema: "db/migrations/post/20231003_init_postdb.up.sql"
+    gen:
+      go:
+        package: "postgresql"
+        out: "internal/post/infras/postgresql"
+        emit_json_tags: true

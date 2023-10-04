@@ -1,8 +1,9 @@
 package domain
 
 import (
-	shared "go-microservices/internal/pkg/shared_kernel"
 	"time"
+
+	shared "github.com/dinhcanh303/go-microservices/internal/pkg/shared_kernel"
 
 	"github.com/google/uuid"
 )

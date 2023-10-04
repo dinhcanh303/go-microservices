@@ -1,0 +1,21 @@
+version: v1
+name: buf.build/dinhcanh303/go-microservices
+deps:
+  - buf.build/googleapis/googleapis
+  - buf.build/grpc-ecosystem/grpc-gateway
+lint:
+  use:
+    - DEFAULT
+  ignore_only:
+    PACKAGE_DIRECTORY_MATCH:
+      - common.proto
+      - group.proto
+    PACKAGE_VERSION_SUFFIX:
+      - common.proto
+      - group.proto
+    RPC_REQUEST_RESPONSE_UNIQUE:
+      - common.proto
+      - group.proto
+    RPC_RESPONSE_STANDARD_NAME:
+      - common.proto
+      - group.proto

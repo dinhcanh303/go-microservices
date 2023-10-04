@@ -2,7 +2,8 @@ package groups
 
 import (
 	"context"
-	"go-microservices/internal/group/domain"
+
+	"github.com/dinhcanh303/go-microservices/internal/group/domain"
 
 	"github.com/google/wire"
 	"github.com/pkg/errors"

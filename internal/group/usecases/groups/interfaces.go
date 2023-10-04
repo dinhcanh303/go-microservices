@@ -2,7 +2,8 @@ package groups
 
 import (
 	"context"
-	"go-microservices/internal/group/domain"
+
+	"github.com/dinhcanh303/go-microservices/internal/group/domain"
 )
 
 type UseCase interface {
