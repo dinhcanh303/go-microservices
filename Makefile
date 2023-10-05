@@ -60,7 +60,7 @@ docker-compose-build:
 run: run-group run-proxy run-web
 
 run-group:
-	cd cmd/group && go mod tidy && go mod dowload && \
+	cd cmd/group && go mod tidy && go mod download && \
 	CGO_ENABLED=0 go run -tags migrate github.com/dinhcanh303/go-microservices/cmd/group
 .PHONY: run-group
 

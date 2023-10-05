@@ -1,4 +1,4 @@
-package config
+package main
 
 import (
 	"context"
@@ -79,7 +79,7 @@ func main() {
 func prepareApp(ctx context.Context, cancel context.CancelFunc, cfg *config.Config, server *grpc.Server) func() {
 	_, cleanup, err := app.InitApp(cfg, postgres.DBConnString(cfg.PG.DsnURL), server)
 	if err != nil {
-		slog.Error("failed init app", err)
+		slog.Error("Failed init app", err)
 		cancel()
 		<-ctx.Done()
 	}
