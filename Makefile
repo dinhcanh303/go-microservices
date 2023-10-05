@@ -19,6 +19,10 @@ linter-golangci: ### check by golangci linter
 	golangci-lint run
 .PHONY: linter-golangci
 
+wire:
+	cd internal/group/app && wire
+.PHONY: wire
+
 proto:
 	rm -f proto/gen/*go
 	protoc --proto_path=proto --go_out=proto/gen --go_opt=paths=source_relative \
@@ -53,20 +57,20 @@ docker-compose-build:
 	docker-compose build
 .PHONY: docker-compose-build
 
-run: run-web run-proxy
+run: run-group run-proxy run-web
 
 run-group:
 	cd cmd/group && go mod tidy && go mod dowload && \
-	CGO_ENABLED=0 go run github.com/dinhcanh303/go-microservices/cmd/group
+	CGO_ENABLED=0 go run -tags migrate github.com/dinhcanh303/go-microservices/cmd/group
 .PHONY: run-group
 
 run-proxy:
 	cd cmd/proxy && go mod tidy && go mod download && \
-	CGO_ENABLED=0 go run -tags migrate github.com/dinhcanh303/go-coffeeshop/cmd/proxy
+	CGO_ENABLED=0 go run -tags migrate github.com/dinhcanh303/go-microservices/cmd/proxy
 .PHONY: run-proxy
 
 run-web:
 	cd cmd/web && go mod tidy && go mod download && \
-	CGO_ENABLED=0 go run github.com/dinhcanh303/go-coffeeshop/cmd/web
+	CGO_ENABLED=0 go run github.com/dinhcanh303/go-microservices/cmd/web
 .PHONY: run-web
 

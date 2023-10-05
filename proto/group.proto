@@ -4,6 +4,7 @@ package go.microsevices.proto.groupapi;
 
 import "google/api/annotations.proto";
 import "protoc-gen-openapiv2/options/annotations.proto";
+import "google/protobuf/timestamp.proto";
 
 option go_package = "github.com/dinhcanh303/go-microsevices/proto/gen";
 
@@ -44,29 +45,35 @@ service GroupService {
 }
 
 message CreateGroupRequest {
-    Group group = 1;
+    GroupRequest group = 1;
 }
 message CreateGroupResponse {
-    Group group = 1;
+    GroupResponse group = 1;
 }
 message GetGroupRequest {
     string id = 1;
 }
 message GetGroupResponse {
-    Group group = 1;
+    GroupResponse group = 1;
 }
 message UpdateGroupRequest {
-    Group group = 1;
+    GroupResponse group = 1;
 }
 message UpdateGroupResponse {
-    Group group = 1;
+    GroupResponse group = 1;
 }
-
-message Group {
+message GroupRequest {
+    string name = 1;
+    string description = 2;
+    int32 status = 3;
+    string user_id = 4;
+}
+message GroupResponse {
     string id = 1;
     string name = 2;
     string description = 3;
     int32 status = 4;
     string user_id = 5;
+    google.protobuf.Timestamp created_at = 6;
+    google.protobuf.Timestamp updated_at = 7;
 }
-

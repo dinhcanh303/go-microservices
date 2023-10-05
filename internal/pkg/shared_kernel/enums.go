@@ -2,7 +2,7 @@ package sharedkernel
 
 import "fmt"
 
-type Status int8
+type Status int32
 
 const (
 	StatusPrivate Status = iota

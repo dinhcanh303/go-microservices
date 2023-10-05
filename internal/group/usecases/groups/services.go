@@ -14,7 +14,7 @@ var _ UseCase = (*service)(nil)
 var UseCaseSet = wire.NewSet(NewService)
 
 type service struct {
-	repo domain.GroupRepo
+	repo GroupRepo
 }
 
 // Create implements UseCase.
@@ -62,7 +62,7 @@ func (s *service) UpdateGroup(ctx context.Context, group *domain.Group) (*domain
 	return result, nil
 }
 
-func NewService(repo domain.GroupRepo) UseCase {
+func NewService(repo GroupRepo) UseCase {
 	return &service{
 		repo: repo,
 	}

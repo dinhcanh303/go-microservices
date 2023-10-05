@@ -5,6 +5,7 @@
         "fsys",
         "glog",
         "Logrus",
-        "rabbitmq"
+        "rabbitmq",
+        "timestamppb"
     ]
 }

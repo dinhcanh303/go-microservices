@@ -1,0 +1,15 @@
+app:
+  name: 'group-service'
+  version: '1.0.0'
+
+http:
+  host: '0.0.0.0'
+  port: 5001
+
+postgres:
+  pool_max: 2
+  dsn_url: host=127.0.0.1 user=postgres password=P@ssw0rd dbname=postgres sslmode=disable
+
+logger:
+  log_level: 'debug'
+  rollbar_env: 'group-service'

@@ -5,6 +5,7 @@ package logger
 // https://thedevelopercafe.com/articles/logging-in-go-with-slog-a7bb489755c2
 
 import (
+	"context"
 	"strings"
 
 	"github.com/sirupsen/logrus"
@@ -40,12 +41,12 @@ func ConvertLogLevel(level string) logrus.Level {
 	return l
 }
 
-func (h *LogrusHandler) Enabled(_ slog.Level) bool {
+func (h *LogrusHandler) Enabled(ctx context.Context, _ slog.Level) bool {
 	// support all logging levels
 	return true
 }
 
-func (h *LogrusHandler) Handle(rec slog.Record) error {
+func (h *LogrusHandler) Handle(ctx context.Context, rec slog.Record) error {
 	fields := make(map[string]interface{}, rec.NumAttrs())
 
 	rec.Attrs(func(a slog.Attr) bool {
@@ -69,12 +70,12 @@ func (h *LogrusHandler) Handle(rec slog.Record) error {
 	return nil
 }
 
-func (h *LogrusHandler) WithAttrs(attrs []slog.Attr) bool {
+func (h *LogrusHandler) WithAttrs(attrs []slog.Attr) slog.Handler {
 	// not implemented for brevity
-	return true
+	return h
 }
 
-func (h *LogrusHandler) WithGroup(name string) bool {
+func (h *LogrusHandler) WithGroup(name string) slog.Handler {
 	// not implemented for brevity
-	return true
+	return h
 }

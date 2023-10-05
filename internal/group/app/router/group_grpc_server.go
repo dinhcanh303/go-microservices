@@ -4,14 +4,16 @@ import (
 	"context"
 
 	"github.com/dinhcanh303/go-microservices/cmd/group/config"
-	gen "github.com/dinhcanh303/go-microservices/gen/go"
+	"github.com/dinhcanh303/go-microservices/internal/group/domain"
 	"github.com/dinhcanh303/go-microservices/internal/group/usecases/groups"
+	"github.com/dinhcanh303/go-microservices/proto/gen"
 	"github.com/google/uuid"
 	"github.com/google/wire"
 	"github.com/pkg/errors"
 	"golang.org/x/exp/slog"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 type groupGRPCServer struct {
@@ -20,11 +22,11 @@ type groupGRPCServer struct {
 	uc  groups.UseCase
 }
 
-var _ gen.UnimplementedGroupServiceServer = (*groupGRPCServer)(nil)
+var _ gen.GroupServiceServer = (*groupGRPCServer)(nil)
 
-var GroupGRPCServerSet = wire.NewSet(NewGRPCCounterServer)
+var GroupGRPCServerSet = wire.NewSet(NewGRPCGroupServer)
 
-func NewGRPCCounterServer(
+func NewGRPCGroupServer(
 	grpcServer *grpc.Server,
 	cfg *config.Config,
 	uc groups.UseCase,
@@ -40,9 +42,80 @@ func NewGRPCCounterServer(
 
 func (g *groupGRPCServer) CreateGroup(ctx context.Context, request *gen.CreateGroupRequest) (*gen.CreateGroupResponse, error) {
 	slog.Info("POST: CreateGroup")
-	id, err := uuid.Parse(request.Group.Uuid)
+	userId, err := uuid.Parse(request.Group.UserId)
 	if err != nil {
-		return nil, errors.Wrap(err, "uuid.Parse failed")
+		return nil, errors.Wrap(err, "failed to parse")
+	}
+	model := domain.Group{
+		Name:        request.Group.Name,
+		Description: request.Group.Description,
+		Status:      request.Group.Status,
+		UserID:      userId,
 	}
 
+	group, err := g.uc.CreateGroup(ctx, &model)
+	if err != nil {
+		return nil, errors.Wrap(err, "uc.CreateGroup failed")
+	}
+	res := &gen.CreateGroupResponse{
+		Group: &gen.GroupResponse{
+			Id:          group.ID.String(),
+			Name:        group.Name,
+			Description: group.Description,
+			UserId:      group.UserID.String(),
+			Status:      group.Status,
+			CreatedAt:   timestamppb.New(group.CreatedAt),
+			UpdatedAt:   timestamppb.New(group.UpdatedAt),
+		},
+	}
+	return res, nil
+}
+func (g *groupGRPCServer) GetGroup(ctx context.Context, request *gen.GetGroupRequest) (*gen.GetGroupResponse, error) {
+	slog.Info("GET: GetGroup")
+	group, err := g.uc.GetGroup(ctx, request.Id)
+	if err != nil {
+		return nil, errors.Wrap(err, "uc.GetGroup failed")
+	}
+	res := &gen.GetGroupResponse{
+		Group: &gen.GroupResponse{
+			Id:          group.ID.String(),
+			Name:        group.Name,
+			Description: group.Description,
+			UserId:      group.UserID.String(),
+			Status:      group.Status,
+			CreatedAt:   timestamppb.New(group.CreatedAt),
+			UpdatedAt:   timestamppb.New(group.UpdatedAt),
+		},
+	}
+	return res, nil
+}
+func (g *groupGRPCServer) UpdateGroup(ctx context.Context, request *gen.UpdateGroupRequest) (*gen.UpdateGroupResponse, error) {
+	slog.Info("PUT: UpdateGroup")
+	id, err := uuid.Parse(request.Group.Id)
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to parse")
+	}
+	model := domain.Group{
+		ID:          id,
+		Name:        request.Group.Name,
+		Description: request.Group.Description,
+		Status:      request.Group.Status,
+	}
+
+	group, err := g.uc.UpdateGroup(ctx, &model)
+	if err != nil {
+		return nil, errors.Wrap(err, "uc.CreateGroup failed")
+	}
+	res := &gen.UpdateGroupResponse{
+		Group: &gen.GroupResponse{
+			Id:          group.ID.String(),
+			Name:        group.Name,
+			Description: group.Description,
+			UserId:      group.UserID.String(),
+			Status:      group.Status,
+			CreatedAt:   timestamppb.New(group.CreatedAt),
+			UpdatedAt:   timestamppb.New(group.UpdatedAt),
+		},
+	}
+	return res, nil
 }
