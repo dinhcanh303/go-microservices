@@ -24,6 +24,7 @@ func newGateway(
 	cfg *config.Config,
 	opts []gwruntime.ServeMuxOption) (http.Handler, error) {
 	groupEndpoint := fmt.Sprintf("%s:%d", cfg.GroupHost, cfg.GroupPort)
+
 	mux := gwruntime.NewServeMux(opts...)
 	dialOpts := []grpc.DialOption{grpc.WithTransportCredentials(insecure.NewCredentials())}
 
@@ -91,7 +92,7 @@ func main() {
 		Addr:    fmt.Sprintf("%s:%d", cfg.Host, cfg.Port),
 		Handler: allowCORS(withLogger(mux)),
 	}
-
+	//goroutine
 	go func() {
 		<-ctx.Done()
 		slog.Info("shutting down the http server")

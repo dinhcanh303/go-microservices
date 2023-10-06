@@ -74,3 +74,7 @@ run-web:
 	CGO_ENABLED=0 go run github.com/dinhcanh303/go-microservices/cmd/web
 .PHONY: run-web
 
+proto-gen:
+	buf generate
+
+

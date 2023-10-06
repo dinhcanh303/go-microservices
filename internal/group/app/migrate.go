@@ -7,7 +7,6 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
-	"strconv"
 	"time"
 
 	"github.com/golang-migrate/migrate/v4"
@@ -19,11 +18,8 @@ import (
 )
 
 const (
-	_defaultAttempts = 5
-	_defaultTimeout  = time.Second
-)
-
-var (
+	_defaultAttempts   = 5
+	_defaultTimeout    = time.Second
 	_migrationFilePath = "db/migrations"
 )
 
@@ -32,7 +28,9 @@ func init() {
 	if !ok || len(databaseURL) == 0 {
 		glog.Fatalf("migrate: environment variable not declared: PG_URL")
 	}
+
 	databaseURL += "?sslmode=disable"
+
 	var (
 		attempts = _defaultAttempts
 		err      error
@@ -40,19 +38,12 @@ func init() {
 	)
 
 	for attempts > 0 {
-		inDocker, ok := os.LookupEnv("IN_DOCKER")
-		if !ok || len(inDocker) == 0 {
-			glog.Fatalf("migrate: environment variable not declared: IN_DOCKER")
-		}
+		cur, _ := os.Getwd()
+		dir := filepath.Dir(cur + "/../../..")
 
-		dir := fmt.Sprintf("file://%s", _migrationFilePath)
-		if dockered, _ := strconv.ParseBool(inDocker); !dockered {
-			cur, _ := os.Getwd()
-			dir = fmt.Sprintf("file://%s/%s", filepath.Dir(cur+"/../../.."), _migrationFilePath)
-		}
+		glog.Infoln(fmt.Sprintf("file://%s", dir))
 
-		glog.Infoln(dir)
-		m, err = migrate.New(dir, databaseURL)
+		m, err = migrate.New(fmt.Sprintf("file://%s/%s", dir, _migrationFilePath), databaseURL)
 		if err == nil {
 			break
 		}
