@@ -39,13 +39,10 @@ services:
       IN_DOCKER: "true"
       PG_URL: postgres://postgres:P@ssw0rd@postgres:5432/postgres
       PG_DSN_URL: host=postgres user=postgres password=P@ssw0rd dbname=postgres sslmode=disable
-      # ATTACHMENT_CLIENT_URL: group:5001
     ports:
       - 5001:5001
     depends_on:
       postgres:
-        condition: service_healthy
-      rabbitmq:
         condition: service_healthy
     networks:
       - microservices-network

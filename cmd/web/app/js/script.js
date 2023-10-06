@@ -17,12 +17,14 @@ function initApp() {
     receiptDate: null,
     async loadApp() {
       const response = await fetch("/reverse-proxy-url")
+      console.log(response)
       const data = await response.json();
       this.url = data.url;
-
+      
       this.loadProducts()
     },
     async loadProducts() {
+      console.log(this.url)
       const response = await fetch(`${this.url}/v1/api/item-types`)
       const data = await response.json();
       this.itemTypes = data.itemTypes;
