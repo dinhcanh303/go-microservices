@@ -35,7 +35,7 @@ func main() {
 	logrus.SetOutput(os.Stdout)
 	logrus.SetLevel(logger.ConvertLogLevel(cfg.Log.Level))
 
-	//intergrate Logrus with the slog logger
+	//integrate Logrus with the slog logger
 	logrusHandle := logger.NewLogrusHandler(logrus.StandardLogger())
 	slog.New(logrusHandle)
 

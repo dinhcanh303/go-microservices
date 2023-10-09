@@ -4,8 +4,10 @@
         "cleanenv",
         "fsys",
         "glog",
+        "Infoln",
         "Logrus",
         "rabbitmq",
+        "sslmode",
         "timestamppb",
         "usecase",
         "usecases"
