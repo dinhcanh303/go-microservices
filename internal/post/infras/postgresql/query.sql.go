@@ -12,18 +12,18 @@ import (
 	"github.com/google/uuid"
 )
 
-const countPosts = `-- name: CountPosts :one
+const count = `-- name: Count :one
 SELECT COUNT(*) FROM post.posts
 `
 
-func (q *Queries) CountPosts(ctx context.Context) (int64, error) {
-	row := q.db.QueryRowContext(ctx, countPosts)
+func (q *Queries) Count(ctx context.Context) (int64, error) {
+	row := q.db.QueryRowContext(ctx, count)
 	var count int64
 	err := row.Scan(&count)
 	return count, err
 }
 
-const createPost = `-- name: CreatePost :one
+const create = `-- name: Create :one
 INSERT INTO
     post.posts (
         id,
@@ -37,7 +37,7 @@ INSERT INTO
 VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id, user_id, group_id, title, content, status, created_at, updated_at, deleted_at
 `
 
-type CreatePostParams struct {
+type CreateParams struct {
 	ID        uuid.UUID     `json:"id"`
 	Status    int32         `json:"status"`
 	Title     string        `json:"title"`
@@ -47,8 +47,8 @@ type CreatePostParams struct {
 	DeletedAt sql.NullTime  `json:"deleted_at"`
 }
 
-func (q *Queries) CreatePost(ctx context.Context, arg CreatePostParams) (PostPost, error) {
-	row := q.db.QueryRowContext(ctx, createPost,
+func (q *Queries) Create(ctx context.Context, arg CreateParams) (PostPost, error) {
+	row := q.db.QueryRowContext(ctx, create,
 		arg.ID,
 		arg.Status,
 		arg.Title,
@@ -72,21 +72,21 @@ func (q *Queries) CreatePost(ctx context.Context, arg CreatePostParams) (PostPos
 	return i, err
 }
 
-const deletePost = `-- name: DeletePost :exec
+const delete = `-- name: Delete :exec
 DELETE FROM post.posts WHERE id = $1
 `
 
-func (q *Queries) DeletePost(ctx context.Context, id uuid.UUID) error {
-	_, err := q.db.ExecContext(ctx, deletePost, id)
+func (q *Queries) Delete(ctx context.Context, id uuid.UUID) error {
+	_, err := q.db.ExecContext(ctx, delete, id)
 	return err
 }
 
-const getPost = `-- name: GetPost :one
+const get = `-- name: Get :one
 SELECT id, user_id, group_id, title, content, status, created_at, updated_at, deleted_at FROM post.posts WHERE id = $1
 `
 
-func (q *Queries) GetPost(ctx context.Context, id uuid.UUID) (PostPost, error) {
-	row := q.db.QueryRowContext(ctx, getPost, id)
+func (q *Queries) Get(ctx context.Context, id uuid.UUID) (PostPost, error) {
+	row := q.db.QueryRowContext(ctx, get, id)
 	var i PostPost
 	err := row.Scan(
 		&i.ID,
@@ -102,17 +102,39 @@ func (q *Queries) GetPost(ctx context.Context, id uuid.UUID) (PostPost, error) {
 	return i, err
 }
 
-const listPosts = `-- name: ListPosts :many
+const getWithUnscoped = `-- name: GetWithUnscoped :one
+SELECT id, user_id, group_id, title, content, status, created_at, updated_at, deleted_at FROM post.posts 
+WHERE id = $1 AND deleted_at IS NOT NULL
+`
+
+func (q *Queries) GetWithUnscoped(ctx context.Context, id uuid.UUID) (PostPost, error) {
+	row := q.db.QueryRowContext(ctx, getWithUnscoped, id)
+	var i PostPost
+	err := row.Scan(
+		&i.ID,
+		&i.UserID,
+		&i.GroupID,
+		&i.Title,
+		&i.Content,
+		&i.Status,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+		&i.DeletedAt,
+	)
+	return i, err
+}
+
+const list = `-- name: List :many
 SELECT id, user_id, group_id, title, content, status, created_at, updated_at, deleted_at FROM post.posts OFFSET $1 LIMIT $2
 `
 
-type ListPostsParams struct {
+type ListParams struct {
 	Offset int32 `json:"offset"`
 	Limit  int32 `json:"limit"`
 }
 
-func (q *Queries) ListPosts(ctx context.Context, arg ListPostsParams) ([]PostPost, error) {
-	rows, err := q.db.QueryContext(ctx, listPosts, arg.Offset, arg.Limit)
+func (q *Queries) List(ctx context.Context, arg ListParams) ([]PostPost, error) {
+	rows, err := q.db.QueryContext(ctx, list, arg.Offset, arg.Limit)
 	if err != nil {
 		return nil, err
 	}
@@ -144,7 +166,7 @@ func (q *Queries) ListPosts(ctx context.Context, arg ListPostsParams) ([]PostPos
 	return items, nil
 }
 
-const updatePost = `-- name: UpdatePost :one
+const update = `-- name: Update :one
 UPDATE post.posts 
 SET
     title = $2 ,
@@ -154,7 +176,7 @@ SET
 WHERE id = $1 RETURNING id, user_id, group_id, title, content, status, created_at, updated_at, deleted_at
 `
 
-type UpdatePostParams struct {
+type UpdateParams struct {
 	ID        uuid.UUID    `json:"id"`
 	Title     string       `json:"title"`
 	Content   string       `json:"content"`
@@ -162,51 +184,13 @@ type UpdatePostParams struct {
 	DeletedAt sql.NullTime `json:"deleted_at"`
 }
 
-func (q *Queries) UpdatePost(ctx context.Context, arg UpdatePostParams) (PostPost, error) {
-	row := q.db.QueryRowContext(ctx, updatePost,
+func (q *Queries) Update(ctx context.Context, arg UpdateParams) (PostPost, error) {
+	row := q.db.QueryRowContext(ctx, update,
 		arg.ID,
 		arg.Title,
 		arg.Content,
 		arg.Status,
 		arg.DeletedAt,
-	)
-	var i PostPost
-	err := row.Scan(
-		&i.ID,
-		&i.UserID,
-		&i.GroupID,
-		&i.Title,
-		&i.Content,
-		&i.Status,
-		&i.CreatedAt,
-		&i.UpdatedAt,
-		&i.DeletedAt,
-	)
-	return i, err
-}
-
-const updatePostWithUnscoped = `-- name: UpdatePostWithUnscoped :one
-UPDATE post.posts 
-SET 
-    title = $2, 
-    content = $3, 
-    status = $4
-WHERE id = $1 AND deleted_at IS NOT NULL RETURNING id, user_id, group_id, title, content, status, created_at, updated_at, deleted_at
-`
-
-type UpdatePostWithUnscopedParams struct {
-	ID      uuid.UUID `json:"id"`
-	Title   string    `json:"title"`
-	Content string    `json:"content"`
-	Status  int32     `json:"status"`
-}
-
-func (q *Queries) UpdatePostWithUnscoped(ctx context.Context, arg UpdatePostWithUnscopedParams) (PostPost, error) {
-	row := q.db.QueryRowContext(ctx, updatePostWithUnscoped,
-		arg.ID,
-		arg.Title,
-		arg.Content,
-		arg.Status,
 	)
 	var i PostPost
 	err := row.Scan(

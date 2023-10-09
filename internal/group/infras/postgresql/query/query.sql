@@ -1,6 +1,9 @@
 -- name: Get :one
 SELECT * FROM "group".groups WHERE id = $1;
 
+-- name: GetWithUnscoped :one
+SELECT * FROM "group".groups WHERE id = $1 AND deleted_at IS NOT NULL;
+
 -- name: Create :one
 INSERT INTO
     "group".groups (
@@ -8,18 +11,16 @@ INSERT INTO
         status,
         name,
         description,
-        user_id,
-        deleted_at
+        user_id
     )
-VALUES ($1, $2, $3, $4, $5, $6) RETURNING *;
+VALUES ($1, $2, $3, $4, $5) RETURNING *;
 
 -- name: Update :one
 UPDATE "group".groups 
 SET
     name = $2 ,
     description = $3,
-    status = $4,
-    deleted_at = $5
+    status = $4
 WHERE id = $1 RETURNING *;
 
 -- name: Delete :exec

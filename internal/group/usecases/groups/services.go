@@ -5,6 +5,7 @@ import (
 
 	"github.com/dinhcanh303/go-microservices/internal/group/domain"
 
+	"github.com/google/uuid"
 	"github.com/google/wire"
 	"github.com/pkg/errors"
 )
@@ -27,8 +28,8 @@ func (s *service) CreateGroup(ctx context.Context, group *domain.Group) (*domain
 }
 
 // Delete implements UseCase.
-func (s *service) DeleteGroup(ctx context.Context, uuid string) (bool, error) {
-	result, err := s.repo.Delete(ctx, uuid)
+func (s *service) DeleteGroup(ctx context.Context, id uuid.UUID) (bool, error) {
+	result, err := s.repo.Delete(ctx, id)
 	if err != nil {
 		return false, errors.Wrap(err, "service.Delete")
 	}
@@ -36,8 +37,8 @@ func (s *service) DeleteGroup(ctx context.Context, uuid string) (bool, error) {
 }
 
 // Get implements UseCase.
-func (s *service) GetGroup(ctx context.Context, uuid string) (*domain.Group, error) {
-	result, err := s.repo.Get(ctx, uuid)
+func (s *service) GetGroup(ctx context.Context, id uuid.UUID) (*domain.Group, error) {
+	result, err := s.repo.Get(ctx, id)
 	if err != nil {
 		return nil, errors.Wrap(err, "service.Get")
 	}
@@ -45,8 +46,8 @@ func (s *service) GetGroup(ctx context.Context, uuid string) (*domain.Group, err
 }
 
 // GetWithUnscoped implements UseCase.
-func (s *service) GetGroupWithUnscoped(ctx context.Context, uuid string) (*domain.Group, error) {
-	result, err := s.repo.GetWithUnscoped(ctx, uuid)
+func (s *service) GetGroupWithUnscoped(ctx context.Context, id uuid.UUID) (*domain.Group, error) {
+	result, err := s.repo.GetWithUnscoped(ctx, id)
 	if err != nil {
 		return nil, errors.Wrap(err, "service.GetWithUnscoped")
 	}

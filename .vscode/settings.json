@@ -6,6 +6,8 @@
         "glog",
         "Logrus",
         "rabbitmq",
-        "timestamppb"
+        "timestamppb",
+        "usecase",
+        "usecases"
     ]
 }

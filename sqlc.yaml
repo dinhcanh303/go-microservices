@@ -2,7 +2,7 @@ version: "2"
 sql:
   - engine: "postgresql"
     queries: "internal/group/infras/postgresql/query/query.sql"
-    schema: "db/migrations/group/20231003_init_groupdb.up.sql"
+    schema: "db/migrations/000001_init_groupdb.up.sql"
     gen:
       go:
         package: "postgresql"
@@ -11,9 +11,18 @@ sql:
 
   - engine: "postgresql"
     queries: "internal/post/infras/postgresql/query/query.sql"
-    schema: "db/migrations/post/20231003_init_postdb.up.sql"
+    schema: "db/migrations/000002_init_postdb.up.sql"
     gen:
       go:
         package: "postgresql"
         out: "internal/post/infras/postgresql"
+        emit_json_tags: true
+
+  - engine: "postgresql"
+    queries: "internal/comment/infras/postgresql/query/query.sql"
+    schema: "db/migrations/000003_init_commentdb.up.sql"
+    gen:
+      go:
+        package: "postgresql"
+        out: "internal/comment/infras/postgresql"
         emit_json_tags: true

@@ -72,7 +72,11 @@ func (g *groupGRPCServer) CreateGroup(ctx context.Context, request *gen.CreateGr
 }
 func (g *groupGRPCServer) GetGroup(ctx context.Context, request *gen.GetGroupRequest) (*gen.GetGroupResponse, error) {
 	slog.Info("GET: GetGroup")
-	group, err := g.uc.GetGroup(ctx, request.Id)
+	id, err := uuid.Parse(request.Id)
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to parse id")
+	}
+	group, err := g.uc.GetGroup(ctx, id)
 	if err != nil {
 		return nil, errors.Wrap(err, "uc.GetGroup failed")
 	}
@@ -88,6 +92,21 @@ func (g *groupGRPCServer) GetGroup(ctx context.Context, request *gen.GetGroupReq
 		},
 	}
 	return res, nil
+}
+func (g *groupGRPCServer) DeleteGroup(ctx context.Context, request *gen.DeleteGroupRequest) (*gen.DeleteGroupResponse, error) {
+	slog.Info("DELETE: DeleteGroup")
+	id, err := uuid.Parse(request.Id)
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to parse id")
+	}
+	deleted, err := g.uc.DeleteGroup(ctx, id)
+	if err != nil {
+		return nil, errors.Wrap(err, "uc.GetGroup failed")
+	}
+
+	return &gen.DeleteGroupResponse{
+		Deleted: deleted,
+	}, nil
 }
 func (g *groupGRPCServer) UpdateGroup(ctx context.Context, request *gen.UpdateGroupRequest) (*gen.UpdateGroupResponse, error) {
 	slog.Info("PUT: UpdateGroup")

@@ -7,7 +7,6 @@ package postgresql
 
 import (
 	"context"
-	"database/sql"
 
 	"github.com/google/uuid"
 )
@@ -19,19 +18,17 @@ INSERT INTO
         status,
         name,
         description,
-        user_id,
-        deleted_at
+        user_id
     )
-VALUES ($1, $2, $3, $4, $5, $6) RETURNING id, user_id, name, description, status, created_at, updated_at, deleted_at
+VALUES ($1, $2, $3, $4, $5) RETURNING id, user_id, name, description, status, created_at, updated_at, deleted_at
 `
 
 type CreateParams struct {
-	ID          uuid.UUID    `json:"id"`
-	Status      int32        `json:"status"`
-	Name        string       `json:"name"`
-	Description string       `json:"description"`
-	UserID      uuid.UUID    `json:"user_id"`
-	DeletedAt   sql.NullTime `json:"deleted_at"`
+	ID          uuid.UUID `json:"id"`
+	Status      int32     `json:"status"`
+	Name        string    `json:"name"`
+	Description string    `json:"description"`
+	UserID      uuid.UUID `json:"user_id"`
 }
 
 func (q *Queries) Create(ctx context.Context, arg CreateParams) (GroupGroup, error) {
@@ -41,7 +38,6 @@ func (q *Queries) Create(ctx context.Context, arg CreateParams) (GroupGroup, err
 		arg.Name,
 		arg.Description,
 		arg.UserID,
-		arg.DeletedAt,
 	)
 	var i GroupGroup
 	err := row.Scan(
@@ -86,22 +82,40 @@ func (q *Queries) Get(ctx context.Context, id uuid.UUID) (GroupGroup, error) {
 	return i, err
 }
 
+const getWithUnscoped = `-- name: GetWithUnscoped :one
+SELECT id, user_id, name, description, status, created_at, updated_at, deleted_at FROM "group".groups WHERE id = $1 AND deleted_at IS NOT NULL
+`
+
+func (q *Queries) GetWithUnscoped(ctx context.Context, id uuid.UUID) (GroupGroup, error) {
+	row := q.db.QueryRowContext(ctx, getWithUnscoped, id)
+	var i GroupGroup
+	err := row.Scan(
+		&i.ID,
+		&i.UserID,
+		&i.Name,
+		&i.Description,
+		&i.Status,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+		&i.DeletedAt,
+	)
+	return i, err
+}
+
 const update = `-- name: Update :one
 UPDATE "group".groups 
 SET
     name = $2 ,
     description = $3,
-    status = $4,
-    deleted_at = $5
+    status = $4
 WHERE id = $1 RETURNING id, user_id, name, description, status, created_at, updated_at, deleted_at
 `
 
 type UpdateParams struct {
-	ID          uuid.UUID    `json:"id"`
-	Name        string       `json:"name"`
-	Description string       `json:"description"`
-	Status      int32        `json:"status"`
-	DeletedAt   sql.NullTime `json:"deleted_at"`
+	ID          uuid.UUID `json:"id"`
+	Name        string    `json:"name"`
+	Description string    `json:"description"`
+	Status      int32     `json:"status"`
 }
 
 func (q *Queries) Update(ctx context.Context, arg UpdateParams) (GroupGroup, error) {
@@ -110,7 +124,6 @@ func (q *Queries) Update(ctx context.Context, arg UpdateParams) (GroupGroup, err
 		arg.Name,
 		arg.Description,
 		arg.Status,
-		arg.DeletedAt,
 	)
 	var i GroupGroup
 	err := row.Scan(
