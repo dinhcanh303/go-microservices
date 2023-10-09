@@ -39,6 +39,7 @@ func init() {
 	)
 
 	for attempts > 0 {
+		glog.Infoln("Migrating database")
 		inDocker, ok := os.LookupEnv("IN_DOCKER")
 		if !ok || len(inDocker) == 0 {
 			glog.Fatalf("migrate: environment variable not declared: IN_DOCKER")
@@ -46,7 +47,7 @@ func init() {
 		dir := fmt.Sprintf("file://%s", _migrationFilePath)
 		if dockerd, _ := strconv.ParseBool(inDocker); !dockerd {
 			cur, _ := os.Getwd()
-			dir := fmt.Sprintf("file://%s/%s", filepath.Dir(cur+"/../../.."), _migrationFilePath)
+			dir = fmt.Sprintf("file://%s/%s", filepath.Dir(cur+"/../../.."), _migrationFilePath)
 		}
 		glog.Infoln(dir)
 		m, err = migrate.New(dir, databaseURL)
