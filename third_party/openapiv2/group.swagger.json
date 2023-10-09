@@ -145,6 +145,35 @@
         "tags": [
           "Group"
         ]
+      },
+      "delete": {
+        "summary": "Delete group",
+        "operationId": "GroupService_DeleteGroup",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/groupapiDeleteGroupResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "Group"
+        ]
       }
     }
   },
@@ -181,6 +210,14 @@
       "properties": {
         "group": {
           "$ref": "#/definitions/groupapiGroupResponse"
+        }
+      }
+    },
+    "groupapiDeleteGroupResponse": {
+      "type": "object",
+      "properties": {
+        "deleted": {
+          "type": "boolean"
         }
       }
     },
