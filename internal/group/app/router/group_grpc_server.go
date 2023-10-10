@@ -52,6 +52,7 @@ func (g *groupGRPCServer) CreateGroup(ctx context.Context, request *gen.CreateGr
 		Status:      request.Group.Status,
 		UserID:      userId,
 	}
+	slog.Info("Model", model)
 
 	group, err := g.uc.CreateGroup(ctx, &model)
 	if err != nil {

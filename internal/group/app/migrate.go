@@ -50,13 +50,13 @@ func init() {
 			cur, _ := os.Getwd()
 			dir = fmt.Sprintf("file://%s/%s", filepath.Dir(cur+"/../../.."), _migrationFilePath)
 		}
-		glog.Infoln(dir)
+		// glog.Infoln(dir)
 		m, err = migrate.New(dir, databaseURL)
 		if err == nil {
 			break
 		}
 
-		glog.Infoln("Migrate: postgres is trying to connect, attempts left: %d", attempts)
+		// glog.Infoln("Migrate: postgres is trying to connect, attempts left: %d", attempts)
 		time.Sleep(_defaultTimeout)
 		attempts--
 	}
@@ -74,5 +74,5 @@ func init() {
 		glog.Infoln("Migrate: no change")
 		return
 	}
-	glog.Infoln("Migrate: up success")
+	// glog.Infoln("Migrate: up success")
 }

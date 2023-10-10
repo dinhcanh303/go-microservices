@@ -21,9 +21,9 @@ func InitApp(
 	panic(wire.Build(
 		New,
 		dbEngineFunc,
-		groupsUC.UseCaseSet,
-		repo.RepositorySet,
 		router.GroupGRPCServerSet,
+		repo.RepositorySet,
+		groupsUC.UseCaseSet,
 	))
 }
 func dbEngineFunc(url postgres.DBConnString) (postgres.DBEngine, func(), error) {

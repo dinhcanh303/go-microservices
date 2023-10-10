@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/dinhcanh303/go-microservices/internal/group/domain"
+	"golang.org/x/exp/slog"
 
 	"github.com/google/uuid"
 	"github.com/google/wire"
@@ -20,6 +21,7 @@ type service struct {
 
 // Create implements UseCase.
 func (s *service) CreateGroup(ctx context.Context, group *domain.Group) (*domain.Group, error) {
+	slog.Info("Create Group Service")
 	result, err := s.repo.Create(ctx, group)
 	if err != nil {
 		return nil, errors.Wrap(err, "service.Create")

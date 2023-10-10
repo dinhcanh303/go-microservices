@@ -10,6 +10,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/google/wire"
 	"github.com/pkg/errors"
+	"golang.org/x/exp/slog"
 )
 
 type orderRepo struct {
@@ -26,6 +27,7 @@ var RepositorySet = wire.NewSet(NewGroupRepo)
 
 // Create implements groups.GroupRepo.
 func (rp *orderRepo) Create(ctx context.Context, group *domain.Group) (*domain.Group, error) {
+	slog.Info("Repo Postgresql")
 	db := rp.pg.GetDB()
 	querier := postgresql.New(db)
 	tx, err := db.Begin()
@@ -33,6 +35,7 @@ func (rp *orderRepo) Create(ctx context.Context, group *domain.Group) (*domain.G
 		return nil, errors.Wrap(err, "CreateGroupRepo")
 	}
 	qtx := querier.WithTx(tx)
+	slog.Info("QTX")
 	result, err := qtx.Create(ctx, postgresql.CreateParams{
 		ID:          uuid.New(),
 		Name:        group.Name,
