@@ -8,8 +8,8 @@ services:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=P@ssw0rd
     healthcheck:
-      # test: ["CMD", "pg_isready"]
-      test: [ "CMD-SHELL", "pg_isready -d $${POSTGRES_DB} -U $${POSTGRES_USER}"]
+      test: ["CMD", "pg_isready"]
+      # test: [ "CMD-SHELL", "pg_isready -d $${POSTGRES_DB} -U $${POSTGRES_USER}"]
     ports:
       - "5432:5432"
     networks:
@@ -29,6 +29,21 @@ services:
       - "15672:15672"
     networks:
       - microservices-network
+  proxy:
+    build:
+      context: .
+      dockerfile: ./docker/Dockerfile-proxy
+    image: go-microservices-proxy
+    environment:
+      APP_NAME: 'proxy-service in docker'
+      GRPC_GROUP_HOST: 'group'
+      GRPC_GROUP_PORT: 5001
+    ports:
+      - 5000:5000
+    depends_on:
+      - group
+    networks:
+      - microservices-network
 
   group:
     build:
@@ -41,26 +56,10 @@ services:
       PG_URL: postgres://postgres:P@ssw0rd@postgres:5432/postgres
       PG_DSN_URL: host=postgres user=postgres password=P@ssw0rd dbname=postgres sslmode=disable
     ports:
-      - "5001:5001"
+      - 5001:5001
     depends_on:
       postgres:
         condition: service_healthy
-    networks:
-      - microservices-network
-
-  proxy:
-    build:
-      context: .
-      dockerfile: ./docker/Dockerfile-proxy
-    image: go-microservices-proxy
-    environment:
-      APP_NAME: 'proxy-service in docker'
-      GRPC_GROUP_HOST: 'group'
-      GRPC_GROUP_PORT: 5001
-    ports:
-      - "5000:5000"
-    depends_on:
-      - group
     networks:
       - microservices-network
 
@@ -73,7 +72,7 @@ services:
       REVERSE_PROXY_URL: http://localhost:5000
       WEB_PORT: 8888
     ports:
-      - "8888:8888"
+      - 8888:8888
     depends_on:
       - proxy
     networks:
