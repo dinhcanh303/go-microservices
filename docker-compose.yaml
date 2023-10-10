@@ -11,7 +11,7 @@ services:
       test: ["CMD", "pg_isready"]
       # test: [ "CMD-SHELL", "pg_isready -d $${POSTGRES_DB} -U $${POSTGRES_USER}"]
     ports:
-      - "5432:5432"
+      - 5432:5432
     networks:
       - microservices-network
   rabbitmq:
@@ -25,8 +25,8 @@ services:
       timeout: 30s
       retries: 3
     ports:
-      - "5672:5672"
-      - "15672:15672"
+      - 5672:5672
+      - 15672:15672
     networks:
       - microservices-network
   proxy:
