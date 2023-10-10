@@ -28,7 +28,6 @@ var (
 )
 
 func init() {
-	glog.Infoln("Init migrate database")
 	databaseURL, ok := os.LookupEnv("PG_URL")
 	if !ok || len(databaseURL) == 0 {
 		glog.Fatalf("migrate: environment variable not declared: PG_URL")
@@ -41,19 +40,16 @@ func init() {
 		err      error
 		m        *migrate.Migrate
 	)
-
 	for attempts > 0 {
 		inDocker, ok := os.LookupEnv("IN_DOCKER")
 		if !ok || len(inDocker) == 0 {
 			glog.Fatalf("migrate: environment variable not declared: IN_DOCKER")
 		}
-		glog.Infoln("Migrate: up success", inDocker)
 		dir := fmt.Sprintf("file://%s", _migrationFilePath)
-		if dockered, _ := strconv.ParseBool(inDocker); !dockered {
+		if dockerd, _ := strconv.ParseBool(inDocker); !dockerd {
 			cur, _ := os.Getwd()
 			dir = fmt.Sprintf("file://%s/%s", filepath.Dir(cur+"/../../.."), _migrationFilePath)
 		}
-		glog.Infoln("Migrate: up success", dir)
 		glog.Infoln(dir)
 		m, err = migrate.New(dir, databaseURL)
 		if err == nil {
@@ -64,7 +60,6 @@ func init() {
 		time.Sleep(_defaultTimeout)
 		attempts--
 	}
-
 	if err != nil {
 		glog.Fatalf("Migrate: postgres connect error: %s", err)
 	}
@@ -79,6 +74,5 @@ func init() {
 		glog.Infoln("Migrate: no change")
 		return
 	}
-
 	glog.Infoln("Migrate: up success")
 }

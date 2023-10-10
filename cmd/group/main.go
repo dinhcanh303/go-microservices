@@ -19,6 +19,7 @@ import (
 )
 
 func main() {
+	slog.Info("Build main group started")
 	_, err := maxprocs.Set()
 	if err != nil {
 		slog.Error("Failed set max process", err)
@@ -63,6 +64,13 @@ func main() {
 			<-ctx.Done()
 		}
 	}()
+	err = server.Serve(l)
+	if err != nil {
+		slog.Error("failed start gRPC server", err, "network", network, "address", address)
+		cancel()
+		<-ctx.Done()
+	}
+
 	quit := make(chan os.Signal, 1)
 	signal.Notify(quit, os.Interrupt, syscall.SIGTERM)
 	select {
