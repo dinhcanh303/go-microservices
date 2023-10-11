@@ -9,8 +9,8 @@ http:
 grpc:
   group_host: '0.0.0.0'
   group_port: 5001
-  # post_host: '0.0.0.0'
-  # post_port: 5002
+  post_host: '0.0.0.0'
+  post_port: 5002
 
 logger:
   log_level: 'debug'

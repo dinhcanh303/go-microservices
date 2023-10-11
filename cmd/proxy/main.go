@@ -24,11 +24,16 @@ func newGateway(
 	cfg *config.Config,
 	opts []gwruntime.ServeMuxOption) (http.Handler, error) {
 	groupEndpoint := fmt.Sprintf("%s:%d", cfg.GroupHost, cfg.GroupPort)
+	postEndpoint := fmt.Sprintf("%s:%d", cfg.PostHost, cfg.PostPort)
 
 	mux := gwruntime.NewServeMux(opts...)
 	dialOpts := []grpc.DialOption{grpc.WithTransportCredentials(insecure.NewCredentials())}
 
 	err := gen.RegisterGroupServiceHandlerFromEndpoint(ctx, mux, groupEndpoint, dialOpts)
+	if err != nil {
+		return nil, err
+	}
+	err = gen.RegisterPostServiceHandlerFromEndpoint(ctx, mux, postEndpoint, dialOpts)
 	if err != nil {
 		return nil, err
 	}

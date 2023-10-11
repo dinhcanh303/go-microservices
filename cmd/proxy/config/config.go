@@ -20,6 +20,8 @@ type (
 	GRPC struct {
 		GroupHost string `env-required:"true" yaml:"group_host" env:"GRPC_GROUP_HOST"`
 		GroupPort int    `env-required:"true" yaml:"group_port" env:"GRPC_GROUP_PORT"`
+		PostHost  string `env-required:"true" yaml:"post_host" env:"GRPC_POST_HOST"`
+		PostPort  int    `env-required:"true" yaml:"post_port" env:"GRPC_POST_PORT"`
 	}
 )
 
