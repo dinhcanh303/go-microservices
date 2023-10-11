@@ -23,9 +23,18 @@ SET
     deleted_at = $5
 WHERE id = $1 RETURNING *;
 
--- name: GetWithUnscoped :one
+-- -- name: GetWithUnscoped :one
+-- SELECT * FROM post.posts 
+-- WHERE id = $1 AND deleted_at IS NOT NULL;
+
+
+-- name: GetByGroupId :many
 SELECT * FROM post.posts 
-WHERE id = $1 AND deleted_at IS NOT NULL;
+WHERE group_id = $1;
+
+-- name: GetByUserId :many
+SELECT * FROM post.posts 
+WHERE user_id = $1 AND group_id IS NULL;
 
 -- name: Delete :exec
 DELETE FROM post.posts WHERE id = $1;
@@ -33,5 +42,8 @@ DELETE FROM post.posts WHERE id = $1;
 -- name: List :many
 SELECT * FROM post.posts OFFSET $1 LIMIT $2;
 
--- name: Count :one
-SELECT COUNT(*) FROM post.posts;
+-- -- name: CountPost :one
+-- SELECT COUNT(*) FROM post.posts WHERE user_id = $1 AND group_id IS NULL;
+
+-- -- name: CountPostInGroup :one
+-- SELECT COUNT(*) FROM post.posts WHERE group_id = $1;

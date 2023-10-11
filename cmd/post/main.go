@@ -8,8 +8,8 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/dinhcanh303/go-microservices/cmd/group/config"
-	"github.com/dinhcanh303/go-microservices/internal/group/app"
+	"github.com/dinhcanh303/go-microservices/cmd/post/config"
+	"github.com/dinhcanh303/go-microservices/internal/post/app"
 	"github.com/dinhcanh303/go-microservices/pkg/logger"
 	"github.com/dinhcanh303/go-microservices/pkg/postgres"
 	"github.com/sirupsen/logrus"
@@ -35,7 +35,7 @@ func main() {
 	logrus.SetOutput(os.Stdout)
 	logrus.SetLevel(logger.ConvertLogLevel(cfg.Log.Level))
 
-	//intergrate Logrus with the slog logger
+	//integrate Logrus with the slog logger
 	logrusHandle := logger.NewLogrusHandler(logrus.StandardLogger())
 	slog.New(logrusHandle)
 
@@ -63,6 +63,12 @@ func main() {
 			<-ctx.Done()
 		}
 	}()
+	err = server.Serve(l)
+	if err != nil {
+		slog.Error("failed start gRPC server", err, "network", network, "address", address)
+		cancel()
+		<-ctx.Done()
+	}
 	quit := make(chan os.Signal, 1)
 	signal.Notify(quit, os.Interrupt, syscall.SIGTERM)
 	select {

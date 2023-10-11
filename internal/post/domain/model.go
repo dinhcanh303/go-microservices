@@ -8,7 +8,7 @@ import (
 
 type Post struct {
 	ID        uuid.UUID     `json:"id"`
-	Status    uint32        `json:"status"`
+	Status    int32         `json:"status"`
 	Title     string        `json:"title"`
 	Content   string        `json:"content"`
 	UserID    uuid.UUID     `json:"user_id"`

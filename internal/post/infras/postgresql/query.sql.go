@@ -12,17 +12,6 @@ import (
 	"github.com/google/uuid"
 )
 
-const count = `-- name: Count :one
-SELECT COUNT(*) FROM post.posts
-`
-
-func (q *Queries) Count(ctx context.Context) (int64, error) {
-	row := q.db.QueryRowContext(ctx, count)
-	var count int64
-	err := row.Scan(&count)
-	return count, err
-}
-
 const create = `-- name: Create :one
 INSERT INTO
     post.posts (
@@ -102,26 +91,85 @@ func (q *Queries) Get(ctx context.Context, id uuid.UUID) (PostPost, error) {
 	return i, err
 }
 
-const getWithUnscoped = `-- name: GetWithUnscoped :one
+const getByGroupId = `-- name: GetByGroupId :many
+
+
 SELECT id, user_id, group_id, title, content, status, created_at, updated_at, deleted_at FROM post.posts 
-WHERE id = $1 AND deleted_at IS NOT NULL
+WHERE group_id = $1
 `
 
-func (q *Queries) GetWithUnscoped(ctx context.Context, id uuid.UUID) (PostPost, error) {
-	row := q.db.QueryRowContext(ctx, getWithUnscoped, id)
-	var i PostPost
-	err := row.Scan(
-		&i.ID,
-		&i.UserID,
-		&i.GroupID,
-		&i.Title,
-		&i.Content,
-		&i.Status,
-		&i.CreatedAt,
-		&i.UpdatedAt,
-		&i.DeletedAt,
-	)
-	return i, err
+// -- name: GetWithUnscoped :one
+// SELECT * FROM post.posts
+// WHERE id = $1 AND deleted_at IS NOT NULL;
+func (q *Queries) GetByGroupId(ctx context.Context, groupID uuid.NullUUID) ([]PostPost, error) {
+	rows, err := q.db.QueryContext(ctx, getByGroupId, groupID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []PostPost
+	for rows.Next() {
+		var i PostPost
+		if err := rows.Scan(
+			&i.ID,
+			&i.UserID,
+			&i.GroupID,
+			&i.Title,
+			&i.Content,
+			&i.Status,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+			&i.DeletedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getByUserId = `-- name: GetByUserId :many
+SELECT id, user_id, group_id, title, content, status, created_at, updated_at, deleted_at FROM post.posts 
+WHERE user_id = $1 AND group_id IS NULL
+`
+
+func (q *Queries) GetByUserId(ctx context.Context, userID uuid.UUID) ([]PostPost, error) {
+	rows, err := q.db.QueryContext(ctx, getByUserId, userID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []PostPost
+	for rows.Next() {
+		var i PostPost
+		if err := rows.Scan(
+			&i.ID,
+			&i.UserID,
+			&i.GroupID,
+			&i.Title,
+			&i.Content,
+			&i.Status,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+			&i.DeletedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
 }
 
 const list = `-- name: List :many
