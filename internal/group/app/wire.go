@@ -22,7 +22,7 @@ func InitApp(
 		New,
 		dbEngineFunc,
 		router.GroupGRPCServerSet,
-		repo.RepositorySet,
+		repo.RepositoryGroupSet,
 		groupsUC.UseCaseSet,
 	))
 }

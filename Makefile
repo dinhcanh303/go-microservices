@@ -20,11 +20,15 @@ linter-golangci: ### check by golangci linter
 .PHONY: linter-golangci
 
 wire:
-	cd internal/group/app && wire
+	cd internal/group/app && wire && cd - && \
+	cd internal/post/app && wire && cd -
 .PHONY: wire
 
+proto-gen:
+	buf generate
+
 proto:
-	rm -f proto/gen/*go
+	rm -f proto/gen/*.go
 	protoc --proto_path=proto --go_out=proto/gen --go_opt=paths=source_relative \
 	--go-grpc_out=proto/gen --go-grpc_opt=paths=source_relative \
 	--grpc-gateway_out=proto/gen --grpc-gateway_opt=paths=source_relative \
@@ -57,12 +61,17 @@ docker-compose-build:
 	docker-compose build
 .PHONY: docker-compose-build
 
-run: run-group run-proxy run-web
+run: run-group run-post run-proxy run-web
 
 run-group:
 	cd cmd/group && go mod tidy && go mod download && \
 	CGO_ENABLED=0 go run -tags migrate github.com/dinhcanh303/go-microservices/cmd/group
 .PHONY: run-group
+
+run-post:
+	cd cmd/post && go mod tidy && go mod download && \
+	CGO_ENABLED=0 go run -tags migrate github.com/dinhcanh303/go-microservices/cmd/post
+.PHONY: run-post
 
 run-proxy:
 	cd cmd/proxy && go mod tidy && go mod download && \
@@ -74,7 +83,5 @@ run-web:
 	CGO_ENABLED=0 go run github.com/dinhcanh303/go-microservices/cmd/web
 .PHONY: run-web
 
-proto-gen:
-	buf generate
 
 

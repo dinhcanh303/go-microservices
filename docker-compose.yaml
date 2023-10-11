@@ -38,13 +38,15 @@ services:
       APP_NAME: 'proxy-service in docker'
       GRPC_GROUP_HOST: 'group'
       GRPC_GROUP_PORT: 5001
+      GRPC_POST_HOST: 'post'
+      GRPC_POST_PORT: 5002
     ports:
       - 5000:5000
     depends_on:
       - group
+      - post
     networks:
       - microservices-network
-
   group:
     build:
       context: .
@@ -57,6 +59,24 @@ services:
       PG_DSN_URL: host=postgres user=postgres password=P@ssw0rd dbname=postgres sslmode=disable
     ports:
       - 5001:5001
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - microservices-network
+
+  post:
+    build:
+      context: .
+      dockerfile: ./docker/Dockerfile-post
+    image: go-microservices-post
+    environment:
+      APP_NAME: 'post-service in docker'
+      IN_DOCKER: "true"
+      PG_URL: postgres://postgres:P@ssw0rd@postgres:5432/postgres
+      PG_DSN_URL: host=postgres user=postgres password=P@ssw0rd dbname=postgres sslmode=disable
+    ports:
+      - 5002:5002
     depends_on:
       postgres:
         condition: service_healthy

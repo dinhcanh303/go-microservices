@@ -13,20 +13,20 @@ import (
 	"golang.org/x/exp/slog"
 )
 
-type orderRepo struct {
+type groupRepo struct {
 	pg postgres.DBEngine
 }
 
 func NewGroupRepo(pg postgres.DBEngine) groups.GroupRepo {
-	return &orderRepo{pg: pg}
+	return &groupRepo{pg: pg}
 }
 
-var _ groups.GroupRepo = (*orderRepo)(nil)
+var _ groups.GroupRepo = (*groupRepo)(nil)
 
-var RepositorySet = wire.NewSet(NewGroupRepo)
+var RepositoryGroupSet = wire.NewSet(NewGroupRepo)
 
 // Create implements groups.GroupRepo.
-func (rp *orderRepo) Create(ctx context.Context, group *domain.Group) (*domain.Group, error) {
+func (rp *groupRepo) Create(ctx context.Context, group *domain.Group) (*domain.Group, error) {
 	slog.Info("Repo Postgresql")
 	db := rp.pg.GetDB()
 	querier := postgresql.New(db)
@@ -60,7 +60,7 @@ func (rp *orderRepo) Create(ctx context.Context, group *domain.Group) (*domain.G
 }
 
 // Delete implements groups.GroupRepo.
-func (rp *orderRepo) Delete(ctx context.Context, id uuid.UUID) (bool, error) {
+func (rp *groupRepo) Delete(ctx context.Context, id uuid.UUID) (bool, error) {
 	db := rp.pg.GetDB()
 	querier := postgresql.New(db)
 	tx, err := db.Begin()
@@ -76,7 +76,7 @@ func (rp *orderRepo) Delete(ctx context.Context, id uuid.UUID) (bool, error) {
 }
 
 // Get implements groups.GroupRepo.
-func (rp *orderRepo) Get(ctx context.Context, id uuid.UUID) (*domain.Group, error) {
+func (rp *groupRepo) Get(ctx context.Context, id uuid.UUID) (*domain.Group, error) {
 	db := rp.pg.GetDB()
 	querier := postgresql.New(db)
 	tx, err := db.Begin()
@@ -102,7 +102,7 @@ func (rp *orderRepo) Get(ctx context.Context, id uuid.UUID) (*domain.Group, erro
 }
 
 // GetWithUnscoped implements groups.GroupRepo.
-func (rp *orderRepo) GetWithUnscoped(ctx context.Context, id uuid.UUID) (*domain.Group, error) {
+func (rp *groupRepo) GetWithUnscoped(ctx context.Context, id uuid.UUID) (*domain.Group, error) {
 	db := rp.pg.GetDB()
 	querier := postgresql.New(db)
 	tx, err := db.Begin()
@@ -127,7 +127,7 @@ func (rp *orderRepo) GetWithUnscoped(ctx context.Context, id uuid.UUID) (*domain
 }
 
 // Update implements groups.GroupRepo.
-func (rp *orderRepo) Update(ctx context.Context, group *domain.Group) (*domain.Group, error) {
+func (rp *groupRepo) Update(ctx context.Context, group *domain.Group) (*domain.Group, error) {
 	db := rp.pg.GetDB()
 	querier := postgresql.New(db)
 	tx, err := db.Begin()
@@ -136,7 +136,6 @@ func (rp *orderRepo) Update(ctx context.Context, group *domain.Group) (*domain.G
 	}
 	qtx := querier.WithTx(tx)
 	result, err := qtx.Update(ctx, postgresql.UpdateParams{
-		ID:          group.ID,
 		Name:        group.Name,
 		Description: group.Description,
 		Status:      group.Status,
