@@ -10,12 +10,16 @@ lint:
     PACKAGE_DIRECTORY_MATCH:
       - common.proto
       - group.proto
+      - post.proto
     PACKAGE_VERSION_SUFFIX:
       - common.proto
       - group.proto
+      - post.proto
     RPC_REQUEST_RESPONSE_UNIQUE:
       - common.proto
       - group.proto
+      - post.proto
     RPC_RESPONSE_STANDARD_NAME:
       - common.proto
       - group.proto
+      - post.proto

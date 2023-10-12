@@ -16,9 +16,3 @@ option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_swagger) = {
     }
     schemes: HTTPS;
 };
-
-enum Status {
-    PRIVATE = 0;
-    PUBLIC = 1;
-}
-

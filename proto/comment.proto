@@ -1,0 +1,136 @@
+syntax="proto3";
+
+package go.microsevices.proto.commentapi;
+
+import "google/api/annotations.proto";
+import "protoc-gen-openapiv2/options/annotations.proto";
+import "google/protobuf/timestamp.proto";
+
+option go_package = "github.com/dinhcanh303/go-microsevices/proto/gen";
+
+service CommentService {
+    rpc CreateComment(CreateCommentRequest) returns (CreateCommentResponse){
+        option (google.api.http) = {
+            post: "/v1/api/comments"
+            body: "*"
+        };
+        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+            summary: "Create Comment"
+            description: ""
+            tags: "Comment"
+        };
+    }
+    rpc GetComment(GetCommentRequest) returns (GetCommentResponse){
+        option (google.api.http) = {
+            get: "/v1/api/comments/{id}"
+        };
+        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+            summary: "Get Comment"
+            description: ""
+            tags: "Comment"
+        };
+    }
+    rpc UpdateComment(UpdateCommentRequest) returns (UpdateCommentResponse){
+        option (google.api.http) = {
+            put: "/v1/api/comments/{comment.id}"
+            body: "*"
+        };
+        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+            summary: "Update Comment"
+            description: ""
+            tags: "Comment"
+        };
+    }
+    rpc DeleteComment(DeleteCommentRequest) returns (DeleteCommentResponse){
+        option (google.api.http) = {
+            delete: "/v1/api/comments/{id}"
+        };
+        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+            summary: "Delete Comment"
+            description: ""
+            tags: "Comment"
+        };
+    }
+    rpc GetCommentsByPostID(GetCommentsByPostIDRequest) returns (GetCommentsByPostIDResponse){
+        option (google.api.http) = {
+            get: "/v1/api/posts/{postID}/comments"
+        };
+        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+            summary: "Get Comment By Post ID"
+            description: ""
+            tags: "Post"
+        };
+    }
+    rpc CountCommentByCommentID(CountCommentByCommentIDRequest) returns (CountCommentByCommentIDResponse){
+        option (google.api.http) = {
+            get: "/v1/api/comments/{id}/count"
+        };
+        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+            summary: "Count Comment By Comment ID"
+            description: ""
+            tags: "Comment"
+        };
+    }
+}
+
+
+message CreateCommentRequest {
+    CommentRequest comment =1;
+}
+message CreateCommentResponse {
+    CommentResponse comment = 1;
+}
+message GetCommentRequest {
+    string id = 1;
+}
+message GetCommentResponse {
+    CommentResponse comment = 1;
+}
+message UpdateCommentRequest {
+    CommentResponse comment = 1;
+}
+message UpdateCommentResponse {
+    CommentResponse comment = 1;
+}
+message DeleteCommentRequest {
+    string id = 1;
+}
+message DeleteCommentResponse {
+    bool deteted = 1;
+}
+message GetCommentsByPostIDRequest {
+    string postID =1;
+}
+message CountCommentByCommentIDRequest {
+    string id = 1;
+}
+message CountCommentByCommentIDResponse {
+    int64 count = 1;
+}
+message GetCommentsByPostIDResponse {
+    repeated GetCommentsResponse comments = 1;
+}
+
+message CommentRequest {
+    string post_id = 1;
+    string user_id = 2;
+    string reply_to = 3;
+    string content = 4;
+    string parent_comment_id = 5;
+
+}
+message CommentResponse {
+    string id = 1;
+    string post_id = 2;
+    string user_id = 3;
+    string reply_to = 4;
+    string content = 5;
+    string parent_comment_id = 6;
+    google.protobuf.Timestamp created_at = 7;
+    google.protobuf.Timestamp updated_at = 8;
+}
+
+message GetCommentsResponse {
+    CommentResponse comment = 1;
+    repeated CommentResponse child = 2;
+}
