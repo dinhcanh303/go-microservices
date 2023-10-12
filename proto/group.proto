@@ -51,6 +51,49 @@ service GroupService {
             tags: "Group"
         };
     }
+    // GroupMember
+    rpc CreateGroupMember(CreateGroupMemberRequest) returns (CreateGroupMemberResponse){
+        option (google.api.http) = {
+            post: "/v1/api/group-members"
+            body: "*"
+        };
+        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+            summary: "Create group member"
+            description: ""
+            tags: "Group"
+        };
+    }
+    rpc UpdateGroupMember(UpdateGroupMemberRequest) returns (UpdateGroupMemberResponse){
+        option (google.api.http) = {
+            put: "/v1/api/group-members/{group_member.id}"
+            body: "*"
+        };
+        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+            summary: "Update group member"
+            description: ""
+            tags: "Group"
+        };
+    }
+    rpc DeleteGroupMember(DeleteGroupMemberRequest) returns (DeleteGroupMemberResponse){
+        option (google.api.http) = {
+            delete: "/v1/api/group-members/{id}"
+        };
+        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+            summary: "Delete group member"
+            description: ""
+            tags: "Group"
+        };
+    }
+    rpc GetAllGroupMembers(GetAllGroupMembersRequest) returns (CreateGroupMemberResponse){
+        option (google.api.http) = {
+            get: "/v1/api/group-members/{groupId}"
+        };
+        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+            summary: "Get all group member"
+            description: ""
+            tags: "Group"
+        };
+    }
 
 }
 
@@ -60,13 +103,28 @@ message CreateGroupRequest {
 message CreateGroupResponse {
     GroupResponse group = 1;
 }
+message CreateGroupMemberRequest {
+    GroupMemberRequest group_member = 1;
+}
+message CreateGroupMemberResponse {
+    GroupMemberResponse group_member = 1;
+}
 message GetGroupRequest {
     string id = 1;
+}
+message GetAllGroupMembersRequest {
+    string groupId = 1;
 }
 message DeleteGroupRequest {
     string id = 1;
 }
 message DeleteGroupResponse {
+    bool deleted = 1;
+}
+message DeleteGroupMemberRequest {
+    string id = 1;
+}
+message DeleteGroupMemberResponse {
     bool deleted = 1;
 }
 message GetGroupResponse {
@@ -77,6 +135,12 @@ message UpdateGroupRequest {
 }
 message UpdateGroupResponse {
     GroupResponse group = 1;
+}
+message UpdateGroupMemberRequest {
+    GroupMemberResponse group_member = 1;
+}
+message UpdateGroupMemberResponse {
+    GroupMemberResponse group_member = 1;
 }
 message GroupRequest {
     string name = 1;
@@ -92,4 +156,17 @@ message GroupResponse {
     string user_id = 5;
     google.protobuf.Timestamp created_at = 6;
     google.protobuf.Timestamp updated_at = 7;
+}
+message GroupMemberRequest {
+    string group_id = 1;
+    string user_id = 2;
+    int32 role = 3;
+}
+message GroupMemberResponse {
+    string id = 1;
+    string group_id = 2;
+    string user_id = 3;
+    int32 role = 4;
+    google.protobuf.Timestamp created_at = 5;
+    google.protobuf.Timestamp updated_at = 6;
 }
