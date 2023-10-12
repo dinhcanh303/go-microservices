@@ -9,18 +9,16 @@ INSERT INTO
         title,
         content,
         user_id,
-        group_id,
-        deleted_at
+        group_id
     )
-VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *;
+VALUES ($1, $2, $3, $4, $5, $6) RETURNING *;
 
 -- name: Update :one
 UPDATE post.posts 
 SET
     title = $2 ,
     content = $3,
-    status = $4,
-    deleted_at = $5
+    status = $4
 WHERE id = $1 RETURNING *;
 
 -- -- name: GetWithUnscoped :one
@@ -29,8 +27,7 @@ WHERE id = $1 RETURNING *;
 
 
 -- name: GetByGroupId :many
-SELECT * FROM post.posts 
-WHERE group_id = $1;
+SELECT * FROM post.posts WHERE group_id = $1;
 
 -- name: GetByUserId :many
 SELECT * FROM post.posts 

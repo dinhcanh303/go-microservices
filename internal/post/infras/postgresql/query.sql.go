@@ -7,7 +7,6 @@ package postgresql
 
 import (
 	"context"
-	"database/sql"
 
 	"github.com/google/uuid"
 )
@@ -20,20 +19,18 @@ INSERT INTO
         title,
         content,
         user_id,
-        group_id,
-        deleted_at
+        group_id
     )
-VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id, user_id, group_id, title, content, status, created_at, updated_at, deleted_at
+VALUES ($1, $2, $3, $4, $5, $6) RETURNING id, user_id, group_id, title, content, status, created_at, updated_at
 `
 
 type CreateParams struct {
-	ID        uuid.UUID     `json:"id"`
-	Status    int32         `json:"status"`
-	Title     string        `json:"title"`
-	Content   string        `json:"content"`
-	UserID    uuid.UUID     `json:"user_id"`
-	GroupID   uuid.NullUUID `json:"group_id"`
-	DeletedAt sql.NullTime  `json:"deleted_at"`
+	ID      uuid.UUID     `json:"id"`
+	Status  int32         `json:"status"`
+	Title   string        `json:"title"`
+	Content string        `json:"content"`
+	UserID  uuid.UUID     `json:"user_id"`
+	GroupID uuid.NullUUID `json:"group_id"`
 }
 
 func (q *Queries) Create(ctx context.Context, arg CreateParams) (PostPost, error) {
@@ -44,7 +41,6 @@ func (q *Queries) Create(ctx context.Context, arg CreateParams) (PostPost, error
 		arg.Content,
 		arg.UserID,
 		arg.GroupID,
-		arg.DeletedAt,
 	)
 	var i PostPost
 	err := row.Scan(
@@ -56,7 +52,6 @@ func (q *Queries) Create(ctx context.Context, arg CreateParams) (PostPost, error
 		&i.Status,
 		&i.CreatedAt,
 		&i.UpdatedAt,
-		&i.DeletedAt,
 	)
 	return i, err
 }
@@ -71,7 +66,7 @@ func (q *Queries) Delete(ctx context.Context, id uuid.UUID) error {
 }
 
 const get = `-- name: Get :one
-SELECT id, user_id, group_id, title, content, status, created_at, updated_at, deleted_at FROM post.posts WHERE id = $1
+SELECT id, user_id, group_id, title, content, status, created_at, updated_at FROM post.posts WHERE id = $1
 `
 
 func (q *Queries) Get(ctx context.Context, id uuid.UUID) (PostPost, error) {
@@ -86,7 +81,6 @@ func (q *Queries) Get(ctx context.Context, id uuid.UUID) (PostPost, error) {
 		&i.Status,
 		&i.CreatedAt,
 		&i.UpdatedAt,
-		&i.DeletedAt,
 	)
 	return i, err
 }
@@ -94,8 +88,7 @@ func (q *Queries) Get(ctx context.Context, id uuid.UUID) (PostPost, error) {
 const getByGroupId = `-- name: GetByGroupId :many
 
 
-SELECT id, user_id, group_id, title, content, status, created_at, updated_at, deleted_at FROM post.posts 
-WHERE group_id = $1
+SELECT id, user_id, group_id, title, content, status, created_at, updated_at FROM post.posts WHERE group_id = $1
 `
 
 // -- name: GetWithUnscoped :one
@@ -119,7 +112,6 @@ func (q *Queries) GetByGroupId(ctx context.Context, groupID uuid.NullUUID) ([]Po
 			&i.Status,
 			&i.CreatedAt,
 			&i.UpdatedAt,
-			&i.DeletedAt,
 		); err != nil {
 			return nil, err
 		}
@@ -135,7 +127,7 @@ func (q *Queries) GetByGroupId(ctx context.Context, groupID uuid.NullUUID) ([]Po
 }
 
 const getByUserId = `-- name: GetByUserId :many
-SELECT id, user_id, group_id, title, content, status, created_at, updated_at, deleted_at FROM post.posts 
+SELECT id, user_id, group_id, title, content, status, created_at, updated_at FROM post.posts 
 WHERE user_id = $1 AND group_id IS NULL
 `
 
@@ -157,7 +149,6 @@ func (q *Queries) GetByUserId(ctx context.Context, userID uuid.UUID) ([]PostPost
 			&i.Status,
 			&i.CreatedAt,
 			&i.UpdatedAt,
-			&i.DeletedAt,
 		); err != nil {
 			return nil, err
 		}
@@ -173,7 +164,7 @@ func (q *Queries) GetByUserId(ctx context.Context, userID uuid.UUID) ([]PostPost
 }
 
 const list = `-- name: List :many
-SELECT id, user_id, group_id, title, content, status, created_at, updated_at, deleted_at FROM post.posts OFFSET $1 LIMIT $2
+SELECT id, user_id, group_id, title, content, status, created_at, updated_at FROM post.posts OFFSET $1 LIMIT $2
 `
 
 type ListParams struct {
@@ -199,7 +190,6 @@ func (q *Queries) List(ctx context.Context, arg ListParams) ([]PostPost, error) 
 			&i.Status,
 			&i.CreatedAt,
 			&i.UpdatedAt,
-			&i.DeletedAt,
 		); err != nil {
 			return nil, err
 		}
@@ -219,17 +209,15 @@ UPDATE post.posts
 SET
     title = $2 ,
     content = $3,
-    status = $4,
-    deleted_at = $5
-WHERE id = $1 RETURNING id, user_id, group_id, title, content, status, created_at, updated_at, deleted_at
+    status = $4
+WHERE id = $1 RETURNING id, user_id, group_id, title, content, status, created_at, updated_at
 `
 
 type UpdateParams struct {
-	ID        uuid.UUID    `json:"id"`
-	Title     string       `json:"title"`
-	Content   string       `json:"content"`
-	Status    int32        `json:"status"`
-	DeletedAt sql.NullTime `json:"deleted_at"`
+	ID      uuid.UUID `json:"id"`
+	Title   string    `json:"title"`
+	Content string    `json:"content"`
+	Status  int32     `json:"status"`
 }
 
 func (q *Queries) Update(ctx context.Context, arg UpdateParams) (PostPost, error) {
@@ -238,7 +226,6 @@ func (q *Queries) Update(ctx context.Context, arg UpdateParams) (PostPost, error
 		arg.Title,
 		arg.Content,
 		arg.Status,
-		arg.DeletedAt,
 	)
 	var i PostPost
 	err := row.Scan(
@@ -250,7 +237,6 @@ func (q *Queries) Update(ctx context.Context, arg UpdateParams) (PostPost, error
 		&i.Status,
 		&i.CreatedAt,
 		&i.UpdatedAt,
-		&i.DeletedAt,
 	)
 	return i, err
 }

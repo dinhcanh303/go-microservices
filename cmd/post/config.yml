@@ -10,6 +10,9 @@ postgres:
   pool_max: 2
   dsn_url: host=127.0.0.1 user=postgres password=P@ssw0rd dbname=postgres sslmode=disable
 
+comment_client:
+  url: 0.0.0.0:5003
+
 logger:
   log_level: 'debug'
   rollbar_env: 'post-service'

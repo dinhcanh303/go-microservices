@@ -11,7 +11,6 @@ import (
 type (
 	PostRepo interface {
 		Get(ctx context.Context, id uuid.UUID) (*domain.Post, error)
-		// GetWithUnscoped(ctx context.Context, id uuid.UUID) (*domain.Post, error)
 		GetByGroupId(ctx context.Context, groupId uuid.UUID) ([]*domain.Post, error)
 		GetByUserId(ctx context.Context, userId uuid.UUID) ([]*domain.Post, error)
 		Create(ctx context.Context, post *domain.Post) (*domain.Post, error)
@@ -26,7 +25,6 @@ type (
 	}
 	UseCase interface {
 		GetPost(ctx context.Context, id uuid.UUID) (*domain.Post, error)
-		// GetPostWithUnscoped(ctx context.Context, id uuid.UUID) (*domain.Post, error)
 		GetByGroupId(ctx context.Context, groupId uuid.UUID) ([]*domain.Post, error)
 		GetByUserId(ctx context.Context, userId uuid.UUID) ([]*domain.Post, error)
 		CreatePost(ctx context.Context, post *domain.Post) (*domain.Post, error)

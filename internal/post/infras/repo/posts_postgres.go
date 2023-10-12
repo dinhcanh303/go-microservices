@@ -11,7 +11,6 @@ import (
 	"github.com/google/wire"
 	"github.com/pkg/errors"
 	"github.com/samber/lo"
-	"golang.org/x/exp/slog"
 )
 
 type postRepo struct {
@@ -30,17 +29,10 @@ var RepositoryPostSet = wire.NewSet(NewPostRepo)
 func (rp *postRepo) GetByGroupId(ctx context.Context, groupId uuid.UUID) ([]*domain.Post, error) {
 	db := rp.pg.GetDB()
 	querier := postgresql.New(db)
-	tx, err := db.Begin()
-	if err != nil {
-		return nil, errors.Wrap(err, "GetPostRepo")
-	}
-	// Convert groupId to a NullUUID
-	nullGroupId := uuid.NullUUID{
+	results, err := querier.GetByGroupId(ctx, uuid.NullUUID{
 		UUID:  groupId,
 		Valid: true, // Set this to true if groupId is valid, or false if it's NULL
-	}
-	qtx := querier.WithTx(tx)
-	results, err := qtx.GetByGroupId(ctx, nullGroupId)
+	})
 	if err != nil {
 		return nil, errors.Wrap(err, "qtx.Get(ctx, id) failed")
 	}
@@ -54,21 +46,15 @@ func (rp *postRepo) GetByGroupId(ctx context.Context, groupId uuid.UUID) ([]*dom
 			GroupID:   item.GroupID,
 			CreatedAt: item.CreatedAt,
 			UpdatedAt: item.UpdatedAt,
-			DeletedAt: item.DeletedAt.Time,
 		}
-	}), tx.Commit()
+	}), nil
 }
 
 // GetByUserId implements posts.PostRepo.
 func (rp *postRepo) GetByUserId(ctx context.Context, userId uuid.UUID) ([]*domain.Post, error) {
 	db := rp.pg.GetDB()
 	querier := postgresql.New(db)
-	tx, err := db.Begin()
-	if err != nil {
-		return nil, errors.Wrap(err, "GetPostRepo")
-	}
-	qtx := querier.WithTx(tx)
-	results, err := qtx.GetByUserId(ctx, userId)
+	results, err := querier.GetByUserId(ctx, userId)
 	if err != nil {
 		return nil, errors.Wrap(err, "qtx.Get(ctx, id) failed")
 	}
@@ -82,9 +68,8 @@ func (rp *postRepo) GetByUserId(ctx context.Context, userId uuid.UUID) ([]*domai
 			GroupID:   item.GroupID,
 			CreatedAt: item.CreatedAt,
 			UpdatedAt: item.UpdatedAt,
-			DeletedAt: item.DeletedAt.Time,
 		}
-	}), tx.Commit()
+	}), nil
 }
 
 // List implements posts.PostRepo.
@@ -94,15 +79,13 @@ func (*postRepo) List(ctx context.Context, offset int, limit int) ([]*domain.Pos
 
 // Create implements posts.PostRepo.
 func (rp *postRepo) Create(ctx context.Context, post *domain.Post) (*domain.Post, error) {
-	slog.Info("Repo Postgresql")
 	db := rp.pg.GetDB()
 	querier := postgresql.New(db)
 	tx, err := db.Begin()
 	if err != nil {
-		return nil, errors.Wrap(err, "CreatePostRepo")
+		return nil, errors.Wrap(err, "postRepo.Create db failed")
 	}
 	qtx := querier.WithTx(tx)
-	slog.Info("QTX")
 	result, err := qtx.Create(ctx, postgresql.CreateParams{
 		ID:      uuid.New(),
 		Title:   post.Title,
@@ -124,7 +107,6 @@ func (rp *postRepo) Create(ctx context.Context, post *domain.Post) (*domain.Post
 		GroupID:   post.GroupID,
 		CreatedAt: result.CreatedAt,
 		UpdatedAt: result.UpdatedAt,
-		DeletedAt: result.DeletedAt.Time,
 	}, tx.Commit()
 }
 
@@ -148,14 +130,9 @@ func (rp *postRepo) Delete(ctx context.Context, id uuid.UUID) (bool, error) {
 func (rp *postRepo) Get(ctx context.Context, id uuid.UUID) (*domain.Post, error) {
 	db := rp.pg.GetDB()
 	querier := postgresql.New(db)
-	tx, err := db.Begin()
+	result, err := querier.Get(ctx, id)
 	if err != nil {
-		return nil, errors.Wrap(err, "GetPostRepo")
-	}
-	qtx := querier.WithTx(tx)
-	result, err := qtx.Get(ctx, id)
-	if err != nil {
-		return nil, errors.Wrap(err, "qtx.Get(ctx, id) failed")
+		return nil, errors.Wrap(err, "querier.Get(ctx, id) failed")
 	}
 
 	return &domain.Post{
@@ -167,34 +144,8 @@ func (rp *postRepo) Get(ctx context.Context, id uuid.UUID) (*domain.Post, error)
 		GroupID:   result.GroupID,
 		CreatedAt: result.CreatedAt,
 		UpdatedAt: result.UpdatedAt,
-		DeletedAt: result.DeletedAt.Time,
-	}, tx.Commit()
+	}, nil
 }
-
-// // GetWithUnscoped implements posts.PostRepo.
-// func (rp *postRepo) GetWithUnscoped(ctx context.Context, id uuid.UUID) (*domain.Post, error) {
-// 	db := rp.pg.GetDB()
-// 	querier := postgresql.New(db)
-// 	tx, err := db.Begin()
-// 	if err != nil {
-// 		return nil, errors.Wrap(err, "GetPostRepo")
-// 	}
-// 	qtx := querier.WithTx(tx)
-// 	result, err := qtx.GetWithUnscoped(ctx, id)
-// 	if err != nil {
-// 		return nil, errors.Wrap(err, "qtx.GetWithUnscoped(ctx, id) failed")
-// 	}
-// 	return &domain.Post{
-// 		ID:          result.ID,
-// 		Name:        result.Name,
-// 		Description: result.Description,
-// 		Status:      result.Status,
-// 		UserID:      result.UserID,
-// 		CreatedAt:   result.CreatedAt,
-// 		UpdatedAt:   result.UpdatedAt,
-// 		DeletedAt:   result.DeletedAt.Time,
-// 	}, tx.Commit()
-// }
 
 // Update implements posts.PostRepo.
 func (rp *postRepo) Update(ctx context.Context, post *domain.Post) (*domain.Post, error) {
@@ -212,7 +163,7 @@ func (rp *postRepo) Update(ctx context.Context, post *domain.Post) (*domain.Post
 		Status:  post.Status,
 	})
 	if err != nil {
-		return nil, errors.Wrap(err, "qtx.Create(ctx, postgresql.CreateParams) failed")
+		return nil, errors.Wrap(err, "qtx.Create(ctx, postgresql.UpdateParams) failed")
 	}
 
 	return &domain.Post{
@@ -224,6 +175,5 @@ func (rp *postRepo) Update(ctx context.Context, post *domain.Post) (*domain.Post
 		GroupID:   result.GroupID,
 		CreatedAt: result.CreatedAt,
 		UpdatedAt: result.UpdatedAt,
-		DeletedAt: result.DeletedAt.Time,
 	}, tx.Commit()
 }

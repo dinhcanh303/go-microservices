@@ -5,7 +5,6 @@
 package postgresql
 
 import (
-	"database/sql"
 	"time"
 
 	"github.com/google/uuid"
@@ -20,5 +19,4 @@ type PostPost struct {
 	Status    int32         `json:"status"`
 	CreatedAt time.Time     `json:"created_at"`
 	UpdatedAt time.Time     `json:"updated_at"`
-	DeletedAt sql.NullTime  `json:"deleted_at"`
 }
