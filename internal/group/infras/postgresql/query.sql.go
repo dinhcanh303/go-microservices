@@ -31,7 +31,7 @@ INSERT INTO
         description,
         user_id
     )
-VALUES ($1, $2, $3, $4, $5) RETURNING id, user_id, name, description, status, created_at, updated_at, deleted_at
+VALUES ($1, $2, $3, $4, $5) RETURNING id, user_id, name, description, status, created_at, updated_at
 `
 
 type CreateParams struct {
@@ -59,7 +59,6 @@ func (q *Queries) Create(ctx context.Context, arg CreateParams) (GroupGroup, err
 		&i.Status,
 		&i.CreatedAt,
 		&i.UpdatedAt,
-		&i.DeletedAt,
 	)
 	return i, err
 }
@@ -72,7 +71,7 @@ INSERT INTO "group".group_members
     user_id,
     role
 )
-VALUES ($1,$2,$3,$4) RETURNING id, group_id, user_id, role, created_at, updated_at, deleted_at
+VALUES ($1,$2,$3,$4) RETURNING id, group_id, user_id, role, created_at, updated_at
 `
 
 type CreateGroupMemberParams struct {
@@ -97,7 +96,6 @@ func (q *Queries) CreateGroupMember(ctx context.Context, arg CreateGroupMemberPa
 		&i.Role,
 		&i.CreatedAt,
 		&i.UpdatedAt,
-		&i.DeletedAt,
 	)
 	return i, err
 }
@@ -130,7 +128,7 @@ func (q *Queries) DeleteGroupMember(ctx context.Context, id uuid.UUID) error {
 }
 
 const get = `-- name: Get :one
-SELECT id, user_id, name, description, status, created_at, updated_at, deleted_at FROM "group".groups WHERE id = $1
+SELECT id, user_id, name, description, status, created_at, updated_at FROM "group".groups WHERE id = $1
 `
 
 func (q *Queries) Get(ctx context.Context, id uuid.UUID) (GroupGroup, error) {
@@ -144,13 +142,12 @@ func (q *Queries) Get(ctx context.Context, id uuid.UUID) (GroupGroup, error) {
 		&i.Status,
 		&i.CreatedAt,
 		&i.UpdatedAt,
-		&i.DeletedAt,
 	)
 	return i, err
 }
 
 const getAllGroupMembers = `-- name: GetAllGroupMembers :many
-SELECT id, group_id, user_id, role, created_at, updated_at, deleted_at FROM "group".group_members WHERE group_id = $1
+SELECT id, group_id, user_id, role, created_at, updated_at FROM "group".group_members WHERE group_id = $1
 `
 
 func (q *Queries) GetAllGroupMembers(ctx context.Context, groupID uuid.UUID) ([]GroupGroupMember, error) {
@@ -169,7 +166,6 @@ func (q *Queries) GetAllGroupMembers(ctx context.Context, groupID uuid.UUID) ([]
 			&i.Role,
 			&i.CreatedAt,
 			&i.UpdatedAt,
-			&i.DeletedAt,
 		); err != nil {
 			return nil, err
 		}
@@ -185,7 +181,7 @@ func (q *Queries) GetAllGroupMembers(ctx context.Context, groupID uuid.UUID) ([]
 }
 
 const getWithUnscoped = `-- name: GetWithUnscoped :one
-SELECT id, user_id, name, description, status, created_at, updated_at, deleted_at FROM "group".groups WHERE id = $1 AND deleted_at IS NOT NULL
+SELECT id, user_id, name, description, status, created_at, updated_at FROM "group".groups WHERE id = $1 AND deleted_at IS NOT NULL
 `
 
 func (q *Queries) GetWithUnscoped(ctx context.Context, id uuid.UUID) (GroupGroup, error) {
@@ -199,7 +195,6 @@ func (q *Queries) GetWithUnscoped(ctx context.Context, id uuid.UUID) (GroupGroup
 		&i.Status,
 		&i.CreatedAt,
 		&i.UpdatedAt,
-		&i.DeletedAt,
 	)
 	return i, err
 }
@@ -210,7 +205,7 @@ SET
     name = $2 ,
     description = $3,
     status = $4
-WHERE id = $1 RETURNING id, user_id, name, description, status, created_at, updated_at, deleted_at
+WHERE id = $1 RETURNING id, user_id, name, description, status, created_at, updated_at
 `
 
 type UpdateParams struct {
@@ -236,7 +231,6 @@ func (q *Queries) Update(ctx context.Context, arg UpdateParams) (GroupGroup, err
 		&i.Status,
 		&i.CreatedAt,
 		&i.UpdatedAt,
-		&i.DeletedAt,
 	)
 	return i, err
 }
@@ -245,7 +239,7 @@ const updateGroupMember = `-- name: UpdateGroupMember :one
 UPDATE "group".group_members
 SET
     role = $2
-WHERE id = $1 RETURNING id, group_id, user_id, role, created_at, updated_at, deleted_at
+WHERE id = $1 RETURNING id, group_id, user_id, role, created_at, updated_at
 `
 
 type UpdateGroupMemberParams struct {
@@ -263,7 +257,6 @@ func (q *Queries) UpdateGroupMember(ctx context.Context, arg UpdateGroupMemberPa
 		&i.Role,
 		&i.CreatedAt,
 		&i.UpdatedAt,
-		&i.DeletedAt,
 	)
 	return i, err
 }

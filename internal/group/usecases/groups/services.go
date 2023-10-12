@@ -53,15 +53,6 @@ func (s *service) GetGroup(ctx context.Context, id uuid.UUID) (*domain.Group, er
 	return result, nil
 }
 
-// GetWithUnscoped implements UseCase.
-func (s *service) GetGroupWithUnscoped(ctx context.Context, id uuid.UUID) (*domain.Group, error) {
-	result, err := s.repo.GetWithUnscoped(ctx, id)
-	if err != nil {
-		return nil, errors.Wrap(err, "service.GetWithUnscoped")
-	}
-	return result, nil
-}
-
 // Update implements UseCase.
 func (s *service) UpdateGroup(ctx context.Context, group *domain.Group) (*domain.Group, error) {
 	result, err := s.repo.Update(ctx, group)

@@ -55,7 +55,6 @@ func (rp *groupRepo) Create(ctx context.Context, group *domain.Group) (*domain.G
 		UserID:      result.UserID,
 		CreatedAt:   result.CreatedAt,
 		UpdatedAt:   result.UpdatedAt,
-		DeletedAt:   result.DeletedAt.Time,
 	}, tx.Commit()
 }
 
@@ -79,12 +78,7 @@ func (rp *groupRepo) Delete(ctx context.Context, id uuid.UUID) (bool, error) {
 func (rp *groupRepo) Get(ctx context.Context, id uuid.UUID) (*domain.Group, error) {
 	db := rp.pg.GetDB()
 	querier := postgresql.New(db)
-	tx, err := db.Begin()
-	if err != nil {
-		return nil, errors.Wrap(err, "GetGroupRepo")
-	}
-	qtx := querier.WithTx(tx)
-	result, err := qtx.Get(ctx, id)
+	result, err := querier.Get(ctx, id)
 	if err != nil {
 		return nil, errors.Wrap(err, "qtx.Get(ctx, id) failed")
 	}
@@ -97,20 +91,14 @@ func (rp *groupRepo) Get(ctx context.Context, id uuid.UUID) (*domain.Group, erro
 		UserID:      result.UserID,
 		CreatedAt:   result.CreatedAt,
 		UpdatedAt:   result.UpdatedAt,
-		DeletedAt:   result.DeletedAt.Time,
-	}, tx.Commit()
+	}, nil
 }
 
 // GetWithUnscoped implements groups.GroupRepo.
 func (rp *groupRepo) GetWithUnscoped(ctx context.Context, id uuid.UUID) (*domain.Group, error) {
 	db := rp.pg.GetDB()
 	querier := postgresql.New(db)
-	tx, err := db.Begin()
-	if err != nil {
-		return nil, errors.Wrap(err, "GetGroupRepo")
-	}
-	qtx := querier.WithTx(tx)
-	result, err := qtx.GetWithUnscoped(ctx, id)
+	result, err := querier.GetWithUnscoped(ctx, id)
 	if err != nil {
 		return nil, errors.Wrap(err, "qtx.GetWithUnscoped(ctx, id) failed")
 	}
@@ -122,8 +110,7 @@ func (rp *groupRepo) GetWithUnscoped(ctx context.Context, id uuid.UUID) (*domain
 		UserID:      result.UserID,
 		CreatedAt:   result.CreatedAt,
 		UpdatedAt:   result.UpdatedAt,
-		DeletedAt:   result.DeletedAt.Time,
-	}, tx.Commit()
+	}, nil
 }
 
 // Update implements groups.GroupRepo.
@@ -152,6 +139,5 @@ func (rp *groupRepo) Update(ctx context.Context, group *domain.Group) (*domain.G
 		UserID:      result.UserID,
 		CreatedAt:   result.CreatedAt,
 		UpdatedAt:   result.UpdatedAt,
-		DeletedAt:   result.DeletedAt.Time,
 	}, tx.Commit()
 }

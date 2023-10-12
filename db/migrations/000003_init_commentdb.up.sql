@@ -13,7 +13,7 @@ CREATE TABLE
         parent_comment_id uuid DEFAULT NULL,
         created_at timestamp with time zone NOT NULL DEFAULT current_timestamp,
         updated_at timestamp with time zone NOT NULL DEFAULT (now()),
-        deleted_at timestamp with time zone NULL,
+        -- deleted_at timestamp with time zone NULL,
         CONSTRAINT pk_comments PRIMARY KEY (id)
     );
 

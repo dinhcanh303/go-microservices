@@ -78,15 +78,6 @@ func (uc *usecase) GetPost(ctx context.Context, id uuid.UUID) (*domain.Post, err
 	return post, nil
 }
 
-// // GetPostWithUnscoped implements UseCase.
-// func (uc *usecase) GetPostWithUnscoped(ctx context.Context, id uuid.UUID) (*domain.Post, error) {
-// 	post, err := uc.postRepo.GetWithUnscoped(ctx, id)
-// 	if err != nil {
-// 		return nil, errors.Wrap(err, "postRepo.GetWithUnscoped")
-// 	}
-// 	return post, nil
-// }
-
 // ListPost implements UseCase.
 func (uc *usecase) ListPost(ctx context.Context, offset int, limit int) ([]*domain.Post, error) {
 	posts, err := uc.postRepo.List(ctx, offset, limit)

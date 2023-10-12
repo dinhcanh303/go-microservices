@@ -38,11 +38,11 @@ func (s *service) DeleteComment(ctx context.Context, id uuid.UUID) (bool, error)
 	return isDelete, nil
 }
 
-// DeleteCommentByCommentID implements UseCase.
-func (s *service) DeleteCommentByCommentID(ctx context.Context, commentId uuid.UUID) (bool, error) {
-	isDelete, err := s.commentRepo.DeleteByCommentID(ctx, commentId)
+// DeleteAllCommentByPostID implements UseCase.
+func (s *service) DeleteAllCommentByPostID(ctx context.Context, postId uuid.UUID) (bool, error) {
+	isDelete, err := s.commentRepo.DeleteAllByPostID(ctx, postId)
 	if err != nil {
-		return false, errors.Wrap(err, "service.DeleteCommentByCommentID")
+		return false, errors.Wrap(err, "service.DeleteAllCommentByPostID")
 	}
 	return isDelete, nil
 }
@@ -56,11 +56,11 @@ func (s *service) GetComment(ctx context.Context, id uuid.UUID) (*domain.Comment
 	return comment, nil
 }
 
-// ListCommentByPostID implements UseCase.
-func (s *service) ListCommentByPostID(ctx context.Context, postId uuid.UUID) ([]*domain.Comment, error) {
-	comments, err := s.commentRepo.ListByPostID(ctx, postId)
+// GetCommentsByPostID implements UseCase.
+func (s *service) GetCommentsByPostID(ctx context.Context, postId uuid.UUID) ([]*domain.Comment, error) {
+	comments, err := s.commentRepo.GetCommentByPostID(ctx, postId)
 	if err != nil {
-		return nil, errors.Wrap(err, "service.ListCommentByPostID")
+		return nil, errors.Wrap(err, "service.GetCommentsByPostID")
 	}
 	return comments, nil
 }
@@ -75,7 +75,7 @@ func (s *service) UpdateComment(ctx context.Context, comment *domain.Comment) (*
 }
 
 // CountCommentByCommentID implements UseCase.
-func (s *service) CountCommentByCommentID(ctx context.Context, commentId uuid.UUID) (uint64, error) {
+func (s *service) CountCommentByCommentID(ctx context.Context, commentId uuid.UUID) (int64, error) {
 	count, err := s.commentRepo.CountByCommentID(ctx, commentId)
 	if err != nil {
 		return 0, errors.Wrap(err, "service.UpdateComment")
@@ -84,7 +84,7 @@ func (s *service) CountCommentByCommentID(ctx context.Context, commentId uuid.UU
 }
 
 // CountCommentByPostID implements UseCase.
-func (s *service) CountCommentByPostID(ctx context.Context, postId uuid.UUID) (uint64, error) {
+func (s *service) CountCommentByPostID(ctx context.Context, postId uuid.UUID) (int64, error) {
 	count, err := s.commentRepo.CountByPostID(ctx, postId)
 	if err != nil {
 		return 0, errors.Wrap(err, "service.UpdateComment")

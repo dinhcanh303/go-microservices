@@ -104,12 +104,7 @@ func (rp *groupMemberRepo) GetAllGroupMembers(ctx context.Context, groupId uuid.
 	slog.Info("Repo GetAllGroupMember")
 	db := rp.pg.GetDB()
 	querier := postgresql.New(db)
-	tx, err := db.Begin()
-	if err != nil {
-		return nil, errors.Wrap(err, "Repo GetAllGroupMember db failed")
-	}
-	qtx := querier.WithTx(tx)
-	results, err := qtx.GetAllGroupMembers(ctx, groupId)
+	results, err := querier.GetAllGroupMembers(ctx, groupId)
 	if err != nil {
 		return nil, errors.Wrap(err, "qtx.UpdateGroupMember(ctx, postgresql.UpdateGroupMemberParams) failed")
 	}
@@ -122,7 +117,7 @@ func (rp *groupMemberRepo) GetAllGroupMembers(ctx context.Context, groupId uuid.
 			CreatedAt: item.CreatedAt,
 			UpdatedAt: item.UpdatedAt,
 		}
-	}), tx.Commit()
+	}), nil
 }
 
 // UpdateGroupMember implements groupmembers.GroupMemberRepo.

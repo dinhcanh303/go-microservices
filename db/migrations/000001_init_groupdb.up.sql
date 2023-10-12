@@ -12,7 +12,7 @@ CREATE TABLE "group".groups (
     status integer NOT NULL,
     created_at timestamp with time zone NOT NULL DEFAULT current_timestamp,
     updated_at timestamp with time zone NOT NULL DEFAULT (now()),
-    deleted_at timestamp with time zone NULL,
+    -- deleted_at timestamp with time zone NULL,
     CONSTRAINT pk_groups PRIMARY KEY (id)
 );
 
@@ -23,7 +23,7 @@ CREATE TABLE "group".group_members (
     role integer NOT NULL,
     created_at timestamp with time zone NOT NULL DEFAULT current_timestamp,
     updated_at timestamp with time zone NOT NULL DEFAULT (now()),
-    deleted_at timestamp with time zone NULL,
+    -- deleted_at timestamp with time zone NULL,
     CONSTRAINT pk_group_members PRIMARY KEY (id)
 );
 

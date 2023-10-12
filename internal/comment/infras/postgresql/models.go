@@ -20,5 +20,4 @@ type CommentComment struct {
 	ParentCommentID uuid.NullUUID  `json:"parent_comment_id"`
 	CreatedAt       time.Time      `json:"created_at"`
 	UpdatedAt       time.Time      `json:"updated_at"`
-	DeletedAt       sql.NullTime   `json:"deleted_at"`
 }

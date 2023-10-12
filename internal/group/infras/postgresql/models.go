@@ -5,29 +5,26 @@
 package postgresql
 
 import (
-	"database/sql"
 	"time"
 
 	"github.com/google/uuid"
 )
 
 type GroupGroup struct {
-	ID          uuid.UUID    `json:"id"`
-	UserID      uuid.UUID    `json:"user_id"`
-	Name        string       `json:"name"`
-	Description string       `json:"description"`
-	Status      int32        `json:"status"`
-	CreatedAt   time.Time    `json:"created_at"`
-	UpdatedAt   time.Time    `json:"updated_at"`
-	DeletedAt   sql.NullTime `json:"deleted_at"`
+	ID          uuid.UUID `json:"id"`
+	UserID      uuid.UUID `json:"user_id"`
+	Name        string    `json:"name"`
+	Description string    `json:"description"`
+	Status      int32     `json:"status"`
+	CreatedAt   time.Time `json:"created_at"`
+	UpdatedAt   time.Time `json:"updated_at"`
 }
 
 type GroupGroupMember struct {
-	ID        uuid.UUID    `json:"id"`
-	GroupID   uuid.UUID    `json:"group_id"`
-	UserID    uuid.UUID    `json:"user_id"`
-	Role      int32        `json:"role"`
-	CreatedAt time.Time    `json:"created_at"`
-	UpdatedAt time.Time    `json:"updated_at"`
-	DeletedAt sql.NullTime `json:"deleted_at"`
+	ID        uuid.UUID `json:"id"`
+	GroupID   uuid.UUID `json:"group_id"`
+	UserID    uuid.UUID `json:"user_id"`
+	Role      int32     `json:"role"`
+	CreatedAt time.Time `json:"created_at"`
+	UpdatedAt time.Time `json:"updated_at"`
 }

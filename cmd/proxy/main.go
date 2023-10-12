@@ -25,6 +25,7 @@ func newGateway(
 	opts []gwruntime.ServeMuxOption) (http.Handler, error) {
 	groupEndpoint := fmt.Sprintf("%s:%d", cfg.GroupHost, cfg.GroupPort)
 	postEndpoint := fmt.Sprintf("%s:%d", cfg.PostHost, cfg.PostPort)
+	commentEndpoint := fmt.Sprintf("%s:%d", cfg.CommentHost, cfg.CommentPort)
 
 	mux := gwruntime.NewServeMux(opts...)
 	dialOpts := []grpc.DialOption{grpc.WithTransportCredentials(insecure.NewCredentials())}
@@ -34,6 +35,10 @@ func newGateway(
 		return nil, err
 	}
 	err = gen.RegisterPostServiceHandlerFromEndpoint(ctx, mux, postEndpoint, dialOpts)
+	if err != nil {
+		return nil, err
+	}
+	err = gen.RegisterCommentServiceHandlerFromEndpoint(ctx, mux, commentEndpoint, dialOpts)
 	if err != nil {
 		return nil, err
 	}

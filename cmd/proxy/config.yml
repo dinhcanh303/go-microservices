@@ -11,6 +11,8 @@ grpc:
   group_port: 5001
   post_host: '0.0.0.0'
   post_port: 5002
+  comment_host: '0.0.0.0'
+  comment_port: 5003
 
 logger:
   log_level: 'debug'

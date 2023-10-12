@@ -44,7 +44,7 @@ INSERT INTO
 		parent_comment_id,
 		reply_to
     )
-VALUES ($1, $2, $3, $4 ,$5 , $6) RETURNING id, user_id, content, reply_to, post_id, parent_comment_id, created_at, updated_at, deleted_at
+VALUES ($1, $2, $3, $4 ,$5 , $6) RETURNING id, user_id, content, reply_to, post_id, parent_comment_id, created_at, updated_at
 `
 
 type CreateParams struct {
@@ -75,13 +75,12 @@ func (q *Queries) Create(ctx context.Context, arg CreateParams) (CommentComment,
 		&i.ParentCommentID,
 		&i.CreatedAt,
 		&i.UpdatedAt,
-		&i.DeletedAt,
 	)
 	return i, err
 }
 
 const delete = `-- name: Delete :exec
-DELETE FROM comment.comments WHERE id = $1
+DELETE FROM comment.comments WHERE id = $1 OR parent_comment_id = $1
 `
 
 func (q *Queries) Delete(ctx context.Context, id uuid.UUID) error {
@@ -89,17 +88,17 @@ func (q *Queries) Delete(ctx context.Context, id uuid.UUID) error {
 	return err
 }
 
-const deleteByCommentID = `-- name: DeleteByCommentID :exec
-DELETE FROM comment.comments WHERE parent_comment_id = $1
+const deleteAllByPostID = `-- name: DeleteAllByPostID :exec
+DELETE FROM comment.comments WHERE post_id = $1
 `
 
-func (q *Queries) DeleteByCommentID(ctx context.Context, parentCommentID uuid.NullUUID) error {
-	_, err := q.db.ExecContext(ctx, deleteByCommentID, parentCommentID)
+func (q *Queries) DeleteAllByPostID(ctx context.Context, postID uuid.UUID) error {
+	_, err := q.db.ExecContext(ctx, deleteAllByPostID, postID)
 	return err
 }
 
 const get = `-- name: Get :one
-SELECT id, user_id, content, reply_to, post_id, parent_comment_id, created_at, updated_at, deleted_at FROM comment.comments WHERE id = $1
+SELECT id, user_id, content, reply_to, post_id, parent_comment_id, created_at, updated_at FROM comment.comments WHERE id = $1
 `
 
 func (q *Queries) Get(ctx context.Context, id uuid.UUID) (CommentComment, error) {
@@ -114,13 +113,12 @@ func (q *Queries) Get(ctx context.Context, id uuid.UUID) (CommentComment, error)
 		&i.ParentCommentID,
 		&i.CreatedAt,
 		&i.UpdatedAt,
-		&i.DeletedAt,
 	)
 	return i, err
 }
 
 const listByPostID = `-- name: ListByPostID :many
-SELECT id, user_id, content, reply_to, post_id, parent_comment_id, created_at, updated_at, deleted_at FROM comment.comments WHERE post_id = $1
+SELECT id, user_id, content, reply_to, post_id, parent_comment_id, created_at, updated_at FROM comment.comments WHERE post_id = $1
 `
 
 func (q *Queries) ListByPostID(ctx context.Context, postID uuid.UUID) ([]CommentComment, error) {
@@ -141,7 +139,6 @@ func (q *Queries) ListByPostID(ctx context.Context, postID uuid.UUID) ([]Comment
 			&i.ParentCommentID,
 			&i.CreatedAt,
 			&i.UpdatedAt,
-			&i.DeletedAt,
 		); err != nil {
 			return nil, err
 		}
@@ -161,7 +158,7 @@ UPDATE comment.comments
 SET
     content = $2 ,
     reply_to = $3
-WHERE id = $1 RETURNING id, user_id, content, reply_to, post_id, parent_comment_id, created_at, updated_at, deleted_at
+WHERE id = $1 RETURNING id, user_id, content, reply_to, post_id, parent_comment_id, created_at, updated_at
 `
 
 type UpdateParams struct {
@@ -182,7 +179,6 @@ func (q *Queries) Update(ctx context.Context, arg UpdateParams) (CommentComment,
 		&i.ParentCommentID,
 		&i.CreatedAt,
 		&i.UpdatedAt,
-		&i.DeletedAt,
 	)
 	return i, err
 }
