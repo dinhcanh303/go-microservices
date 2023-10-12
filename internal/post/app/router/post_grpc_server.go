@@ -55,7 +55,7 @@ func (g *postGRPCServer) CreatePost(ctx context.Context, request *gen.CreatePost
 		UserID:  userId,
 		GroupID: uuid.NullUUID{
 			UUID:  groupId,
-			Valid: true,
+			Valid: request.Post.GroupId != "",
 		},
 	}
 	slog.Info("Model", model)

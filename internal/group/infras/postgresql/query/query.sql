@@ -27,3 +27,31 @@ WHERE id = $1 RETURNING *;
 DELETE FROM "group".groups WHERE id = $1;
 
 
+-- name: CreateGroupMember :one
+INSERT INTO "group".group_members
+(
+    id,
+    group_id,
+    user_id,
+    role
+)
+VALUES ($1,$2,$3,$4) RETURNING *;
+
+-- name: UpdateGroupMember :one
+UPDATE "group".group_members
+SET
+    role = $2
+WHERE id = $1 RETURNING *;
+
+-- name: DeleteGroupMember :exec
+DELETE FROM "group".group_members WHERE id = $1;
+
+-- name: GetAllGroupMembers :many
+SELECT * FROM "group".group_members WHERE group_id = $1;
+
+-- name: CountGroupMembers :one
+SELECT count(*) FROM "group".group_members WHERE group_id = $1;
+
+-- name: DeleteAllGroupMembersByGroupId :exec
+DELETE FROM "group".group_members WHERE group_id = $1;
+

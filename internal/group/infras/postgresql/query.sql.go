@@ -11,6 +11,17 @@ import (
 	"github.com/google/uuid"
 )
 
+const countGroupMembers = `-- name: CountGroupMembers :one
+SELECT count(*) FROM "group".group_members WHERE group_id = $1
+`
+
+func (q *Queries) CountGroupMembers(ctx context.Context, groupID uuid.UUID) (int64, error) {
+	row := q.db.QueryRowContext(ctx, countGroupMembers, groupID)
+	var count int64
+	err := row.Scan(&count)
+	return count, err
+}
+
 const create = `-- name: Create :one
 INSERT INTO
     "group".groups (
@@ -53,12 +64,68 @@ func (q *Queries) Create(ctx context.Context, arg CreateParams) (GroupGroup, err
 	return i, err
 }
 
+const createGroupMember = `-- name: CreateGroupMember :one
+INSERT INTO "group".group_members
+(
+    id,
+    group_id,
+    user_id,
+    role
+)
+VALUES ($1,$2,$3,$4) RETURNING id, group_id, user_id, role, created_at, updated_at, deleted_at
+`
+
+type CreateGroupMemberParams struct {
+	ID      uuid.UUID `json:"id"`
+	GroupID uuid.UUID `json:"group_id"`
+	UserID  uuid.UUID `json:"user_id"`
+	Role    int32     `json:"role"`
+}
+
+func (q *Queries) CreateGroupMember(ctx context.Context, arg CreateGroupMemberParams) (GroupGroupMember, error) {
+	row := q.db.QueryRowContext(ctx, createGroupMember,
+		arg.ID,
+		arg.GroupID,
+		arg.UserID,
+		arg.Role,
+	)
+	var i GroupGroupMember
+	err := row.Scan(
+		&i.ID,
+		&i.GroupID,
+		&i.UserID,
+		&i.Role,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+		&i.DeletedAt,
+	)
+	return i, err
+}
+
 const delete = `-- name: Delete :exec
 DELETE FROM "group".groups WHERE id = $1
 `
 
 func (q *Queries) Delete(ctx context.Context, id uuid.UUID) error {
 	_, err := q.db.ExecContext(ctx, delete, id)
+	return err
+}
+
+const deleteAllGroupMembersByGroupId = `-- name: DeleteAllGroupMembersByGroupId :exec
+DELETE FROM "group".group_members WHERE group_id = $1
+`
+
+func (q *Queries) DeleteAllGroupMembersByGroupId(ctx context.Context, groupID uuid.UUID) error {
+	_, err := q.db.ExecContext(ctx, deleteAllGroupMembersByGroupId, groupID)
+	return err
+}
+
+const deleteGroupMember = `-- name: DeleteGroupMember :exec
+DELETE FROM "group".group_members WHERE id = $1
+`
+
+func (q *Queries) DeleteGroupMember(ctx context.Context, id uuid.UUID) error {
+	_, err := q.db.ExecContext(ctx, deleteGroupMember, id)
 	return err
 }
 
@@ -80,6 +147,41 @@ func (q *Queries) Get(ctx context.Context, id uuid.UUID) (GroupGroup, error) {
 		&i.DeletedAt,
 	)
 	return i, err
+}
+
+const getAllGroupMembers = `-- name: GetAllGroupMembers :many
+SELECT id, group_id, user_id, role, created_at, updated_at, deleted_at FROM "group".group_members WHERE group_id = $1
+`
+
+func (q *Queries) GetAllGroupMembers(ctx context.Context, groupID uuid.UUID) ([]GroupGroupMember, error) {
+	rows, err := q.db.QueryContext(ctx, getAllGroupMembers, groupID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []GroupGroupMember
+	for rows.Next() {
+		var i GroupGroupMember
+		if err := rows.Scan(
+			&i.ID,
+			&i.GroupID,
+			&i.UserID,
+			&i.Role,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+			&i.DeletedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
 }
 
 const getWithUnscoped = `-- name: GetWithUnscoped :one
@@ -132,6 +234,33 @@ func (q *Queries) Update(ctx context.Context, arg UpdateParams) (GroupGroup, err
 		&i.Name,
 		&i.Description,
 		&i.Status,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+		&i.DeletedAt,
+	)
+	return i, err
+}
+
+const updateGroupMember = `-- name: UpdateGroupMember :one
+UPDATE "group".group_members
+SET
+    role = $2
+WHERE id = $1 RETURNING id, group_id, user_id, role, created_at, updated_at, deleted_at
+`
+
+type UpdateGroupMemberParams struct {
+	ID   uuid.UUID `json:"id"`
+	Role int32     `json:"role"`
+}
+
+func (q *Queries) UpdateGroupMember(ctx context.Context, arg UpdateGroupMemberParams) (GroupGroupMember, error) {
+	row := q.db.QueryRowContext(ctx, updateGroupMember, arg.ID, arg.Role)
+	var i GroupGroupMember
+	err := row.Scan(
+		&i.ID,
+		&i.GroupID,
+		&i.UserID,
+		&i.Role,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 		&i.DeletedAt,

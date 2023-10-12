@@ -10,6 +10,7 @@ import (
 	"github.com/dinhcanh303/go-microservices/cmd/group/config"
 	"github.com/dinhcanh303/go-microservices/internal/group/app/router"
 	"github.com/dinhcanh303/go-microservices/internal/group/infras/repo"
+	"github.com/dinhcanh303/go-microservices/internal/group/usecases/groupmembers"
 	"github.com/dinhcanh303/go-microservices/internal/group/usecases/groups"
 	"github.com/dinhcanh303/go-microservices/pkg/postgres"
 	"google.golang.org/grpc"
@@ -23,9 +24,11 @@ func InitApp(cfg *config.Config, dbConnStr postgres.DBConnString, grpcServer *gr
 		return nil, nil, err
 	}
 	groupRepo := repo.NewGroupRepo(dbEngine)
-	useCase := groups.NewService(groupRepo)
+	groupMemberRepo := repo.NewGroupMemberRepo(dbEngine)
+	useCase := groups.NewService(groupRepo, groupMemberRepo)
+	groupmembersUseCase := groupmembers.NewService(groupMemberRepo)
 	groupServiceServer := router.NewGRPCGroupServer(grpcServer, cfg, useCase)
-	app := New(cfg, dbEngine, useCase, groupServiceServer)
+	app := New(cfg, dbEngine, useCase, groupmembersUseCase, groupServiceServer)
 	return app, func() {
 		cleanup()
 	}, nil

@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/dinhcanh303/go-microservices/internal/group/domain"
+	groupmembers "github.com/dinhcanh303/go-microservices/internal/group/usecases/groupmembers"
 	"golang.org/x/exp/slog"
 
 	"github.com/google/uuid"
@@ -16,7 +17,8 @@ var _ UseCase = (*service)(nil)
 var UseCaseSet = wire.NewSet(NewService)
 
 type service struct {
-	repo GroupRepo
+	repo            GroupRepo
+	repoGroupMember groupmembers.GroupMemberRepo
 }
 
 // Create implements UseCase.
@@ -34,6 +36,10 @@ func (s *service) DeleteGroup(ctx context.Context, id uuid.UUID) (bool, error) {
 	result, err := s.repo.Delete(ctx, id)
 	if err != nil {
 		return false, errors.Wrap(err, "service.Delete")
+	}
+	err = s.repoGroupMember.DeleteAllGroupMembersByGroupId(ctx, id)
+	if err != nil {
+		slog.Error("service.DeleteGroup can't DeleteAllGroupMembers please check", err)
 	}
 	return result, nil
 }
@@ -65,8 +71,9 @@ func (s *service) UpdateGroup(ctx context.Context, group *domain.Group) (*domain
 	return result, nil
 }
 
-func NewService(repo GroupRepo) UseCase {
+func NewService(repo GroupRepo, repoGroupMember groupmembers.GroupMemberRepo) UseCase {
 	return &service{
-		repo: repo,
+		repo:            repo,
+		repoGroupMember: repoGroupMember,
 	}
 }

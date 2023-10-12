@@ -14,6 +14,7 @@ type GroupRepo interface {
 	Update(ctx context.Context, group *domain.Group) (*domain.Group, error)
 	Delete(ctx context.Context, id uuid.UUID) (bool, error)
 }
+
 type UseCase interface {
 	GetGroup(ctx context.Context, id uuid.UUID) (*domain.Group, error)
 	GetGroupWithUnscoped(ctx context.Context, id uuid.UUID) (*domain.Group, error)
