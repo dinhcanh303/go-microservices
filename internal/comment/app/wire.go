@@ -1,5 +1,5 @@
-///go:build wireinject
-/// +build wireinject
+//go:build wireinject
+// +build wireinject
 
 package app
 

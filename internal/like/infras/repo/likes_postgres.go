@@ -8,6 +8,7 @@ import (
 	"github.com/dinhcanh303/go-microservices/internal/like/usecases/likes"
 	"github.com/dinhcanh303/go-microservices/pkg/postgres"
 	"github.com/google/uuid"
+	"github.com/google/wire"
 	"github.com/pkg/errors"
 	"github.com/samber/lo"
 )
@@ -17,6 +18,8 @@ type likeRepo struct {
 }
 
 var _ likes.LikeRepo = (*likeRepo)(nil)
+
+var RepositorySet = wire.NewSet(NewLikeRepo)
 
 func NewLikeRepo(pg postgres.DBEngine) likes.LikeRepo {
 	return &likeRepo{
