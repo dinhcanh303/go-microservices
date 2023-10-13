@@ -263,7 +263,7 @@ type DeleteLikeResponse struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	Deteted bool `protobuf:"varint,1,opt,name=deteted,proto3" json:"deteted,omitempty"`
+	Deleted bool `protobuf:"varint,1,opt,name=deteted,proto3" json:"deteted,omitempty"`
 }
 
 func (x *DeleteLikeResponse) Reset() {
@@ -300,7 +300,7 @@ func (*DeleteLikeResponse) Descriptor() ([]byte, []int) {
 
 func (x *DeleteLikeResponse) GetDeteted() bool {
 	if x != nil {
-		return x.Deteted
+		return x.Deleted
 	}
 	return false
 }

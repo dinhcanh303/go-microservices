@@ -96,7 +96,7 @@ message DeleteCommentRequest {
     string id = 1;
 }
 message DeleteCommentResponse {
-    bool deteted = 1;
+    bool deleted = 1;
 }
 message GetCommentsByPostIDRequest {
     string postID =1;

@@ -321,7 +321,7 @@
     "commentapiDeleteCommentResponse": {
       "type": "object",
       "properties": {
-        "deteted": {
+        "deleted": {
           "type": "boolean"
         }
       }
