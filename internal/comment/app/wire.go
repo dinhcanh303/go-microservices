@@ -1,5 +1,5 @@
-//go:build wireinject
-// +build wireinject
+///go:build wireinject
+/// +build wireinject
 
 package app
 
@@ -22,7 +22,7 @@ func InitApp(
 		New,
 		dbEngineFunc,
 		router.CommentGRPCServerSet,
-		repo.RepositoryPostSet,
+		repo.RepositorySet,
 		commentsUC.UseCaseSet,
 	))
 }

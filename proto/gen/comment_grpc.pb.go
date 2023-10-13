@@ -23,7 +23,7 @@ const (
 	CommentService_GetComment_FullMethodName              = "/go.microsevices.proto.commentapi.CommentService/GetComment"
 	CommentService_UpdateComment_FullMethodName           = "/go.microsevices.proto.commentapi.CommentService/UpdateComment"
 	CommentService_DeleteComment_FullMethodName           = "/go.microsevices.proto.commentapi.CommentService/DeleteComment"
-	CommentService_ListCommentByPostID_FullMethodName     = "/go.microsevices.proto.commentapi.CommentService/ListCommentByPostID"
+	CommentService_GetCommentsByPostID_FullMethodName     = "/go.microsevices.proto.commentapi.CommentService/GetCommentsByPostID"
 	CommentService_CountCommentByCommentID_FullMethodName = "/go.microsevices.proto.commentapi.CommentService/CountCommentByCommentID"
 )
 
@@ -35,7 +35,7 @@ type CommentServiceClient interface {
 	GetComment(ctx context.Context, in *GetCommentRequest, opts ...grpc.CallOption) (*GetCommentResponse, error)
 	UpdateComment(ctx context.Context, in *UpdateCommentRequest, opts ...grpc.CallOption) (*UpdateCommentResponse, error)
 	DeleteComment(ctx context.Context, in *DeleteCommentRequest, opts ...grpc.CallOption) (*DeleteCommentResponse, error)
-	ListCommentByPostID(ctx context.Context, in *ListCommentByPostIDRequest, opts ...grpc.CallOption) (*ListCommentByPostIDResponse, error)
+	GetCommentsByPostID(ctx context.Context, in *GetCommentsByPostIDRequest, opts ...grpc.CallOption) (*GetCommentsByPostIDResponse, error)
 	CountCommentByCommentID(ctx context.Context, in *CountCommentByCommentIDRequest, opts ...grpc.CallOption) (*CountCommentByCommentIDResponse, error)
 }
 
@@ -83,9 +83,9 @@ func (c *commentServiceClient) DeleteComment(ctx context.Context, in *DeleteComm
 	return out, nil
 }
 
-func (c *commentServiceClient) ListCommentByPostID(ctx context.Context, in *ListCommentByPostIDRequest, opts ...grpc.CallOption) (*ListCommentByPostIDResponse, error) {
-	out := new(ListCommentByPostIDResponse)
-	err := c.cc.Invoke(ctx, CommentService_ListCommentByPostID_FullMethodName, in, out, opts...)
+func (c *commentServiceClient) GetCommentsByPostID(ctx context.Context, in *GetCommentsByPostIDRequest, opts ...grpc.CallOption) (*GetCommentsByPostIDResponse, error) {
+	out := new(GetCommentsByPostIDResponse)
+	err := c.cc.Invoke(ctx, CommentService_GetCommentsByPostID_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -109,7 +109,7 @@ type CommentServiceServer interface {
 	GetComment(context.Context, *GetCommentRequest) (*GetCommentResponse, error)
 	UpdateComment(context.Context, *UpdateCommentRequest) (*UpdateCommentResponse, error)
 	DeleteComment(context.Context, *DeleteCommentRequest) (*DeleteCommentResponse, error)
-	ListCommentByPostID(context.Context, *ListCommentByPostIDRequest) (*ListCommentByPostIDResponse, error)
+	GetCommentsByPostID(context.Context, *GetCommentsByPostIDRequest) (*GetCommentsByPostIDResponse, error)
 	CountCommentByCommentID(context.Context, *CountCommentByCommentIDRequest) (*CountCommentByCommentIDResponse, error)
 	mustEmbedUnimplementedCommentServiceServer()
 }
@@ -130,8 +130,8 @@ func (UnimplementedCommentServiceServer) UpdateComment(context.Context, *UpdateC
 func (UnimplementedCommentServiceServer) DeleteComment(context.Context, *DeleteCommentRequest) (*DeleteCommentResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteComment not implemented")
 }
-func (UnimplementedCommentServiceServer) ListCommentByPostID(context.Context, *ListCommentByPostIDRequest) (*ListCommentByPostIDResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method ListCommentByPostID not implemented")
+func (UnimplementedCommentServiceServer) GetCommentsByPostID(context.Context, *GetCommentsByPostIDRequest) (*GetCommentsByPostIDResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetCommentsByPostID not implemented")
 }
 func (UnimplementedCommentServiceServer) CountCommentByCommentID(context.Context, *CountCommentByCommentIDRequest) (*CountCommentByCommentIDResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CountCommentByCommentID not implemented")
@@ -221,20 +221,20 @@ func _CommentService_DeleteComment_Handler(srv interface{}, ctx context.Context,
 	return interceptor(ctx, in, info, handler)
 }
 
-func _CommentService_ListCommentByPostID_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ListCommentByPostIDRequest)
+func _CommentService_GetCommentsByPostID_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetCommentsByPostIDRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(CommentServiceServer).ListCommentByPostID(ctx, in)
+		return srv.(CommentServiceServer).GetCommentsByPostID(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: CommentService_ListCommentByPostID_FullMethodName,
+		FullMethod: CommentService_GetCommentsByPostID_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(CommentServiceServer).ListCommentByPostID(ctx, req.(*ListCommentByPostIDRequest))
+		return srv.(CommentServiceServer).GetCommentsByPostID(ctx, req.(*GetCommentsByPostIDRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -281,8 +281,8 @@ var CommentService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _CommentService_DeleteComment_Handler,
 		},
 		{
-			MethodName: "ListCommentByPostID",
-			Handler:    _CommentService_ListCommentByPostID_Handler,
+			MethodName: "GetCommentsByPostID",
+			Handler:    _CommentService_GetCommentsByPostID_Handler,
 		},
 		{
 			MethodName: "CountCommentByCommentID",

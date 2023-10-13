@@ -5,6 +5,7 @@ import (
 
 	"github.com/dinhcanh303/go-microservices/internal/comment/domain"
 	"github.com/google/uuid"
+	"github.com/google/wire"
 	"github.com/pkg/errors"
 )
 
@@ -13,6 +14,8 @@ type service struct {
 }
 
 var _ UseCase = (*service)(nil)
+
+var UseCaseSet = wire.NewSet(NewService)
 
 func NewService(commentRepo CommentRepo) UseCase {
 	return &service{

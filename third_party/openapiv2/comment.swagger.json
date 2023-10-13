@@ -211,13 +211,13 @@
     },
     "/v1/api/posts/{postID}/comments": {
       "get": {
-        "summary": "List Comment By Post ID",
-        "operationId": "CommentService_ListCommentByPostID",
+        "summary": "Get Comment By Post ID",
+        "operationId": "CommentService_GetCommentsByPostID",
         "responses": {
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/commentapiListCommentByPostIDResponse"
+              "$ref": "#/definitions/commentapiGetCommentsByPostIDResponse"
             }
           },
           "default": {
@@ -334,19 +334,19 @@
         }
       }
     },
-    "commentapiListCommentByPostIDResponse": {
+    "commentapiGetCommentsByPostIDResponse": {
       "type": "object",
       "properties": {
         "comments": {
           "type": "array",
           "items": {
             "type": "object",
-            "$ref": "#/definitions/commentapiListCommentResponse"
+            "$ref": "#/definitions/commentapiGetCommentsResponse"
           }
         }
       }
     },
-    "commentapiListCommentResponse": {
+    "commentapiGetCommentsResponse": {
       "type": "object",
       "properties": {
         "comment": {

@@ -9,7 +9,7 @@ import (
 type Comment struct {
 	ID              uuid.UUID     `json:"id"`
 	UserID          uuid.UUID     `json:"user_id"`
-	ReplyTo         string        `json:"reply_to"`
+	ReplyToID       uuid.NullUUID `json:"reply_to_id"`
 	Content         string        `json:"content"`
 	PostID          uuid.UUID     `json:"post_id"`
 	ParentCommentID uuid.NullUUID `json:"parent_comment_id"`

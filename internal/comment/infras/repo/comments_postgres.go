@@ -2,7 +2,6 @@ package repo
 
 import (
 	"context"
-	"database/sql"
 
 	"github.com/dinhcanh303/go-microservices/internal/comment/domain"
 	"github.com/dinhcanh303/go-microservices/internal/comment/infras/postgresql"
@@ -68,10 +67,7 @@ func (rp *commentRepo) Create(ctx context.Context, comment *domain.Comment) (*do
 		Content:         comment.Content,
 		PostID:          comment.PostID,
 		ParentCommentID: comment.ParentCommentID,
-		ReplyTo: sql.NullString{
-			String: comment.ReplyTo,
-			Valid:  true,
-		},
+		ReplyToID:       comment.ReplyToID,
 	})
 	if err != nil {
 		return nil, errors.Wrap(err, "commentRepo.Create failed")
@@ -82,7 +78,7 @@ func (rp *commentRepo) Create(ctx context.Context, comment *domain.Comment) (*do
 		Content:         result.Content,
 		PostID:          result.PostID,
 		ParentCommentID: result.ParentCommentID,
-		ReplyTo:         result.ReplyTo.String,
+		ReplyToID:       result.ReplyToID,
 		CreatedAt:       result.CreatedAt,
 		UpdatedAt:       result.UpdatedAt,
 	}, tx.Commit()
@@ -135,7 +131,7 @@ func (rp *commentRepo) Get(ctx context.Context, uuid uuid.UUID) (*domain.Comment
 		Content:         result.Content,
 		PostID:          result.PostID,
 		ParentCommentID: result.ParentCommentID,
-		ReplyTo:         result.ReplyTo.String,
+		ReplyToID:       result.ReplyToID,
 		CreatedAt:       result.CreatedAt,
 		UpdatedAt:       result.UpdatedAt,
 	}, nil
@@ -156,7 +152,7 @@ func (rp *commentRepo) GetCommentByPostID(ctx context.Context, postId uuid.UUID)
 			Content:         item.Content,
 			PostID:          item.PostID,
 			ParentCommentID: item.ParentCommentID,
-			ReplyTo:         item.ReplyTo.String,
+			ReplyToID:       item.ReplyToID,
 			CreatedAt:       item.CreatedAt,
 			UpdatedAt:       item.UpdatedAt,
 		}
@@ -173,12 +169,9 @@ func (rp *commentRepo) Update(ctx context.Context, comment *domain.Comment) (*do
 	}
 	qtx := querier.WithTx(tx)
 	result, err := qtx.Update(ctx, postgresql.UpdateParams{
-		ID:      comment.ID,
-		Content: comment.Content,
-		ReplyTo: sql.NullString{
-			String: comment.ReplyTo,
-			Valid:  true,
-		},
+		ID:        comment.ID,
+		Content:   comment.Content,
+		ReplyToID: comment.ReplyToID,
 	})
 	if err != nil {
 		return nil, errors.Wrap(err, "commentRepo.Create failed")
@@ -189,7 +182,7 @@ func (rp *commentRepo) Update(ctx context.Context, comment *domain.Comment) (*do
 		Content:         result.Content,
 		PostID:          result.PostID,
 		ParentCommentID: result.ParentCommentID,
-		ReplyTo:         result.ReplyTo.String,
+		ReplyToID:       result.ReplyToID,
 		CreatedAt:       result.CreatedAt,
 		UpdatedAt:       result.UpdatedAt,
 	}, tx.Commit()

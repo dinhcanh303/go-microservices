@@ -7,7 +7,6 @@ package postgresql
 
 import (
 	"context"
-	"database/sql"
 
 	"github.com/google/uuid"
 )
@@ -42,18 +41,18 @@ INSERT INTO
 		content,
 		post_id,
 		parent_comment_id,
-		reply_to
+		reply_to_id
     )
-VALUES ($1, $2, $3, $4 ,$5 , $6) RETURNING id, user_id, content, reply_to, post_id, parent_comment_id, created_at, updated_at
+VALUES ($1, $2, $3, $4 ,$5 , $6) RETURNING id, user_id, content, reply_to_id, post_id, parent_comment_id, created_at, updated_at
 `
 
 type CreateParams struct {
-	ID              uuid.UUID      `json:"id"`
-	UserID          uuid.UUID      `json:"user_id"`
-	Content         string         `json:"content"`
-	PostID          uuid.UUID      `json:"post_id"`
-	ParentCommentID uuid.NullUUID  `json:"parent_comment_id"`
-	ReplyTo         sql.NullString `json:"reply_to"`
+	ID              uuid.UUID     `json:"id"`
+	UserID          uuid.UUID     `json:"user_id"`
+	Content         string        `json:"content"`
+	PostID          uuid.UUID     `json:"post_id"`
+	ParentCommentID uuid.NullUUID `json:"parent_comment_id"`
+	ReplyToID       uuid.NullUUID `json:"reply_to_id"`
 }
 
 func (q *Queries) Create(ctx context.Context, arg CreateParams) (CommentComment, error) {
@@ -63,14 +62,14 @@ func (q *Queries) Create(ctx context.Context, arg CreateParams) (CommentComment,
 		arg.Content,
 		arg.PostID,
 		arg.ParentCommentID,
-		arg.ReplyTo,
+		arg.ReplyToID,
 	)
 	var i CommentComment
 	err := row.Scan(
 		&i.ID,
 		&i.UserID,
 		&i.Content,
-		&i.ReplyTo,
+		&i.ReplyToID,
 		&i.PostID,
 		&i.ParentCommentID,
 		&i.CreatedAt,
@@ -98,7 +97,7 @@ func (q *Queries) DeleteAllByPostID(ctx context.Context, postID uuid.UUID) error
 }
 
 const get = `-- name: Get :one
-SELECT id, user_id, content, reply_to, post_id, parent_comment_id, created_at, updated_at FROM comment.comments WHERE id = $1
+SELECT id, user_id, content, reply_to_id, post_id, parent_comment_id, created_at, updated_at FROM comment.comments WHERE id = $1
 `
 
 func (q *Queries) Get(ctx context.Context, id uuid.UUID) (CommentComment, error) {
@@ -108,7 +107,7 @@ func (q *Queries) Get(ctx context.Context, id uuid.UUID) (CommentComment, error)
 		&i.ID,
 		&i.UserID,
 		&i.Content,
-		&i.ReplyTo,
+		&i.ReplyToID,
 		&i.PostID,
 		&i.ParentCommentID,
 		&i.CreatedAt,
@@ -117,12 +116,12 @@ func (q *Queries) Get(ctx context.Context, id uuid.UUID) (CommentComment, error)
 	return i, err
 }
 
-const listByPostID = `-- name: ListByPostID :many
-SELECT id, user_id, content, reply_to, post_id, parent_comment_id, created_at, updated_at FROM comment.comments WHERE post_id = $1
+const getCommentByPostID = `-- name: GetCommentByPostID :many
+SELECT id, user_id, content, reply_to_id, post_id, parent_comment_id, created_at, updated_at FROM comment.comments WHERE post_id = $1
 `
 
-func (q *Queries) ListByPostID(ctx context.Context, postID uuid.UUID) ([]CommentComment, error) {
-	rows, err := q.db.QueryContext(ctx, listByPostID, postID)
+func (q *Queries) GetCommentByPostID(ctx context.Context, postID uuid.UUID) ([]CommentComment, error) {
+	rows, err := q.db.QueryContext(ctx, getCommentByPostID, postID)
 	if err != nil {
 		return nil, err
 	}
@@ -134,7 +133,7 @@ func (q *Queries) ListByPostID(ctx context.Context, postID uuid.UUID) ([]Comment
 			&i.ID,
 			&i.UserID,
 			&i.Content,
-			&i.ReplyTo,
+			&i.ReplyToID,
 			&i.PostID,
 			&i.ParentCommentID,
 			&i.CreatedAt,
@@ -157,24 +156,24 @@ const update = `-- name: Update :one
 UPDATE comment.comments 
 SET
     content = $2 ,
-    reply_to = $3
-WHERE id = $1 RETURNING id, user_id, content, reply_to, post_id, parent_comment_id, created_at, updated_at
+    reply_to_id = $3
+WHERE id = $1 RETURNING id, user_id, content, reply_to_id, post_id, parent_comment_id, created_at, updated_at
 `
 
 type UpdateParams struct {
-	ID      uuid.UUID      `json:"id"`
-	Content string         `json:"content"`
-	ReplyTo sql.NullString `json:"reply_to"`
+	ID        uuid.UUID     `json:"id"`
+	Content   string        `json:"content"`
+	ReplyToID uuid.NullUUID `json:"reply_to_id"`
 }
 
 func (q *Queries) Update(ctx context.Context, arg UpdateParams) (CommentComment, error) {
-	row := q.db.QueryRowContext(ctx, update, arg.ID, arg.Content, arg.ReplyTo)
+	row := q.db.QueryRowContext(ctx, update, arg.ID, arg.Content, arg.ReplyToID)
 	var i CommentComment
 	err := row.Scan(
 		&i.ID,
 		&i.UserID,
 		&i.Content,
-		&i.ReplyTo,
+		&i.ReplyToID,
 		&i.PostID,
 		&i.ParentCommentID,
 		&i.CreatedAt,

@@ -237,8 +237,8 @@ func local_request_CommentService_DeleteComment_0(ctx context.Context, marshaler
 
 }
 
-func request_CommentService_ListCommentByPostID_0(ctx context.Context, marshaler runtime.Marshaler, client CommentServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq ListCommentByPostIDRequest
+func request_CommentService_GetCommentsByPostID_0(ctx context.Context, marshaler runtime.Marshaler, client CommentServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var protoReq GetCommentsByPostIDRequest
 	var metadata runtime.ServerMetadata
 
 	var (
@@ -258,13 +258,13 @@ func request_CommentService_ListCommentByPostID_0(ctx context.Context, marshaler
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "postID", err)
 	}
 
-	msg, err := client.ListCommentByPostID(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
+	msg, err := client.GetCommentsByPostID(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
 	return msg, metadata, err
 
 }
 
-func local_request_CommentService_ListCommentByPostID_0(ctx context.Context, marshaler runtime.Marshaler, server CommentServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq ListCommentByPostIDRequest
+func local_request_CommentService_GetCommentsByPostID_0(ctx context.Context, marshaler runtime.Marshaler, server CommentServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var protoReq GetCommentsByPostIDRequest
 	var metadata runtime.ServerMetadata
 
 	var (
@@ -284,7 +284,7 @@ func local_request_CommentService_ListCommentByPostID_0(ctx context.Context, mar
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "postID", err)
 	}
 
-	msg, err := server.ListCommentByPostID(ctx, &protoReq)
+	msg, err := server.GetCommentsByPostID(ctx, &protoReq)
 	return msg, metadata, err
 
 }
@@ -447,7 +447,7 @@ func RegisterCommentServiceHandlerServer(ctx context.Context, mux *runtime.Serve
 
 	})
 
-	mux.Handle("GET", pattern_CommentService_ListCommentByPostID_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("GET", pattern_CommentService_GetCommentsByPostID_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		var stream runtime.ServerTransportStream
@@ -455,12 +455,12 @@ func RegisterCommentServiceHandlerServer(ctx context.Context, mux *runtime.Serve
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/go.microsevices.proto.commentapi.CommentService/ListCommentByPostID", runtime.WithHTTPPathPattern("/v1/api/posts/{postID}/comments"))
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/go.microsevices.proto.commentapi.CommentService/GetCommentsByPostID", runtime.WithHTTPPathPattern("/v1/api/posts/{postID}/comments"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_CommentService_ListCommentByPostID_0(annotatedContext, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_CommentService_GetCommentsByPostID_0(annotatedContext, inboundMarshaler, server, req, pathParams)
 		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
 		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
 		if err != nil {
@@ -468,7 +468,7 @@ func RegisterCommentServiceHandlerServer(ctx context.Context, mux *runtime.Serve
 			return
 		}
 
-		forward_CommentService_ListCommentByPostID_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_CommentService_GetCommentsByPostID_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
@@ -626,25 +626,25 @@ func RegisterCommentServiceHandlerClient(ctx context.Context, mux *runtime.Serve
 
 	})
 
-	mux.Handle("GET", pattern_CommentService_ListCommentByPostID_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("GET", pattern_CommentService_GetCommentsByPostID_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/go.microsevices.proto.commentapi.CommentService/ListCommentByPostID", runtime.WithHTTPPathPattern("/v1/api/posts/{postID}/comments"))
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/go.microsevices.proto.commentapi.CommentService/GetCommentsByPostID", runtime.WithHTTPPathPattern("/v1/api/posts/{postID}/comments"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_CommentService_ListCommentByPostID_0(annotatedContext, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_CommentService_GetCommentsByPostID_0(annotatedContext, inboundMarshaler, client, req, pathParams)
 		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
 		if err != nil {
 			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
 			return
 		}
 
-		forward_CommentService_ListCommentByPostID_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_CommentService_GetCommentsByPostID_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
@@ -682,7 +682,7 @@ var (
 
 	pattern_CommentService_DeleteComment_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3}, []string{"v1", "api", "comments", "id"}, ""))
 
-	pattern_CommentService_ListCommentByPostID_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3, 2, 4}, []string{"v1", "api", "posts", "postID", "comments"}, ""))
+	pattern_CommentService_GetCommentsByPostID_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3, 2, 4}, []string{"v1", "api", "posts", "postID", "comments"}, ""))
 
 	pattern_CommentService_CountCommentByCommentID_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3, 2, 4}, []string{"v1", "api", "comments", "id", "count"}, ""))
 )
@@ -696,7 +696,7 @@ var (
 
 	forward_CommentService_DeleteComment_0 = runtime.ForwardResponseMessage
 
-	forward_CommentService_ListCommentByPostID_0 = runtime.ForwardResponseMessage
+	forward_CommentService_GetCommentsByPostID_0 = runtime.ForwardResponseMessage
 
 	forward_CommentService_CountCommentByCommentID_0 = runtime.ForwardResponseMessage
 )

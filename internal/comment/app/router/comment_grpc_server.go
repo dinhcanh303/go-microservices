@@ -3,8 +3,8 @@ package router
 import (
 	"context"
 
-	"github.com/dinhcanh303/go-microservices/cmd/post/config"
-	"github.com/dinhcanh303/go-microservices/internal/post/usecases/posts"
+	"github.com/dinhcanh303/go-microservices/cmd/comment/config"
+	"github.com/dinhcanh303/go-microservices/internal/comment/usecases/comments"
 	"github.com/dinhcanh303/go-microservices/proto/gen"
 	"github.com/google/wire"
 	"google.golang.org/grpc"
@@ -14,7 +14,7 @@ import (
 type commentGRPCServer struct {
 	gen.UnimplementedCommentServiceServer
 	cfg *config.Config
-	uc  posts.UseCase
+	uc  comments.UseCase
 }
 
 var _ gen.CommentServiceServer = (*commentGRPCServer)(nil)
@@ -24,7 +24,7 @@ var CommentGRPCServerSet = wire.NewSet(NewGRPCCommentServer)
 func NewGRPCCommentServer(
 	grpcServer *grpc.Server,
 	cfg *config.Config,
-	uc posts.UseCase,
+	uc comments.UseCase,
 ) gen.CommentServiceServer {
 	svc := commentGRPCServer{
 		cfg: cfg,

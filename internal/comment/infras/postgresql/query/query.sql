@@ -6,7 +6,7 @@ INSERT INTO
 		content,
 		post_id,
 		parent_comment_id,
-		reply_to
+		reply_to_id
     )
 VALUES ($1, $2, $3, $4 ,$5 , $6) RETURNING *;
 
@@ -17,7 +17,7 @@ SELECT * FROM comment.comments WHERE id = $1;
 UPDATE comment.comments 
 SET
     content = $2 ,
-    reply_to = $3
+    reply_to_id = $3
 WHERE id = $1 RETURNING *;
 
 -- name: Delete :exec
