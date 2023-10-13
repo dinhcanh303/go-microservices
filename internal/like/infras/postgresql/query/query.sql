@@ -1,16 +1,24 @@
-Create(ctx context.Context, comment *domain.Comment) (*domain.Comment, error)
-	Get(ctx context.Context, uuid string) (*domain.Comment, error)
-	Update(ctx context.Context, comment *domain.Comment) (*domain.Comment, error)
-	Delete(ctx context.Context, uuid string) (bool, error)
-	DeleteByPostID(ctx context.Context, postId string) (bool, error)
-	DeleteByCommentID(ctx context.Context, commentId string) (bool, error)
-	ListByPostID(ctx context.Context, postId string) ([]*domain.Comment, error)
-	CountByPostID(ctx context.Context, postId string) (uint64, error)
-	CountByCommentID(ctx context.Context, commentId string) (uint64, error)
-
 -- name: Create :one
 INSERT INTO 
-    interaction.comments (
+    "like".likes (
         id,
-        
+		emoji,
+		likeable_type,
+		likeable_id,
+		user_id
     )
+VALUES ($1, $2, $3, $4, $5) RETURNING *;
+
+-- name: Update :one
+UPDATE "like".likes
+SET
+	emoji = $2
+WHERE id = $1 RETURNING *;
+
+-- name: Delete :exec
+DELETE FROM "like".likes WHERE id = $1;
+
+-- name: GetAllByType :many
+SELECT * FROM "like".likes WHERE likeable_type = $1
+AND likeable_id = $2;
+

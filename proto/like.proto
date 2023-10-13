@@ -1,0 +1,84 @@
+syntax="proto3";
+
+package go.microsevices.proto.likeapi;
+
+import "google/api/annotations.proto";
+import "protoc-gen-openapiv2/options/annotations.proto";
+import "google/protobuf/timestamp.proto";
+
+option go_package = "github.com/dinhcanh303/go-microsevices/proto/gen";
+
+service LikeService {
+    rpc CreateLike(CreateLikeRequest) returns (CreateLikeResponse){
+        option (google.api.http) = {
+            post: "/v1/api/likes"
+            body: "*"
+        };
+        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+            summary: "Create Like"
+            description: ""
+            tags: "Like"
+        };
+    }
+    rpc UpdateLike(UpdateLikeRequest) returns (UpdateLikeResponse){
+        option (google.api.http) = {
+            put: "/v1/api/likes/{like.id}"
+            body: "*"
+        };
+        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+            summary: "Update Like"
+            description: ""
+            tags: "Like"
+        };
+    }
+    rpc DeleteLike(DeleteLikeRequest) returns (DeleteLikeResponse){
+        option (google.api.http) = {
+            delete: "/v1/api/likes/{id}"
+        };
+        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+            summary: "Delete Like"
+            description: ""
+            tags: "Like"
+        };
+    }
+}
+
+
+message CreateLikeRequest {
+    LikeRequest like =1;
+}
+message CreateLikeResponse {
+    LikeResponse like = 1;
+}
+message UpdateLikeRequest {
+    LikeUpdateRequest like = 1;
+}
+message UpdateLikeResponse {
+    LikeResponse like = 1;
+}
+message DeleteLikeRequest {
+    string id = 1;
+}
+message DeleteLikeResponse {
+    bool deteted = 1;
+}
+
+message LikeRequest {
+    string emoji =1;
+    string likeable_type =2;
+    string likeable_id =3;
+    string user_id = 4;
+}
+message LikeUpdateRequest {
+    string id = 1;
+    string emoji = 2;
+}
+message LikeResponse {
+    string id =1;
+    string emoji =2;
+    string likeable_type =3;
+    string likeable_id =4;
+    string user_id = 5;
+    google.protobuf.Timestamp created_at = 6;
+    google.protobuf.Timestamp updated_at = 7;
+}
