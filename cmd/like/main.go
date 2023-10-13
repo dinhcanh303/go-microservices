@@ -8,8 +8,8 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/dinhcanh303/go-microservices/cmd/comment/config"
-	"github.com/dinhcanh303/go-microservices/internal/comment/app"
+	"github.com/dinhcanh303/go-microservices/cmd/like/config"
+	"github.com/dinhcanh303/go-microservices/internal/like/app"
 	"github.com/dinhcanh303/go-microservices/pkg/logger"
 	"github.com/dinhcanh303/go-microservices/pkg/postgres"
 	"github.com/sirupsen/logrus"
