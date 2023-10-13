@@ -26,3 +26,12 @@ sql:
         package: "postgresql"
         out: "internal/comment/infras/postgresql"
         emit_json_tags: true
+
+  - engine: "postgresql"
+    queries: "internal/like/infras/postgresql/query/query.sql"
+    schema: "db/migrations/000004_init_likedb.up.sql"
+    gen:
+      go:
+        package: "postgresql"
+        out: "internal/like/infras/postgresql"
+        emit_json_tags: true

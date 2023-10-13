@@ -21,7 +21,9 @@ linter-golangci: ### check by golangci linter
 
 wire:
 	cd internal/group/app && wire && cd - && \
-	cd internal/post/app && wire && cd -
+	cd internal/post/app && wire && cd - && \
+	cd internal/comment/app && wire && cd - && \
+	cd internal/like/app && wire && cd -
 .PHONY: wire
 
 proto-gen:
