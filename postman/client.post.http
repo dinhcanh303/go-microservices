@@ -7,34 +7,47 @@ content-type: application/json
 {
   "post": 
     {
-    "title" : "Hom nay la ngay 11/10/2023",
+    "title" : "Hom nay la ngay 16/10/2023",
+    "content" :"who is that who is that",
+    "status" : 1,
+    "user_id" :"526c0b00-677d-11ee-8390-0242ac150004"
+    }
+  
+}
+
+###Create Post Group
+POST {{host}}/v1/api/posts HTTP/1.1
+content-type: application/json
+
+{
+  "post": 
+    {
+    "title" : "Hom nay la ngay 16/10/2023",
     "content" :"who is that who is that",
     "status" : 1,
     "user_id" :"526c0b00-677d-11ee-8390-0242ac150004",
-    "group_id": "6a0f18b3-09e6-4769-859b-be3ce968dc23"
+    "group_id": "8d694e9c-1a35-4c98-97d6-14838c0de767"
     }
   
 }
 
 ###Update Post
-PUT {{host}}/v1/api/posts/733e10b3-25a6-4bf1-b276-8724d913700c HTTP/1.1
+PUT {{host}}/v1/api/posts/10f47af0-c67c-4a0a-8003-5ce66d785bc3 HTTP/1.1
 content-type: application/json
 
 {
-  "group": 
+  "post": 
     {
-    "id":"733e10b3-25a6-4bf1-b276-8724d913700c",
-    "name" : "TEAM DEV 3",
-    "description" :"who is that",
+    "title" : "Hom nay la ngay 15/10/2023",
+    "content" :"who is that who is that",
     "status" : 1,
     "user_id" :"526c0b00-677d-11ee-8390-0242ac150004",
-    "group_id": "6a0f18b3-09e6-4769-859b-be3ce968dc23"
+    "group_id": "8d694e9c-1a35-4c98-97d6-14838c0de767"
     }
-  
 }
 
 ###Get Post
-GET {{host}}/v1/api/posts/e782831a-7739-4cfa-aec7-5f528e738daf HTTP/1.1
+GET {{host}}/v1/api/posts/b9097220-5d74-4a9c-a8f4-0a7648b40000 HTTP/1.1
 content-type: application/json
 
 {}

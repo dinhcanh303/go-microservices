@@ -1,0 +1,63 @@
+@host = http://localhost:5000
+
+###Create Comment
+POST {{host}}/v1/api/comments HTTP/1.1
+content-type: application/json
+
+{
+  "comment": 
+    {
+    "post_id" : "e32b4984-cd0a-4167-bcf1-393be4c03853",
+    "user_id" :"526c0b00-677d-11ee-8390-0242ac150004",
+    //"reply_to_id" : 1,
+    "content" :"Hello my friend 2"
+    //"parent_comment_id" : "58705792-5cc0-4411-87da-b46a2d4df932"
+    }
+}
+
+###Create Comment Has Parent
+POST {{host}}/v1/api/comments HTTP/1.1
+content-type: application/json
+
+{
+  "comment": 
+    {
+    "post_id" : "e32b4984-cd0a-4167-bcf1-393be4c03853",
+    "user_id" :"526c0b00-677d-11ee-8390-0242ac150004",
+    //"reply_to_id" : 1,
+    "content" :"Hello1",
+    "parent_comment_id" : "019ca506-16ff-40d8-ab65-2e4dbe23995a"
+    }
+}
+
+###Update Comment
+PUT {{host}}/v1/api/comments/fea1c7ed-6eb1-482b-b9b4-9bcac87b6834 HTTP/1.1
+content-type: application/json
+
+{
+  "comment": 
+    {
+      "id": "fea1c7ed-6eb1-482b-b9b4-9bcac87b6834",
+    //"reply_to_id" : 1,
+      "content" :"Reply comment 58705792-5cc0-4411-87da-b46a2d4df932"
+    }
+  
+}
+
+###Get Comment By PostID
+GET {{host}}/v1/api/posts/e32b4984-cd0a-4167-bcf1-393be4c03853/comments HTTP/1.1
+content-type: application/json
+
+{}
+
+###Get Comment
+GET {{host}}/v1/api/comments/07e314e7-bee1-411f-bb94-820c74f124b2 HTTP/1.1
+content-type: application/json
+
+{}
+
+###Delete Comment
+DELETE  {{host}}/v1/api/comments/07e314e7-bee1-411f-bb94-820c74f124b2 HTTP/1.1
+content-type: application/json
+
+{}
