@@ -41,6 +41,26 @@ service LikeService {
             tags: "Like"
         };
     }
+    rpc GetLikesByPostID(GetLikesByPostIDRequest) returns (GetLikesByPostIDResponse){
+        option (google.api.http) = {
+            get: "/v1/api/posts/{postID}/likes"
+        };
+        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+            summary: "Get Like by Post ID"
+            description: ""
+            tags: "Post"
+        };
+    }
+    rpc GetLikesByCommentID(GetLikesByCommentIDRequest) returns (GetLikesByCommentIDResponse){
+        option (google.api.http) = {
+            get: "/v1/api/comments/{commentID}/likes"
+        };
+        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+            summary: "Get Like by Comment ID"
+            description: ""
+            tags: "Comment"
+        };
+    }
 }
 
 
@@ -81,4 +101,16 @@ message LikeResponse {
     string user_id = 5;
     google.protobuf.Timestamp created_at = 6;
     google.protobuf.Timestamp updated_at = 7;
+}
+message GetLikesByPostIDRequest {
+    string postID = 1;
+}
+message GetLikesByCommentIDRequest {
+    string commentID = 1;
+}
+message GetLikesByPostIDResponse {
+    repeated LikeResponse likes = 1;
+}
+message GetLikesByCommentIDResponse {
+    repeated LikeResponse likes = 1;
 }

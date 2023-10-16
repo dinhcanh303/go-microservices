@@ -90,7 +90,7 @@
                     "userId": {
                       "type": "string"
                     },
-                    "replyTo": {
+                    "replyToId": {
                       "type": "string"
                     },
                     "content": {
@@ -251,7 +251,7 @@
         "userId": {
           "type": "string"
         },
-        "replyTo": {
+        "replyToId": {
           "type": "string"
         },
         "content": {
@@ -274,7 +274,7 @@
         "userId": {
           "type": "string"
         },
-        "replyTo": {
+        "replyToId": {
           "type": "string"
         },
         "content": {
@@ -349,10 +349,33 @@
     "commentapiGetCommentsResponse": {
       "type": "object",
       "properties": {
-        "comment": {
-          "$ref": "#/definitions/commentapiCommentResponse"
+        "id": {
+          "type": "string"
         },
-        "child": {
+        "postId": {
+          "type": "string"
+        },
+        "userId": {
+          "type": "string"
+        },
+        "replyToId": {
+          "type": "string"
+        },
+        "content": {
+          "type": "string"
+        },
+        "parentCommentId": {
+          "type": "string"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "children": {
           "type": "array",
           "items": {
             "type": "object",

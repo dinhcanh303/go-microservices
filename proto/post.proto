@@ -61,17 +61,6 @@ service PostService {
             tags: "Post"
         };
     }
-    // rpc Count(CountPostRequest) returns (CountPostResponse){
-    //     option (google.api.http) = {
-    //         get: "/v1/api/posts/{id}"
-    //     };
-    //     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
-    //         summary: "Delete Post"
-    //         description: ""
-    //         tags: "Post"
-    //     };
-    // }
-
 }
 message CreatePostRequest {
     PostRequest post = 1;

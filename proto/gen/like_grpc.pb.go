@@ -19,9 +19,11 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	LikeService_CreateLike_FullMethodName = "/go.microsevices.proto.likeapi.LikeService/CreateLike"
-	LikeService_UpdateLike_FullMethodName = "/go.microsevices.proto.likeapi.LikeService/UpdateLike"
-	LikeService_DeleteLike_FullMethodName = "/go.microsevices.proto.likeapi.LikeService/DeleteLike"
+	LikeService_CreateLike_FullMethodName          = "/go.microsevices.proto.likeapi.LikeService/CreateLike"
+	LikeService_UpdateLike_FullMethodName          = "/go.microsevices.proto.likeapi.LikeService/UpdateLike"
+	LikeService_DeleteLike_FullMethodName          = "/go.microsevices.proto.likeapi.LikeService/DeleteLike"
+	LikeService_GetLikesByPostID_FullMethodName    = "/go.microsevices.proto.likeapi.LikeService/GetLikesByPostID"
+	LikeService_GetLikesByCommentID_FullMethodName = "/go.microsevices.proto.likeapi.LikeService/GetLikesByCommentID"
 )
 
 // LikeServiceClient is the client API for LikeService service.
@@ -31,6 +33,8 @@ type LikeServiceClient interface {
 	CreateLike(ctx context.Context, in *CreateLikeRequest, opts ...grpc.CallOption) (*CreateLikeResponse, error)
 	UpdateLike(ctx context.Context, in *UpdateLikeRequest, opts ...grpc.CallOption) (*UpdateLikeResponse, error)
 	DeleteLike(ctx context.Context, in *DeleteLikeRequest, opts ...grpc.CallOption) (*DeleteLikeResponse, error)
+	GetLikesByPostID(ctx context.Context, in *GetLikesByPostIDRequest, opts ...grpc.CallOption) (*GetLikesByPostIDResponse, error)
+	GetLikesByCommentID(ctx context.Context, in *GetLikesByCommentIDRequest, opts ...grpc.CallOption) (*GetLikesByCommentIDResponse, error)
 }
 
 type likeServiceClient struct {
@@ -68,6 +72,24 @@ func (c *likeServiceClient) DeleteLike(ctx context.Context, in *DeleteLikeReques
 	return out, nil
 }
 
+func (c *likeServiceClient) GetLikesByPostID(ctx context.Context, in *GetLikesByPostIDRequest, opts ...grpc.CallOption) (*GetLikesByPostIDResponse, error) {
+	out := new(GetLikesByPostIDResponse)
+	err := c.cc.Invoke(ctx, LikeService_GetLikesByPostID_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *likeServiceClient) GetLikesByCommentID(ctx context.Context, in *GetLikesByCommentIDRequest, opts ...grpc.CallOption) (*GetLikesByCommentIDResponse, error) {
+	out := new(GetLikesByCommentIDResponse)
+	err := c.cc.Invoke(ctx, LikeService_GetLikesByCommentID_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // LikeServiceServer is the server API for LikeService service.
 // All implementations must embed UnimplementedLikeServiceServer
 // for forward compatibility
@@ -75,6 +97,8 @@ type LikeServiceServer interface {
 	CreateLike(context.Context, *CreateLikeRequest) (*CreateLikeResponse, error)
 	UpdateLike(context.Context, *UpdateLikeRequest) (*UpdateLikeResponse, error)
 	DeleteLike(context.Context, *DeleteLikeRequest) (*DeleteLikeResponse, error)
+	GetLikesByPostID(context.Context, *GetLikesByPostIDRequest) (*GetLikesByPostIDResponse, error)
+	GetLikesByCommentID(context.Context, *GetLikesByCommentIDRequest) (*GetLikesByCommentIDResponse, error)
 	mustEmbedUnimplementedLikeServiceServer()
 }
 
@@ -90,6 +114,12 @@ func (UnimplementedLikeServiceServer) UpdateLike(context.Context, *UpdateLikeReq
 }
 func (UnimplementedLikeServiceServer) DeleteLike(context.Context, *DeleteLikeRequest) (*DeleteLikeResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteLike not implemented")
+}
+func (UnimplementedLikeServiceServer) GetLikesByPostID(context.Context, *GetLikesByPostIDRequest) (*GetLikesByPostIDResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetLikesByPostID not implemented")
+}
+func (UnimplementedLikeServiceServer) GetLikesByCommentID(context.Context, *GetLikesByCommentIDRequest) (*GetLikesByCommentIDResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetLikesByCommentID not implemented")
 }
 func (UnimplementedLikeServiceServer) mustEmbedUnimplementedLikeServiceServer() {}
 
@@ -158,6 +188,42 @@ func _LikeService_DeleteLike_Handler(srv interface{}, ctx context.Context, dec f
 	return interceptor(ctx, in, info, handler)
 }
 
+func _LikeService_GetLikesByPostID_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetLikesByPostIDRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(LikeServiceServer).GetLikesByPostID(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: LikeService_GetLikesByPostID_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(LikeServiceServer).GetLikesByPostID(ctx, req.(*GetLikesByPostIDRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _LikeService_GetLikesByCommentID_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetLikesByCommentIDRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(LikeServiceServer).GetLikesByCommentID(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: LikeService_GetLikesByCommentID_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(LikeServiceServer).GetLikesByCommentID(ctx, req.(*GetLikesByCommentIDRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // LikeService_ServiceDesc is the grpc.ServiceDesc for LikeService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -176,6 +242,14 @@ var LikeService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "DeleteLike",
 			Handler:    _LikeService_DeleteLike_Handler,
+		},
+		{
+			MethodName: "GetLikesByPostID",
+			Handler:    _LikeService_GetLikesByPostID_Handler,
+		},
+		{
+			MethodName: "GetLikesByCommentID",
+			Handler:    _LikeService_GetLikesByCommentID_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
