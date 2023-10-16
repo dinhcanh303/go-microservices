@@ -57,7 +57,7 @@ func (s *service) GetGroup(ctx context.Context, id uuid.UUID) (*domain.Group, er
 func (s *service) UpdateGroup(ctx context.Context, group *domain.Group) (*domain.Group, error) {
 	result, err := s.repo.Update(ctx, group)
 	if err != nil {
-		return nil, errors.Wrap(err, "service.GetWithUnscoped")
+		return nil, errors.Wrap(err, "service.UpdateGroup")
 	}
 	return result, nil
 }

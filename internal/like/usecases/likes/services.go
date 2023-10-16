@@ -42,8 +42,8 @@ func (s *service) DeleteLike(ctx context.Context, id uuid.UUID) (bool, error) {
 }
 
 // GetAllLikeByCommentID implements UseCase.
-func (s *service) GetAllLikeByCommentID(ctx context.Context, commentID uuid.UUID) ([]*domain.Like, error) {
-	likes, err := s.likeRepo.GetAllByCommentID(ctx, commentID)
+func (s *service) GetLikesByCommentID(ctx context.Context, commentID uuid.UUID) ([]*domain.Like, error) {
+	likes, err := s.likeRepo.GetLikesByCommentID(ctx, commentID)
 	if err != nil {
 		return nil, errors.Wrap(err, "service.GetAllLikeByCommentID")
 	}
@@ -51,8 +51,8 @@ func (s *service) GetAllLikeByCommentID(ctx context.Context, commentID uuid.UUID
 }
 
 // GetAllLikeByPostID implements UseCase.
-func (s *service) GetAllLikeByPostID(ctx context.Context, postID uuid.UUID) ([]*domain.Like, error) {
-	likes, err := s.likeRepo.GetAllByPostID(ctx, postID)
+func (s *service) GetLikesByPostID(ctx context.Context, postID uuid.UUID) ([]*domain.Like, error) {
+	likes, err := s.likeRepo.GetLikesByPostID(ctx, postID)
 	if err != nil {
 		return nil, errors.Wrap(err, "service.GetAllLikeByPostID")
 	}

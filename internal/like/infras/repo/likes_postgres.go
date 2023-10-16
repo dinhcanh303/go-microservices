@@ -72,8 +72,8 @@ func (rp *likeRepo) Delete(ctx context.Context, id uuid.UUID) (bool, error) {
 	return true, tx.Commit()
 }
 
-// GetAllByCommentID implements likes.LikeRepo.
-func (rp *likeRepo) GetAllByCommentID(ctx context.Context, commentID uuid.UUID) ([]*domain.Like, error) {
+// GetLikesByCommentID implements likes.LikeRepo.
+func (rp *likeRepo) GetLikesByCommentID(ctx context.Context, commentID uuid.UUID) ([]*domain.Like, error) {
 	db := rp.pg.GetDB()
 	querier := postgresql.New(db)
 	results, err := querier.GetAllByType(ctx, postgresql.GetAllByTypeParams{
@@ -81,7 +81,7 @@ func (rp *likeRepo) GetAllByCommentID(ctx context.Context, commentID uuid.UUID) 
 		LikeableID:   commentID,
 	})
 	if err != nil {
-		return nil, errors.Wrap(err, "likeRepo.GetAllByCommentID failed")
+		return nil, errors.Wrap(err, "likeRepo.GetLikesByCommentID failed")
 	}
 	return lo.Map(results, func(item postgresql.LikeLike, _ int) *domain.Like {
 		return &domain.Like{
@@ -96,8 +96,8 @@ func (rp *likeRepo) GetAllByCommentID(ctx context.Context, commentID uuid.UUID) 
 
 }
 
-// GetAllByPostID implements likes.LikeRepo.
-func (rp *likeRepo) GetAllByPostID(ctx context.Context, postID uuid.UUID) ([]*domain.Like, error) {
+// GetLikesByPostID implements likes.LikeRepo.
+func (rp *likeRepo) GetLikesByPostID(ctx context.Context, postID uuid.UUID) ([]*domain.Like, error) {
 	db := rp.pg.GetDB()
 	querier := postgresql.New(db)
 	results, err := querier.GetAllByType(ctx, postgresql.GetAllByTypeParams{
@@ -105,7 +105,7 @@ func (rp *likeRepo) GetAllByPostID(ctx context.Context, postID uuid.UUID) ([]*do
 		LikeableID:   postID,
 	})
 	if err != nil {
-		return nil, errors.Wrap(err, "likeRepo.GetAllByPostID failed")
+		return nil, errors.Wrap(err, "likeRepo.GetLikesByPostID failed")
 	}
 	return lo.Map(results, func(item postgresql.LikeLike, _ int) *domain.Like {
 		return &domain.Like{

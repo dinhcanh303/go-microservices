@@ -119,16 +119,17 @@ func (rp *groupRepo) Update(ctx context.Context, group *domain.Group) (*domain.G
 	querier := postgresql.New(db)
 	tx, err := db.Begin()
 	if err != nil {
-		return nil, errors.Wrap(err, "CreateGroupRepo")
+		return nil, errors.Wrap(err, "UpdateGroupRepo")
 	}
 	qtx := querier.WithTx(tx)
 	result, err := qtx.Update(ctx, postgresql.UpdateParams{
+		ID:          group.ID,
 		Name:        group.Name,
 		Description: group.Description,
 		Status:      group.Status,
 	})
 	if err != nil {
-		return nil, errors.Wrap(err, "qtx.Create(ctx, postgresql.CreateParams) failed")
+		return nil, errors.Wrap(err, "qtx.Update(ctx, postgresql.UpdateParams) failed")
 	}
 
 	return &domain.Group{

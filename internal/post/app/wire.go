@@ -6,6 +6,7 @@ package app
 import (
 	"github.com/dinhcanh303/go-microservices/cmd/post/config"
 	"github.com/dinhcanh303/go-microservices/internal/post/app/router"
+	infrasGRPC "github.com/dinhcanh303/go-microservices/internal/post/infras/grpc"
 	"github.com/dinhcanh303/go-microservices/internal/post/infras/repo"
 	postsUC "github.com/dinhcanh303/go-microservices/internal/post/usecases/posts"
 	"github.com/dinhcanh303/go-microservices/pkg/postgres"
@@ -24,6 +25,8 @@ func InitApp(
 		router.PostGRPCServerSet,
 		repo.RepositoryPostSet,
 		postsUC.UseCaseSet,
+		infrasGRPC.CommentGRPCClientSet,
+		infrasGRPC.LikeGRPCClientSet,
 	))
 }
 func dbEngineFunc(url postgres.DBConnString) (postgres.DBEngine, func(), error) {

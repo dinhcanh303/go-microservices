@@ -17,7 +17,6 @@ type (
 		Update(ctx context.Context, post *domain.Post) (*domain.Post, error)
 		Delete(ctx context.Context, id uuid.UUID) (bool, error)
 		List(ctx context.Context, offset, limit int) ([]*domain.Post, error)
-		// Count(ctx context.Context) (uint64, error)
 	}
 	UploadEventPublisher interface {
 		Configure(...publisher.Option)
@@ -25,12 +24,12 @@ type (
 	}
 	UseCase interface {
 		GetPost(ctx context.Context, id uuid.UUID) (*domain.Post, error)
+		GetPostExtra(ctx context.Context, id uuid.UUID) (*domain.PostExtra, error)
 		GetByGroupId(ctx context.Context, groupId uuid.UUID) ([]*domain.Post, error)
 		GetByUserId(ctx context.Context, userId uuid.UUID) ([]*domain.Post, error)
 		CreatePost(ctx context.Context, post *domain.Post) (*domain.Post, error)
 		UpdatePost(ctx context.Context, post *domain.Post) (*domain.Post, error)
 		DeletePost(ctx context.Context, id uuid.UUID) (bool, error)
 		ListPost(ctx context.Context, offset, limit int) ([]*domain.Post, error)
-		// Count(ctx context.Context) (uint64, error)
 	}
 )

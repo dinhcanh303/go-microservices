@@ -4,13 +4,13 @@ import (
 	"context"
 
 	"github.com/dinhcanh303/go-microservices/cmd/comment/config"
+	"github.com/dinhcanh303/go-microservices/internal/comment/domain"
 	"github.com/dinhcanh303/go-microservices/internal/comment/usecases/comments"
-	"github.com/dinhcanh303/go-microservices/internal/like/domain"
 	"github.com/dinhcanh303/go-microservices/proto/gen"
 	"github.com/google/uuid"
 	"github.com/google/wire"
 	"github.com/pkg/errors"
-	"golang.org/x/exp/slices"
+	"github.com/samber/lo"
 	"golang.org/x/exp/slog"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
@@ -47,63 +47,158 @@ func (*commentGRPCServer) CountCommentByCommentID(context.Context, *gen.CountCom
 }
 
 // CreateComment implements gen.CommentServiceServer.
-func (*commentGRPCServer) CreateComment(ctx context.Context, request *gen.CreateCommentRequest) (*gen.CreateCommentResponse, error) {
+func (c *commentGRPCServer) CreateComment(ctx context.Context, request *gen.CreateCommentRequest) (*gen.CreateCommentResponse, error) {
 	slog.Info("POST: CreateComment")
-	userId, err := uuid.Parse(request.Like.UserId)
+	userId, err := uuid.Parse(request.Comment.UserId)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to parse")
 	}
-	likeableId, err := uuid.Parse(request.Like.LikeableId)
+	postId, err := uuid.Parse(request.Comment.PostId)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to parse")
 	}
-	likeableType := request.Like.LikeableType
-	hasTypeLike := slices.Contains(typeLike, likeableType)
-	if !hasTypeLike {
-		return nil, errors.Wrap(err, "Please Enter Input Type Correct")
+	parentCommentId, _ := uuid.Parse(request.Comment.ParentCommentId)
+	replyToId, _ := uuid.Parse(request.Comment.ReplyToId)
+	model := domain.Comment{
+		ID:      uuid.New(),
+		PostID:  postId,
+		Content: request.Comment.Content,
+		ParentCommentID: uuid.NullUUID{
+			UUID:  parentCommentId,
+			Valid: request.Comment.ParentCommentId != "",
+		},
+		ReplyToID: uuid.NullUUID{
+			UUID:  replyToId,
+			Valid: request.Comment.ReplyToId != "",
+		},
+		UserID: userId,
 	}
-	model := domain.Like{
-		ID:           uuid.New(),
-		Emoji:        request.Like.Emoji,
-		LikeableType: request.Like.LikeableType,
-		LikeableID:   likeableId,
-		UserID:       userId,
-	}
-	like, err := l.uc.CreateLike(ctx, &model)
+	comment, err := c.uc.CreateComment(ctx, &model)
 	if err != nil {
-		return nil, errors.Wrap(err, "uc.CreateGroup failed")
+		return nil, errors.Wrap(err, "uc.CreateComment failed")
 	}
-	res := &gen.CreateLikeResponse{
-		Like: &gen.LikeResponse{
-			Id:           like.ID.String(),
-			Emoji:        like.Emoji,
-			LikeableType: like.LikeableType,
-			LikeableId:   like.LikeableID.String(),
-			UserId:       like.UserID.String(),
-			CreatedAt:    timestamppb.New(like.CreatedAt),
-			UpdatedAt:    timestamppb.New(like.UpdatedAt),
+	res := &gen.CreateCommentResponse{
+		Comment: &gen.CommentResponse{
+			Id:              comment.ID.String(),
+			PostId:          comment.PostID.String(),
+			ReplyToId:       comment.ReplyToID.UUID.String(),
+			Content:         comment.Content,
+			ParentCommentId: comment.ParentCommentID.UUID.String(),
+			UserId:          comment.UserID.String(),
+			CreatedAt:       timestamppb.New(comment.CreatedAt),
+			UpdatedAt:       timestamppb.New(comment.UpdatedAt),
 		},
 	}
 	return res, nil
-	panic("unimplemented")
 }
 
 // DeleteComment implements gen.CommentServiceServer.
-func (*commentGRPCServer) DeleteComment(context.Context, *gen.DeleteCommentRequest) (*gen.DeleteCommentResponse, error) {
-	panic("unimplemented")
+func (c *commentGRPCServer) DeleteComment(ctx context.Context, request *gen.DeleteCommentRequest) (*gen.DeleteCommentResponse, error) {
+	slog.Info("DELETE: DeleteComment")
+	id, err := uuid.Parse(request.Id)
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to parse")
+	}
+	result, err := c.uc.DeleteComment(ctx, id)
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to delete")
+	}
+	return &gen.DeleteCommentResponse{
+		Deleted: result,
+	}, nil
 }
 
 // GetComment implements gen.CommentServiceServer.
-func (*commentGRPCServer) GetComment(context.Context, *gen.GetCommentRequest) (*gen.GetCommentResponse, error) {
-	panic("unimplemented")
+func (c *commentGRPCServer) GetComment(ctx context.Context, request *gen.GetCommentRequest) (*gen.GetCommentResponse, error) {
+	slog.Info("GET: GetComment")
+	id, err := uuid.Parse(request.Id)
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to parse")
+	}
+	comment, err := c.uc.GetComment(ctx, id)
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to get comment")
+	}
+	return &gen.GetCommentResponse{
+		Comment: &gen.CommentResponse{
+			Id:              comment.ID.String(),
+			PostId:          comment.PostID.String(),
+			ReplyToId:       comment.ReplyToID.UUID.String(),
+			ParentCommentId: comment.ParentCommentID.UUID.String(),
+			Content:         comment.Content,
+			UserId:          comment.UserID.String(),
+			CreatedAt:       timestamppb.New(comment.CreatedAt),
+			UpdatedAt:       timestamppb.New(comment.UpdatedAt),
+		},
+	}, nil
 }
 
 // ListCommentByPostID implements gen.CommentServiceServer.
-func (*commentGRPCServer) GetCommentsByPostID(context.Context, *gen.GetCommentsByPostIDRequest) (*gen.GetCommentsByPostIDResponse, error) {
-	panic("unimplemented")
+func (c *commentGRPCServer) GetCommentsByPostID(ctx context.Context, request *gen.GetCommentsByPostIDRequest) (*gen.GetCommentsByPostIDResponse, error) {
+	slog.Info("GET: GetCommentsByPostID")
+	postId, err := uuid.Parse(request.PostID)
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to parse")
+	}
+	res := gen.GetCommentsByPostIDResponse{}
+	comments, err := c.uc.GetCommentsByPostID(ctx, postId)
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to get comments by post ID")
+	}
+	for _, comment := range comments {
+		slog.Info("LOOP COMMENTS::", comment.Children)
+		res.Comments = append(res.Comments, &gen.GetCommentsResponse{
+			Id:              comment.ID.String(),
+			PostId:          comment.PostID.String(),
+			UserId:          comment.UserID.String(),
+			ReplyToId:       comment.ReplyToID.UUID.String(),
+			Content:         comment.Content,
+			ParentCommentId: comment.ParentCommentID.UUID.String(),
+			CreatedAt:       timestamppb.New(comment.CreatedAt),
+			UpdatedAt:       timestamppb.New(comment.UpdatedAt),
+			Children: lo.Map(comment.Children, func(item *domain.Comment, _ int) *gen.CommentResponse {
+				return &gen.CommentResponse{
+					Id:              item.ID.String(),
+					PostId:          item.PostID.String(),
+					UserId:          item.UserID.String(),
+					ReplyToId:       item.ReplyToID.UUID.String(),
+					Content:         item.Content,
+					ParentCommentId: item.ParentCommentID.UUID.String(),
+					CreatedAt:       timestamppb.New(item.CreatedAt),
+					UpdatedAt:       timestamppb.New(item.UpdatedAt),
+				}
+			}),
+		})
+	}
+	return &res, nil
 }
 
 // UpdateComment implements gen.CommentServiceServer.
-func (*commentGRPCServer) UpdateComment(context.Context, *gen.UpdateCommentRequest) (*gen.UpdateCommentResponse, error) {
-	panic("unimplemented")
+func (c *commentGRPCServer) UpdateComment(ctx context.Context, request *gen.UpdateCommentRequest) (*gen.UpdateCommentResponse, error) {
+	slog.Info("PUT: UpdateComment")
+	replyToId, _ := uuid.Parse(request.Comment.ReplyToId)
+	model := domain.Comment{
+		Content: request.Comment.Content,
+		ReplyToID: uuid.NullUUID{
+			UUID:  replyToId,
+			Valid: request.Comment.ReplyToId != "",
+		},
+	}
+	comment, err := c.uc.UpdateComment(ctx, &model)
+	if err != nil {
+		return nil, errors.Wrap(err, "uc.UpdateComment failed")
+	}
+	res := &gen.UpdateCommentResponse{
+		Comment: &gen.CommentResponse{
+			Id:              comment.ID.String(),
+			PostId:          comment.PostID.String(),
+			ReplyToId:       comment.ReplyToID.UUID.String(),
+			Content:         comment.Content,
+			ParentCommentId: comment.ParentCommentID.UUID.String(),
+			UserId:          comment.UserID.String(),
+			CreatedAt:       timestamppb.New(comment.CreatedAt),
+			UpdatedAt:       timestamppb.New(comment.UpdatedAt),
+		},
+	}
+	return res, nil
 }

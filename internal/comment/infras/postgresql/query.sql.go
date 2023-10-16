@@ -116,12 +116,12 @@ func (q *Queries) Get(ctx context.Context, id uuid.UUID) (CommentComment, error)
 	return i, err
 }
 
-const getCommentByPostID = `-- name: GetCommentByPostID :many
+const getCommentsByPostID = `-- name: GetCommentsByPostID :many
 SELECT id, user_id, content, reply_to_id, post_id, parent_comment_id, created_at, updated_at FROM comment.comments WHERE post_id = $1
 `
 
-func (q *Queries) GetCommentByPostID(ctx context.Context, postID uuid.UUID) ([]CommentComment, error) {
-	rows, err := q.db.QueryContext(ctx, getCommentByPostID, postID)
+func (q *Queries) GetCommentsByPostID(ctx context.Context, postID uuid.UUID) ([]CommentComment, error) {
+	rows, err := q.db.QueryContext(ctx, getCommentsByPostID, postID)
 	if err != nil {
 		return nil, err
 	}

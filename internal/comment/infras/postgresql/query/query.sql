@@ -26,7 +26,7 @@ DELETE FROM comment.comments WHERE id = $1 OR parent_comment_id = $1;
 -- name: DeleteAllByPostID :exec
 DELETE FROM comment.comments WHERE post_id = $1;
 
--- name: GetCommentByPostID :many
+-- name: GetCommentsByPostID :many
 SELECT * FROM comment.comments WHERE post_id = $1;
 
 -- name: CountByPostID :one

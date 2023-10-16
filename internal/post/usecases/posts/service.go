@@ -10,15 +10,21 @@ import (
 )
 
 type usecase struct {
-	postRepo PostRepo
+	postRepo         PostRepo
+	commentDomainSvc domain.CommentDomainService
+	likeDomainSvc    domain.LikeDomainService
 }
 
 var _ UseCase = (*usecase)(nil)
 var UseCaseSet = wire.NewSet(NewUseCase)
 
-func NewUseCase(postRepo PostRepo) UseCase {
+func NewUseCase(postRepo PostRepo,
+	commentDomainSvc domain.CommentDomainService,
+	likeDomainSvc domain.LikeDomainService) UseCase {
 	return &usecase{
-		postRepo: postRepo,
+		postRepo:         postRepo,
+		commentDomainSvc: commentDomainSvc,
+		likeDomainSvc:    likeDomainSvc,
 	}
 }
 
@@ -32,6 +38,34 @@ func NewUseCase(postRepo PostRepo) UseCase {
 //		return count, nil
 //	}
 //
+
+// GetPostExtra implements UseCase.
+func (uc *usecase) GetPostExtra(ctx context.Context, id uuid.UUID) (*domain.PostExtra, error) {
+	post, err := uc.GetPost(ctx, id)
+	if err != nil {
+		return nil, errors.Wrap(err, "postRepo.Get")
+	}
+	comments, err := uc.commentDomainSvc.GetCommentsByPostID(ctx, post.ID)
+	if err != nil {
+		comments = nil
+	}
+	likes, err := uc.likeDomainSvc.GetLikesByPostID(ctx, post.ID)
+	if err != nil {
+		likes = nil
+	}
+	return &domain.PostExtra{
+		ID:        post.ID,
+		Status:    post.Status,
+		Title:     post.Title,
+		Content:   post.Content,
+		UserID:    post.UserID,
+		GroupID:   post.GroupID,
+		CreatedAt: post.CreatedAt,
+		UpdatedAt: post.UpdatedAt,
+		Comments:  comments,
+		Likes:     likes,
+	}, nil
+}
 
 // GetByGroupId implements UseCase.
 func (uc *usecase) GetByGroupId(ctx context.Context, groupId uuid.UUID) ([]*domain.Post, error) {

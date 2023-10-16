@@ -11,6 +11,7 @@ import (
 	"github.com/google/wire"
 	"github.com/pkg/errors"
 	"github.com/samber/lo"
+	"golang.org/x/exp/slog"
 )
 
 type commentRepo struct {
@@ -137,14 +138,15 @@ func (rp *commentRepo) Get(ctx context.Context, uuid uuid.UUID) (*domain.Comment
 	}, nil
 }
 
-// GetCommentByPostID implements comments.CommentRepo.
-func (rp *commentRepo) GetCommentByPostID(ctx context.Context, postId uuid.UUID) ([]*domain.Comment, error) {
+// GetCommentsByPostID implements comments.CommentRepo.
+func (rp *commentRepo) GetCommentsByPostID(ctx context.Context, postId uuid.UUID) ([]*domain.Comment, error) {
 	db := rp.pg.GetDB()
 	querier := postgresql.New(db)
-	results, err := querier.GetCommentByPostID(ctx, postId)
+	results, err := querier.GetCommentsByPostID(ctx, postId)
 	if err != nil {
-		return nil, errors.Wrap(err, "commentRepo.GetCommentByPostID failed")
+		return nil, errors.Wrap(err, "commentRepo.GetCommentsByPostID failed")
 	}
+	slog.Info("Repo::", results)
 	return lo.Map(results, func(item postgresql.CommentComment, _ int) *domain.Comment {
 		return &domain.Comment{
 			ID:              item.ID,
@@ -165,7 +167,7 @@ func (rp *commentRepo) Update(ctx context.Context, comment *domain.Comment) (*do
 	querier := postgresql.New(db)
 	tx, err := db.Begin()
 	if err != nil {
-		return nil, errors.Wrap(err, "commentRepo.Create db failed")
+		return nil, errors.Wrap(err, "commentRepo.Update db failed")
 	}
 	qtx := querier.WithTx(tx)
 	result, err := qtx.Update(ctx, postgresql.UpdateParams{
@@ -174,7 +176,7 @@ func (rp *commentRepo) Update(ctx context.Context, comment *domain.Comment) (*do
 		ReplyToID: comment.ReplyToID,
 	})
 	if err != nil {
-		return nil, errors.Wrap(err, "commentRepo.Create failed")
+		return nil, errors.Wrap(err, "commentRepo.Update failed")
 	}
 	return &domain.Comment{
 		ID:              result.ID,

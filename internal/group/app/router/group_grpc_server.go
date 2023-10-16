@@ -124,7 +124,7 @@ func (g *groupGRPCServer) UpdateGroup(ctx context.Context, request *gen.UpdateGr
 
 	group, err := g.uc.UpdateGroup(ctx, &model)
 	if err != nil {
-		return nil, errors.Wrap(err, "uc.CreateGroup failed")
+		return nil, errors.Wrap(err, "uc.UpdateGroup failed")
 	}
 	res := &gen.UpdateGroupResponse{
 		Group: &gen.GroupResponse{

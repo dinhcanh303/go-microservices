@@ -67,7 +67,7 @@ func (l *likeGRPCServer) CreateLike(ctx context.Context, request *gen.CreateLike
 	}
 	like, err := l.uc.CreateLike(ctx, &model)
 	if err != nil {
-		return nil, errors.Wrap(err, "uc.CreateGroup failed")
+		return nil, errors.Wrap(err, "uc.CreateLike failed")
 	}
 	res := &gen.CreateLikeResponse{
 		Like: &gen.LikeResponse{
@@ -92,7 +92,7 @@ func (l *likeGRPCServer) DeleteLike(ctx context.Context, request *gen.DeleteLike
 	}
 	like, err := l.uc.DeleteLike(ctx, id)
 	if err != nil {
-		return nil, errors.Wrap(err, "uc.UpdateLike failed")
+		return nil, errors.Wrap(err, "uc.DeleteLike failed")
 	}
 	res := &gen.DeleteLikeResponse{
 		Deleted: like,
