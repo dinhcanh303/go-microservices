@@ -17,6 +17,7 @@ type (
 		configs.Log   `yaml:"logger"`
 		PG            `yaml:"postgres"`
 		CommentClient `yaml:"comment_client"`
+		LikeClient    `yaml:"like_client"`
 	}
 
 	PG struct {
@@ -25,7 +26,10 @@ type (
 	}
 
 	CommentClient struct {
-		URL string `env-required:"true" yaml:"url" env:"COMMENT_CLIENT_URL"`
+		URL string `env-required:"true" yaml:"comment_url" env:"COMMENT_CLIENT_URL"`
+	}
+	LikeClient struct {
+		URL string `env-required:"true" yaml:"like_url" env:"LIKE_CLIENT_URL"`
 	}
 )
 

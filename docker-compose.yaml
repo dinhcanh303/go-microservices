@@ -8,8 +8,8 @@ services:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=P@ssw0rd
     healthcheck:
-      test: ["CMD", "pg_isready"]
-      # test: [ "CMD-SHELL", "pg_isready -d $${POSTGRES_DB} -U $${POSTGRES_USER}"]
+      # test: ["CMD", "pg_isready"]
+      test: [ "CMD-SHELL", "pg_isready -d $${POSTGRES_DB} -U $${POSTGRES_USER}"]
     ports:
       - 5432:5432
     networks:
@@ -40,11 +40,17 @@ services:
       GRPC_GROUP_PORT: 5001
       GRPC_POST_HOST: 'post'
       GRPC_POST_PORT: 5002
+      GRPC_COMMENT_HOST: 'comment'
+      GRPC_COMMENT_PORT: 5003
+      GRPC_LIKE_HOST: 'like'
+      GRPC_LIKE_PORT: 5004
     ports:
       - 5000:5000
     depends_on:
       - group
       - post
+      - comment
+      - like
     networks:
       - microservices-network
   group:
@@ -64,7 +70,6 @@ services:
         condition: service_healthy
     networks:
       - microservices-network
-
   post:
     build:
       context: .
@@ -82,7 +87,40 @@ services:
         condition: service_healthy
     networks:
       - microservices-network
-
+  comment:
+    build:
+      context: .
+      dockerfile: ./docker/Dockerfile-comment
+    image: go-microservices-comment
+    environment:
+      APP_NAME: 'comment-service in docker'
+      IN_DOCKER: "true"
+      PG_URL: postgres://postgres:P@ssw0rd@postgres:5432/postgres
+      PG_DSN_URL: host=postgres user=postgres password=P@ssw0rd dbname=postgres sslmode=disable
+    ports:
+      - 5003:5003
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - microservices-network
+  like:
+    build:
+      context: .
+      dockerfile: ./docker/Dockerfile-like
+    image: go-microservices-like
+    environment:
+      APP_NAME: 'like-service in docker'
+      IN_DOCKER: "true"
+      PG_URL: postgres://postgres:P@ssw0rd@postgres:5432/postgres
+      PG_DSN_URL: host=postgres user=postgres password=P@ssw0rd dbname=postgres sslmode=disable
+    ports:
+      - 5004:5004
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - microservices-network
   web:
     build:
       context: .

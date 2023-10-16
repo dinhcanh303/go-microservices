@@ -24,6 +24,8 @@ type (
 		PostPort    int    `env-required:"true" yaml:"post_port" env:"GRPC_POST_PORT"`
 		CommentHost string `env-required:"true" yaml:"comment_host" env:"GRPC_COMMENT_HOST"`
 		CommentPort int    `env-required:"true" yaml:"comment_port" env:"GRPC_COMMENT_PORT"`
+		LikeHost    string `env-required:"true" yaml:"like_host" env:"GRPC_LIKE_HOST"`
+		LikePort    int    `env-required:"true" yaml:"like_port" env:"GRPC_LIKE_PORT"`
 	}
 )
 

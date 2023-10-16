@@ -16,6 +16,37 @@
     "application/json"
   ],
   "paths": {
+    "/v1/api/comments/{commentID}/likes": {
+      "get": {
+        "summary": "Get Like by Comment ID",
+        "operationId": "LikeService_GetLikesByCommentID",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/likeapiGetLikesByCommentIDResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "commentID",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "Comment"
+        ]
+      }
+    },
     "/v1/api/likes": {
       "post": {
         "summary": "Create Like",
@@ -128,6 +159,37 @@
           "Like"
         ]
       }
+    },
+    "/v1/api/posts/{postID}/likes": {
+      "get": {
+        "summary": "Get Like by Post ID",
+        "operationId": "LikeService_GetLikesByPostID",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/likeapiGetLikesByPostIDResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "postID",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "Post"
+        ]
+      }
     }
   },
   "definitions": {
@@ -152,6 +214,30 @@
       "properties": {
         "deleted": {
           "type": "boolean"
+        }
+      }
+    },
+    "likeapiGetLikesByCommentIDResponse": {
+      "type": "object",
+      "properties": {
+        "likes": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/likeapiLikeResponse"
+          }
+        }
+      }
+    },
+    "likeapiGetLikesByPostIDResponse": {
+      "type": "object",
+      "properties": {
+        "likes": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/likeapiLikeResponse"
+          }
         }
       }
     },
