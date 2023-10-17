@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/dinhcanh303/go-microservices/internal/comment/domain"
+	sharedkernel "github.com/dinhcanh303/go-microservices/internal/pkg/shared_kernel"
 	"github.com/google/uuid"
 )
 
@@ -24,7 +25,7 @@ type (
 		UpdateComment(ctx context.Context, comment *domain.Comment) (*domain.Comment, error)
 		DeleteComment(ctx context.Context, id uuid.UUID) (bool, error)
 		DeleteAllCommentByPostID(ctx context.Context, postId uuid.UUID) (bool, error)
-		GetCommentsByPostID(ctx context.Context, postId uuid.UUID) ([]*domain.CommentHasChild, error)
+		GetCommentsByPostID(ctx context.Context, postId uuid.UUID) ([]*sharedkernel.CommentHasChildren, error)
 		CountCommentByPostID(ctx context.Context, postId uuid.UUID) (int64, error)
 		CountCommentByCommentID(ctx context.Context, commentId uuid.UUID) (int64, error)
 	}

@@ -2,6 +2,7 @@ package repo
 
 import (
 	"context"
+	"database/sql"
 	"log/slog"
 
 	"github.com/dinhcanh303/go-microservices/internal/group/domain"
@@ -131,8 +132,11 @@ func (rp *groupMemberRepo) UpdateGroupMember(ctx context.Context, groupMember *d
 	}
 	qtx := querier.WithTx(tx)
 	result, err := qtx.UpdateGroupMember(ctx, postgresql.UpdateGroupMemberParams{
-		ID:   groupMember.ID,
-		Role: groupMember.Role,
+		ID: groupMember.ID,
+		Role: sql.NullInt32{
+			Int32: groupMember.Role,
+			Valid: groupMember.Role != 0,
+		},
 	})
 	if err != nil {
 		return nil, errors.Wrap(err, "qtx.UpdateGroupMember(ctx, postgresql.UpdateGroupMemberParams) failed")

@@ -3,20 +3,21 @@ package domain
 import (
 	"time"
 
+	sharedkernel "github.com/dinhcanh303/go-microservices/internal/pkg/shared_kernel"
 	"github.com/google/uuid"
 )
 
 type PostExtra struct {
-	ID        uuid.UUID      `json:"id"`
-	Status    int32          `json:"status"`
-	Title     string         `json:"title"`
-	Content   string         `json:"content"`
-	UserID    uuid.UUID      `json:"user_id"`
-	GroupID   uuid.NullUUID  `json:"group_id"`
-	CreatedAt time.Time      `json:"created_at"`
-	UpdatedAt time.Time      `json:"updated_at"`
-	Likes     []*LikeItem    `json:"likes"`
-	Comments  []*CommentItem `json:"comments"`
+	ID        uuid.UUID                          `json:"id"`
+	Status    int32                              `json:"status"`
+	Title     string                             `json:"title"`
+	Content   string                             `json:"content"`
+	UserID    uuid.UUID                          `json:"user_id"`
+	GroupID   uuid.NullUUID                      `json:"group_id"`
+	CreatedAt time.Time                          `json:"created_at"`
+	UpdatedAt time.Time                          `json:"updated_at"`
+	Likes     []*LikeItem                        `json:"likes"`
+	Comments  []*sharedkernel.CommentHasChildren `json:"comments"`
 }
 
 type LikeItem struct {
@@ -27,27 +28,4 @@ type LikeItem struct {
 	UserID       uuid.UUID `json:"user_id"`
 	CreatedAt    time.Time `json:"created_at"`
 	UpdatedAt    time.Time `json:"updated_at"`
-}
-type CommentItem struct {
-	ID              uuid.UUID     `json:"id"`
-	Content         string        `json:"content"`
-	ReplyToID       uuid.NullUUID `json:"reply_to_id"`
-	UserID          uuid.UUID     `json:"user_id"`
-	PostID          uuid.UUID     `json:"post_id"`
-	ParentCommentID uuid.NullUUID `json:"parent_comment_id"`
-	Child           []*Comment    `json:"child"`
-	CreatedAt       time.Time     `json:"created_at"`
-	UpdatedAt       time.Time     `json:"updated_at"`
-	DeletedAt       time.Time     `json:"deleted_at"`
-}
-type Comment struct {
-	ID              uuid.UUID     `json:"id"`
-	Content         string        `json:"content"`
-	ReplyToID       uuid.NullUUID `json:"reply_to_id"`
-	UserID          uuid.UUID     `json:"user_id"`
-	PostID          uuid.UUID     `json:"post_id"`
-	ParentCommentID uuid.NullUUID `json:"parent_comment_id"`
-	CreatedAt       time.Time     `json:"created_at"`
-	UpdatedAt       time.Time     `json:"updated_at"`
-	DeletedAt       time.Time     `json:"deleted_at"`
 }

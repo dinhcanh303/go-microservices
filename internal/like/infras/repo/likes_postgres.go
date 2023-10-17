@@ -2,6 +2,7 @@ package repo
 
 import (
 	"context"
+	"database/sql"
 
 	"github.com/dinhcanh303/go-microservices/internal/like/domain"
 	"github.com/dinhcanh303/go-microservices/internal/like/infras/postgresql"
@@ -129,8 +130,11 @@ func (rp *likeRepo) Update(ctx context.Context, like *domain.Like) (*domain.Like
 	}
 	qtx := querier.WithTx(tx)
 	result, err := qtx.Update(ctx, postgresql.UpdateParams{
-		ID:    uuid.New(),
-		Emoji: like.Emoji,
+		ID: like.ID,
+		Emoji: sql.NullString{
+			String: like.Emoji,
+			Valid:  like.Emoji != "",
+		},
 	})
 	if err != nil {
 		return nil, errors.Wrap(err, "likeRepo.Update failed")

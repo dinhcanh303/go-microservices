@@ -2,6 +2,7 @@ package repo
 
 import (
 	"context"
+	"database/sql"
 
 	"github.com/dinhcanh303/go-microservices/internal/comment/domain"
 	"github.com/dinhcanh303/go-microservices/internal/comment/infras/postgresql"
@@ -171,8 +172,11 @@ func (rp *commentRepo) Update(ctx context.Context, comment *domain.Comment) (*do
 	}
 	qtx := querier.WithTx(tx)
 	result, err := qtx.Update(ctx, postgresql.UpdateParams{
-		ID:        comment.ID,
-		Content:   comment.Content,
+		ID: comment.ID,
+		Content: sql.NullString{
+			String: comment.Content,
+			Valid:  comment.Content != "",
+		},
 		ReplyToID: comment.ReplyToID,
 	})
 	if err != nil {

@@ -4,10 +4,10 @@ import (
 	"context"
 
 	"github.com/dinhcanh303/go-microservices/internal/comment/domain"
+	sharedkernel "github.com/dinhcanh303/go-microservices/internal/pkg/shared_kernel"
 	"github.com/google/uuid"
 	"github.com/google/wire"
 	"github.com/pkg/errors"
-	"golang.org/x/exp/slog"
 )
 
 const UUID_NULL string = "00000000-0000-0000-0000-000000000000"
@@ -63,49 +63,36 @@ func (s *service) GetComment(ctx context.Context, id uuid.UUID) (*domain.Comment
 }
 
 // GetCommentsByPostID implements UseCase.
-func (s *service) GetCommentsByPostID(ctx context.Context, postId uuid.UUID) ([]*domain.CommentHasChild, error) {
+func (s *service) GetCommentsByPostID(ctx context.Context, postId uuid.UUID) ([]*sharedkernel.CommentHasChildren, error) {
 	comments, err := s.commentRepo.GetCommentsByPostID(ctx, postId)
-	slog.Info("GET::", comments)
 	if err != nil {
 		return nil, errors.Wrap(err, "service.GetCommentsByPostID")
 	}
-	commentMap := make(map[uuid.UUID]*domain.CommentHasChild)
-	var commentsHasChild []*domain.CommentHasChild
+	commentMap := make(map[uuid.UUID]*sharedkernel.CommentHasChildren)
+	var commentsHasChildren []*sharedkernel.CommentHasChildren
 
-	for _, comment := range comments {
-		slog.Info("ParentID::", comment.ParentCommentID.UUID.String())
-		if comment.ParentCommentID.UUID.String() == "" || comment.ParentCommentID.UUID.String() == UUID_NULL {
-			commentsHasChild = append(commentsHasChild, &domain.CommentHasChild{
-				ID:              comment.ID,
-				UserID:          comment.UserID,
-				ReplyToID:       comment.ReplyToID,
-				Content:         comment.Content,
-				PostID:          comment.PostID,
-				ParentCommentID: comment.ParentCommentID,
-				CreatedAt:       comment.CreatedAt,
-				UpdatedAt:       comment.UpdatedAt,
-			})
-		} else {
-			parentComment, exists := commentMap[comment.ParentCommentID.UUID]
-			slog.Info("ParentComment::", parentComment)
-			slog.Info("Exits::", exists)
-			if exists {
-				parentComment.Children = append(parentComment.Children, comment)
-			}
+	for i, comment := range comments {
+		commentHasChildren := &sharedkernel.CommentHasChildren{
+			ID:              comments[i].ID,
+			UserID:          comments[i].UserID,
+			ReplyToID:       comments[i].ReplyToID,
+			Content:         comments[i].Content,
+			PostID:          comments[i].PostID,
+			ParentCommentID: comments[i].ParentCommentID,
+			CreatedAt:       comments[i].CreatedAt,
+			UpdatedAt:       comments[i].UpdatedAt,
 		}
-		commentMap[comment.ID] = &domain.CommentHasChild{
-			ID:              comment.ID,
-			UserID:          comment.UserID,
-			ReplyToID:       comment.ReplyToID,
-			Content:         comment.Content,
-			PostID:          comment.PostID,
-			ParentCommentID: comment.ParentCommentID,
-			CreatedAt:       comment.CreatedAt,
-			UpdatedAt:       comment.UpdatedAt,
+		commentMap[comment.ID] = commentHasChildren
+		if comment.ParentCommentID.UUID.String() != UUID_NULL {
+			parentComment, exists := commentMap[comment.ParentCommentID.UUID]
+			if exists {
+				parentComment.Children = append(parentComment.Children, comments[i])
+			}
+		} else {
+			commentsHasChildren = append(commentsHasChildren, commentHasChildren)
 		}
 	}
-	slog.Info("CommentHasChild::", commentsHasChild)
-	return commentsHasChild, nil
+	return commentsHasChildren, nil
 }
 
 // UpdateComment implements UseCase.
