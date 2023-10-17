@@ -7,6 +7,7 @@ package postgresql
 
 import (
 	"context"
+	"database/sql"
 
 	"github.com/google/uuid"
 )
@@ -155,19 +156,19 @@ func (q *Queries) GetCommentsByPostID(ctx context.Context, postID uuid.UUID) ([]
 const update = `-- name: Update :one
 UPDATE comment.comments 
 SET
-    content = $2 ,
-    reply_to_id = $3
-WHERE id = $1 RETURNING id, user_id, content, reply_to_id, post_id, parent_comment_id, created_at, updated_at
+    content = COALESCE($1,content),
+    reply_to_id = COALESCE($2,reply_to_id)
+WHERE id = $3 RETURNING id, user_id, content, reply_to_id, post_id, parent_comment_id, created_at, updated_at
 `
 
 type UpdateParams struct {
-	ID        uuid.UUID     `json:"id"`
-	Content   string        `json:"content"`
-	ReplyToID uuid.NullUUID `json:"reply_to_id"`
+	Content   sql.NullString `json:"content"`
+	ReplyToID uuid.NullUUID  `json:"reply_to_id"`
+	ID        uuid.UUID      `json:"id"`
 }
 
 func (q *Queries) Update(ctx context.Context, arg UpdateParams) (CommentComment, error) {
-	row := q.db.QueryRowContext(ctx, update, arg.ID, arg.Content, arg.ReplyToID)
+	row := q.db.QueryRowContext(ctx, update, arg.Content, arg.ReplyToID, arg.ID)
 	var i CommentComment
 	err := row.Scan(
 		&i.ID,

@@ -7,6 +7,7 @@ package postgresql
 
 import (
 	"context"
+	"database/sql"
 
 	"github.com/google/uuid"
 )
@@ -202,25 +203,25 @@ func (q *Queries) GetWithUnscoped(ctx context.Context, id uuid.UUID) (GroupGroup
 const update = `-- name: Update :one
 UPDATE "group".groups 
 SET
-    name = $2 ,
-    description = $3,
-    status = $4
-WHERE id = $1 RETURNING id, user_id, name, description, status, created_at, updated_at
+    name = COALESCE($1,name),
+    description = COALESCE($2,description),
+    status = COALESCE($3,status)
+WHERE id = $4 RETURNING id, user_id, name, description, status, created_at, updated_at
 `
 
 type UpdateParams struct {
-	ID          uuid.UUID `json:"id"`
-	Name        string    `json:"name"`
-	Description string    `json:"description"`
-	Status      int32     `json:"status"`
+	Name        sql.NullString `json:"name"`
+	Description sql.NullString `json:"description"`
+	Status      sql.NullInt32  `json:"status"`
+	ID          uuid.UUID      `json:"id"`
 }
 
 func (q *Queries) Update(ctx context.Context, arg UpdateParams) (GroupGroup, error) {
 	row := q.db.QueryRowContext(ctx, update,
-		arg.ID,
 		arg.Name,
 		arg.Description,
 		arg.Status,
+		arg.ID,
 	)
 	var i GroupGroup
 	err := row.Scan(
@@ -238,17 +239,17 @@ func (q *Queries) Update(ctx context.Context, arg UpdateParams) (GroupGroup, err
 const updateGroupMember = `-- name: UpdateGroupMember :one
 UPDATE "group".group_members
 SET
-    role = $2
-WHERE id = $1 RETURNING id, group_id, user_id, role, created_at, updated_at
+    role = COALESCE($1,role)
+WHERE id = $2 RETURNING id, group_id, user_id, role, created_at, updated_at
 `
 
 type UpdateGroupMemberParams struct {
-	ID   uuid.UUID `json:"id"`
-	Role int32     `json:"role"`
+	Role sql.NullInt32 `json:"role"`
+	ID   uuid.UUID     `json:"id"`
 }
 
 func (q *Queries) UpdateGroupMember(ctx context.Context, arg UpdateGroupMemberParams) (GroupGroupMember, error) {
-	row := q.db.QueryRowContext(ctx, updateGroupMember, arg.ID, arg.Role)
+	row := q.db.QueryRowContext(ctx, updateGroupMember, arg.Role, arg.ID)
 	var i GroupGroupMember
 	err := row.Scan(
 		&i.ID,

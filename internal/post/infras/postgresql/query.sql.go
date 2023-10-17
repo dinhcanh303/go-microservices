@@ -7,6 +7,7 @@ package postgresql
 
 import (
 	"context"
+	"database/sql"
 
 	"github.com/google/uuid"
 )
@@ -207,25 +208,25 @@ func (q *Queries) List(ctx context.Context, arg ListParams) ([]PostPost, error) 
 const update = `-- name: Update :one
 UPDATE post.posts 
 SET
-    title = $2 ,
-    content = $3,
-    status = $4
-WHERE id = $1 RETURNING id, user_id, group_id, title, content, status, created_at, updated_at
+    title = COALESCE($1,title),
+    content = COALESCE($2,content),
+    status = COALESCE($3,status)
+WHERE id = $4 RETURNING id, user_id, group_id, title, content, status, created_at, updated_at
 `
 
 type UpdateParams struct {
-	ID      uuid.UUID `json:"id"`
-	Title   string    `json:"title"`
-	Content string    `json:"content"`
-	Status  int32     `json:"status"`
+	Title   sql.NullString `json:"title"`
+	Content sql.NullString `json:"content"`
+	Status  sql.NullInt32  `json:"status"`
+	ID      uuid.UUID      `json:"id"`
 }
 
 func (q *Queries) Update(ctx context.Context, arg UpdateParams) (PostPost, error) {
 	row := q.db.QueryRowContext(ctx, update,
-		arg.ID,
 		arg.Title,
 		arg.Content,
 		arg.Status,
+		arg.ID,
 	)
 	var i PostPost
 	err := row.Scan(

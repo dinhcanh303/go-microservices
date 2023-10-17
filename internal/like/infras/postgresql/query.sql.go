@@ -7,6 +7,7 @@ package postgresql
 
 import (
 	"context"
+	"database/sql"
 
 	"github.com/google/uuid"
 )
@@ -105,17 +106,17 @@ func (q *Queries) GetAllByType(ctx context.Context, arg GetAllByTypeParams) ([]L
 const update = `-- name: Update :one
 UPDATE "like".likes
 SET
-	emoji = $2
-WHERE id = $1 RETURNING id, emoji, likeable_type, likeable_id, user_id, created_at, updated_at
+	emoji = COALESCE($1,emoji)
+WHERE id = $2 RETURNING id, emoji, likeable_type, likeable_id, user_id, created_at, updated_at
 `
 
 type UpdateParams struct {
-	ID    uuid.UUID `json:"id"`
-	Emoji string    `json:"emoji"`
+	Emoji sql.NullString `json:"emoji"`
+	ID    uuid.UUID      `json:"id"`
 }
 
 func (q *Queries) Update(ctx context.Context, arg UpdateParams) (LikeLike, error) {
-	row := q.db.QueryRowContext(ctx, update, arg.ID, arg.Emoji)
+	row := q.db.QueryRowContext(ctx, update, arg.Emoji, arg.ID)
 	var i LikeLike
 	err := row.Scan(
 		&i.ID,

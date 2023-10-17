@@ -2,6 +2,7 @@ package repo
 
 import (
 	"context"
+	"database/sql"
 
 	"github.com/dinhcanh303/go-microservices/internal/post/domain"
 	"github.com/dinhcanh303/go-microservices/internal/post/infras/postgresql"
@@ -157,10 +158,19 @@ func (rp *postRepo) Update(ctx context.Context, post *domain.Post) (*domain.Post
 	}
 	qtx := querier.WithTx(tx)
 	result, err := qtx.Update(ctx, postgresql.UpdateParams{
-		ID:      post.ID,
-		Title:   post.Title,
-		Content: post.Content,
-		Status:  post.Status,
+		ID: post.ID,
+		Title: sql.NullString{
+			String: post.Title,
+			Valid:  post.Title != "",
+		},
+		Content: sql.NullString{
+			String: post.Content,
+			Valid:  post.Content != "",
+		},
+		Status: sql.NullInt32{
+			Int32: post.Status,
+			Valid: post.Status != 0,
+		},
 	})
 	if err != nil {
 		return nil, errors.Wrap(err, "qtx.Create(ctx, postgresql.UpdateParams) failed")
