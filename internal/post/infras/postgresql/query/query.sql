@@ -16,10 +16,10 @@ VALUES ($1, $2, $3, $4, $5, $6) RETURNING *;
 -- name: Update :one
 UPDATE post.posts 
 SET
-    title = $2 ,
-    content = $3,
-    status = $4
-WHERE id = $1 RETURNING *;
+    title = COALESCE(sqlc.narg(title),title),
+    content = COALESCE(sqlc.narg(content),content),
+    status = COALESCE(sqlc.narg(status),status)
+WHERE id = sqlc.arg(id) RETURNING *;
 
 -- -- name: GetWithUnscoped :one
 -- SELECT * FROM post.posts 

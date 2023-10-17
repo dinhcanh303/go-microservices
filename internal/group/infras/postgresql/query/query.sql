@@ -18,10 +18,10 @@ VALUES ($1, $2, $3, $4, $5) RETURNING *;
 -- name: Update :one
 UPDATE "group".groups 
 SET
-    name = $2 ,
-    description = $3,
-    status = $4
-WHERE id = $1 RETURNING *;
+    name = COALESCE(sqlc.narg('name'),name),
+    description = COALESCE(sqlc.narg('description'),description),
+    status = COALESCE(sqlc.narg('status'),status)
+WHERE id = sqlc.arg(id) RETURNING *;
 
 -- name: Delete :exec
 DELETE FROM "group".groups WHERE id = $1;
@@ -40,8 +40,8 @@ VALUES ($1,$2,$3,$4) RETURNING *;
 -- name: UpdateGroupMember :one
 UPDATE "group".group_members
 SET
-    role = $2
-WHERE id = $1 RETURNING *;
+    role = COALESCE(sqlc.narg(role),role)
+WHERE id = sqlc.arg(id) RETURNING *;
 
 -- name: DeleteGroupMember :exec
 DELETE FROM "group".group_members WHERE id = $1;

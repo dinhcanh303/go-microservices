@@ -12,8 +12,8 @@ VALUES ($1, $2, $3, $4, $5) RETURNING *;
 -- name: Update :one
 UPDATE "like".likes
 SET
-	emoji = $2
-WHERE id = $1 RETURNING *;
+	emoji = COALESCE(sqlc.narg(emoji),emoji)
+WHERE id = sqlc.arg(id) RETURNING *;
 
 -- name: Delete :exec
 DELETE FROM "like".likes WHERE id = $1;

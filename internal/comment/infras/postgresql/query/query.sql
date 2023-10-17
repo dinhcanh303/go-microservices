@@ -16,9 +16,9 @@ SELECT * FROM comment.comments WHERE id = $1;
 -- name: Update :one
 UPDATE comment.comments 
 SET
-    content = $2 ,
-    reply_to_id = $3
-WHERE id = $1 RETURNING *;
+    content = COALESCE(sqlc.narg(content),content),
+    reply_to_id = COALESCE(sqlc.narg(reply_to_id),reply_to_id)
+WHERE id = sqlc.arg(id) RETURNING *;
 
 -- name: Delete :exec
 DELETE FROM comment.comments WHERE id = $1 OR parent_comment_id = $1;
