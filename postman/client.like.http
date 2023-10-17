@@ -7,9 +7,9 @@ content-type: application/json
 {
   "like": 
     {
-    "emoji" : "TEAM DEV",
-    "likeable_type" :"Like/Post",
-    "likeable_id" : "10f47af0-c67c-4a0a-8003-5ce66d785bc3",
+    "emoji" : "hehe",
+    "likeable_type" :"Like/Comment",
+    "likeable_id" : "174be2cd-ed9a-4534-89f5-a982944aac84",
     "user_id" :"526c0b00-677d-11ee-8390-0242ac150004"
     }
 }
@@ -37,7 +37,7 @@ content-type: application/json
 {}
 
 ###Delete Like
-DELETE  {{host}}/v1/api/likes/07e314e7-bee1-411f-bb94-820c74f124b2 HTTP/1.1
+DELETE  {{host}}/v1/api/likes/a5ffee90-879b-4b30-b9b8-d732605a658b HTTP/1.1
 content-type: application/json
 
 {}

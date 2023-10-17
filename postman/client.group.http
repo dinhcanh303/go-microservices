@@ -16,28 +16,27 @@ content-type: application/json
 }
 
 ###Update Group
-PUT {{host}}/v1/api/groups/3a1feefe-f300-4bf3-ba6c-c7acf9a701f0 HTTP/1.1
+PUT {{host}}/v1/api/groups/64bd1996-856d-43a7-bdf8-420052d34b50 HTTP/1.1
 content-type: application/json
 
 {
   "group": 
     {
-    "id":"3a1feefe-f300-4bf3-ba6c-c7acf9a701f0",
     "name" : "TEAM DEV 3",
-    "description" :"who is that",
-    "status" : 1
+    //"description" :"who is that 2"
+    "status" : 0
     }
   
 }
 
 ###Get Group
-GET {{host}}/v1/api/groups/07e314e7-bee1-411f-bb94-820c74f124b2 HTTP/1.1
+GET {{host}}/v1/api/groups/64bd1996-856d-43a7-bdf8-420052d34b50 HTTP/1.1
 content-type: application/json
 
 {}
 
 ###Delete Group
-DELETE  {{host}}/v1/api/groups/07e314e7-bee1-411f-bb94-820c74f124b2 HTTP/1.1
+DELETE  {{host}}/v1/api/groups/64bd1996-856d-43a7-bdf8-420052d34b50 HTTP/1.1
 content-type: application/json
 
 {}
