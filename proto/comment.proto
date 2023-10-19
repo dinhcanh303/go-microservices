@@ -126,9 +126,22 @@ message CommentResponse {
     string reply_to_id = 4;
     string content = 5;
     string parent_comment_id = 6;
-    google.protobuf.Timestamp created_at = 7;
-    google.protobuf.Timestamp updated_at = 8;
+    google.protobuf.Timestamp created_at = 8;
+    google.protobuf.Timestamp updated_at = 9;
 }
+
+message CommentResponseHasLike {
+    string id = 1;
+    string post_id = 2;
+    string user_id = 3;
+    string reply_to_id = 4;
+    string content = 5;
+    string parent_comment_id = 6;
+    repeated LikeResponseInComment likes = 7;
+    google.protobuf.Timestamp created_at = 8;
+    google.protobuf.Timestamp updated_at = 9;
+}
+
 
 message GetCommentsResponse {
     string id = 1;
@@ -137,7 +150,18 @@ message GetCommentsResponse {
     string reply_to_id = 4;
     string content = 5;
     string parent_comment_id = 6;
-    google.protobuf.Timestamp created_at = 7;
-    google.protobuf.Timestamp updated_at = 8;
-    repeated CommentResponse children = 9;
+    repeated CommentResponseHasLike children = 7;
+    repeated LikeResponseInComment likes = 8;
+    google.protobuf.Timestamp created_at = 9;
+    google.protobuf.Timestamp updated_at = 10;
+    
+}
+message LikeResponseInComment {
+    string id =1;
+    string emoji =2;
+    string likeable_type =3;
+    string likeable_id =4;
+    string user_id = 5;
+    google.protobuf.Timestamp created_at = 6;
+    google.protobuf.Timestamp updated_at = 7;
 }

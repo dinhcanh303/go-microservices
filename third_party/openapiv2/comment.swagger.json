@@ -293,6 +293,44 @@
         }
       }
     },
+    "commentapiCommentResponseHasLike": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "postId": {
+          "type": "string"
+        },
+        "userId": {
+          "type": "string"
+        },
+        "replyToId": {
+          "type": "string"
+        },
+        "content": {
+          "type": "string"
+        },
+        "parentCommentId": {
+          "type": "string"
+        },
+        "likes": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/commentapiLikeResponseInComment"
+          }
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
     "commentapiCountCommentByCommentIDResponse": {
       "type": "object",
       "properties": {
@@ -367,6 +405,20 @@
         "parentCommentId": {
           "type": "string"
         },
+        "children": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/commentapiCommentResponseHasLike"
+          }
+        },
+        "likes": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/commentapiLikeResponseInComment"
+          }
+        },
         "createdAt": {
           "type": "string",
           "format": "date-time"
@@ -374,13 +426,34 @@
         "updatedAt": {
           "type": "string",
           "format": "date-time"
+        }
+      }
+    },
+    "commentapiLikeResponseInComment": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
         },
-        "children": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "$ref": "#/definitions/commentapiCommentResponse"
-          }
+        "emoji": {
+          "type": "string"
+        },
+        "likeableType": {
+          "type": "string"
+        },
+        "likeableId": {
+          "type": "string"
+        },
+        "userId": {
+          "type": "string"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
         }
       }
     },
