@@ -51,7 +51,8 @@ func (m *minio) UploadFile() {
 	contentType := "application/zip"
 
 	// Upload the zip file with FPutObject
-	info, err := minioClient.FPutObject(ctx, bucketName, objectName, filePath, minioV7.PutObjectOptions{ContentType: contentType})
+	info, err := minioClient.FPutObject(ctx, bucketName, objectName,
+		filePath, minioV7.PutObjectOptions{ContentType: contentType})
 	if err != nil {
 		log.Fatalln(err)
 	}

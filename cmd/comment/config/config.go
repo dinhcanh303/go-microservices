@@ -16,11 +16,15 @@ type (
 		configs.HTTP `yaml:"http"`
 		configs.Log  `yaml:"logger"`
 		PG           `yaml:"postgres"`
+		LikeClient   `yaml:"like_client"`
 	}
 
 	PG struct {
 		PoolMax int    `env-required:"true" yaml:"pool_max" env:"PG_POOL_MAX"`
 		DsnURL  string `env-required:"true" yaml:"dsn_url" env:"PG_DSN_URL"`
+	}
+	LikeClient struct {
+		URL string `env-required:"true" yaml:"like_url" env:"LIKE_CLIENT_URL"`
 	}
 )
 

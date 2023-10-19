@@ -10,6 +10,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/google/wire"
 	"github.com/pkg/errors"
+	"github.com/samber/lo"
 	"golang.org/x/exp/slices"
 	"golang.org/x/exp/slog"
 	"google.golang.org/grpc"
@@ -39,6 +40,57 @@ func NewGRPCLikeServer(
 	gen.RegisterLikeServiceServer(grpcServer, &svc)
 	reflection.Register(grpcServer)
 	return &svc
+}
+func (l *likeGRPCServer) GetLikesByPostID(ctx context.Context, request *gen.GetLikesByPostIDRequest) (*gen.GetLikesByPostIDResponse, error) {
+	slog.Info("GET: GetLikesByPostID")
+	postId, err := uuid.Parse(request.PostID)
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to parse")
+	}
+	likes, err := l.uc.GetLikesByPostID(ctx, postId)
+	if err != nil {
+		return nil, errors.Wrap(err, "uc.GetLikesByPostID failed")
+	}
+	res := &gen.GetLikesByPostIDResponse{
+		Likes: lo.Map(likes, func(item *domain.Like, _ int) *gen.LikeResponse {
+			return &gen.LikeResponse{
+				Id:           item.ID.String(),
+				UserId:       item.UserID.String(),
+				Emoji:        item.Emoji,
+				LikeableType: item.LikeableType,
+				LikeableId:   item.LikeableID.String(),
+				CreatedAt:    timestamppb.New(item.CreatedAt),
+				UpdatedAt:    timestamppb.New(item.UpdatedAt),
+			}
+		}),
+	}
+	return res, nil
+}
+
+func (l *likeGRPCServer) GetLikesByCommentID(ctx context.Context, request *gen.GetLikesByCommentIDRequest) (*gen.GetLikesByCommentIDResponse, error) {
+	slog.Info("GET: GetLikesByCommentID")
+	commentId, err := uuid.Parse(request.CommentID)
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to parse")
+	}
+	likes, err := l.uc.GetLikesByCommentID(ctx, commentId)
+	if err != nil {
+		return nil, errors.Wrap(err, "uc.GetLikesByCommentID failed")
+	}
+	res := &gen.GetLikesByCommentIDResponse{
+		Likes: lo.Map(likes, func(item *domain.Like, _ int) *gen.LikeResponse {
+			return &gen.LikeResponse{
+				Id:           item.ID.String(),
+				UserId:       item.UserID.String(),
+				Emoji:        item.Emoji,
+				LikeableType: item.LikeableType,
+				LikeableId:   item.LikeableID.String(),
+				CreatedAt:    timestamppb.New(item.CreatedAt),
+				UpdatedAt:    timestamppb.New(item.UpdatedAt),
+			}
+		}),
+	}
+	return res, nil
 }
 
 // CreateLike implements gen.LikeServiceServer.

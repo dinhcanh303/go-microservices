@@ -7,7 +7,7 @@ content-type: application/json
 {
   "comment": 
     {
-    "post_id" : "e4a448b6-278b-4a41-a936-9e2003fcee71",
+    "post_id" : "3b68c889-c24c-4e53-90e4-807fcdb1a6b1",
     "user_id" :"526c0b00-677d-11ee-8390-0242ac150004",
     //"reply_to_id" : 1,
     "content" :"Hello my friend 1"
@@ -21,11 +21,11 @@ content-type: application/json
 {
   "comment": 
     {
-    "post_id" : "e4a448b6-278b-4a41-a936-9e2003fcee71",
+    "post_id" : "3b68c889-c24c-4e53-90e4-807fcdb1a6b1",
     "user_id" :"526c0b00-677d-11ee-8390-0242ac150004",
     //"reply_to_id" : 1,
     "content" :"Hello 3",
-    "parent_comment_id" : "174be2cd-ed9a-4534-89f5-a982944aac84"
+    "parent_comment_id" : "2d21ca29-a9c9-4da3-8807-f50c364a0eb6"
     }
 }
 
@@ -42,7 +42,7 @@ content-type: application/json
 }
 
 ###Get Comment By PostID
-GET {{host}}/v1/api/posts/e4a448b6-278b-4a41-a936-9e2003fcee71/comments HTTP/1.1
+GET {{host}}/v1/api/posts/3b68c889-c24c-4e53-90e4-807fcdb1a6b1/comments HTTP/1.1
 content-type: application/json
 
 {}

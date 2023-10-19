@@ -7,9 +7,9 @@ content-type: application/json
 {
   "like": 
     {
-    "emoji" : "hehe",
+    "emoji" : "cry",
     "likeable_type" :"Like/Comment",
-    "likeable_id" : "174be2cd-ed9a-4534-89f5-a982944aac84",
+    "likeable_id" : "b8b0a48d-61a0-427f-b3d7-bab73b7bdca3",
     "user_id" :"526c0b00-677d-11ee-8390-0242ac150004"
     }
 }

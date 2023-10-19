@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/dinhcanh303/go-microservices/cmd/post/config"
+	domain2 "github.com/dinhcanh303/go-microservices/internal/like/domain"
 	"github.com/dinhcanh303/go-microservices/internal/post/domain"
 	"github.com/google/uuid"
 	"github.com/google/wire"
@@ -16,7 +17,7 @@ type likeGRPCClient struct {
 }
 
 // GetLikesByPostID implements domain.LikeDomainService.
-func (*likeGRPCClient) GetLikesByPostID(ctx context.Context, postId uuid.UUID) ([]*domain.LikeItem, error) {
+func (l *likeGRPCClient) GetLikesByPostID(ctx context.Context, postId uuid.UUID) ([]*domain2.Like, error) {
 	panic("unimplemented")
 }
 

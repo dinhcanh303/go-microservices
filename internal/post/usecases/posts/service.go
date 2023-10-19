@@ -43,7 +43,7 @@ func NewUseCase(postRepo PostRepo,
 func (uc *usecase) GetPostExtra(ctx context.Context, id uuid.UUID) (*domain.PostExtra, error) {
 	post, err := uc.GetPost(ctx, id)
 	if err != nil {
-		return nil, errors.Wrap(err, "postRepo.Get")
+		return nil, errors.Wrap(err, "postRepo.GetPostExtra")
 	}
 	comments, err := uc.commentDomainSvc.GetCommentsByPostID(ctx, post.ID)
 	if err != nil {

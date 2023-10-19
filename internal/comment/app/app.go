@@ -2,6 +2,7 @@ package app
 
 import (
 	"github.com/dinhcanh303/go-microservices/cmd/comment/config"
+	"github.com/dinhcanh303/go-microservices/internal/comment/domain"
 	"github.com/dinhcanh303/go-microservices/internal/comment/usecases/comments"
 	"github.com/dinhcanh303/go-microservices/pkg/postgres"
 	"github.com/dinhcanh303/go-microservices/proto/gen"
@@ -12,17 +13,20 @@ type App struct {
 	PG                postgres.DBEngine
 	UC                comments.UseCase
 	CommentGRPCServer gen.CommentServiceServer
+	LikeDomainSvc     domain.LikeDomainService
 }
 
 func New(
 	cfg *config.Config,
 	pg postgres.DBEngine,
 	uc comments.UseCase,
-	commentGRPCServer gen.CommentServiceServer) *App {
+	commentGRPCServer gen.CommentServiceServer,
+	likeDomainSvc domain.LikeDomainService) *App {
 	return &App{
 		Cfg:               cfg,
 		UC:                uc,
 		PG:                pg,
 		CommentGRPCServer: commentGRPCServer,
+		LikeDomainSvc:     likeDomainSvc,
 	}
 }

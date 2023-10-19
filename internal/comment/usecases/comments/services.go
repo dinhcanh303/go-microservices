@@ -4,25 +4,30 @@ import (
 	"context"
 
 	"github.com/dinhcanh303/go-microservices/internal/comment/domain"
+	domain2 "github.com/dinhcanh303/go-microservices/internal/like/domain"
 	sharedkernel "github.com/dinhcanh303/go-microservices/internal/pkg/shared_kernel"
 	"github.com/google/uuid"
 	"github.com/google/wire"
 	"github.com/pkg/errors"
+	"golang.org/x/exp/slog"
 )
 
 const UUID_NULL string = "00000000-0000-0000-0000-000000000000"
 
 type service struct {
-	commentRepo CommentRepo
+	commentRepo   CommentRepo
+	likeDomainSvc domain.LikeDomainService
 }
 
 var _ UseCase = (*service)(nil)
 
 var UseCaseSet = wire.NewSet(NewService)
 
-func NewService(commentRepo CommentRepo) UseCase {
+func NewService(commentRepo CommentRepo,
+	likeDomainSvc domain.LikeDomainService) UseCase {
 	return &service{
-		commentRepo: commentRepo,
+		commentRepo:   commentRepo,
+		likeDomainSvc: likeDomainSvc,
 	}
 }
 
@@ -70,8 +75,13 @@ func (s *service) GetCommentsByPostID(ctx context.Context, postId uuid.UUID) ([]
 	}
 	commentMap := make(map[uuid.UUID]*sharedkernel.CommentHasChildren)
 	var commentsHasChildren []*sharedkernel.CommentHasChildren
-
+	slog.Info("COMMENT::", comments)
 	for i, comment := range comments {
+		likes, err := s.likeDomainSvc.GetLikesByCommentID(ctx, comment.ID)
+		slog.Info("LIKE::", likes)
+		if err != nil {
+			likes = make([]*domain2.Like, 0)
+		}
 		commentHasChildren := &sharedkernel.CommentHasChildren{
 			ID:              comments[i].ID,
 			UserID:          comments[i].UserID,
@@ -79,6 +89,18 @@ func (s *service) GetCommentsByPostID(ctx context.Context, postId uuid.UUID) ([]
 			Content:         comments[i].Content,
 			PostID:          comments[i].PostID,
 			ParentCommentID: comments[i].ParentCommentID,
+			Likes:           likes,
+			CreatedAt:       comments[i].CreatedAt,
+			UpdatedAt:       comments[i].UpdatedAt,
+		}
+		results := &domain.CommentHasLike{
+			ID:              comments[i].ID,
+			UserID:          comments[i].UserID,
+			ReplyToID:       comments[i].ReplyToID,
+			Content:         comments[i].Content,
+			PostID:          comments[i].PostID,
+			ParentCommentID: comments[i].ParentCommentID,
+			Likes:           likes,
 			CreatedAt:       comments[i].CreatedAt,
 			UpdatedAt:       comments[i].UpdatedAt,
 		}
@@ -86,7 +108,7 @@ func (s *service) GetCommentsByPostID(ctx context.Context, postId uuid.UUID) ([]
 		if comment.ParentCommentID.UUID.String() != UUID_NULL {
 			parentComment, exists := commentMap[comment.ParentCommentID.UUID]
 			if exists {
-				parentComment.Children = append(parentComment.Children, comments[i])
+				parentComment.Children = append(parentComment.Children, results)
 			}
 		} else {
 			commentsHasChildren = append(commentsHasChildren, commentHasChildren)

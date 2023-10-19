@@ -6,6 +6,7 @@ import (
 	"github.com/dinhcanh303/go-microservices/cmd/comment/config"
 	"github.com/dinhcanh303/go-microservices/internal/comment/domain"
 	"github.com/dinhcanh303/go-microservices/internal/comment/usecases/comments"
+	domain2 "github.com/dinhcanh303/go-microservices/internal/like/domain"
 	"github.com/dinhcanh303/go-microservices/proto/gen"
 	"github.com/google/uuid"
 	"github.com/google/wire"
@@ -146,7 +147,6 @@ func (c *commentGRPCServer) GetCommentsByPostID(ctx context.Context, request *ge
 		return nil, errors.Wrap(err, "failed to get comments by post ID")
 	}
 	for _, comment := range comments {
-		slog.Info("LOOP COMMENTS::", comment.Children)
 		res.Comments = append(res.Comments, &gen.GetCommentsResponse{
 			Id:              comment.ID.String(),
 			PostId:          comment.PostID.String(),
@@ -156,13 +156,35 @@ func (c *commentGRPCServer) GetCommentsByPostID(ctx context.Context, request *ge
 			ParentCommentId: comment.ParentCommentID.UUID.String(),
 			CreatedAt:       timestamppb.New(comment.CreatedAt),
 			UpdatedAt:       timestamppb.New(comment.UpdatedAt),
-			Children: lo.Map(comment.Children, func(item *domain.Comment, _ int) *gen.CommentResponse {
-				return &gen.CommentResponse{
-					Id:              item.ID.String(),
-					PostId:          item.PostID.String(),
-					UserId:          item.UserID.String(),
-					ReplyToId:       item.ReplyToID.UUID.String(),
-					Content:         item.Content,
+			Likes: lo.Map(comment.Likes, func(item *domain2.Like, _ int) *gen.LikeResponseInComment {
+				return &gen.LikeResponseInComment{
+					Id:           item.ID.String(),
+					UserId:       item.UserID.String(),
+					Emoji:        item.Emoji,
+					LikeableType: item.LikeableType,
+					LikeableId:   item.LikeableID.String(),
+					CreatedAt:    timestamppb.New(item.CreatedAt),
+					UpdatedAt:    timestamppb.New(item.UpdatedAt),
+				}
+			}),
+			Children: lo.Map(comment.Children, func(item *domain.CommentHasLike, _ int) *gen.CommentResponseHasLike {
+				return &gen.CommentResponseHasLike{
+					Id:        item.ID.String(),
+					PostId:    item.PostID.String(),
+					UserId:    item.UserID.String(),
+					ReplyToId: item.ReplyToID.UUID.String(),
+					Content:   item.Content,
+					Likes: lo.Map(item.Likes, func(item *domain2.Like, _ int) *gen.LikeResponseInComment {
+						return &gen.LikeResponseInComment{
+							Id:           item.ID.String(),
+							UserId:       item.UserID.String(),
+							Emoji:        item.Emoji,
+							LikeableType: item.LikeableType,
+							LikeableId:   item.LikeableID.String(),
+							CreatedAt:    timestamppb.New(item.CreatedAt),
+							UpdatedAt:    timestamppb.New(item.UpdatedAt),
+						}
+					}),
 					ParentCommentId: item.ParentCommentID.UUID.String(),
 					CreatedAt:       timestamppb.New(item.CreatedAt),
 					UpdatedAt:       timestamppb.New(item.UpdatedAt),

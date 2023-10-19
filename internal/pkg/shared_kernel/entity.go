@@ -10,6 +10,5 @@ func NewID() ID {
 
 func StringToID(s string) (ID, error) {
 	id, err := uuid.Parse(s)
-
 	return id, err
 }

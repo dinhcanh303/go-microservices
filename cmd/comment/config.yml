@@ -5,6 +5,9 @@ app:
 http:
   host: '0.0.0.0'
   port: 5003
+  
+like_client:
+  like_url: 0.0.0.0:5004
 
 postgres:
   pool_max: 2

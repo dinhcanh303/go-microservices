@@ -5,8 +5,10 @@ import (
 
 	"github.com/dinhcanh303/go-microservices/cmd/post/config"
 	domain2 "github.com/dinhcanh303/go-microservices/internal/comment/domain"
+	domain3 "github.com/dinhcanh303/go-microservices/internal/like/domain"
 	sharedkernel "github.com/dinhcanh303/go-microservices/internal/pkg/shared_kernel"
 	"github.com/dinhcanh303/go-microservices/internal/post/domain"
+	"github.com/dinhcanh303/go-microservices/pkg/utils"
 	"github.com/dinhcanh303/go-microservices/proto/gen"
 	"github.com/google/uuid"
 	"github.com/google/wire"
@@ -48,22 +50,44 @@ func (c *commentGRPCClient) GetCommentsByPostID(ctx context.Context, postId uuid
 	results := make([]*sharedkernel.CommentHasChildren, 0)
 	for _, item := range res.Comments {
 		results = append(results, &sharedkernel.CommentHasChildren{
-			ID:              uuid.Parse(item.Id),
-			UserID:          item.UserId,
+			ID:              uuid.MustParse(item.Id),
+			UserID:          uuid.MustParse(item.UserId),
 			Content:         item.Content,
-			PostID:          item.PostId,
-			ReplyToID:       item.ReplyToId,
-			ParentCommentID: item.ParentCommentId,
-			Children: lo.Map(item.Children, func(value *gen.CommentResponse, _ int) *domain2.Comment {
-				return &domain2.Comment{
-					ID:              value.Id,
-					UserID:          uuid.Parse(value.UserId),
-					Content:         value.Content,
-					PostID:          uuid.Parse(value.PostId),
-					ReplyToID:       uuid.Parse(value.ReplyToId),
-					ParentCommentID: uuid.Parse(value.ParentCommentId),
+			PostID:          uuid.MustParse(item.PostId),
+			ReplyToID:       utils.StringToNullUUID(item.ReplyToId),
+			ParentCommentID: utils.StringToNullUUID(item.ParentCommentId),
+			Children: lo.Map(item.Children, func(value *gen.CommentResponseHasLike, _ int) *domain2.CommentHasLike {
+				return &domain2.CommentHasLike{
+					ID:      uuid.MustParse(value.Id),
+					UserID:  uuid.MustParse(value.UserId),
+					Content: value.Content,
+					Likes: lo.Map(item.Likes, func(value *gen.LikeResponseInComment, _ int) *domain3.Like {
+						return &domain3.Like{
+							ID:           uuid.MustParse(value.Id),
+							UserID:       uuid.MustParse(value.UserId),
+							Emoji:        value.Emoji,
+							LikeableType: value.LikeableType,
+							LikeableID:   uuid.MustParse(value.LikeableId),
+							CreatedAt:    value.CreatedAt.AsTime(),
+							UpdatedAt:    value.UpdatedAt.AsTime(),
+						}
+					}),
+					PostID:          uuid.MustParse(value.PostId),
+					ReplyToID:       utils.StringToNullUUID(value.ReplyToId),
+					ParentCommentID: utils.StringToNullUUID(value.ParentCommentId),
 					CreatedAt:       value.CreatedAt.AsTime(),
 					UpdatedAt:       value.UpdatedAt.AsTime(),
+				}
+			}),
+			Likes: lo.Map(item.Likes, func(value *gen.LikeResponseInComment, _ int) *domain3.Like {
+				return &domain3.Like{
+					ID:           uuid.MustParse(value.Id),
+					UserID:       uuid.MustParse(value.UserId),
+					Emoji:        value.Emoji,
+					LikeableType: value.LikeableType,
+					LikeableID:   uuid.MustParse(value.LikeableId),
+					CreatedAt:    value.CreatedAt.AsTime(),
+					UpdatedAt:    value.UpdatedAt.AsTime(),
 				}
 			}),
 			CreatedAt: item.CreatedAt.AsTime(),

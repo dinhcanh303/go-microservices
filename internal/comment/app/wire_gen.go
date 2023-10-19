@@ -9,6 +9,7 @@ package app
 import (
 	"github.com/dinhcanh303/go-microservices/cmd/comment/config"
 	"github.com/dinhcanh303/go-microservices/internal/comment/app/router"
+	grpc2 "github.com/dinhcanh303/go-microservices/internal/comment/infras/grpc"
 	"github.com/dinhcanh303/go-microservices/internal/comment/infras/repo"
 	"github.com/dinhcanh303/go-microservices/internal/comment/usecases/comments"
 	"github.com/dinhcanh303/go-microservices/pkg/postgres"
@@ -23,9 +24,14 @@ func InitApp(cfg *config.Config, dbConnStr postgres.DBConnString, grpcServer *gr
 		return nil, nil, err
 	}
 	commentRepo := repo.NewCommentRepo(dbEngine)
-	useCase := comments.NewService(commentRepo)
+	likeDomainService, err := grpc2.NewGRPCLikeClient(cfg)
+	if err != nil {
+		cleanup()
+		return nil, nil, err
+	}
+	useCase := comments.NewService(commentRepo, likeDomainService)
 	commentServiceServer := router.NewGRPCCommentServer(grpcServer, cfg, useCase)
-	app := New(cfg, dbEngine, useCase, commentServiceServer)
+	app := New(cfg, dbEngine, useCase, commentServiceServer, likeDomainService)
 	return app, func() {
 		cleanup()
 	}, nil
