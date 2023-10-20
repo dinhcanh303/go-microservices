@@ -27,6 +27,7 @@ func newGateway(
 	postEndpoint := fmt.Sprintf("%s:%d", cfg.PostHost, cfg.PostPort)
 	commentEndpoint := fmt.Sprintf("%s:%d", cfg.CommentHost, cfg.CommentPort)
 	likeEndpoint := fmt.Sprintf("%s:%d", cfg.LikeHost, cfg.LikePort)
+	uploadEndpoint := fmt.Sprintf("%s:%d", cfg.UploadHost, cfg.UploadPort)
 
 	mux := gwruntime.NewServeMux(opts...)
 	dialOpts := []grpc.DialOption{grpc.WithTransportCredentials(insecure.NewCredentials())}
@@ -44,6 +45,10 @@ func newGateway(
 		return nil, err
 	}
 	err = gen.RegisterLikeServiceHandlerFromEndpoint(ctx, mux, likeEndpoint, dialOpts)
+	if err != nil {
+		return nil, err
+	}
+	err = gen.RegisterUploadServiceHandlerFromEndpoint(ctx, mux, uploadEndpoint, dialOpts)
 	if err != nil {
 		return nil, err
 	}
@@ -77,6 +82,7 @@ func withLogger(h http.Handler) http.Handler {
 		h.ServeHTTP(w, r)
 	})
 }
+
 func main() {
 	ctx := context.Background()
 	ctx, cancel := context.WithCancel(ctx)

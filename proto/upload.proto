@@ -1,0 +1,137 @@
+syntax="proto3";
+
+package go.microsevices.proto.uploadapi;
+
+import "google/api/annotations.proto";
+import "protoc-gen-openapiv2/options/annotations.proto";
+import "google/protobuf/timestamp.proto";
+
+option go_package = "github.com/dinhcanh303/go-microsevices/proto/gen";
+
+service UploadService {
+    rpc Upload(stream UploadRequest) returns (UploadResponse){
+        option (google.api.http) = {
+            post: "/v1/api/upload"
+            body: "*"
+        };
+        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+            summary: "Upload File"
+            description: ""
+            tags: "Upload"
+        };
+    }
+    rpc DeleteFile(GetPostRequest) returns (GetPostResponse){
+        option (google.api.http) = {
+            delete: "/v1/api/upload/{id}"
+        };
+        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+            summary: "Delete File"
+            description: ""
+            tags: "Upload"
+        };
+    }
+    rpc GetAttachment(GetAttachmentRequest) returns (GetAttachmentResponse) {
+        option (google.api.http) = {
+            delete: "/v1/api/attachment/{id}"
+        };
+        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+            summary: "Get Attachment"
+            description: ""
+            tags: "Upload"
+        };
+    }
+    rpc CreateAttachment(GetAttachmentRequest) returns (GetAttachmentResponse) {
+        option (google.api.http) = {
+            post: "/v1/api/attachments"
+        };
+        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+            summary: "Get Attachment"
+            description: ""
+            tags: "Upload"
+        };
+    }
+    rpc UpdateAttachment(GetAttachmentRequest) returns (GetAttachmentResponse) {
+        option (google.api.http) = {
+            post: "/v1/api/attachments/{id}"
+        };
+        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+            summary: "Get Attachment"
+            description: ""
+            tags: "Upload"
+        };
+    }
+    rpc DeleteAttachment(GetAttachmentRequest) returns (GetAttachmentResponse) {
+        option (google.api.http) = {
+            delete: "/v1/api/attachments/{id}"
+        };
+        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+            summary: "Get Attachment"
+            description: ""
+            tags: "Upload"
+        };
+    }
+
+}
+message GetAttachmentRequest {
+    string id = 1;
+}
+message GetAttachmentResponse {
+    Attachment attachment = 1;
+}
+message CreateAttachmentRequest {
+    string attachable_type = 2;
+    string attachable_id = 3;
+    string user_id = 4;
+    string filename = 5;
+    string extension = 6;
+    string mime_type = 7;
+    string folder = 8;
+    string url_thumbnail = 9;
+    string url = 10;
+}
+message CreateAttachmentResponse{
+    Attachment attachment = 1;
+}
+message UpdateAttachmentRequest{
+    Attachment attachment = 1;
+}
+message UpdateAttachmentResponse{
+    Attachment attachment = 1;
+}
+message DeleteAttachmentRequest{
+    string id = 1;
+}
+message DeleteAttachmentResponse{
+    bool deleted = 1;
+}
+message Attachment{
+    string id = 1;
+    string attachable_type = 2;
+    string attachable_id = 3;
+    string user_id = 4;
+    string filename = 5;
+    string extension = 6;
+    string mime_type = 7;
+    string folder = 8;
+    string url_thumbnail = 9;
+    string url = 10;
+    google.protobuf.Timestamp created_at = 11;
+    google.protobuf.Timestamp updated_at = 12;
+    
+}
+message UploadRequest{
+    oneof data {
+        FileInfo info = 1;
+        bytes chuck_data = 2;
+    }
+}
+
+message UploadResponse{
+    string id = 1;
+    int32 size = 2;
+
+}
+message FileInfo {
+    string file_id = 3;
+    string file_type = 4;
+}

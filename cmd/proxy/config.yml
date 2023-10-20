@@ -13,6 +13,10 @@ grpc:
   post_port: 5002
   comment_host: '0.0.0.0'
   comment_port: 5003
+  like_host: '0.0.0.0'
+  like_port: 5004
+  upload_host: '0.0.0.0'
+  upload_port: 5005
 
 logger:
   log_level: 'debug'

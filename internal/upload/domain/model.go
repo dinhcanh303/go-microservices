@@ -3,11 +3,10 @@ package domain
 import (
 	"time"
 
-	"github.com/dinhcanh303/go-microservices/internal/pkg/event"
 	"github.com/google/uuid"
 )
 
-type AttachmentOrder struct {
+type Attachment struct {
 	ID             uuid.UUID `json:"id"`
 	AttachableType string    `json:"attachable_type"`
 	AttachableID   uuid.UUID `json:"attachable_id"`
@@ -21,8 +20,4 @@ type AttachmentOrder struct {
 	CreatedAt      time.Time `json:"created_at"`
 	UpdatedAt      time.Time `json:"updated_at"`
 	DeletedAt      time.Time `json:"deleted_at"`
-}
-
-func NewAttachmentOrder(e event.GroupUploadBegin) AttachmentOrder {
-	return AttachmentOrder{}
 }
