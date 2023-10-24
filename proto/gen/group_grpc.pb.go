@@ -19,14 +19,16 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	GroupService_CreateGroup_FullMethodName        = "/go.microsevices.proto.groupapi.GroupService/CreateGroup"
-	GroupService_GetGroup_FullMethodName           = "/go.microsevices.proto.groupapi.GroupService/GetGroup"
-	GroupService_UpdateGroup_FullMethodName        = "/go.microsevices.proto.groupapi.GroupService/UpdateGroup"
-	GroupService_DeleteGroup_FullMethodName        = "/go.microsevices.proto.groupapi.GroupService/DeleteGroup"
-	GroupService_CreateGroupMember_FullMethodName  = "/go.microsevices.proto.groupapi.GroupService/CreateGroupMember"
-	GroupService_UpdateGroupMember_FullMethodName  = "/go.microsevices.proto.groupapi.GroupService/UpdateGroupMember"
-	GroupService_DeleteGroupMember_FullMethodName  = "/go.microsevices.proto.groupapi.GroupService/DeleteGroupMember"
-	GroupService_GetAllGroupMembers_FullMethodName = "/go.microsevices.proto.groupapi.GroupService/GetAllGroupMembers"
+	GroupService_CreateGroup_FullMethodName           = "/go.microsevices.proto.groupapi.GroupService/CreateGroup"
+	GroupService_GetGroup_FullMethodName              = "/go.microsevices.proto.groupapi.GroupService/GetGroup"
+	GroupService_UpdateGroup_FullMethodName           = "/go.microsevices.proto.groupapi.GroupService/UpdateGroup"
+	GroupService_DeleteGroup_FullMethodName           = "/go.microsevices.proto.groupapi.GroupService/DeleteGroup"
+	GroupService_GetAllGroupByUserId_FullMethodName   = "/go.microsevices.proto.groupapi.GroupService/GetAllGroupByUserId"
+	GroupService_GetAllGroupIdByUserId_FullMethodName = "/go.microsevices.proto.groupapi.GroupService/GetAllGroupIdByUserId"
+	GroupService_CreateGroupMember_FullMethodName     = "/go.microsevices.proto.groupapi.GroupService/CreateGroupMember"
+	GroupService_UpdateGroupMember_FullMethodName     = "/go.microsevices.proto.groupapi.GroupService/UpdateGroupMember"
+	GroupService_DeleteGroupMember_FullMethodName     = "/go.microsevices.proto.groupapi.GroupService/DeleteGroupMember"
+	GroupService_GetAllGroupMembers_FullMethodName    = "/go.microsevices.proto.groupapi.GroupService/GetAllGroupMembers"
 )
 
 // GroupServiceClient is the client API for GroupService service.
@@ -37,11 +39,13 @@ type GroupServiceClient interface {
 	GetGroup(ctx context.Context, in *GetGroupRequest, opts ...grpc.CallOption) (*GetGroupResponse, error)
 	UpdateGroup(ctx context.Context, in *UpdateGroupRequest, opts ...grpc.CallOption) (*UpdateGroupResponse, error)
 	DeleteGroup(ctx context.Context, in *DeleteGroupRequest, opts ...grpc.CallOption) (*DeleteGroupResponse, error)
+	GetAllGroupByUserId(ctx context.Context, in *GetAllGroupByUserIdRequest, opts ...grpc.CallOption) (*GetAllGroupByUserIdResponse, error)
+	GetAllGroupIdByUserId(ctx context.Context, in *GetAllGroupIdByUserIdRequest, opts ...grpc.CallOption) (*GetAllGroupIdByUserIdResponse, error)
 	// GroupMember
 	CreateGroupMember(ctx context.Context, in *CreateGroupMemberRequest, opts ...grpc.CallOption) (*CreateGroupMemberResponse, error)
 	UpdateGroupMember(ctx context.Context, in *UpdateGroupMemberRequest, opts ...grpc.CallOption) (*UpdateGroupMemberResponse, error)
 	DeleteGroupMember(ctx context.Context, in *DeleteGroupMemberRequest, opts ...grpc.CallOption) (*DeleteGroupMemberResponse, error)
-	GetAllGroupMembers(ctx context.Context, in *GetAllGroupMembersRequest, opts ...grpc.CallOption) (*CreateGroupMemberResponse, error)
+	GetAllGroupMembers(ctx context.Context, in *GetAllGroupMembersRequest, opts ...grpc.CallOption) (*GetAllGroupMembersResponse, error)
 }
 
 type groupServiceClient struct {
@@ -88,6 +92,24 @@ func (c *groupServiceClient) DeleteGroup(ctx context.Context, in *DeleteGroupReq
 	return out, nil
 }
 
+func (c *groupServiceClient) GetAllGroupByUserId(ctx context.Context, in *GetAllGroupByUserIdRequest, opts ...grpc.CallOption) (*GetAllGroupByUserIdResponse, error) {
+	out := new(GetAllGroupByUserIdResponse)
+	err := c.cc.Invoke(ctx, GroupService_GetAllGroupByUserId_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *groupServiceClient) GetAllGroupIdByUserId(ctx context.Context, in *GetAllGroupIdByUserIdRequest, opts ...grpc.CallOption) (*GetAllGroupIdByUserIdResponse, error) {
+	out := new(GetAllGroupIdByUserIdResponse)
+	err := c.cc.Invoke(ctx, GroupService_GetAllGroupIdByUserId_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *groupServiceClient) CreateGroupMember(ctx context.Context, in *CreateGroupMemberRequest, opts ...grpc.CallOption) (*CreateGroupMemberResponse, error) {
 	out := new(CreateGroupMemberResponse)
 	err := c.cc.Invoke(ctx, GroupService_CreateGroupMember_FullMethodName, in, out, opts...)
@@ -115,8 +137,8 @@ func (c *groupServiceClient) DeleteGroupMember(ctx context.Context, in *DeleteGr
 	return out, nil
 }
 
-func (c *groupServiceClient) GetAllGroupMembers(ctx context.Context, in *GetAllGroupMembersRequest, opts ...grpc.CallOption) (*CreateGroupMemberResponse, error) {
-	out := new(CreateGroupMemberResponse)
+func (c *groupServiceClient) GetAllGroupMembers(ctx context.Context, in *GetAllGroupMembersRequest, opts ...grpc.CallOption) (*GetAllGroupMembersResponse, error) {
+	out := new(GetAllGroupMembersResponse)
 	err := c.cc.Invoke(ctx, GroupService_GetAllGroupMembers_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -132,11 +154,13 @@ type GroupServiceServer interface {
 	GetGroup(context.Context, *GetGroupRequest) (*GetGroupResponse, error)
 	UpdateGroup(context.Context, *UpdateGroupRequest) (*UpdateGroupResponse, error)
 	DeleteGroup(context.Context, *DeleteGroupRequest) (*DeleteGroupResponse, error)
+	GetAllGroupByUserId(context.Context, *GetAllGroupByUserIdRequest) (*GetAllGroupByUserIdResponse, error)
+	GetAllGroupIdByUserId(context.Context, *GetAllGroupIdByUserIdRequest) (*GetAllGroupIdByUserIdResponse, error)
 	// GroupMember
 	CreateGroupMember(context.Context, *CreateGroupMemberRequest) (*CreateGroupMemberResponse, error)
 	UpdateGroupMember(context.Context, *UpdateGroupMemberRequest) (*UpdateGroupMemberResponse, error)
 	DeleteGroupMember(context.Context, *DeleteGroupMemberRequest) (*DeleteGroupMemberResponse, error)
-	GetAllGroupMembers(context.Context, *GetAllGroupMembersRequest) (*CreateGroupMemberResponse, error)
+	GetAllGroupMembers(context.Context, *GetAllGroupMembersRequest) (*GetAllGroupMembersResponse, error)
 	mustEmbedUnimplementedGroupServiceServer()
 }
 
@@ -156,6 +180,12 @@ func (UnimplementedGroupServiceServer) UpdateGroup(context.Context, *UpdateGroup
 func (UnimplementedGroupServiceServer) DeleteGroup(context.Context, *DeleteGroupRequest) (*DeleteGroupResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteGroup not implemented")
 }
+func (UnimplementedGroupServiceServer) GetAllGroupByUserId(context.Context, *GetAllGroupByUserIdRequest) (*GetAllGroupByUserIdResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetAllGroupByUserId not implemented")
+}
+func (UnimplementedGroupServiceServer) GetAllGroupIdByUserId(context.Context, *GetAllGroupIdByUserIdRequest) (*GetAllGroupIdByUserIdResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetAllGroupIdByUserId not implemented")
+}
 func (UnimplementedGroupServiceServer) CreateGroupMember(context.Context, *CreateGroupMemberRequest) (*CreateGroupMemberResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateGroupMember not implemented")
 }
@@ -165,7 +195,7 @@ func (UnimplementedGroupServiceServer) UpdateGroupMember(context.Context, *Updat
 func (UnimplementedGroupServiceServer) DeleteGroupMember(context.Context, *DeleteGroupMemberRequest) (*DeleteGroupMemberResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteGroupMember not implemented")
 }
-func (UnimplementedGroupServiceServer) GetAllGroupMembers(context.Context, *GetAllGroupMembersRequest) (*CreateGroupMemberResponse, error) {
+func (UnimplementedGroupServiceServer) GetAllGroupMembers(context.Context, *GetAllGroupMembersRequest) (*GetAllGroupMembersResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetAllGroupMembers not implemented")
 }
 func (UnimplementedGroupServiceServer) mustEmbedUnimplementedGroupServiceServer() {}
@@ -249,6 +279,42 @@ func _GroupService_DeleteGroup_Handler(srv interface{}, ctx context.Context, dec
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(GroupServiceServer).DeleteGroup(ctx, req.(*DeleteGroupRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _GroupService_GetAllGroupByUserId_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetAllGroupByUserIdRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(GroupServiceServer).GetAllGroupByUserId(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: GroupService_GetAllGroupByUserId_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(GroupServiceServer).GetAllGroupByUserId(ctx, req.(*GetAllGroupByUserIdRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _GroupService_GetAllGroupIdByUserId_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetAllGroupIdByUserIdRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(GroupServiceServer).GetAllGroupIdByUserId(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: GroupService_GetAllGroupIdByUserId_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(GroupServiceServer).GetAllGroupIdByUserId(ctx, req.(*GetAllGroupIdByUserIdRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -347,6 +413,14 @@ var GroupService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "DeleteGroup",
 			Handler:    _GroupService_DeleteGroup_Handler,
+		},
+		{
+			MethodName: "GetAllGroupByUserId",
+			Handler:    _GroupService_GetAllGroupByUserId_Handler,
+		},
+		{
+			MethodName: "GetAllGroupIdByUserId",
+			Handler:    _GroupService_GetAllGroupIdByUserId_Handler,
 		},
 		{
 			MethodName: "CreateGroupMember",

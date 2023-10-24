@@ -4,11 +4,10 @@
 package app
 
 import (
-	"github.com/dinhcanh303/go-microservices/cmd/group/config"
-	"github.com/dinhcanh303/go-microservices/internal/group/app/router"
-	"github.com/dinhcanh303/go-microservices/internal/group/infras/repo"
-	groupmembersUC "github.com/dinhcanh303/go-microservices/internal/group/usecases/groupmembers"
-	groupsUC "github.com/dinhcanh303/go-microservices/internal/group/usecases/groups"
+	"github.com/dinhcanh303/go-microservices/cmd/upload/config"
+	"github.com/dinhcanh303/go-microservices/internal/upload/app/router"
+	"github.com/dinhcanh303/go-microservices/internal/upload/infras/repo"
+	uploadsUC "github.com/dinhcanh303/go-microservices/internal/upload/usecases/groups"
 	"github.com/dinhcanh303/go-microservices/pkg/postgres"
 	"github.com/google/wire"
 	"google.golang.org/grpc"
@@ -22,11 +21,9 @@ func InitApp(
 	panic(wire.Build(
 		New,
 		dbEngineFunc,
-		router.GroupGRPCServerSet,
-		repo.RepositoryGroupMemberSet,
-		groupmembersUC.UseCaseSet,
-		repo.RepositoryGroupSet,
-		groupsUC.UseCaseSet,
+		router.UploadGRPCServerSet,
+		repo.RepositoryUploadSet,
+		uploadsUC.UseCaseSet,
 	))
 }
 func dbEngineFunc(url postgres.DBConnString) (postgres.DBEngine, func(), error) {

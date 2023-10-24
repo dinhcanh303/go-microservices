@@ -21,26 +21,18 @@ SET
     status = COALESCE(sqlc.narg(status),status)
 WHERE id = sqlc.arg(id) RETURNING *;
 
--- -- name: GetWithUnscoped :one
--- SELECT * FROM post.posts 
--- WHERE id = $1 AND deleted_at IS NOT NULL;
-
-
 -- name: GetByGroupId :many
-SELECT * FROM post.posts WHERE group_id = $1;
+SELECT * FROM post.posts WHERE group_id = $1 LIMIT $2 OFFSET $3;
 
 -- name: GetByUserId :many
 SELECT * FROM post.posts 
-WHERE user_id = $1 AND group_id IS NULL;
+WHERE user_id = $1 AND group_id IS NULL LIMIT $2 OFFSET $3;
 
+-- name: GetByFeed :many
+SELECT *
+FROM post.posts
+WHERE user_id IN ($1)
+   OR group_id IN ($2)
+LIMIT $3 OFFSET $4;
 -- name: Delete :exec
 DELETE FROM post.posts WHERE id = $1;
-
--- name: List :many
-SELECT * FROM post.posts OFFSET $1 LIMIT $2;
-
--- -- name: CountPost :one
--- SELECT COUNT(*) FROM post.posts WHERE user_id = $1 AND group_id IS NULL;
-
--- -- name: CountPostInGroup :one
--- SELECT COUNT(*) FROM post.posts WHERE group_id = $1;

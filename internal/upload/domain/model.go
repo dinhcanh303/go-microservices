@@ -16,7 +16,7 @@ type Attachment struct {
 	MimeType       string    `json:"mime_type"`
 	Folder         string    `json:"folder"`
 	URLThumbnail   string    `json:"url_thumbnail"`
-	URLType        string    `json:"url"`
+	URL            string    `json:"url"`
 	CreatedAt      time.Time `json:"created_at"`
 	UpdatedAt      time.Time `json:"updated_at"`
 	DeletedAt      time.Time `json:"deleted_at"`

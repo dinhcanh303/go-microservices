@@ -147,6 +147,74 @@ func (q *Queries) Get(ctx context.Context, id uuid.UUID) (GroupGroup, error) {
 	return i, err
 }
 
+const getAllGroupByUserId = `-- name: GetAllGroupByUserId :many
+SELECT g.id, g.user_id, g.name, g.description, g.status, g.created_at, g.updated_at
+FROM "group".groups AS g
+INNER JOIN "group".group_members AS gm ON g.id = gm.group_id
+WHERE gm.user_id = $1
+`
+
+func (q *Queries) GetAllGroupByUserId(ctx context.Context, userID uuid.UUID) ([]GroupGroup, error) {
+	rows, err := q.db.QueryContext(ctx, getAllGroupByUserId, userID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []GroupGroup
+	for rows.Next() {
+		var i GroupGroup
+		if err := rows.Scan(
+			&i.ID,
+			&i.UserID,
+			&i.Name,
+			&i.Description,
+			&i.Status,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getAllGroupIdByUserId = `-- name: GetAllGroupIdByUserId :many
+SELECT g.id
+FROM "group".groups AS g
+INNER JOIN "group".group_members AS gm ON g.id = gm.group_id
+WHERE gm.user_id = $1
+`
+
+func (q *Queries) GetAllGroupIdByUserId(ctx context.Context, userID uuid.UUID) ([]uuid.UUID, error) {
+	rows, err := q.db.QueryContext(ctx, getAllGroupIdByUserId, userID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []uuid.UUID
+	for rows.Next() {
+		var id uuid.UUID
+		if err := rows.Scan(&id); err != nil {
+			return nil, err
+		}
+		items = append(items, id)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const getAllGroupMembers = `-- name: GetAllGroupMembers :many
 SELECT id, group_id, user_id, role, created_at, updated_at FROM "group".group_members WHERE group_id = $1
 `

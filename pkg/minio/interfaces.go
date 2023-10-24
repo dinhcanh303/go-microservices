@@ -7,6 +7,6 @@ import (
 	minioV7 "github.com/minio/minio-go/v7"
 )
 
-type MinioUpload interface {
+type MinioService interface {
 	UploadFile(file *multipart.FileHeader, buffer io.Reader) (*minioV7.UploadInfo, error)
 }

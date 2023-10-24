@@ -84,20 +84,20 @@ func (rp *groupMemberRepo) DeleteAllGroupMembersByGroupId(ctx context.Context, g
 }
 
 // DeleteGroupMember implements groupmembers.GroupMemberRepo.
-func (rp *groupMemberRepo) DeleteGroupMember(ctx context.Context, id uuid.UUID) error {
+func (rp *groupMemberRepo) DeleteGroupMember(ctx context.Context, id uuid.UUID) (bool, error) {
 	slog.Info("Repo DeleteGroupMember")
 	db := rp.pg.GetDB()
 	querier := postgresql.New(db)
 	tx, err := db.Begin()
 	if err != nil {
-		return errors.Wrap(err, "Repo DeleteGroupMember db failed")
+		return false, errors.Wrap(err, "Repo DeleteGroupMember db failed")
 	}
 	qtx := querier.WithTx(tx)
 	err = qtx.DeleteGroupMember(ctx, id)
 	if err != nil {
-		return errors.Wrap(err, "qtx.DeleteGroupMember(ctx, ids) failed")
+		return false, errors.Wrap(err, "qtx.DeleteGroupMember(ctx, ids) failed")
 	}
-	return tx.Commit()
+	return true, tx.Commit()
 }
 
 // GetAllGroupMember implements groupmembers.GroupMemberRepo.

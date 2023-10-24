@@ -15,6 +15,22 @@ type usecase struct {
 	likeDomainSvc    domain.LikeDomainService
 }
 
+// GetPostsByFeed implements UseCase.
+func (*usecase) GetPostsByFeed(ctx context.Context, userIds, groupIds string, limit int32, offset int32) ([]*domain.PostExtra, error) {
+	panic("unimplemented")
+}
+
+// GetPostsByGroupId implements UseCase.
+func (*usecase) GetPostsByGroupId(ctx context.Context, groupId uuid.UUID, limit int32, offset int32) ([]*domain.PostExtra, error) {
+	panic("unimplemented")
+}
+
+// GetPostsByUserId implements UseCase.
+func (*usecase) GetPostsByUserId(ctx context.Context, userId uuid.UUID, limit int32, offset int32) ([]*domain.PostExtra, error) {
+
+	panic("unimplemented")
+}
+
 var _ UseCase = (*usecase)(nil)
 var UseCaseSet = wire.NewSet(NewUseCase)
 
@@ -27,17 +43,6 @@ func NewUseCase(postRepo PostRepo,
 		likeDomainSvc:    likeDomainSvc,
 	}
 }
-
-// // Count implements UseCase.
-//
-//	func (uc *usecase) Count(ctx context.Context) (uint64, error) {
-//		count, err := uc.postRepo.Count(ctx)
-//		if err != nil {
-//			return 0, errors.Wrap(err, "postRepo.Count")
-//		}
-//		return count, nil
-//	}
-//
 
 // GetPostExtra implements UseCase.
 func (uc *usecase) GetPostExtra(ctx context.Context, id uuid.UUID) (*domain.PostExtra, error) {
@@ -67,24 +72,6 @@ func (uc *usecase) GetPostExtra(ctx context.Context, id uuid.UUID) (*domain.Post
 	}, nil
 }
 
-// GetByGroupId implements UseCase.
-func (uc *usecase) GetByGroupId(ctx context.Context, groupId uuid.UUID) ([]*domain.Post, error) {
-	posts, err := uc.postRepo.GetByGroupId(ctx, groupId)
-	if err != nil {
-		return nil, errors.Wrap(err, "postRepo.GetByGroupId")
-	}
-	return posts, nil
-}
-
-// GetByUserId implements UseCase.
-func (uc *usecase) GetByUserId(ctx context.Context, userId uuid.UUID) ([]*domain.Post, error) {
-	posts, err := uc.postRepo.GetByGroupId(ctx, userId)
-	if err != nil {
-		return nil, errors.Wrap(err, "postRepo.GetByUserId")
-	}
-	return posts, nil
-}
-
 // CreatePost implements UseCase.
 func (uc *usecase) CreatePost(ctx context.Context, post *domain.Post) (*domain.Post, error) {
 	post, err := uc.postRepo.Create(ctx, post)
@@ -112,20 +99,11 @@ func (uc *usecase) GetPost(ctx context.Context, id uuid.UUID) (*domain.Post, err
 	return post, nil
 }
 
-// ListPost implements UseCase.
-func (uc *usecase) ListPost(ctx context.Context, offset int, limit int) ([]*domain.Post, error) {
-	posts, err := uc.postRepo.List(ctx, offset, limit)
-	if err != nil {
-		return nil, errors.Wrap(err, "postRepo.List")
-	}
-	return posts, nil
-}
-
 // UpdatePost implements UseCase.
 func (uc *usecase) UpdatePost(ctx context.Context, post *domain.Post) (*domain.Post, error) {
 	post, err := uc.postRepo.Update(ctx, post)
 	if err != nil {
-		return nil, errors.Wrap(err, "postRepo.GetWithUnscoped")
+		return nil, errors.Wrap(err, "postRepo.UpdatePost")
 	}
 	return post, nil
 }

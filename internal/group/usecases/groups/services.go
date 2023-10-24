@@ -21,6 +21,24 @@ type service struct {
 	repoGroupMember groupmembers.GroupMemberRepo
 }
 
+// GetAllGroupByUserId implements UseCase.
+func (s *service) GetAllGroupByUserId(ctx context.Context, userId uuid.UUID) ([]*domain.Group, error) {
+	result, err := s.repo.GetAllGroupByUserId(ctx, userId)
+	if err != nil {
+		return nil, errors.Wrap(err, "service.GetAllGroupByUserId")
+	}
+	return result, nil
+}
+
+// GetAllGroupByUserId implements UseCase.
+func (s *service) GetAllGroupIdByUserId(ctx context.Context, userId uuid.UUID) ([]string, error) {
+	result, err := s.repo.GetAllGroupIdByUserId(ctx, userId)
+	if err != nil {
+		return nil, errors.Wrap(err, "service.GetAllGroupIdByUserId")
+	}
+	return result, nil
+}
+
 // Create implements UseCase.
 func (s *service) CreateGroup(ctx context.Context, group *domain.Group) (*domain.Group, error) {
 	slog.Info("Create Group Service")

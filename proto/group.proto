@@ -51,6 +51,26 @@ service GroupService {
             tags: "Group"
         };
     }
+    rpc GetAllGroupByUserId(GetAllGroupByUserIdRequest) returns (GetAllGroupByUserIdResponse){
+        option (google.api.http) = {
+            get: "/v1/api/groups/{userId}"
+        };
+        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+            summary: "Get all group member"
+            description: ""
+            tags: "Group"
+        };
+    }
+    rpc GetAllGroupIdByUserId(GetAllGroupIdByUserIdRequest) returns (GetAllGroupIdByUserIdResponse){
+        option (google.api.http) = {
+            get: "/v1/api/group-ids/{userId}"
+        };
+        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+            summary: "Get all group id by user id",
+            description: ""
+            tags: "Group"
+        };
+    }
     // GroupMember
     rpc CreateGroupMember(CreateGroupMemberRequest) returns (CreateGroupMemberResponse){
         option (google.api.http) = {
@@ -84,7 +104,7 @@ service GroupService {
             tags: "Group"
         };
     }
-    rpc GetAllGroupMembers(GetAllGroupMembersRequest) returns (CreateGroupMemberResponse){
+    rpc GetAllGroupMembers(GetAllGroupMembersRequest) returns (GetAllGroupMembersResponse){
         option (google.api.http) = {
             get: "/v1/api/group-members/{groupId}"
         };
@@ -94,6 +114,7 @@ service GroupService {
             tags: "Group"
         };
     }
+    
 
 }
 
@@ -114,6 +135,9 @@ message GetGroupRequest {
 }
 message GetAllGroupMembersRequest {
     string groupId = 1;
+}
+message GetAllGroupMembersResponse {
+    repeated GroupMemberResponse group_members = 1;
 }
 message DeleteGroupRequest {
     string id = 1;
@@ -141,6 +165,18 @@ message UpdateGroupMemberRequest {
 }
 message UpdateGroupMemberResponse {
     GroupMemberResponse group_member = 1;
+}
+message GetAllGroupByUserIdRequest {
+    string userId = 1;
+}
+message GetAllGroupByUserIdResponse {
+    repeated GroupResponse groups = 1;
+}
+message GetAllGroupIdByUserIdRequest {
+    string userId = 1;
+}
+message GetAllGroupIdByUserIdResponse {
+    repeated string group_ids = 1;
 }
 message GroupRequest {
     string name = 1;

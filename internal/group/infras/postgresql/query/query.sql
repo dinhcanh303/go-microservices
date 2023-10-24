@@ -55,3 +55,15 @@ SELECT count(*) FROM "group".group_members WHERE group_id = $1;
 -- name: DeleteAllGroupMembersByGroupId :exec
 DELETE FROM "group".group_members WHERE group_id = $1;
 
+-- name: GetAllGroupByUserId :many
+SELECT g.*
+FROM "group".groups AS g
+INNER JOIN "group".group_members AS gm ON g.id = gm.group_id
+WHERE gm.user_id = $1;
+
+-- name: GetAllGroupIdByUserId :many
+SELECT g.id
+FROM "group".groups AS g
+INNER JOIN "group".group_members AS gm ON g.id = gm.group_id
+WHERE gm.user_id = $1;
+

@@ -9,7 +9,7 @@ import (
 	"syscall"
 
 	"github.com/dinhcanh303/go-microservices/cmd/upload/config"
-	"github.com/dinhcanh303/go-microservices/internal/like/app"
+	"github.com/dinhcanh303/go-microservices/internal/upload/app"
 	"github.com/dinhcanh303/go-microservices/pkg/logger"
 	"github.com/dinhcanh303/go-microservices/pkg/postgres"
 	"github.com/sirupsen/logrus"

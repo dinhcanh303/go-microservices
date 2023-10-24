@@ -15,3 +15,10 @@ func StringToNullUUID(uuidString string) uuid.NullUUID {
 		Valid: true,
 	}
 }
+func StringToUUID(uuidString string) uuid.UUID {
+	paserdUUID, err := uuid.Parse(uuidString)
+	if err != nil {
+		slog.Warn("Parsed UUID failed")
+	}
+	return paserdUUID
+}

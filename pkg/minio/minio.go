@@ -65,4 +65,4 @@ func (m *minio) UploadFile(file *multipart.FileHeader, buffer io.Reader) (*minio
 	return &info, nil
 }
 
-var _ MinioUpload = (*minio)(nil)
+var _ MinioService = (*minio)(nil)

@@ -26,16 +26,25 @@ var _ posts.PostRepo = (*postRepo)(nil)
 
 var RepositoryPostSet = wire.NewSet(NewPostRepo)
 
+// GetByFeed implements posts.PostRepo.
+func (*postRepo) GetByFeed(ctx context.Context, userIds, groupIds string, limit int32, offset int32) ([]*domain.Post, error) {
+	panic("unimplemented")
+}
+
 // GetByGroupId implements posts.PostRepo.
-func (rp *postRepo) GetByGroupId(ctx context.Context, groupId uuid.UUID) ([]*domain.Post, error) {
+func (rp *postRepo) GetByGroupId(ctx context.Context, groupId uuid.UUID, limit, offset int32) ([]*domain.Post, error) {
 	db := rp.pg.GetDB()
 	querier := postgresql.New(db)
-	results, err := querier.GetByGroupId(ctx, uuid.NullUUID{
-		UUID:  groupId,
-		Valid: true, // Set this to true if groupId is valid, or false if it's NULL
+	results, err := querier.GetByGroupId(ctx, postgresql.GetByGroupIdParams{
+		GroupID: uuid.NullUUID{
+			UUID:  groupId,
+			Valid: true, // Set this to true if groupId is valid, or false if it's NULL
+		},
+		Limit:  limit,
+		Offset: offset,
 	})
 	if err != nil {
-		return nil, errors.Wrap(err, "qtx.Get(ctx, id) failed")
+		return nil, errors.Wrap(err, "qtx.GetByGroupId(ctx, userId , limit , offset) failed")
 	}
 	return lo.Map(results, func(item postgresql.PostPost, _ int) *domain.Post {
 		return &domain.Post{
@@ -52,12 +61,16 @@ func (rp *postRepo) GetByGroupId(ctx context.Context, groupId uuid.UUID) ([]*dom
 }
 
 // GetByUserId implements posts.PostRepo.
-func (rp *postRepo) GetByUserId(ctx context.Context, userId uuid.UUID) ([]*domain.Post, error) {
+func (rp *postRepo) GetByUserId(ctx context.Context, userId uuid.UUID, limit, offset int32) ([]*domain.Post, error) {
 	db := rp.pg.GetDB()
 	querier := postgresql.New(db)
-	results, err := querier.GetByUserId(ctx, userId)
+	results, err := querier.GetByUserId(ctx, postgresql.GetByUserIdParams{
+		UserID: userId,
+		Limit:  limit,
+		Offset: offset,
+	})
 	if err != nil {
-		return nil, errors.Wrap(err, "qtx.Get(ctx, id) failed")
+		return nil, errors.Wrap(err, "qtx.GetByUserId(ctx, userId , limit , offset) failed")
 	}
 	return lo.Map(results, func(item postgresql.PostPost, _ int) *domain.Post {
 		return &domain.Post{
@@ -71,11 +84,6 @@ func (rp *postRepo) GetByUserId(ctx context.Context, userId uuid.UUID) ([]*domai
 			UpdatedAt: item.UpdatedAt,
 		}
 	}), nil
-}
-
-// List implements posts.PostRepo.
-func (*postRepo) List(ctx context.Context, offset int, limit int) ([]*domain.Post, error) {
-	panic("unimplemented")
 }
 
 // Create implements posts.PostRepo.

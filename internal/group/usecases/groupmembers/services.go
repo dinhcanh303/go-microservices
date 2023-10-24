@@ -33,12 +33,12 @@ func (s *service) CreateGroupMember(ctx context.Context, groupMember *domain.Gro
 }
 
 // DeleteGroupMember implements UseCase.
-func (s *service) DeleteGroupMember(ctx context.Context, id uuid.UUID) error {
-	err := s.repo.DeleteGroupMember(ctx, id)
+func (s *service) DeleteGroupMember(ctx context.Context, id uuid.UUID) (bool, error) {
+	deleted, err := s.repo.DeleteGroupMember(ctx, id)
 	if err != nil {
-		return errors.Wrap(err, "service.DeleteGroupMember")
+		return false, errors.Wrap(err, "service.DeleteGroupMember")
 	}
-	return nil
+	return deleted, nil
 }
 
 // UpdateGroupMember implements UseCase.

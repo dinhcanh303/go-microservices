@@ -11,11 +11,46 @@ import (
 	"github.com/google/uuid"
 	"github.com/google/wire"
 	"github.com/pkg/errors"
+	"github.com/samber/lo"
 	"golang.org/x/exp/slog"
 )
 
 type groupRepo struct {
 	pg postgres.DBEngine
+}
+
+// GetAllGroupByUserId implements groups.GroupRepo.
+func (rp *groupRepo) GetAllGroupByUserId(ctx context.Context, userId uuid.UUID) ([]*domain.Group, error) {
+	slog.Info("Repo GetAllGroupByUserId")
+	db := rp.pg.GetDB()
+	querier := postgresql.New(db)
+	results, err := querier.GetAllGroupByUserId(ctx, userId)
+	if err != nil {
+		return nil, errors.Wrap(err, "qtx.GetAllGroupByUserId(ctx, userId) failed")
+	}
+	return lo.Map(results, func(item postgresql.GroupGroup, _ int) *domain.Group {
+		return &domain.Group{
+			ID:          item.ID,
+			Name:        item.Name,
+			Description: item.Description,
+			Status:      item.Status,
+			UserID:      item.UserID,
+			CreatedAt:   item.CreatedAt,
+			UpdatedAt:   item.UpdatedAt,
+		}
+	}), nil
+}
+func (rp *groupRepo) GetAllGroupIdByUserId(ctx context.Context, userId uuid.UUID) ([]string, error) {
+	slog.Info("Repo GetAllGroupByUserId")
+	db := rp.pg.GetDB()
+	querier := postgresql.New(db)
+	results, err := querier.GetAllGroupIdByUserId(ctx, userId)
+	if err != nil {
+		return nil, errors.Wrap(err, "qtx.GetAllGroupByUserId(ctx, userId) failed")
+	}
+	return lo.Map(results, func(item uuid.UUID, _ int) string {
+		return item.String()
+	}), nil
 }
 
 func NewGroupRepo(pg postgres.DBEngine) groups.GroupRepo {
@@ -84,25 +119,6 @@ func (rp *groupRepo) Get(ctx context.Context, id uuid.UUID) (*domain.Group, erro
 		return nil, errors.Wrap(err, "qtx.Get(ctx, id) failed")
 	}
 
-	return &domain.Group{
-		ID:          result.ID,
-		Name:        result.Name,
-		Description: result.Description,
-		Status:      result.Status,
-		UserID:      result.UserID,
-		CreatedAt:   result.CreatedAt,
-		UpdatedAt:   result.UpdatedAt,
-	}, nil
-}
-
-// GetWithUnscoped implements groups.GroupRepo.
-func (rp *groupRepo) GetWithUnscoped(ctx context.Context, id uuid.UUID) (*domain.Group, error) {
-	db := rp.pg.GetDB()
-	querier := postgresql.New(db)
-	result, err := querier.GetWithUnscoped(ctx, id)
-	if err != nil {
-		return nil, errors.Wrap(err, "qtx.GetWithUnscoped(ctx, id) failed")
-	}
 	return &domain.Group{
 		ID:          result.ID,
 		Name:        result.Name,

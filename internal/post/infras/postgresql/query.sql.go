@@ -86,17 +86,70 @@ func (q *Queries) Get(ctx context.Context, id uuid.UUID) (PostPost, error) {
 	return i, err
 }
 
-const getByGroupId = `-- name: GetByGroupId :many
-
-
-SELECT id, user_id, group_id, title, content, status, created_at, updated_at FROM post.posts WHERE group_id = $1
+const getByFeed = `-- name: GetByFeed :many
+SELECT id, user_id, group_id, title, content, status, created_at, updated_at
+FROM post.posts
+WHERE user_id IN ($1)
+   OR group_id IN ($2)
+LIMIT $3 OFFSET $4
 `
 
-// -- name: GetWithUnscoped :one
-// SELECT * FROM post.posts
-// WHERE id = $1 AND deleted_at IS NOT NULL;
-func (q *Queries) GetByGroupId(ctx context.Context, groupID uuid.NullUUID) ([]PostPost, error) {
-	rows, err := q.db.QueryContext(ctx, getByGroupId, groupID)
+type GetByFeedParams struct {
+	UserID  uuid.UUID     `json:"user_id"`
+	GroupID uuid.NullUUID `json:"group_id"`
+	Limit   int32         `json:"limit"`
+	Offset  int32         `json:"offset"`
+}
+
+func (q *Queries) GetByFeed(ctx context.Context, arg GetByFeedParams) ([]PostPost, error) {
+	rows, err := q.db.QueryContext(ctx, getByFeed,
+		arg.UserID,
+		arg.GroupID,
+		arg.Limit,
+		arg.Offset,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []PostPost
+	for rows.Next() {
+		var i PostPost
+		if err := rows.Scan(
+			&i.ID,
+			&i.UserID,
+			&i.GroupID,
+			&i.Title,
+			&i.Content,
+			&i.Status,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getByGroupId = `-- name: GetByGroupId :many
+SELECT id, user_id, group_id, title, content, status, created_at, updated_at FROM post.posts WHERE group_id = $1 LIMIT $2 OFFSET $3
+`
+
+type GetByGroupIdParams struct {
+	GroupID uuid.NullUUID `json:"group_id"`
+	Limit   int32         `json:"limit"`
+	Offset  int32         `json:"offset"`
+}
+
+func (q *Queries) GetByGroupId(ctx context.Context, arg GetByGroupIdParams) ([]PostPost, error) {
+	rows, err := q.db.QueryContext(ctx, getByGroupId, arg.GroupID, arg.Limit, arg.Offset)
 	if err != nil {
 		return nil, err
 	}
@@ -129,52 +182,17 @@ func (q *Queries) GetByGroupId(ctx context.Context, groupID uuid.NullUUID) ([]Po
 
 const getByUserId = `-- name: GetByUserId :many
 SELECT id, user_id, group_id, title, content, status, created_at, updated_at FROM post.posts 
-WHERE user_id = $1 AND group_id IS NULL
+WHERE user_id = $1 AND group_id IS NULL LIMIT $2 OFFSET $3
 `
 
-func (q *Queries) GetByUserId(ctx context.Context, userID uuid.UUID) ([]PostPost, error) {
-	rows, err := q.db.QueryContext(ctx, getByUserId, userID)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-	var items []PostPost
-	for rows.Next() {
-		var i PostPost
-		if err := rows.Scan(
-			&i.ID,
-			&i.UserID,
-			&i.GroupID,
-			&i.Title,
-			&i.Content,
-			&i.Status,
-			&i.CreatedAt,
-			&i.UpdatedAt,
-		); err != nil {
-			return nil, err
-		}
-		items = append(items, i)
-	}
-	if err := rows.Close(); err != nil {
-		return nil, err
-	}
-	if err := rows.Err(); err != nil {
-		return nil, err
-	}
-	return items, nil
+type GetByUserIdParams struct {
+	UserID uuid.UUID `json:"user_id"`
+	Limit  int32     `json:"limit"`
+	Offset int32     `json:"offset"`
 }
 
-const list = `-- name: List :many
-SELECT id, user_id, group_id, title, content, status, created_at, updated_at FROM post.posts OFFSET $1 LIMIT $2
-`
-
-type ListParams struct {
-	Offset int32 `json:"offset"`
-	Limit  int32 `json:"limit"`
-}
-
-func (q *Queries) List(ctx context.Context, arg ListParams) ([]PostPost, error) {
-	rows, err := q.db.QueryContext(ctx, list, arg.Offset, arg.Limit)
+func (q *Queries) GetByUserId(ctx context.Context, arg GetByUserIdParams) ([]PostPost, error) {
+	rows, err := q.db.QueryContext(ctx, getByUserId, arg.UserID, arg.Limit, arg.Offset)
 	if err != nil {
 		return nil, err
 	}

@@ -27,7 +27,7 @@ func InitApp(cfg *config.Config, dbConnStr postgres.DBConnString, grpcServer *gr
 	groupMemberRepo := repo.NewGroupMemberRepo(dbEngine)
 	useCase := groups.NewService(groupRepo, groupMemberRepo)
 	groupmembersUseCase := groupmembers.NewService(groupMemberRepo)
-	groupServiceServer := router.NewGRPCGroupServer(grpcServer, cfg, useCase)
+	groupServiceServer := router.NewGRPCGroupServer(grpcServer, cfg, useCase, groupmembersUseCase)
 	app := New(cfg, dbEngine, useCase, groupmembersUseCase, groupServiceServer)
 	return app, func() {
 		cleanup()

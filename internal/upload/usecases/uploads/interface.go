@@ -1,4 +1,4 @@
-package attachments
+package uploads
 
 import (
 	"context"
@@ -15,8 +15,8 @@ type (
 		Delete(ctx context.Context, attachmentId uuid.UUID) (bool, error)
 	}
 	UseCase interface {
+		UploadFile() ([]*string, error)
 		GetAttachment(ctx context.Context, attachmentId uuid.UUID) (*domain.Attachment, error)
-		CreateAttachment(ctx context.Context, attachment *domain.Attachment) (*domain.Attachment, error)
 		UpdateAttachment(ctx context.Context, attachment *domain.Attachment) (*domain.Attachment, error)
 		DeleteAttachment(ctx context.Context, attachmentId uuid.UUID) (bool, error)
 	}

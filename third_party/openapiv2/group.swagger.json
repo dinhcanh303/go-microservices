@@ -16,6 +16,37 @@
     "application/json"
   ],
   "paths": {
+    "/v1/api/group-ids/{userId}": {
+      "get": {
+        "summary": "Get all group id by user id",
+        "operationId": "GroupService_GetAllGroupIdByUserId",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/groupapiGetAllGroupIdByUserIdResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "Group"
+        ]
+      }
+    },
     "/v1/api/group-members": {
       "post": {
         "summary": "Create group member",
@@ -57,7 +88,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/groupapiCreateGroupMemberResponse"
+              "$ref": "#/definitions/groupapiGetAllGroupMembersResponse"
             }
           },
           "default": {
@@ -334,6 +365,37 @@
           "Group"
         ]
       }
+    },
+    "/v1/api/groups/{userId}": {
+      "get": {
+        "summary": "Get all group member",
+        "operationId": "GroupService_GetAllGroupByUserId",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/groupapiGetAllGroupByUserIdResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "Group"
+        ]
+      }
     }
   },
   "definitions": {
@@ -382,6 +444,41 @@
       "properties": {
         "deleted": {
           "type": "boolean"
+        }
+      }
+    },
+    "groupapiGetAllGroupByUserIdResponse": {
+      "type": "object",
+      "properties": {
+        "groups": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/groupapiGroupResponse"
+          }
+        }
+      }
+    },
+    "groupapiGetAllGroupIdByUserIdResponse": {
+      "type": "object",
+      "properties": {
+        "groupIds": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "groupapiGetAllGroupMembersResponse": {
+      "type": "object",
+      "properties": {
+        "groupMembers": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/groupapiGroupMemberResponse"
+          }
         }
       }
     },
