@@ -7,21 +7,25 @@ import (
 	"github.com/dinhcanh303/go-microservices/cmd/upload/config"
 	"github.com/dinhcanh303/go-microservices/internal/upload/app/router"
 	"github.com/dinhcanh303/go-microservices/internal/upload/infras/repo"
-	uploadsUC "github.com/dinhcanh303/go-microservices/internal/upload/usecases/groups"
+	uploadsUC "github.com/dinhcanh303/go-microservices/internal/upload/usecases/uploads"
+	configs "github.com/dinhcanh303/go-microservices/pkg/config"
+	"github.com/dinhcanh303/go-microservices/pkg/minio"
 	"github.com/dinhcanh303/go-microservices/pkg/postgres"
 	"github.com/google/wire"
-	"google.golang.org/grpc"
+	"github.com/labstack/echo/v4"
 )
 
 func InitApp(
 	cfg *config.Config,
+	cfgMinio *configs.Minio,
 	dbConnStr postgres.DBConnString,
-	grpcServer *grpc.Server,
+	echo *echo.Echo,
 ) (*App, func(), error) {
 	panic(wire.Build(
 		New,
 		dbEngineFunc,
-		router.UploadGRPCServerSet,
+		minioFunc,
+		router.ConfigureRoutesSet,
 		repo.RepositoryUploadSet,
 		uploadsUC.UseCaseSet,
 	))
@@ -32,4 +36,7 @@ func dbEngineFunc(url postgres.DBConnString) (postgres.DBEngine, func(), error) 
 		return nil, nil, err
 	}
 	return db, func() { db.Close() }, nil
+}
+func minioFunc(cfg *configs.Minio) (minio.MinioService, func(), error) {
+	return minio.NewMinio(cfg), func() {}, nil
 }

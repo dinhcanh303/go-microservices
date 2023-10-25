@@ -7,29 +7,32 @@
 package app
 
 import (
-	"github.com/dinhcanh303/go-microservices/cmd/group/config"
-	"github.com/dinhcanh303/go-microservices/internal/group/app/router"
-	"github.com/dinhcanh303/go-microservices/internal/group/infras/repo"
-	"github.com/dinhcanh303/go-microservices/internal/group/usecases/groupmembers"
-	"github.com/dinhcanh303/go-microservices/internal/group/usecases/groups"
+	"github.com/dinhcanh303/go-microservices/cmd/upload/config"
+	"github.com/dinhcanh303/go-microservices/internal/upload/infras/repo"
+	"github.com/dinhcanh303/go-microservices/internal/upload/usecases/uploads"
+	"github.com/dinhcanh303/go-microservices/pkg/config"
+	"github.com/dinhcanh303/go-microservices/pkg/minio"
 	"github.com/dinhcanh303/go-microservices/pkg/postgres"
-	"google.golang.org/grpc"
+	"github.com/labstack/echo/v4"
 )
 
 // Injectors from wire.go:
 
-func InitApp(cfg *config.Config, dbConnStr postgres.DBConnString, grpcServer *grpc.Server) (*App, func(), error) {
+func InitApp(cfg *config.Config, cfgMinio *configs.Minio, dbConnStr postgres.DBConnString, echo2 *echo.Echo) (*App, func(), error) {
 	dbEngine, cleanup, err := dbEngineFunc(dbConnStr)
 	if err != nil {
 		return nil, nil, err
 	}
-	groupRepo := repo.NewGroupRepo(dbEngine)
-	groupMemberRepo := repo.NewGroupMemberRepo(dbEngine)
-	useCase := groups.NewService(groupRepo, groupMemberRepo)
-	groupmembersUseCase := groupmembers.NewService(groupMemberRepo)
-	groupServiceServer := router.NewGRPCGroupServer(grpcServer, cfg, useCase)
-	app := New(cfg, dbEngine, useCase, groupmembersUseCase, groupServiceServer)
+	attachmentRepo := repo.NewAttachmentRepo(dbEngine)
+	minioService, cleanup2, err := minioFunc(cfgMinio)
+	if err != nil {
+		cleanup()
+		return nil, nil, err
+	}
+	useCase := uploads.NewUploadService(attachmentRepo, minioService)
+	app := New(cfg, cfgMinio, dbEngine, useCase, echo2)
 	return app, func() {
+		cleanup2()
 		cleanup()
 	}, nil
 }
@@ -42,4 +45,8 @@ func dbEngineFunc(url postgres.DBConnString) (postgres.DBEngine, func(), error) 
 		return nil, nil, err
 	}
 	return db, func() { db.Close() }, nil
+}
+
+func minioFunc(cfg *configs.Minio) (minio.MinioService, func(), error) {
+	return minio.NewMinio(cfg), func() {}, nil
 }

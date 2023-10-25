@@ -1,27 +1,28 @@
--- name: Get:one
+-- name: Get :one
 SELECT * FROM upload.attachments WHERE id = $1;
 
--- name: Create:one
+-- name: Create :one
 INSERT INTO upload.attachments 
     (
         id,
         user_id, 
         filename, 
         extension,
-        mime_type
+        mime_type,
+        version_id,
         url,
-        url_thumbnail
-        created_at, 
-        updated_at)
+        url_thumbnail)
 VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING * ;
 
--- name: Update:one
-UPDATE upload.attachments SET
+-- name: Update :one
+UPDATE upload.attachments 
+SET
     attachable_type = $2,
-    attachable_id = $3,
+    attachable_id = $3
+WHERE id = $1 RETURNING *;
 
-
-
+-- name: Delete :exec
+DELETE FROM upload.attachments WHERE id = $1;
 
 
    

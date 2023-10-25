@@ -13,11 +13,11 @@ CREATE TABLE
         extension VARCHAR(255) NOT NULL,
         mime_type VARCHAR(255) DEFAULT NULL,
         folder VARCHAR(255) DEFAULT NULL,
-        url_thumbnail VARCHAR(255) DEFAULT NULL,
+        version_id VARCHAR(255) DEFAULT NULL,
         url VARCHAR(255) NOT NULL,
+        url_thumbnail VARCHAR(255) DEFAULT NULL,
         created_at timestamp with time zone NOT NULL DEFAULT current_timestamp,
         updated_at timestamp with time zone NOT NULL DEFAULT (now()),
-        -- deleted_at timestamp with time zone NULL,
         CONSTRAINT pk_attachments PRIMARY KEY (id)
     );
 

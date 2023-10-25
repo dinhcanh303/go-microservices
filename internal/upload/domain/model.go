@@ -15,9 +15,33 @@ type Attachment struct {
 	Extension      string    `json:"extension"`
 	MimeType       string    `json:"mime_type"`
 	Folder         string    `json:"folder"`
-	URLThumbnail   string    `json:"url_thumbnail"`
+	VersionID      string    `json:"version_id"`
 	URL            string    `json:"url"`
+	URLThumbnail   string    `json:"url_thumbnail"`
 	CreatedAt      time.Time `json:"created_at"`
 	UpdatedAt      time.Time `json:"updated_at"`
-	DeletedAt      time.Time `json:"deleted_at"`
+}
+
+func NewAttachment(
+	userId uuid.UUID,
+	fileName,
+	extension,
+	mimeType,
+	folder,
+	versionID,
+	urlThumbnail,
+	url string) *Attachment {
+	return &Attachment{
+		ID:           uuid.New(),
+		UserID:       userId,
+		FileName:     fileName,
+		Extension:    extension,
+		MimeType:     mimeType,
+		Folder:       folder,
+		VersionID:    versionID,
+		URL:          url,
+		URLThumbnail: urlThumbnail,
+		CreatedAt:    time.Now(),
+		UpdatedAt:    time.Now(),
+	}
 }

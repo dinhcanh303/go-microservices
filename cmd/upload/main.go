@@ -3,36 +3,19 @@ package main
 import (
 	"context"
 	"fmt"
-	"net"
 	"os"
-	"os/signal"
-	"syscall"
 
 	"github.com/dinhcanh303/go-microservices/cmd/upload/config"
 	"github.com/dinhcanh303/go-microservices/internal/upload/app"
+	configs "github.com/dinhcanh303/go-microservices/pkg/config"
 	"github.com/dinhcanh303/go-microservices/pkg/logger"
 	"github.com/dinhcanh303/go-microservices/pkg/postgres"
+	"github.com/golang/glog"
+	"github.com/labstack/echo/v4"
 	"github.com/sirupsen/logrus"
 	"go.uber.org/automaxprocs/maxprocs"
 	"golang.org/x/exp/slog"
-	"google.golang.org/grpc"
 )
-
-// func upload(ctx echo.Context) error {
-// 	form, err := ctx.MultipartForm()
-// 	if err != nil {
-// 		return err
-// 	}
-// 	files := form.File["files"]
-// 	for _, file := range files {
-// 		buffer, err := file.Open()
-// 		if err != nil {
-// 			return err
-// 		}
-// 		defer buffer.Close()
-// 		minio.MinioUpload.UploadFile(file, buffer)
-// 	}
-// }
 
 func main() {
 	_, err := maxprocs.Set()
@@ -41,6 +24,10 @@ func main() {
 	}
 	ctx, cancel := context.WithCancel(context.Background())
 	cfg, err := config.NewConfig()
+	if err != nil {
+		slog.Error("Failed get config", err)
+	}
+	cfgMinio, err := configs.NewConfigMinio()
 	if err != nil {
 		slog.Error("Failed get config", err)
 	}
@@ -54,52 +41,18 @@ func main() {
 	//integrate Logrus with the slog logger
 	logrusHandle := logger.NewLogrusHandler(logrus.StandardLogger())
 	slog.New(logrusHandle)
-
-	server := grpc.NewServer()
-
-	go func() {
-		defer server.GracefulStop()
-		<-ctx.Done()
-	}()
-	cleanup := prepareApp(ctx, cancel, cfg, server)
-
-	//gRPC Server
-	address := fmt.Sprintf("%s:%d", cfg.HTTP.Host, cfg.HTTP.Port)
-	network := "tcp"
-	l, err := net.Listen(network, address)
-	if err != nil {
-		slog.Error("Failed to listen to address", err, "Network", network, "Address", address)
-		cancel()
-		<-ctx.Done()
+	webPort, ok := os.LookupEnv("WEB_PORT")
+	if !ok || webPort == "" {
+		glog.Fatalf("web: environment variable not declared: webPort")
 	}
-	slog.Info("🌏 start server...", "address", address)
-	defer func() {
-		if err1 := l.Close(); err != nil {
-			slog.Error("failed to close", err1, "network", network, "address", address)
-			<-ctx.Done()
-		}
-	}()
-	err = server.Serve(l)
-	if err != nil {
-		slog.Error("failed start gRPC server", err, "network", network, "address", address)
-		cancel()
-		<-ctx.Done()
-	}
-	quit := make(chan os.Signal, 1)
-	signal.Notify(quit, os.Interrupt, syscall.SIGTERM)
-	select {
-	case v := <-quit:
-		cleanup()
-		slog.Info("signal.Notify", v)
-	case done := <-ctx.Done():
-		cleanup()
-		slog.Info("ctx.Done", "app done", done)
-	}
+	e := echo.New()
+	prepareApp(ctx, cancel, cfg, cfgMinio, e)
+	e.Logger.Fatal(e.Start(fmt.Sprintf(":%v", webPort)))
 
 }
 
-func prepareApp(ctx context.Context, cancel context.CancelFunc, cfg *config.Config, server *grpc.Server) func() {
-	_, cleanup, err := app.InitApp(cfg, postgres.DBConnString(cfg.PG.DsnURL), server)
+func prepareApp(ctx context.Context, cancel context.CancelFunc, cfg *config.Config, cfgMinio *configs.Minio, echo *echo.Echo) func() {
+	_, cleanup, err := app.InitApp(cfg, cfgMinio, postgres.DBConnString(cfg.PG.DsnURL), echo)
 	if err != nil {
 		slog.Error("Failed init app", err)
 		cancel()

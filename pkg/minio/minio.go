@@ -13,7 +13,38 @@ import (
 )
 
 type minio struct {
-	cf configs.Minio
+	cf *configs.Minio
+}
+
+func NewMinio(cf *configs.Minio) MinioService {
+	return &minio{
+		cf: cf,
+	}
+}
+
+// DeleteFile implements MinioService.
+func (m *minio) DeleteFile(fileNames []string) (bool, error) {
+	endpoint := m.cf.EndPoint
+	accessKeyID := m.cf.AccessKeyID
+	secretAccessKey := m.cf.SecretAccessKey
+	useSSL := m.cf.UseSSL
+	minioClient, err := minioV7.New(endpoint, &minioV7.Options{
+		Creds:  credentials.NewStaticV4(accessKeyID, secretAccessKey, ""),
+		Secure: useSSL,
+	})
+	if err != nil {
+		return false, errors.Wrap(err, "minio.DeleteFile failed")
+	}
+	opts := minioV7.RemoveObjectOptions{
+		GovernanceBypass: true,
+	}
+	for _, fileName := range fileNames {
+		err := minioClient.RemoveObject(context.Background(), m.cf.BucketName, fileName, opts)
+		if err != nil {
+			return false, errors.Wrap(err, "minio.DeleteFile failed")
+		}
+	}
+	return true, nil
 }
 
 // UploadFile implements MinioUpload.
