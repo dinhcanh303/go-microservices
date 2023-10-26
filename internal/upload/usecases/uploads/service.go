@@ -36,7 +36,7 @@ func (s *uploadService) DeleteAttachment(ctx context.Context, attachmentId uuid.
 	}
 	fileNames := make([]string, 1)
 	fileNames = append(fileNames, attachment.FileName)
-	deletedFile, err := s.minio.DeleteFile(fileNames)
+	deletedFile, err := s.minio.DeleteFile(ctx, fileNames)
 	if err != nil {
 		return false, errors.Wrap(err, "minioService.DeleteFile failed")
 	}
@@ -73,11 +73,13 @@ func (s *uploadService) UpdateAttachment(ctx context.Context, attachment *domain
 
 // UploadFile implements UseCase.
 func (s *uploadService) UploadFile(echoCtx echo.Context) ([]*domain.Attachment, error) {
+	slog.Info("Service: UploadFile")
 	ctx := context.Background()
 	form, err := echoCtx.MultipartForm()
 	if err != nil {
 		return nil, errors.Wrap(err, "Get Upload Form Error")
 	}
+	slog.Info("FORMDATA::", form)
 	files := form.File["files"]
 	results := make([]*domain.Attachment, 1)
 	for _, file := range files {
@@ -86,9 +88,11 @@ func (s *uploadService) UploadFile(echoCtx echo.Context) ([]*domain.Attachment, 
 			return nil, errors.Wrap(err, "Open Upload file buffer failed")
 		}
 		defer buffer.Close()
-		info, err := s.minio.UploadFile(file, buffer)
+		slog.Info("FILE::", &file)
+		info, err := s.minio.UploadFile(ctx, file, buffer)
+		slog.Info("INFO::", info)
 		if err != nil {
-			slog.Warn("Upload file failed: %v", err)
+			return nil, errors.Wrap(err, "Upload file failed:")
 		}
 		model := domain.NewAttachment(uuid.New(), info.Key, "", "", info.Bucket, info.VersionID, info.Location, info.Location)
 		attachment, err := s.repo.Create(ctx, model)
@@ -98,5 +102,6 @@ func (s *uploadService) UploadFile(echoCtx echo.Context) ([]*domain.Attachment, 
 		results = append(results, attachment)
 
 	}
+	slog.Info("Data::", results)
 	return results, nil
 }

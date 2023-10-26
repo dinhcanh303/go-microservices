@@ -1,8 +1,6 @@
 include .env
 export
 
-
-
 all: build test
 
 sqlc: 
@@ -18,6 +16,9 @@ clean:
 linter-golangci: ### check by golangci linter
 	golangci-lint run
 .PHONY: linter-golangci
+
+env:
+	docker run --env-file .env upload
 
 wire:
 	cd internal/group/app && wire && cd - && \

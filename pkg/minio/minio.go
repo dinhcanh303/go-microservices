@@ -4,6 +4,7 @@ import (
 	"context"
 	"io"
 	"log"
+	"log/slog"
 	"mime/multipart"
 
 	configs "github.com/dinhcanh303/go-microservices/pkg/config"
@@ -23,7 +24,7 @@ func NewMinio(cf *configs.Minio) MinioService {
 }
 
 // DeleteFile implements MinioService.
-func (m *minio) DeleteFile(fileNames []string) (bool, error) {
+func (m *minio) DeleteFile(ctx context.Context, fileNames []string) (bool, error) {
 	endpoint := m.cf.EndPoint
 	accessKeyID := m.cf.AccessKeyID
 	secretAccessKey := m.cf.SecretAccessKey
@@ -39,7 +40,7 @@ func (m *minio) DeleteFile(fileNames []string) (bool, error) {
 		GovernanceBypass: true,
 	}
 	for _, fileName := range fileNames {
-		err := minioClient.RemoveObject(context.Background(), m.cf.BucketName, fileName, opts)
+		err := minioClient.RemoveObject(ctx, m.cf.BucketName, fileName, opts)
 		if err != nil {
 			return false, errors.Wrap(err, "minio.DeleteFile failed")
 		}
@@ -48,51 +49,38 @@ func (m *minio) DeleteFile(fileNames []string) (bool, error) {
 }
 
 // UploadFile implements MinioUpload.
-func (m *minio) UploadFile(file *multipart.FileHeader, buffer io.Reader) (*minioV7.UploadInfo, error) {
-	ctx := context.Background()
+func (m *minio) UploadFile(ctx context.Context, file *multipart.FileHeader, buffer io.Reader) (*minioV7.UploadInfo, error) {
+	slog.Info("MINIO::Upload File")
+	mdf.Pla
 	endpoint := m.cf.EndPoint
 	accessKeyID := m.cf.AccessKeyID
 	secretAccessKey := m.cf.SecretAccessKey
-	useSSL := m.cf.UseSSL
-
+	// useSSL := m.cf.UseSSL
+	region := m.cf.Region
+	bucketName := m.cf.BucketName
+	// rootForlder := m.cf.RootFolder
 	// Initialize minio client object.
 	minioClient, err := minioV7.New(endpoint, &minioV7.Options{
 		Creds:  credentials.NewStaticV4(accessKeyID, secretAccessKey, ""),
-		Secure: useSSL,
+		Secure: true,
+		Region: region,
 	})
 	if err != nil {
 		log.Fatalln(err)
 	}
-	// Make a new bucket called.
-	bucketName := m.cf.BucketName
-	location := m.cf.Location
-	err = minioClient.MakeBucket(ctx, bucketName, minioV7.MakeBucketOptions{Region: location})
-	if err != nil {
-		// Check to see if we already own this bucket (which happens if you run this twice)
-		exists, errBucketExists := minioClient.BucketExists(ctx, bucketName)
-		if errBucketExists == nil && exists {
-			return nil, errors.Wrap(err, "We already own ::")
-		} else {
-			return nil, errors.Wrap(err, "Error:")
-		}
-	} else {
-		log.Printf("Successfully created %s\n", bucketName)
-	}
-
-	// Upload the zip file with FPutObject
-	// info, err := minioClient.FPutObject(ctx, bucketName, objectName,
-	// 	filePath, minioV7.PutObjectOptions{ContentType: contentType})
 	objectName := file.Filename
 	contentType := file.Header.Get("Content-Type")
 	fileSize := file.Size
+	slog.Info("FILE::", objectName, contentType, fileSize)
 	info, err := minioClient.PutObject(ctx, bucketName, objectName, buffer, fileSize, minioV7.PutObjectOptions{
 		ContentType: contentType,
 	})
+	slog.Info("MINIO FILE ERROR::", err)
+	slog.Info("MINIO FILE::", info)
 	if err != nil {
 		log.Fatalln(err)
 	}
-
-	log.Printf("Successfully uploaded %s of size %d\n", objectName, info.Size)
+	slog.Info("Successfully uploaded %s of size %d\n", objectName, info.Size)
 	return &info, nil
 }
 

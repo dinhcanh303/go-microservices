@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"context"
+	"log/slog"
 
 	"net/http"
 
@@ -23,7 +24,7 @@ func NewUploadHandler(uc uploads.UseCase) *UploadHandler {
 	}
 }
 
-var UploadServerSet = wire.NewSet(NewUploadHandler)
+var UploadHandlerSet = wire.NewSet(NewUploadHandler)
 
 // DeleteAttachment implements uploads.UseCase.
 func (s *UploadHandler) DeleteAttachment(ctx echo.Context) error {
@@ -70,6 +71,7 @@ func (s *UploadHandler) UpdateAttachment(ctx echo.Context) error {
 
 // UploadFile implements uploads.UseCase.
 func (s *UploadHandler) UploadFile(ctx echo.Context) error {
+	slog.Info("POST: UploadFile")
 	attachments, err := s.uc.UploadFile(ctx)
 	if err != nil {
 		return err

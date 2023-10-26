@@ -2,6 +2,7 @@ package app
 
 import (
 	"github.com/dinhcanh303/go-microservices/cmd/upload/config"
+	"github.com/dinhcanh303/go-microservices/internal/upload/app/handlers"
 	"github.com/dinhcanh303/go-microservices/internal/upload/usecases/uploads"
 	configs "github.com/dinhcanh303/go-microservices/pkg/config"
 	"github.com/dinhcanh303/go-microservices/pkg/postgres"
@@ -12,6 +13,7 @@ type App struct {
 	CfgMinio *configs.Minio
 	PG       postgres.DBEngine
 	UC       uploads.UseCase
+	Handler  *handlers.UploadHandler
 }
 
 func New(
@@ -19,11 +21,13 @@ func New(
 	cfgMinio *configs.Minio,
 	pg postgres.DBEngine,
 	uc uploads.UseCase,
+	handler *handlers.UploadHandler,
 ) *App {
 	return &App{
 		Cfg:      cfg,
 		CfgMinio: cfgMinio,
 		UC:       uc,
 		PG:       pg,
+		Handler:  handler,
 	}
 }

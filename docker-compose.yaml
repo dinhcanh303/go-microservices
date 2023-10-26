@@ -122,20 +122,42 @@ services:
         condition: service_healthy
     networks:
       - microservices-network
-  web:
+  upload:
     build:
       context: .
-      dockerfile: ./docker/Dockerfile-web
-    image: go-microservices-web
+      dockerfile: ./docker/Dockerfile-upload
+    image: go-microservices-upload
+
+    env_file:
+      - .env
     environment:
-      REVERSE_PROXY_URL: http://localhost:5000
-      WEB_PORT: 8888
+      APP_NAME: 'upload-service in docker'
+      IN_DOCKER: "true"
+      PG_URL: postgres://postgres:P@ssw0rd@postgres:5432/postgres
+      PG_DSN_URL: host=postgres user=postgres password=P@ssw0rd dbname=postgres sslmode=disable
+      MINIO_KMS_KES_CERT_FILE: path/to/certs/public.crt
+      MINIO_KMS_KES_KEY_FILE: path/to/certs/private.key
     ports:
-      - 8888:8888
+      - 5005:5005
     depends_on:
-      - proxy
+      postgres:
+        condition: service_healthy
     networks:
       - microservices-network
+  # web:
+  #   build:
+  #     context: .
+  #     dockerfile: ./docker/Dockerfile-web
+  #   image: go-microservices-web
+  #   environment:
+  #     REVERSE_PROXY_URL: http://localhost:5000
+  #     WEB_PORT: 8888
+  #   ports:
+  #     - 8888:8888
+  #   depends_on:
+  #     - proxy
+  #   networks:
+  #     - microservices-network
 
 networks:
   microservices-network:

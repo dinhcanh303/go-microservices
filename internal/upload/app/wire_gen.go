@@ -8,17 +8,17 @@ package app
 
 import (
 	"github.com/dinhcanh303/go-microservices/cmd/upload/config"
+	"github.com/dinhcanh303/go-microservices/internal/upload/app/handlers"
 	"github.com/dinhcanh303/go-microservices/internal/upload/infras/repo"
 	"github.com/dinhcanh303/go-microservices/internal/upload/usecases/uploads"
 	"github.com/dinhcanh303/go-microservices/pkg/config"
 	"github.com/dinhcanh303/go-microservices/pkg/minio"
 	"github.com/dinhcanh303/go-microservices/pkg/postgres"
-	"github.com/labstack/echo/v4"
 )
 
 // Injectors from wire.go:
 
-func InitApp(cfg *config.Config, cfgMinio *configs.Minio, dbConnStr postgres.DBConnString, echo2 *echo.Echo) (*App, func(), error) {
+func InitApp(cfg *config.Config, cfgMinio *configs.Minio, dbConnStr postgres.DBConnString) (*App, func(), error) {
 	dbEngine, cleanup, err := dbEngineFunc(dbConnStr)
 	if err != nil {
 		return nil, nil, err
@@ -30,7 +30,8 @@ func InitApp(cfg *config.Config, cfgMinio *configs.Minio, dbConnStr postgres.DBC
 		return nil, nil, err
 	}
 	useCase := uploads.NewUploadService(attachmentRepo, minioService)
-	app := New(cfg, cfgMinio, dbEngine, useCase, echo2)
+	uploadHandler := handlers.NewUploadHandler(useCase)
+	app := New(cfg, cfgMinio, dbEngine, useCase, uploadHandler)
 	return app, func() {
 		cleanup2()
 		cleanup()

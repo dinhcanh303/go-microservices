@@ -5,29 +5,27 @@ package app
 
 import (
 	"github.com/dinhcanh303/go-microservices/cmd/upload/config"
-	"github.com/dinhcanh303/go-microservices/internal/upload/app/router"
+	"github.com/dinhcanh303/go-microservices/internal/upload/app/handlers"
 	"github.com/dinhcanh303/go-microservices/internal/upload/infras/repo"
 	uploadsUC "github.com/dinhcanh303/go-microservices/internal/upload/usecases/uploads"
 	configs "github.com/dinhcanh303/go-microservices/pkg/config"
 	"github.com/dinhcanh303/go-microservices/pkg/minio"
 	"github.com/dinhcanh303/go-microservices/pkg/postgres"
 	"github.com/google/wire"
-	"github.com/labstack/echo/v4"
 )
 
 func InitApp(
 	cfg *config.Config,
 	cfgMinio *configs.Minio,
 	dbConnStr postgres.DBConnString,
-	echo *echo.Echo,
 ) (*App, func(), error) {
 	panic(wire.Build(
 		New,
 		dbEngineFunc,
 		minioFunc,
-		router.ConfigureRoutesSet,
 		repo.RepositoryUploadSet,
 		uploadsUC.UseCaseSet,
+		handlers.UploadHandlerSet,
 	))
 }
 func dbEngineFunc(url postgres.DBConnString) (postgres.DBEngine, func(), error) {

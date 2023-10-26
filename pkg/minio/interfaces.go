@@ -1,6 +1,7 @@
 package minio
 
 import (
+	"context"
 	"io"
 	"mime/multipart"
 
@@ -8,6 +9,6 @@ import (
 )
 
 type MinioService interface {
-	UploadFile(file *multipart.FileHeader, buffer io.Reader) (*minioV7.UploadInfo, error)
-	DeleteFile(fileNames []string) (bool, error)
+	UploadFile(ctx context.Context, file *multipart.FileHeader, buffer io.Reader) (*minioV7.UploadInfo, error)
+	DeleteFile(ctx context.Context, fileNames []string) (bool, error)
 }
