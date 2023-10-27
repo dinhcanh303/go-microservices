@@ -15,7 +15,7 @@ RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 \
 # Step 3: Final
 FROM scratch
 
-EXPOSE 5002
+EXPOSE 5003
 
 # GOPATH for scratch images is /
 COPY --from=builder /app/cmd/comment/config.yml /

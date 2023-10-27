@@ -44,6 +44,8 @@ services:
       GRPC_COMMENT_PORT: 5003
       GRPC_LIKE_HOST: 'like'
       GRPC_LIKE_PORT: 5004
+      GRPC_UPLOAD_HOST: 'upload'
+      GRPC_UPLOAD_PORT: 5006
     ports:
       - 5000:5000
     depends_on:
@@ -51,6 +53,7 @@ services:
       - post
       - comment
       - like
+      - upload
     networks:
       - microservices-network
   group:
@@ -139,6 +142,7 @@ services:
       MINIO_KMS_KES_KEY_FILE: path/to/certs/private.key
     ports:
       - 5005:5005
+      - 5006:5006
     depends_on:
       postgres:
         condition: service_healthy
