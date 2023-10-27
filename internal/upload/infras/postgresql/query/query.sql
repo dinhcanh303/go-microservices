@@ -1,6 +1,12 @@
 -- name: Get :one
 SELECT * FROM upload.attachments WHERE id = $1;
 
+-- name: GetByIds :many
+SELECT * FROM upload.attachments WHERE id IN (sqlc.slice(attachmentIds));
+
+-- name: GetAttachmentsByType :many
+SELECT * FROM upload.attachments WHERE attachable_type = $1 AND attachable_id = $2;
+
 -- name: Create :one
 INSERT INTO upload.attachments 
     (
@@ -9,10 +15,10 @@ INSERT INTO upload.attachments
         filename, 
         extension,
         mime_type,
-        version_id,
+        folder,
         url,
         url_thumbnail)
-VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING * ;
+VALUES ($1, $2, $3, $4, $5, $6, $7 ,$8) RETURNING * ;
 
 -- name: Update :one
 UPDATE upload.attachments 
@@ -21,8 +27,15 @@ SET
     attachable_id = $3
 WHERE id = $1 RETURNING *;
 
+-- name: UpdateByIds :many
+UPDATE upload.attachments 
+SET
+    attachable_type = $1,
+    attachable_id = $2
+WHERE id IN (sqlc.slice(attachmentIds)) RETURNING *;
+
 -- name: Delete :exec
 DELETE FROM upload.attachments WHERE id = $1;
 
-
-   
+-- name: DeleteByIds :exec
+DELETE FROM upload.attachments WHERE id IN (sqlc.slice(attachmentIds));

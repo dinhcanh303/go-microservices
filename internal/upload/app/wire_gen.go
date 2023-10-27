@@ -9,16 +9,18 @@ package app
 import (
 	"github.com/dinhcanh303/go-microservices/cmd/upload/config"
 	"github.com/dinhcanh303/go-microservices/internal/upload/app/handlers"
+	"github.com/dinhcanh303/go-microservices/internal/upload/app/router"
 	"github.com/dinhcanh303/go-microservices/internal/upload/infras/repo"
 	"github.com/dinhcanh303/go-microservices/internal/upload/usecases/uploads"
 	"github.com/dinhcanh303/go-microservices/pkg/config"
 	"github.com/dinhcanh303/go-microservices/pkg/minio"
 	"github.com/dinhcanh303/go-microservices/pkg/postgres"
+	"google.golang.org/grpc"
 )
 
 // Injectors from wire.go:
 
-func InitApp(cfg *config.Config, cfgMinio *configs.Minio, dbConnStr postgres.DBConnString) (*App, func(), error) {
+func InitApp(cfg *config.Config, cfgMinio *configs.Minio, dbConnStr postgres.DBConnString, grpcServer *grpc.Server) (*App, func(), error) {
 	dbEngine, cleanup, err := dbEngineFunc(dbConnStr)
 	if err != nil {
 		return nil, nil, err
@@ -31,7 +33,9 @@ func InitApp(cfg *config.Config, cfgMinio *configs.Minio, dbConnStr postgres.DBC
 	}
 	useCase := uploads.NewUploadService(attachmentRepo, minioService)
 	uploadHandler := handlers.NewUploadHandler(useCase)
-	app := New(cfg, cfgMinio, dbEngine, useCase, uploadHandler)
+	useCaseGRPC := uploads.NewUploadGRPCService(attachmentRepo)
+	uploadServiceServer := router.NewGRPCUploadServer(grpcServer, cfg, useCaseGRPC)
+	app := New(cfg, cfgMinio, dbEngine, useCase, uploadHandler, uploadServiceServer)
 	return app, func() {
 		cleanup2()
 		cleanup()

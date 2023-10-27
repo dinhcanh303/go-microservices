@@ -9,39 +9,24 @@ import "google/protobuf/timestamp.proto";
 option go_package = "github.com/dinhcanh303/go-microsevices/proto/gen";
 
 service UploadService {
-    rpc UpdateAttachment(UpdateAttachmentRequest) returns (UpdateAttachmentResponse) {
+    rpc GetAttachmentsByType(GetAttachmentsByTypeRequest) returns (GetAttachmentsByTypeResponse) {
         option (google.api.http) = {
-            post: "/v1/api/attachments/{attachment.id}"
+            post: "/v1/api/attachments"
         };
         option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
-            summary: "Update Attachment"
-            description: ""
-            tags: "Upload"
-        };
-    }
-    rpc DeleteAttachment(DeleteAttachmentRequest) returns (DeleteAttachmentResponse) {
-        option (google.api.http) = {
-            delete: "/v1/api/attachments/{id}"
-        };
-        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
-            summary: "Delete Attachment"
+            summary: "GetAttachmentsByType"
             description: ""
             tags: "Upload"
         };
     }
 
 }
-message UpdateAttachmentRequest{
-    Attachment attachment = 1;
+message GetAttachmentsByTypeRequest{
+    string attachable_type = 1;
+    string attachable_id = 2;
 }
-message UpdateAttachmentResponse{
-    Attachment attachment = 1;
-}
-message DeleteAttachmentRequest{
-    string id = 1;
-}
-message DeleteAttachmentResponse{
-    bool deleted = 1;
+message GetAttachmentsByTypeResponse{
+    repeated Attachment attachments = 1;
 }
 message Attachment{
     string id = 1;
@@ -52,8 +37,8 @@ message Attachment{
     string extension = 6;
     string mime_type = 7;
     string folder = 8;
-    string url_thumbnail = 9;
-    string url = 10;
+    string url = 9;
+    string url_thumbnail = 10;
     google.protobuf.Timestamp created_at = 11;
     google.protobuf.Timestamp updated_at = 12;
 }

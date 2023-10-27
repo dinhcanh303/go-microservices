@@ -16,15 +16,15 @@
     "application/json"
   ],
   "paths": {
-    "/v1/api/attachments/{attachment.id}": {
+    "/v1/api/attachments": {
       "post": {
-        "summary": "Update Attachment",
-        "operationId": "UploadService_UpdateAttachment",
+        "summary": "GetAttachmentsByType",
+        "operationId": "UploadService_GetAttachmentsByType",
         "responses": {
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/uploadapiUpdateAttachmentResponse"
+              "$ref": "#/definitions/uploadapiGetAttachmentsByTypeResponse"
             }
           },
           "default": {
@@ -36,108 +36,15 @@
         },
         "parameters": [
           {
-            "name": "attachment.id",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "name": "attachment.attachableType",
+            "name": "attachableType",
             "in": "query",
             "required": false,
             "type": "string"
           },
           {
-            "name": "attachment.attachableId",
+            "name": "attachableId",
             "in": "query",
             "required": false,
-            "type": "string"
-          },
-          {
-            "name": "attachment.userId",
-            "in": "query",
-            "required": false,
-            "type": "string"
-          },
-          {
-            "name": "attachment.filename",
-            "in": "query",
-            "required": false,
-            "type": "string"
-          },
-          {
-            "name": "attachment.extension",
-            "in": "query",
-            "required": false,
-            "type": "string"
-          },
-          {
-            "name": "attachment.mimeType",
-            "in": "query",
-            "required": false,
-            "type": "string"
-          },
-          {
-            "name": "attachment.folder",
-            "in": "query",
-            "required": false,
-            "type": "string"
-          },
-          {
-            "name": "attachment.urlThumbnail",
-            "in": "query",
-            "required": false,
-            "type": "string"
-          },
-          {
-            "name": "attachment.url",
-            "in": "query",
-            "required": false,
-            "type": "string"
-          },
-          {
-            "name": "attachment.createdAt",
-            "in": "query",
-            "required": false,
-            "type": "string",
-            "format": "date-time"
-          },
-          {
-            "name": "attachment.updatedAt",
-            "in": "query",
-            "required": false,
-            "type": "string",
-            "format": "date-time"
-          }
-        ],
-        "tags": [
-          "Upload"
-        ]
-      }
-    },
-    "/v1/api/attachments/{id}": {
-      "delete": {
-        "summary": "Delete Attachment",
-        "operationId": "UploadService_DeleteAttachment",
-        "responses": {
-          "200": {
-            "description": "A successful response.",
-            "schema": {
-              "$ref": "#/definitions/uploadapiDeleteAttachmentResponse"
-            }
-          },
-          "default": {
-            "description": "An unexpected error response.",
-            "schema": {
-              "$ref": "#/definitions/rpcStatus"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
             "type": "string"
           }
         ],
@@ -205,10 +112,10 @@
         "folder": {
           "type": "string"
         },
-        "urlThumbnail": {
+        "url": {
           "type": "string"
         },
-        "url": {
+        "urlThumbnail": {
           "type": "string"
         },
         "createdAt": {
@@ -221,19 +128,15 @@
         }
       }
     },
-    "uploadapiDeleteAttachmentResponse": {
+    "uploadapiGetAttachmentsByTypeResponse": {
       "type": "object",
       "properties": {
-        "deleted": {
-          "type": "boolean"
-        }
-      }
-    },
-    "uploadapiUpdateAttachmentResponse": {
-      "type": "object",
-      "properties": {
-        "attachment": {
-          "$ref": "#/definitions/uploadapiAttachment"
+        "attachments": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/uploadapiAttachment"
+          }
         }
       }
     }

@@ -224,6 +224,87 @@
     }
   },
   "definitions": {
+    "postapiAttachmentInPost": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "attachableType": {
+          "type": "string"
+        },
+        "attachableId": {
+          "type": "string"
+        },
+        "userId": {
+          "type": "string"
+        },
+        "filename": {
+          "type": "string"
+        },
+        "extension": {
+          "type": "string"
+        },
+        "mimeType": {
+          "type": "string"
+        },
+        "folder": {
+          "type": "string"
+        },
+        "url": {
+          "type": "string"
+        },
+        "urlThumbnail": {
+          "type": "string"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "postapiComment": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "postId": {
+          "type": "string"
+        },
+        "userId": {
+          "type": "string"
+        },
+        "replyToId": {
+          "type": "string"
+        },
+        "content": {
+          "type": "string"
+        },
+        "parentCommentId": {
+          "type": "string"
+        },
+        "likes": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/postapiLike"
+          }
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
     "postapiCreatePostRequest": {
       "type": "object",
       "properties": {
@@ -253,6 +334,55 @@
       "properties": {
         "post": {
           "$ref": "#/definitions/postapiPostResponse"
+        },
+        "attachments": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/postapiAttachmentInPost"
+          }
+        },
+        "likes": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/postapiLike"
+          }
+        },
+        "comments": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/postapiComment"
+          }
+        }
+      }
+    },
+    "postapiLike": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "emoji": {
+          "type": "string"
+        },
+        "likeableType": {
+          "type": "string"
+        },
+        "likeableId": {
+          "type": "string"
+        },
+        "userId": {
+          "type": "string"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
         }
       }
     },

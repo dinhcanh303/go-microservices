@@ -20,7 +20,6 @@ type UploadAttachment struct {
 	Extension      string         `json:"extension"`
 	MimeType       sql.NullString `json:"mime_type"`
 	Folder         sql.NullString `json:"folder"`
-	VersionID      sql.NullString `json:"version_id"`
 	Url            string         `json:"url"`
 	UrlThumbnail   sql.NullString `json:"url_thumbnail"`
 	CreatedAt      time.Time      `json:"created_at"`

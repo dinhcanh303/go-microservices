@@ -32,123 +32,37 @@ var _ = utilities.NewDoubleArray
 var _ = metadata.Join
 
 var (
-	filter_UploadService_UpdateAttachment_0 = &utilities.DoubleArray{Encoding: map[string]int{"attachment": 0, "id": 1}, Base: []int{1, 2, 3, 2, 0, 0}, Check: []int{0, 1, 1, 2, 4, 3}}
+	filter_UploadService_GetAttachmentsByType_0 = &utilities.DoubleArray{Encoding: map[string]int{}, Base: []int(nil), Check: []int(nil)}
 )
 
-func request_UploadService_UpdateAttachment_0(ctx context.Context, marshaler runtime.Marshaler, client UploadServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq UpdateAttachmentRequest
+func request_UploadService_GetAttachmentsByType_0(ctx context.Context, marshaler runtime.Marshaler, client UploadServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var protoReq GetAttachmentsByTypeRequest
 	var metadata runtime.ServerMetadata
-
-	var (
-		val string
-		ok  bool
-		err error
-		_   = err
-	)
-
-	val, ok = pathParams["attachment.id"]
-	if !ok {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "attachment.id")
-	}
-
-	err = runtime.PopulateFieldFromPath(&protoReq, "attachment.id", val)
-	if err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "attachment.id", err)
-	}
 
 	if err := req.ParseForm(); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
-	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_UploadService_UpdateAttachment_0); err != nil {
+	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_UploadService_GetAttachmentsByType_0); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
 
-	msg, err := client.UpdateAttachment(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
+	msg, err := client.GetAttachmentsByType(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
 	return msg, metadata, err
 
 }
 
-func local_request_UploadService_UpdateAttachment_0(ctx context.Context, marshaler runtime.Marshaler, server UploadServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq UpdateAttachmentRequest
+func local_request_UploadService_GetAttachmentsByType_0(ctx context.Context, marshaler runtime.Marshaler, server UploadServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var protoReq GetAttachmentsByTypeRequest
 	var metadata runtime.ServerMetadata
-
-	var (
-		val string
-		ok  bool
-		err error
-		_   = err
-	)
-
-	val, ok = pathParams["attachment.id"]
-	if !ok {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "attachment.id")
-	}
-
-	err = runtime.PopulateFieldFromPath(&protoReq, "attachment.id", val)
-	if err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "attachment.id", err)
-	}
 
 	if err := req.ParseForm(); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
-	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_UploadService_UpdateAttachment_0); err != nil {
+	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_UploadService_GetAttachmentsByType_0); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
 
-	msg, err := server.UpdateAttachment(ctx, &protoReq)
-	return msg, metadata, err
-
-}
-
-func request_UploadService_DeleteAttachment_0(ctx context.Context, marshaler runtime.Marshaler, client UploadServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq DeleteAttachmentRequest
-	var metadata runtime.ServerMetadata
-
-	var (
-		val string
-		ok  bool
-		err error
-		_   = err
-	)
-
-	val, ok = pathParams["id"]
-	if !ok {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "id")
-	}
-
-	protoReq.Id, err = runtime.String(val)
-	if err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "id", err)
-	}
-
-	msg, err := client.DeleteAttachment(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
-	return msg, metadata, err
-
-}
-
-func local_request_UploadService_DeleteAttachment_0(ctx context.Context, marshaler runtime.Marshaler, server UploadServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq DeleteAttachmentRequest
-	var metadata runtime.ServerMetadata
-
-	var (
-		val string
-		ok  bool
-		err error
-		_   = err
-	)
-
-	val, ok = pathParams["id"]
-	if !ok {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "id")
-	}
-
-	protoReq.Id, err = runtime.String(val)
-	if err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "id", err)
-	}
-
-	msg, err := server.DeleteAttachment(ctx, &protoReq)
+	msg, err := server.GetAttachmentsByType(ctx, &protoReq)
 	return msg, metadata, err
 
 }
@@ -159,7 +73,7 @@ func local_request_UploadService_DeleteAttachment_0(ctx context.Context, marshal
 // Note that using this registration option will cause many gRPC library features to stop working. Consider using RegisterUploadServiceHandlerFromEndpoint instead.
 func RegisterUploadServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux, server UploadServiceServer) error {
 
-	mux.Handle("POST", pattern_UploadService_UpdateAttachment_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("POST", pattern_UploadService_GetAttachmentsByType_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		var stream runtime.ServerTransportStream
@@ -167,12 +81,12 @@ func RegisterUploadServiceHandlerServer(ctx context.Context, mux *runtime.ServeM
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/go.microsevices.proto.uploadapi.UploadService/UpdateAttachment", runtime.WithHTTPPathPattern("/v1/api/attachments/{attachment.id}"))
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/go.microsevices.proto.uploadapi.UploadService/GetAttachmentsByType", runtime.WithHTTPPathPattern("/v1/api/attachments"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_UploadService_UpdateAttachment_0(annotatedContext, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_UploadService_GetAttachmentsByType_0(annotatedContext, inboundMarshaler, server, req, pathParams)
 		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
 		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
 		if err != nil {
@@ -180,32 +94,7 @@ func RegisterUploadServiceHandlerServer(ctx context.Context, mux *runtime.ServeM
 			return
 		}
 
-		forward_UploadService_UpdateAttachment_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
-
-	})
-
-	mux.Handle("DELETE", pattern_UploadService_DeleteAttachment_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
-		ctx, cancel := context.WithCancel(req.Context())
-		defer cancel()
-		var stream runtime.ServerTransportStream
-		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
-		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		var err error
-		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/go.microsevices.proto.uploadapi.UploadService/DeleteAttachment", runtime.WithHTTPPathPattern("/v1/api/attachments/{id}"))
-		if err != nil {
-			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
-			return
-		}
-		resp, md, err := local_request_UploadService_DeleteAttachment_0(annotatedContext, inboundMarshaler, server, req, pathParams)
-		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
-		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
-		if err != nil {
-			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
-			return
-		}
-
-		forward_UploadService_DeleteAttachment_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_UploadService_GetAttachmentsByType_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
@@ -250,47 +139,25 @@ func RegisterUploadServiceHandler(ctx context.Context, mux *runtime.ServeMux, co
 // "UploadServiceClient" to call the correct interceptors.
 func RegisterUploadServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux, client UploadServiceClient) error {
 
-	mux.Handle("POST", pattern_UploadService_UpdateAttachment_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("POST", pattern_UploadService_GetAttachmentsByType_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/go.microsevices.proto.uploadapi.UploadService/UpdateAttachment", runtime.WithHTTPPathPattern("/v1/api/attachments/{attachment.id}"))
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/go.microsevices.proto.uploadapi.UploadService/GetAttachmentsByType", runtime.WithHTTPPathPattern("/v1/api/attachments"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_UploadService_UpdateAttachment_0(annotatedContext, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_UploadService_GetAttachmentsByType_0(annotatedContext, inboundMarshaler, client, req, pathParams)
 		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
 		if err != nil {
 			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
 			return
 		}
 
-		forward_UploadService_UpdateAttachment_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
-
-	})
-
-	mux.Handle("DELETE", pattern_UploadService_DeleteAttachment_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
-		ctx, cancel := context.WithCancel(req.Context())
-		defer cancel()
-		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		var err error
-		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/go.microsevices.proto.uploadapi.UploadService/DeleteAttachment", runtime.WithHTTPPathPattern("/v1/api/attachments/{id}"))
-		if err != nil {
-			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
-			return
-		}
-		resp, md, err := request_UploadService_DeleteAttachment_0(annotatedContext, inboundMarshaler, client, req, pathParams)
-		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
-		if err != nil {
-			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
-			return
-		}
-
-		forward_UploadService_DeleteAttachment_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_UploadService_GetAttachmentsByType_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
@@ -298,13 +165,9 @@ func RegisterUploadServiceHandlerClient(ctx context.Context, mux *runtime.ServeM
 }
 
 var (
-	pattern_UploadService_UpdateAttachment_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3}, []string{"v1", "api", "attachments", "attachment.id"}, ""))
-
-	pattern_UploadService_DeleteAttachment_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3}, []string{"v1", "api", "attachments", "id"}, ""))
+	pattern_UploadService_GetAttachmentsByType_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"v1", "api", "attachments"}, ""))
 )
 
 var (
-	forward_UploadService_UpdateAttachment_0 = runtime.ForwardResponseMessage
-
-	forward_UploadService_DeleteAttachment_0 = runtime.ForwardResponseMessage
+	forward_UploadService_GetAttachmentsByType_0 = runtime.ForwardResponseMessage
 )

@@ -1,14 +1,14 @@
 package request
 
-import "github.com/google/uuid"
-
-type GetAttachmentRequest struct {
-	AttachmentID uuid.UUID `json:"id"`
-}
 type UpdateAttachmentRequest struct {
-	AttachableType string    `json:"attachable_type"`
-	AttachableID   uuid.UUID `json:"attachable_id"`
+	AttachableType string `json:"attachable_type"`
+	AttachableID   string `json:"attachable_id"`
 }
-type DeleteAttachmentRequest struct {
-	AttachmentID uuid.UUID `json:"id"`
+type UpdateAttachmentsByIdsRequest struct {
+	AttachmentIds  []string `json:"attachment_ids"`
+	AttachableType string   `json:"attachable_type"`
+	AttachableID   string   `json:"attachable_id"`
+}
+type DeleteAttachmentsByIdsRequest struct {
+	AttachmentIds []string `json:"attachment_ids"`
 }

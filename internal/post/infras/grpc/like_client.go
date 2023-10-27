@@ -4,10 +4,12 @@ import (
 	"context"
 
 	"github.com/dinhcanh303/go-microservices/cmd/post/config"
-	domain2 "github.com/dinhcanh303/go-microservices/internal/like/domain"
+	domainLike "github.com/dinhcanh303/go-microservices/internal/like/domain"
 	"github.com/dinhcanh303/go-microservices/internal/post/domain"
+	"github.com/dinhcanh303/go-microservices/proto/gen"
 	"github.com/google/uuid"
 	"github.com/google/wire"
+	"github.com/pkg/errors"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 )
@@ -17,8 +19,28 @@ type likeGRPCClient struct {
 }
 
 // GetLikesByPostID implements domain.LikeDomainService.
-func (l *likeGRPCClient) GetLikesByPostID(ctx context.Context, postId uuid.UUID) ([]*domain2.Like, error) {
-	panic("unimplemented")
+func (l *likeGRPCClient) GetLikesByPostID(ctx context.Context, postId uuid.UUID) ([]*domainLike.Like, error) {
+	client := gen.NewLikeServiceClient(l.conn)
+	res, err := client.GetLikesByPostID(ctx, &gen.GetLikesByPostIDRequest{
+		PostID: postId.String(),
+	})
+	if err != nil {
+		return nil, errors.Wrap(err, "likeGRPCClient.GetLikesByPostID failed")
+
+	}
+	results := make([]*domainLike.Like, 0)
+	for _, item := range res.Likes {
+		results = append(results, &domainLike.Like{
+			ID:           uuid.MustParse(item.Id),
+			UserID:       uuid.MustParse(item.UserId),
+			Emoji:        item.Emoji,
+			LikeableType: item.LikeableType,
+			LikeableID:   uuid.MustParse(item.LikeableId),
+			CreatedAt:    item.CreatedAt.AsTime(),
+			UpdatedAt:    item.UpdatedAt.AsTime(),
+		})
+	}
+	return results, nil
 }
 
 var LikeGRPCClientSet = wire.NewSet(NewGRPCLikeClient)

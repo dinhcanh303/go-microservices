@@ -14,4 +14,9 @@ type (
 	Log struct {
 		Level string `env-required:"true" yaml:"log_level"   env:"LOG_LEVEL"`
 	}
+
+	HTTPEcho struct {
+		HostEcho string `env-required:"true" yaml:"host" env:"HTTP_HOST_ECHO"`
+		PortEcho int    `env-required:"true" yaml:"port" env:"HTTP_PORT_ECHO"`
+	}
 )

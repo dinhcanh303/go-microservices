@@ -6,14 +6,16 @@ import (
 	"github.com/dinhcanh303/go-microservices/internal/upload/usecases/uploads"
 	configs "github.com/dinhcanh303/go-microservices/pkg/config"
 	"github.com/dinhcanh303/go-microservices/pkg/postgres"
+	"github.com/dinhcanh303/go-microservices/proto/gen"
 )
 
 type App struct {
-	Cfg      *config.Config
-	CfgMinio *configs.Minio
-	PG       postgres.DBEngine
-	UC       uploads.UseCase
-	Handler  *handlers.UploadHandler
+	Cfg              *config.Config
+	CfgMinio         *configs.Minio
+	PG               postgres.DBEngine
+	UC               uploads.UseCase
+	Handler          *handlers.UploadHandler
+	UploadGRPCServer gen.UploadServiceServer
 }
 
 func New(
@@ -22,12 +24,14 @@ func New(
 	pg postgres.DBEngine,
 	uc uploads.UseCase,
 	handler *handlers.UploadHandler,
+	uploadGRPCServer gen.UploadServiceServer,
 ) *App {
 	return &App{
-		Cfg:      cfg,
-		CfgMinio: cfgMinio,
-		UC:       uc,
-		PG:       pg,
-		Handler:  handler,
+		Cfg:              cfg,
+		CfgMinio:         cfgMinio,
+		UC:               uc,
+		PG:               pg,
+		Handler:          handler,
+		UploadGRPCServer: uploadGRPCServer,
 	}
 }

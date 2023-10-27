@@ -4,8 +4,8 @@ import (
 	"context"
 
 	"github.com/dinhcanh303/go-microservices/cmd/post/config"
-	domain2 "github.com/dinhcanh303/go-microservices/internal/comment/domain"
-	domain3 "github.com/dinhcanh303/go-microservices/internal/like/domain"
+	domainComment "github.com/dinhcanh303/go-microservices/internal/comment/domain"
+	domainLike "github.com/dinhcanh303/go-microservices/internal/like/domain"
 	sharedkernel "github.com/dinhcanh303/go-microservices/internal/pkg/shared_kernel"
 	"github.com/dinhcanh303/go-microservices/internal/post/domain"
 	"github.com/dinhcanh303/go-microservices/pkg/utils"
@@ -56,13 +56,13 @@ func (c *commentGRPCClient) GetCommentsByPostID(ctx context.Context, postId uuid
 			PostID:          uuid.MustParse(item.PostId),
 			ReplyToID:       utils.StringToNullUUID(item.ReplyToId),
 			ParentCommentID: utils.StringToNullUUID(item.ParentCommentId),
-			Children: lo.Map(item.Children, func(value *gen.CommentResponseHasLike, _ int) *domain2.CommentHasLike {
-				return &domain2.CommentHasLike{
+			Children: lo.Map(item.Children, func(value *gen.CommentResponseHasLike, _ int) *domainComment.CommentHasLike {
+				return &domainComment.CommentHasLike{
 					ID:      uuid.MustParse(value.Id),
 					UserID:  uuid.MustParse(value.UserId),
 					Content: value.Content,
-					Likes: lo.Map(item.Likes, func(value *gen.LikeResponseInComment, _ int) *domain3.Like {
-						return &domain3.Like{
+					Likes: lo.Map(item.Likes, func(value *gen.LikeResponseInComment, _ int) *domainLike.Like {
+						return &domainLike.Like{
 							ID:           uuid.MustParse(value.Id),
 							UserID:       uuid.MustParse(value.UserId),
 							Emoji:        value.Emoji,
@@ -79,8 +79,8 @@ func (c *commentGRPCClient) GetCommentsByPostID(ctx context.Context, postId uuid
 					UpdatedAt:       value.UpdatedAt.AsTime(),
 				}
 			}),
-			Likes: lo.Map(item.Likes, func(value *gen.LikeResponseInComment, _ int) *domain3.Like {
-				return &domain3.Like{
+			Likes: lo.Map(item.Likes, func(value *gen.LikeResponseInComment, _ int) *domainLike.Like {
+				return &domainLike.Like{
 					ID:           uuid.MustParse(value.Id),
 					UserID:       uuid.MustParse(value.UserId),
 					Emoji:        value.Emoji,

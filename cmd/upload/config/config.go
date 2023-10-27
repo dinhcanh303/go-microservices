@@ -12,10 +12,11 @@ import (
 
 type (
 	Config struct {
-		configs.App  `yaml:"app"`
-		configs.HTTP `yaml:"http"`
-		configs.Log  `yaml:"logger"`
-		PG           `yaml:"postgres"`
+		configs.App      `yaml:"app"`
+		configs.HTTP     `yaml:"http"`
+		configs.HTTPEcho `yaml:"http_echo"`
+		configs.Log      `yaml:"logger"`
+		PG               `yaml:"postgres"`
 	}
 	PG struct {
 		PoolMax int    `env-required:"true" yaml:"pool_max" env:"PG_POOL_MAX"`

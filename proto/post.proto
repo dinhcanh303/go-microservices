@@ -81,6 +81,9 @@ message DeletePostResponse {
 }
 message GetPostResponse {
     PostResponse post = 1;
+    repeated AttachmentInPost attachments = 2;
+    repeated Like likes = 3;
+    repeated Comment comments = 4;
 }
 message UpdatePostRequest {
     PostResponse post = 1;
@@ -113,15 +116,37 @@ message PostResponse {
     google.protobuf.Timestamp created_at = 7;
     google.protobuf.Timestamp updated_at = 8;
 }
-message UploadFileRequest{
-    oneof data {
-        FileInfo info = 1;
-        bytes chuck_data = 2;
-    }
+message AttachmentInPost {
+    string id = 1;
+    string attachable_type = 2;
+    string attachable_id = 3;
+    string user_id = 4;
+    string filename = 5;
+    string extension = 6;
+    string mime_type = 7;
+    string folder = 8;
+    string url = 9;
+    string url_thumbnail = 10;
+    google.protobuf.Timestamp created_at = 11;
+    google.protobuf.Timestamp updated_at = 12;
 }
-message FileInfo {
-    string post_id = 1;
-    string file_type = 2;
-    string file_name = 3;
-    string file_extension = 4;
+message Like {
+    string id =1;
+    string emoji =2;
+    string likeable_type =3;
+    string likeable_id =4;
+    string user_id = 5;
+    google.protobuf.Timestamp created_at = 6;
+    google.protobuf.Timestamp updated_at = 7;
+}
+message Comment {
+    string id = 1;
+    string post_id = 2;
+    string user_id = 3;
+    string reply_to_id = 4;
+    string content = 5;
+    string parent_comment_id = 6;
+    repeated Like likes = 7;
+    google.protobuf.Timestamp created_at = 8;
+    google.protobuf.Timestamp updated_at = 9;
 }

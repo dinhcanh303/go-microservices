@@ -1,6 +1,8 @@
 package responses
 
 import (
+	"fmt"
+
 	"github.com/labstack/echo/v4"
 )
 
@@ -33,4 +35,7 @@ func ErrorResponse(c echo.Context, statusCode int, message string) error {
 		Code:  statusCode,
 		Error: message,
 	})
+}
+func ErrorString(message string, err error) string {
+	return fmt.Sprintf("%s: %s", message, err.Error())
 }

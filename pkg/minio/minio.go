@@ -2,10 +2,15 @@ package minio
 
 import (
 	"context"
+	"crypto/tls"
+	"fmt"
 	"io"
 	"log"
 	"log/slog"
 	"mime/multipart"
+	"net/http"
+	"path/filepath"
+	"time"
 
 	configs "github.com/dinhcanh303/go-microservices/pkg/config"
 	minioV7 "github.com/minio/minio-go/v7"
@@ -16,6 +21,14 @@ import (
 type minio struct {
 	cf *configs.Minio
 }
+type FileInfo struct {
+	FileName     string `json:"filename"`
+	Extension    string `json:"extension"`
+	MimeType     string `json:"mime_type"`
+	Folder       string `json:"folder"`
+	Url          string `json:"url"`
+	UrlThumbnail string `json:"url_thumbnail"`
+}
 
 func NewMinio(cf *configs.Minio) MinioService {
 	return &minio{
@@ -24,64 +37,76 @@ func NewMinio(cf *configs.Minio) MinioService {
 }
 
 // DeleteFile implements MinioService.
-func (m *minio) DeleteFile(ctx context.Context, fileNames []string) (bool, error) {
-	endpoint := m.cf.EndPoint
-	accessKeyID := m.cf.AccessKeyID
-	secretAccessKey := m.cf.SecretAccessKey
-	useSSL := m.cf.UseSSL
-	minioClient, err := minioV7.New(endpoint, &minioV7.Options{
-		Creds:  credentials.NewStaticV4(accessKeyID, secretAccessKey, ""),
-		Secure: useSSL,
-	})
-	if err != nil {
-		return false, errors.Wrap(err, "minio.DeleteFile failed")
-	}
+func (m *minio) DeleteFile(ctx context.Context, fileName string) (bool, error) {
+	config := m.cf
+	client, _ := minioClient(config)
 	opts := minioV7.RemoveObjectOptions{
 		GovernanceBypass: true,
 	}
-	for _, fileName := range fileNames {
-		err := minioClient.RemoveObject(ctx, m.cf.BucketName, fileName, opts)
-		if err != nil {
-			return false, errors.Wrap(err, "minio.DeleteFile failed")
-		}
+	err := client.RemoveObject(ctx, m.cf.BucketName, fileName, opts)
+	if err != nil {
+		return false, errors.Wrap(err, "minio.DeleteFile failed")
 	}
 	return true, nil
 }
 
 // UploadFile implements MinioUpload.
-func (m *minio) UploadFile(ctx context.Context, file *multipart.FileHeader, buffer io.Reader) (*minioV7.UploadInfo, error) {
+func (m *minio) UploadFile(ctx context.Context, file *multipart.FileHeader, buffer io.Reader) (*minioV7.UploadInfo, *FileInfo, error) {
 	slog.Info("MINIO::Upload File")
-	mdf.Pla
-	endpoint := m.cf.EndPoint
-	accessKeyID := m.cf.AccessKeyID
-	secretAccessKey := m.cf.SecretAccessKey
-	// useSSL := m.cf.UseSSL
-	region := m.cf.Region
-	bucketName := m.cf.BucketName
-	// rootForlder := m.cf.RootFolder
-	// Initialize minio client object.
-	minioClient, err := minioV7.New(endpoint, &minioV7.Options{
-		Creds:  credentials.NewStaticV4(accessKeyID, secretAccessKey, ""),
-		Secure: true,
-		Region: region,
-	})
-	if err != nil {
-		log.Fatalln(err)
-	}
-	objectName := file.Filename
+	config := m.cf
+	client, _ := minioClient(config)
+	folder := locationFolderSaveFile(config.RootFolder)
+	objectName := folder + file.Filename
 	contentType := file.Header.Get("Content-Type")
 	fileSize := file.Size
-	slog.Info("FILE::", objectName, contentType, fileSize)
-	info, err := minioClient.PutObject(ctx, bucketName, objectName, buffer, fileSize, minioV7.PutObjectOptions{
+	info, err := client.PutObject(ctx, config.BucketName, objectName, buffer, fileSize, minioV7.PutObjectOptions{
 		ContentType: contentType,
 	})
-	slog.Info("MINIO FILE ERROR::", err)
-	slog.Info("MINIO FILE::", info)
+	urlFile := getUrlFile(config.EndPoint, config.BucketName, objectName)
+	fileInfo := &FileInfo{
+		FileName:     file.Filename,
+		Folder:       folder,
+		Extension:    getExtensionFile(file.Filename),
+		MimeType:     contentType,
+		Url:          urlFile,
+		UrlThumbnail: urlFile,
+	}
+	slog.Info("MINIO FILE::", fileInfo)
 	if err != nil {
 		log.Fatalln(err)
 	}
 	slog.Info("Successfully uploaded %s of size %d\n", objectName, info.Size)
-	return &info, nil
+	return &info, fileInfo, nil
+}
+func getExtensionFile(fileName string) string {
+	extension := filepath.Ext(fileName)
+	return extension[1:]
+}
+func minioClient(config *configs.Minio) (*minioV7.Client, error) {
+	endpoint := config.EndPoint
+	accessKeyID := config.AccessKeyID
+	secretAccessKey := config.SecretAccessKey
+	useSSL := config.UseSSL
+	minioClient, err := minioV7.New(endpoint, &minioV7.Options{
+		Creds:  credentials.NewStaticV4(accessKeyID, secretAccessKey, ""),
+		Secure: useSSL,
+		Transport: &http.Transport{
+			TLSClientConfig: &tls.Config{
+				InsecureSkipVerify: true,
+			},
+		},
+	})
+	if err != nil {
+		return nil, errors.Wrap(err, "Client Minio failed:")
+	}
+	return minioClient, nil
+}
+func getUrlFile(endpoint string, bucketName string, objectName string) string {
+	return fmt.Sprintf("https://%s/%s/%s", endpoint, bucketName, objectName)
+}
+func locationFolderSaveFile(rootFolder string) string {
+	year, month, _ := time.Now().Date()
+	return fmt.Sprintf("%s/%d/%02d/", rootFolder, year, int(month))
 }
 
 var _ MinioService = (*minio)(nil)

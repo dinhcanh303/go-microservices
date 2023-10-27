@@ -24,6 +24,12 @@ func InitApp(cfg *config.Config, dbConnStr postgres.DBConnString, grpcServer *gr
 		return nil, nil, err
 	}
 	postRepo := repo.NewPostRepo(dbEngine)
+	useCase := posts.NewUseCase(postRepo)
+	uploadDomainService, err := grpc2.NewGRPCUploadClient(cfg)
+	if err != nil {
+		cleanup()
+		return nil, nil, err
+	}
 	commentDomainService, err := grpc2.NewGRPCCommentClient(cfg)
 	if err != nil {
 		cleanup()
@@ -34,8 +40,7 @@ func InitApp(cfg *config.Config, dbConnStr postgres.DBConnString, grpcServer *gr
 		cleanup()
 		return nil, nil, err
 	}
-	useCase := posts.NewUseCase(postRepo, commentDomainService, likeDomainService)
-	postServiceServer := router.NewGRPCPostServer(grpcServer, cfg, useCase)
+	postServiceServer := router.NewGRPCPostServer(grpcServer, cfg, useCase, uploadDomainService, commentDomainService, likeDomainService)
 	app := New(cfg, dbEngine, useCase, postServiceServer, commentDomainService, likeDomainService)
 	return app, func() {
 		cleanup()

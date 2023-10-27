@@ -18,6 +18,7 @@ type (
 		PG            `yaml:"postgres"`
 		CommentClient `yaml:"comment_client"`
 		LikeClient    `yaml:"like_client"`
+		UploadClient  `yaml:"upload_client"`
 	}
 
 	PG struct {
@@ -30,6 +31,9 @@ type (
 	}
 	LikeClient struct {
 		URL string `env-required:"true" yaml:"like_url" env:"LIKE_CLIENT_URL"`
+	}
+	UploadClient struct {
+		URL string `env-required:"true" yaml:"upload_url" env:"UPLOAD_CLIENT_URL"`
 	}
 )
 

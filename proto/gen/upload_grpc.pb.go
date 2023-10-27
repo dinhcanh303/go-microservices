@@ -19,16 +19,14 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	UploadService_UpdateAttachment_FullMethodName = "/go.microsevices.proto.uploadapi.UploadService/UpdateAttachment"
-	UploadService_DeleteAttachment_FullMethodName = "/go.microsevices.proto.uploadapi.UploadService/DeleteAttachment"
+	UploadService_GetAttachmentsByType_FullMethodName = "/go.microsevices.proto.uploadapi.UploadService/GetAttachmentsByType"
 )
 
 // UploadServiceClient is the client API for UploadService service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type UploadServiceClient interface {
-	UpdateAttachment(ctx context.Context, in *UpdateAttachmentRequest, opts ...grpc.CallOption) (*UpdateAttachmentResponse, error)
-	DeleteAttachment(ctx context.Context, in *DeleteAttachmentRequest, opts ...grpc.CallOption) (*DeleteAttachmentResponse, error)
+	GetAttachmentsByType(ctx context.Context, in *GetAttachmentsByTypeRequest, opts ...grpc.CallOption) (*GetAttachmentsByTypeResponse, error)
 }
 
 type uploadServiceClient struct {
@@ -39,18 +37,9 @@ func NewUploadServiceClient(cc grpc.ClientConnInterface) UploadServiceClient {
 	return &uploadServiceClient{cc}
 }
 
-func (c *uploadServiceClient) UpdateAttachment(ctx context.Context, in *UpdateAttachmentRequest, opts ...grpc.CallOption) (*UpdateAttachmentResponse, error) {
-	out := new(UpdateAttachmentResponse)
-	err := c.cc.Invoke(ctx, UploadService_UpdateAttachment_FullMethodName, in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *uploadServiceClient) DeleteAttachment(ctx context.Context, in *DeleteAttachmentRequest, opts ...grpc.CallOption) (*DeleteAttachmentResponse, error) {
-	out := new(DeleteAttachmentResponse)
-	err := c.cc.Invoke(ctx, UploadService_DeleteAttachment_FullMethodName, in, out, opts...)
+func (c *uploadServiceClient) GetAttachmentsByType(ctx context.Context, in *GetAttachmentsByTypeRequest, opts ...grpc.CallOption) (*GetAttachmentsByTypeResponse, error) {
+	out := new(GetAttachmentsByTypeResponse)
+	err := c.cc.Invoke(ctx, UploadService_GetAttachmentsByType_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -61,8 +50,7 @@ func (c *uploadServiceClient) DeleteAttachment(ctx context.Context, in *DeleteAt
 // All implementations must embed UnimplementedUploadServiceServer
 // for forward compatibility
 type UploadServiceServer interface {
-	UpdateAttachment(context.Context, *UpdateAttachmentRequest) (*UpdateAttachmentResponse, error)
-	DeleteAttachment(context.Context, *DeleteAttachmentRequest) (*DeleteAttachmentResponse, error)
+	GetAttachmentsByType(context.Context, *GetAttachmentsByTypeRequest) (*GetAttachmentsByTypeResponse, error)
 	mustEmbedUnimplementedUploadServiceServer()
 }
 
@@ -70,11 +58,8 @@ type UploadServiceServer interface {
 type UnimplementedUploadServiceServer struct {
 }
 
-func (UnimplementedUploadServiceServer) UpdateAttachment(context.Context, *UpdateAttachmentRequest) (*UpdateAttachmentResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method UpdateAttachment not implemented")
-}
-func (UnimplementedUploadServiceServer) DeleteAttachment(context.Context, *DeleteAttachmentRequest) (*DeleteAttachmentResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method DeleteAttachment not implemented")
+func (UnimplementedUploadServiceServer) GetAttachmentsByType(context.Context, *GetAttachmentsByTypeRequest) (*GetAttachmentsByTypeResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetAttachmentsByType not implemented")
 }
 func (UnimplementedUploadServiceServer) mustEmbedUnimplementedUploadServiceServer() {}
 
@@ -89,38 +74,20 @@ func RegisterUploadServiceServer(s grpc.ServiceRegistrar, srv UploadServiceServe
 	s.RegisterService(&UploadService_ServiceDesc, srv)
 }
 
-func _UploadService_UpdateAttachment_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(UpdateAttachmentRequest)
+func _UploadService_GetAttachmentsByType_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetAttachmentsByTypeRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(UploadServiceServer).UpdateAttachment(ctx, in)
+		return srv.(UploadServiceServer).GetAttachmentsByType(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: UploadService_UpdateAttachment_FullMethodName,
+		FullMethod: UploadService_GetAttachmentsByType_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(UploadServiceServer).UpdateAttachment(ctx, req.(*UpdateAttachmentRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _UploadService_DeleteAttachment_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(DeleteAttachmentRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(UploadServiceServer).DeleteAttachment(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: UploadService_DeleteAttachment_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(UploadServiceServer).DeleteAttachment(ctx, req.(*DeleteAttachmentRequest))
+		return srv.(UploadServiceServer).GetAttachmentsByType(ctx, req.(*GetAttachmentsByTypeRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -133,12 +100,8 @@ var UploadService_ServiceDesc = grpc.ServiceDesc{
 	HandlerType: (*UploadServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "UpdateAttachment",
-			Handler:    _UploadService_UpdateAttachment_Handler,
-		},
-		{
-			MethodName: "DeleteAttachment",
-			Handler:    _UploadService_DeleteAttachment_Handler,
+			MethodName: "GetAttachmentsByType",
+			Handler:    _UploadService_GetAttachmentsByType_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

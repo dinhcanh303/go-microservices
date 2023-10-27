@@ -17,6 +17,18 @@ type uploadService struct {
 	minio minio.MinioService
 }
 
+// UpdateAttachmentsByIds implements UseCase.
+func (s *uploadService) UpdateAttachmentsByIds(ctx context.Context, attachmentIds []uuid.UUID, attachment *domain.Attachment) ([]*domain.Attachment, error) {
+	results, err := s.repo.UpdateByIds(ctx, attachmentIds, &domain.Attachment{
+		AttachableType: attachment.AttachableType,
+		AttachableID:   attachment.AttachableID,
+	})
+	if err != nil {
+		return nil, errors.Wrap(err, "uploadService.UpdateAttachmentsByIds failed")
+	}
+	return results, nil
+}
+
 var _ UseCase = (*uploadService)(nil)
 
 var UseCaseSet = wire.NewSet(NewUploadService)
@@ -28,15 +40,32 @@ func NewUploadService(repo AttachmentRepo, minio minio.MinioService) UseCase {
 	}
 }
 
+// DeleteAttachmentsByIds implements UseCase.
+func (s *uploadService) DeleteAttachmentsByIds(ctx context.Context, attachmentIds []uuid.UUID) (bool, error) {
+	attachments, err := s.repo.GetByIds(ctx, attachmentIds)
+	if err != nil {
+		return false, errors.Wrap(err, "uploadService.DeleteAttachment failed")
+	}
+	for _, attachment := range attachments {
+		_, err := s.minio.DeleteFile(ctx, attachment.Folder+attachment.FileName)
+		if err != nil {
+			slog.Warn("Minio.DeleteFile failed", err)
+		}
+	}
+	deleted, err := s.repo.DeleteByIds(ctx, attachmentIds)
+	if err != nil {
+		return false, errors.Wrap(err, "uploadService.DeleteAttachment failed")
+	}
+	return deleted, nil
+}
+
 // DeleteAttachment implements UseCase.
 func (s *uploadService) DeleteAttachment(ctx context.Context, attachmentId uuid.UUID) (bool, error) {
 	attachment, err := s.repo.Get(ctx, attachmentId)
 	if err != nil {
 		return false, errors.Wrap(err, "uploadService.DeleteAttachment failed")
 	}
-	fileNames := make([]string, 1)
-	fileNames = append(fileNames, attachment.FileName)
-	deletedFile, err := s.minio.DeleteFile(ctx, fileNames)
+	deletedFile, err := s.minio.DeleteFile(ctx, attachment.Folder+attachment.FileName)
 	if err != nil {
 		return false, errors.Wrap(err, "minioService.DeleteFile failed")
 	}
@@ -48,6 +77,15 @@ func (s *uploadService) DeleteAttachment(ctx context.Context, attachmentId uuid.
 		return false, errors.Wrap(err, "uploadService.DeleteAttachment failed")
 	}
 	return deleted, nil
+}
+
+// GetAttachmentByIds implements UseCase.
+func (s *uploadService) GetAttachmentByIds(ctx context.Context, attachmentIds []uuid.UUID) ([]*domain.Attachment, error) {
+	attachments, err := s.repo.GetByIds(ctx, attachmentIds)
+	if err != nil {
+		return nil, errors.Wrap(err, "uploadService.GetAttachment failed")
+	}
+	return attachments, nil
 }
 
 // GetAttachment implements UseCase.
@@ -62,6 +100,7 @@ func (s *uploadService) GetAttachment(ctx context.Context, attachmentId uuid.UUI
 // UpdateAttachment implements UseCase.
 func (s *uploadService) UpdateAttachment(ctx context.Context, attachment *domain.Attachment) (*domain.Attachment, error) {
 	result, err := s.repo.Update(ctx, &domain.Attachment{
+		ID:             attachment.ID,
 		AttachableType: attachment.AttachableType,
 		AttachableID:   attachment.AttachableID,
 	})
@@ -81,6 +120,11 @@ func (s *uploadService) UploadFile(echoCtx echo.Context) ([]*domain.Attachment, 
 	}
 	slog.Info("FORMDATA::", form)
 	files := form.File["files"]
+	id := form.Value["user_id"][0]
+	userId, err := uuid.Parse(id)
+	if err != nil {
+		return nil, errors.Wrap(err, "Parse User Id Error")
+	}
 	results := make([]*domain.Attachment, 1)
 	for _, file := range files {
 		buffer, err := file.Open()
@@ -89,12 +133,12 @@ func (s *uploadService) UploadFile(echoCtx echo.Context) ([]*domain.Attachment, 
 		}
 		defer buffer.Close()
 		slog.Info("FILE::", &file)
-		info, err := s.minio.UploadFile(ctx, file, buffer)
-		slog.Info("INFO::", info)
+		_, fileInfo, err := s.minio.UploadFile(ctx, file, buffer)
 		if err != nil {
 			return nil, errors.Wrap(err, "Upload file failed:")
 		}
-		model := domain.NewAttachment(uuid.New(), info.Key, "", "", info.Bucket, info.VersionID, info.Location, info.Location)
+		model := domain.NewAttachment(userId, fileInfo.FileName, fileInfo.Extension,
+			fileInfo.MimeType, fileInfo.Folder, fileInfo.Url, fileInfo.UrlThumbnail)
 		attachment, err := s.repo.Create(ctx, model)
 		if err != nil {
 			return nil, errors.Wrap(err, "Create Attachment failed")
@@ -102,6 +146,5 @@ func (s *uploadService) UploadFile(echoCtx echo.Context) ([]*domain.Attachment, 
 		results = append(results, attachment)
 
 	}
-	slog.Info("Data::", results)
 	return results, nil
 }

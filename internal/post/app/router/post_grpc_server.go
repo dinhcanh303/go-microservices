@@ -4,12 +4,16 @@ import (
 	"context"
 
 	"github.com/dinhcanh303/go-microservices/cmd/post/config"
+	domainLike "github.com/dinhcanh303/go-microservices/internal/like/domain"
+	sharedkernel "github.com/dinhcanh303/go-microservices/internal/pkg/shared_kernel"
 	"github.com/dinhcanh303/go-microservices/internal/post/domain"
 	"github.com/dinhcanh303/go-microservices/internal/post/usecases/posts"
+	domainUpload "github.com/dinhcanh303/go-microservices/internal/upload/domain"
 	"github.com/dinhcanh303/go-microservices/proto/gen"
 	"github.com/google/uuid"
 	"github.com/google/wire"
 	"github.com/pkg/errors"
+	"github.com/samber/lo"
 	"golang.org/x/exp/slog"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
@@ -18,8 +22,11 @@ import (
 
 type postGRPCServer struct {
 	gen.UnimplementedPostServiceServer
-	cfg *config.Config
-	uc  posts.UseCase
+	cfg                  *config.Config
+	uc                   posts.UseCase
+	uploadDomainService  domain.UploadDomainService
+	commentDomainService domain.CommentDomainService
+	likeDomainService    domain.LikeDomainService
 }
 
 var _ gen.PostServiceServer = (*postGRPCServer)(nil)
@@ -30,10 +37,16 @@ func NewGRPCPostServer(
 	grpcServer *grpc.Server,
 	cfg *config.Config,
 	uc posts.UseCase,
+	uploadDomainService domain.UploadDomainService,
+	commentDomainService domain.CommentDomainService,
+	likeDomainService domain.LikeDomainService,
 ) gen.PostServiceServer {
 	svc := postGRPCServer{
-		cfg: cfg,
-		uc:  uc,
+		cfg:                  cfg,
+		uc:                   uc,
+		uploadDomainService:  uploadDomainService,
+		commentDomainService: commentDomainService,
+		likeDomainService:    likeDomainService,
 	}
 	gen.RegisterPostServiceServer(grpcServer, &svc)
 	reflection.Register(grpcServer)
@@ -88,6 +101,18 @@ func (g *postGRPCServer) GetPost(ctx context.Context, request *gen.GetPostReques
 	if err != nil {
 		return nil, errors.Wrap(err, "uc.GetPost failed")
 	}
+	likes, err := g.likeDomainService.GetLikesByPostID(ctx, post.ID)
+	if err != nil {
+		return nil, errors.Wrap(err, "likeDomainService.GetLikesByPostID failed")
+	}
+	comments, err := g.commentDomainService.GetCommentsByPostID(ctx, post.ID)
+	if err != nil {
+		return nil, errors.Wrap(err, "commentDomainService.GetCommentsByPostID failed")
+	}
+	attachments, err := g.uploadDomainService.GetAttachmentsByType(ctx, "Attachment/Post", post.ID)
+	if err != nil {
+		return nil, errors.Wrap(err, "uploadDomainService.GetAttachmentsByType failed")
+	}
 	res := &gen.GetPostResponse{
 		Post: &gen.PostResponse{
 			Id:        post.ID.String(),
@@ -99,6 +124,56 @@ func (g *postGRPCServer) GetPost(ctx context.Context, request *gen.GetPostReques
 			CreatedAt: timestamppb.New(post.CreatedAt),
 			UpdatedAt: timestamppb.New(post.UpdatedAt),
 		},
+		Attachments: lo.Map(attachments, func(item *domainUpload.Attachment, _ int) *gen.AttachmentInPost {
+			return &gen.AttachmentInPost{
+				Id:             item.ID.String(),
+				AttachableType: item.AttachableType,
+				AttachableId:   item.AttachableID.String(),
+				Filename:       item.FileName,
+				Extension:      item.Extension,
+				MimeType:       item.MimeType,
+				Folder:         item.Folder,
+				Url:            item.URL,
+				UrlThumbnail:   item.URLThumbnail,
+				UserId:         item.UserID.String(),
+				CreatedAt:      timestamppb.New(item.CreatedAt),
+				UpdatedAt:      timestamppb.New(item.UpdatedAt),
+			}
+		}),
+		Likes: lo.Map(likes, func(item *domainLike.Like, _ int) *gen.Like {
+			return &gen.Like{
+				Id:           item.ID.String(),
+				Emoji:        item.Emoji,
+				LikeableType: item.LikeableType,
+				LikeableId:   item.LikeableID.String(),
+				UserId:       item.UserID.String(),
+				CreatedAt:    timestamppb.New(item.CreatedAt),
+				UpdatedAt:    timestamppb.New(item.UpdatedAt),
+			}
+		}),
+		Comments: lo.Map(comments, func(item *sharedkernel.CommentHasChildren, _ int) *gen.Comment {
+			return &gen.Comment{
+				Id:              item.ID.String(),
+				PostId:          item.PostID.String(),
+				ReplyToId:       item.ReplyToID.UUID.String(),
+				Content:         item.Content,
+				ParentCommentId: item.ParentCommentID.UUID.String(),
+				Likes: lo.Map(item.Likes, func(item *domainLike.Like, _ int) *gen.Like {
+					return &gen.Like{
+						Id:           item.ID.String(),
+						Emoji:        item.Emoji,
+						LikeableType: item.LikeableType,
+						LikeableId:   item.LikeableID.String(),
+						UserId:       item.UserID.String(),
+						CreatedAt:    timestamppb.New(item.CreatedAt),
+						UpdatedAt:    timestamppb.New(item.UpdatedAt),
+					}
+				}),
+				UserId:    item.UserID.String(),
+				CreatedAt: timestamppb.New(item.CreatedAt),
+				UpdatedAt: timestamppb.New(item.UpdatedAt),
+			}
+		}),
 	}
 	return res, nil
 }

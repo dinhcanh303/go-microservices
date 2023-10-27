@@ -8,6 +8,7 @@ package postgresql
 import (
 	"context"
 	"database/sql"
+	"strings"
 
 	"github.com/google/uuid"
 )
@@ -20,10 +21,10 @@ INSERT INTO upload.attachments
         filename, 
         extension,
         mime_type,
-        version_id,
+        folder,
         url,
         url_thumbnail)
-VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING id, attachable_type, attachable_id, user_id, filename, extension, mime_type, folder, version_id, url, url_thumbnail, created_at, updated_at
+VALUES ($1, $2, $3, $4, $5, $6, $7 ,$8) RETURNING id, attachable_type, attachable_id, user_id, filename, extension, mime_type, folder, url, url_thumbnail, created_at, updated_at
 `
 
 type CreateParams struct {
@@ -32,7 +33,7 @@ type CreateParams struct {
 	Filename     string         `json:"filename"`
 	Extension    string         `json:"extension"`
 	MimeType     sql.NullString `json:"mime_type"`
-	VersionID    sql.NullString `json:"version_id"`
+	Folder       sql.NullString `json:"folder"`
 	Url          string         `json:"url"`
 	UrlThumbnail sql.NullString `json:"url_thumbnail"`
 }
@@ -44,7 +45,7 @@ func (q *Queries) Create(ctx context.Context, arg CreateParams) (UploadAttachmen
 		arg.Filename,
 		arg.Extension,
 		arg.MimeType,
-		arg.VersionID,
+		arg.Folder,
 		arg.Url,
 		arg.UrlThumbnail,
 	)
@@ -58,7 +59,6 @@ func (q *Queries) Create(ctx context.Context, arg CreateParams) (UploadAttachmen
 		&i.Extension,
 		&i.MimeType,
 		&i.Folder,
-		&i.VersionID,
 		&i.Url,
 		&i.UrlThumbnail,
 		&i.CreatedAt,
@@ -76,8 +76,27 @@ func (q *Queries) Delete(ctx context.Context, id uuid.UUID) error {
 	return err
 }
 
+const deleteByIds = `-- name: DeleteByIds :exec
+DELETE FROM upload.attachments WHERE id IN ($1)
+`
+
+func (q *Queries) DeleteByIds(ctx context.Context, attachmentids []uuid.UUID) error {
+	query := deleteByIds
+	var queryParams []interface{}
+	if len(attachmentids) > 0 {
+		for _, v := range attachmentids {
+			queryParams = append(queryParams, v)
+		}
+		query = strings.Replace(query, "/*SLICE:attachmentids*/?", strings.Repeat(",?", len(attachmentids))[1:], 1)
+	} else {
+		query = strings.Replace(query, "/*SLICE:attachmentids*/?", "NULL", 1)
+	}
+	_, err := q.db.ExecContext(ctx, query, queryParams...)
+	return err
+}
+
 const get = `-- name: Get :one
-SELECT id, attachable_type, attachable_id, user_id, filename, extension, mime_type, folder, version_id, url, url_thumbnail, created_at, updated_at FROM upload.attachments WHERE id = $1
+SELECT id, attachable_type, attachable_id, user_id, filename, extension, mime_type, folder, url, url_thumbnail, created_at, updated_at FROM upload.attachments WHERE id = $1
 `
 
 func (q *Queries) Get(ctx context.Context, id uuid.UUID) (UploadAttachment, error) {
@@ -92,7 +111,6 @@ func (q *Queries) Get(ctx context.Context, id uuid.UUID) (UploadAttachment, erro
 		&i.Extension,
 		&i.MimeType,
 		&i.Folder,
-		&i.VersionID,
 		&i.Url,
 		&i.UrlThumbnail,
 		&i.CreatedAt,
@@ -101,12 +119,107 @@ func (q *Queries) Get(ctx context.Context, id uuid.UUID) (UploadAttachment, erro
 	return i, err
 }
 
+const getAttachmentsByType = `-- name: GetAttachmentsByType :many
+SELECT id, attachable_type, attachable_id, user_id, filename, extension, mime_type, folder, url, url_thumbnail, created_at, updated_at FROM upload.attachments WHERE attachable_type = $1 AND attachable_id = $2
+`
+
+type GetAttachmentsByTypeParams struct {
+	AttachableType sql.NullString `json:"attachable_type"`
+	AttachableID   uuid.NullUUID  `json:"attachable_id"`
+}
+
+func (q *Queries) GetAttachmentsByType(ctx context.Context, arg GetAttachmentsByTypeParams) ([]UploadAttachment, error) {
+	rows, err := q.db.QueryContext(ctx, getAttachmentsByType, arg.AttachableType, arg.AttachableID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []UploadAttachment
+	for rows.Next() {
+		var i UploadAttachment
+		if err := rows.Scan(
+			&i.ID,
+			&i.AttachableType,
+			&i.AttachableID,
+			&i.UserID,
+			&i.Filename,
+			&i.Extension,
+			&i.MimeType,
+			&i.Folder,
+			&i.Url,
+			&i.UrlThumbnail,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getByIds = `-- name: GetByIds :many
+SELECT id, attachable_type, attachable_id, user_id, filename, extension, mime_type, folder, url, url_thumbnail, created_at, updated_at FROM upload.attachments WHERE id IN ($1)
+`
+
+func (q *Queries) GetByIds(ctx context.Context, attachmentids []uuid.UUID) ([]UploadAttachment, error) {
+	query := getByIds
+	var queryParams []interface{}
+	if len(attachmentids) > 0 {
+		for _, v := range attachmentids {
+			queryParams = append(queryParams, v)
+		}
+		query = strings.Replace(query, "/*SLICE:attachmentids*/?", strings.Repeat(",?", len(attachmentids))[1:], 1)
+	} else {
+		query = strings.Replace(query, "/*SLICE:attachmentids*/?", "NULL", 1)
+	}
+	rows, err := q.db.QueryContext(ctx, query, queryParams...)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []UploadAttachment
+	for rows.Next() {
+		var i UploadAttachment
+		if err := rows.Scan(
+			&i.ID,
+			&i.AttachableType,
+			&i.AttachableID,
+			&i.UserID,
+			&i.Filename,
+			&i.Extension,
+			&i.MimeType,
+			&i.Folder,
+			&i.Url,
+			&i.UrlThumbnail,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const update = `-- name: Update :one
 UPDATE upload.attachments 
 SET
     attachable_type = $2,
     attachable_id = $3
-WHERE id = $1 RETURNING id, attachable_type, attachable_id, user_id, filename, extension, mime_type, folder, version_id, url, url_thumbnail, created_at, updated_at
+WHERE id = $1 RETURNING id, attachable_type, attachable_id, user_id, filename, extension, mime_type, folder, url, url_thumbnail, created_at, updated_at
 `
 
 type UpdateParams struct {
@@ -127,11 +240,72 @@ func (q *Queries) Update(ctx context.Context, arg UpdateParams) (UploadAttachmen
 		&i.Extension,
 		&i.MimeType,
 		&i.Folder,
-		&i.VersionID,
 		&i.Url,
 		&i.UrlThumbnail,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 	)
 	return i, err
+}
+
+const updateByIds = `-- name: UpdateByIds :many
+UPDATE upload.attachments 
+SET
+    attachable_type = $1,
+    attachable_id = $2
+WHERE id IN ($3) RETURNING id, attachable_type, attachable_id, user_id, filename, extension, mime_type, folder, url, url_thumbnail, created_at, updated_at
+`
+
+type UpdateByIdsParams struct {
+	AttachableType sql.NullString `json:"attachable_type"`
+	AttachableID   uuid.NullUUID  `json:"attachable_id"`
+	Attachmentids  []uuid.UUID    `json:"attachmentids"`
+}
+
+func (q *Queries) UpdateByIds(ctx context.Context, arg UpdateByIdsParams) ([]UploadAttachment, error) {
+	query := updateByIds
+	var queryParams []interface{}
+	queryParams = append(queryParams, arg.AttachableType)
+	queryParams = append(queryParams, arg.AttachableID)
+	if len(arg.Attachmentids) > 0 {
+		for _, v := range arg.Attachmentids {
+			queryParams = append(queryParams, v)
+		}
+		query = strings.Replace(query, "/*SLICE:attachmentids*/?", strings.Repeat(",?", len(arg.Attachmentids))[1:], 1)
+	} else {
+		query = strings.Replace(query, "/*SLICE:attachmentids*/?", "NULL", 1)
+	}
+	rows, err := q.db.QueryContext(ctx, query, queryParams...)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []UploadAttachment
+	for rows.Next() {
+		var i UploadAttachment
+		if err := rows.Scan(
+			&i.ID,
+			&i.AttachableType,
+			&i.AttachableID,
+			&i.UserID,
+			&i.Filename,
+			&i.Extension,
+			&i.MimeType,
+			&i.Folder,
+			&i.Url,
+			&i.UrlThumbnail,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
 }
