@@ -14,6 +14,8 @@ comment_client:
   comment_url: 0.0.0.0:5003
 like_client:
   like_url: 0.0.0.0:5004
+upload_client:
+  upload_url: 0.0.0.0:5006
 
 logger:
   log_level: 'debug'

@@ -2,9 +2,13 @@ app:
   name: 'upload-service'
   version: '1.0.0'
 
-http:
+http_echo:
   host: '0.0.0.0'
   port: 5005
+
+http:
+  host: '0.0.0.0'
+  port: 5006
 
 postgres:
   pool_max: 2

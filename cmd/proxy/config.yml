@@ -16,7 +16,7 @@ grpc:
   like_host: '0.0.0.0'
   like_port: 5004
   upload_host: '0.0.0.0'
-  upload_port: 5005
+  upload_port: 5006
 
 logger:
   log_level: 'debug'
