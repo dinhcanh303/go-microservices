@@ -81,7 +81,7 @@ func RegisterUploadServiceHandlerServer(ctx context.Context, mux *runtime.ServeM
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/go.microsevices.proto.uploadapi.UploadService/GetAttachmentsByType", runtime.WithHTTPPathPattern("/v1/api/attachments"))
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/upload.UploadService/GetAttachmentsByType", runtime.WithHTTPPathPattern("/v1/api/attachments"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -145,7 +145,7 @@ func RegisterUploadServiceHandlerClient(ctx context.Context, mux *runtime.ServeM
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/go.microsevices.proto.uploadapi.UploadService/GetAttachmentsByType", runtime.WithHTTPPathPattern("/v1/api/attachments"))
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/upload.UploadService/GetAttachmentsByType", runtime.WithHTTPPathPattern("/v1/api/attachments"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return

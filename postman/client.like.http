@@ -8,8 +8,8 @@ content-type: application/json
   "like": 
     {
     "emoji" : "cry",
-    "likeable_type" :"Like/Comment",
-    "likeable_id" : "b8b0a48d-61a0-427f-b3d7-bab73b7bdca3",
+    "likeable_type" :"Like/Post",
+    "likeable_id" : "120d1c98-4cb9-499d-9ddd-01351ddb3781",
     "user_id" :"526c0b00-677d-11ee-8390-0242ac150004"
     }
 }

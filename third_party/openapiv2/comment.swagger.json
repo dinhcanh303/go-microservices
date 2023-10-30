@@ -24,7 +24,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/commentapiCreateCommentResponse"
+              "$ref": "#/definitions/commentCreateCommentResponse"
             }
           },
           "default": {
@@ -40,7 +40,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/commentapiCreateCommentRequest"
+              "$ref": "#/definitions/commentCreateCommentRequest"
             }
           }
         ],
@@ -57,7 +57,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/commentapiUpdateCommentResponse"
+              "$ref": "#/definitions/commentUpdateCommentResponse"
             }
           },
           "default": {
@@ -126,7 +126,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/commentapiGetCommentResponse"
+              "$ref": "#/definitions/commentGetCommentResponse"
             }
           },
           "default": {
@@ -155,7 +155,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/commentapiDeleteCommentResponse"
+              "$ref": "#/definitions/commentDeleteCommentResponse"
             }
           },
           "default": {
@@ -186,7 +186,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/commentapiCountCommentByCommentIDResponse"
+              "$ref": "#/definitions/commentCountCommentByCommentIDResponse"
             }
           },
           "default": {
@@ -209,7 +209,7 @@
         ]
       }
     },
-    "/v1/api/posts/{postID}/comments": {
+    "/v1/api/posts/{postId}/comments": {
       "get": {
         "summary": "Get Comment By Post ID",
         "operationId": "CommentService_GetCommentsByPostID",
@@ -217,7 +217,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/commentapiGetCommentsByPostIDResponse"
+              "$ref": "#/definitions/commentGetCommentsByPostIDResponse"
             }
           },
           "default": {
@@ -229,7 +229,7 @@
         },
         "parameters": [
           {
-            "name": "postID",
+            "name": "postId",
             "in": "path",
             "required": true,
             "type": "string"
@@ -242,27 +242,7 @@
     }
   },
   "definitions": {
-    "commentapiCommentRequest": {
-      "type": "object",
-      "properties": {
-        "postId": {
-          "type": "string"
-        },
-        "userId": {
-          "type": "string"
-        },
-        "replyToId": {
-          "type": "string"
-        },
-        "content": {
-          "type": "string"
-        },
-        "parentCommentId": {
-          "type": "string"
-        }
-      }
-    },
-    "commentapiCommentResponse": {
+    "commentComment": {
       "type": "object",
       "properties": {
         "id": {
@@ -293,98 +273,7 @@
         }
       }
     },
-    "commentapiCommentResponseHasLike": {
-      "type": "object",
-      "properties": {
-        "id": {
-          "type": "string"
-        },
-        "postId": {
-          "type": "string"
-        },
-        "userId": {
-          "type": "string"
-        },
-        "replyToId": {
-          "type": "string"
-        },
-        "content": {
-          "type": "string"
-        },
-        "parentCommentId": {
-          "type": "string"
-        },
-        "likes": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "$ref": "#/definitions/commentapiLikeResponseInComment"
-          }
-        },
-        "createdAt": {
-          "type": "string",
-          "format": "date-time"
-        },
-        "updatedAt": {
-          "type": "string",
-          "format": "date-time"
-        }
-      }
-    },
-    "commentapiCountCommentByCommentIDResponse": {
-      "type": "object",
-      "properties": {
-        "count": {
-          "type": "string",
-          "format": "int64"
-        }
-      }
-    },
-    "commentapiCreateCommentRequest": {
-      "type": "object",
-      "properties": {
-        "comment": {
-          "$ref": "#/definitions/commentapiCommentRequest"
-        }
-      }
-    },
-    "commentapiCreateCommentResponse": {
-      "type": "object",
-      "properties": {
-        "comment": {
-          "$ref": "#/definitions/commentapiCommentResponse"
-        }
-      }
-    },
-    "commentapiDeleteCommentResponse": {
-      "type": "object",
-      "properties": {
-        "deleted": {
-          "type": "boolean"
-        }
-      }
-    },
-    "commentapiGetCommentResponse": {
-      "type": "object",
-      "properties": {
-        "comment": {
-          "$ref": "#/definitions/commentapiCommentResponse"
-        }
-      }
-    },
-    "commentapiGetCommentsByPostIDResponse": {
-      "type": "object",
-      "properties": {
-        "comments": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "$ref": "#/definitions/commentapiGetCommentsResponse"
-          }
-        }
-      }
-    },
-    "commentapiGetCommentsResponse": {
+    "commentCommentHasCommentAndLike": {
       "type": "object",
       "properties": {
         "id": {
@@ -409,14 +298,14 @@
           "type": "array",
           "items": {
             "type": "object",
-            "$ref": "#/definitions/commentapiCommentResponseHasLike"
+            "$ref": "#/definitions/commentCommentHasLike"
           }
         },
         "likes": {
           "type": "array",
           "items": {
             "type": "object",
-            "$ref": "#/definitions/commentapiLikeResponseInComment"
+            "$ref": "#/definitions/likeLike"
           }
         },
         "createdAt": {
@@ -429,7 +318,126 @@
         }
       }
     },
-    "commentapiLikeResponseInComment": {
+    "commentCommentHasLike": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "postId": {
+          "type": "string"
+        },
+        "userId": {
+          "type": "string"
+        },
+        "replyToId": {
+          "type": "string"
+        },
+        "content": {
+          "type": "string"
+        },
+        "parentCommentId": {
+          "type": "string"
+        },
+        "likes": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/likeLike"
+          }
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "commentCommentRequest": {
+      "type": "object",
+      "properties": {
+        "postId": {
+          "type": "string"
+        },
+        "userId": {
+          "type": "string"
+        },
+        "replyToId": {
+          "type": "string"
+        },
+        "content": {
+          "type": "string"
+        },
+        "parentCommentId": {
+          "type": "string"
+        }
+      }
+    },
+    "commentCountCommentByCommentIDResponse": {
+      "type": "object",
+      "properties": {
+        "count": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "commentCreateCommentRequest": {
+      "type": "object",
+      "properties": {
+        "comment": {
+          "$ref": "#/definitions/commentCommentRequest"
+        }
+      }
+    },
+    "commentCreateCommentResponse": {
+      "type": "object",
+      "properties": {
+        "comment": {
+          "$ref": "#/definitions/commentComment"
+        }
+      }
+    },
+    "commentDeleteCommentResponse": {
+      "type": "object",
+      "properties": {
+        "deleted": {
+          "type": "boolean"
+        }
+      }
+    },
+    "commentGetCommentResponse": {
+      "type": "object",
+      "properties": {
+        "comment": {
+          "$ref": "#/definitions/commentComment"
+        }
+      }
+    },
+    "commentGetCommentsByPostIDResponse": {
+      "type": "object",
+      "properties": {
+        "comments": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/commentCommentHasCommentAndLike"
+          }
+        }
+      }
+    },
+    "commentUpdateCommentResponse": {
+      "type": "object",
+      "properties": {
+        "comment": {
+          "$ref": "#/definitions/commentComment"
+        }
+      }
+    },
+    "likeLike": {
       "type": "object",
       "properties": {
         "id": {
@@ -454,14 +462,6 @@
         "updatedAt": {
           "type": "string",
           "format": "date-time"
-        }
-      }
-    },
-    "commentapiUpdateCommentResponse": {
-      "type": "object",
-      "properties": {
-        "comment": {
-          "$ref": "#/definitions/commentapiCommentResponse"
         }
       }
     },

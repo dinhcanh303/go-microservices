@@ -24,7 +24,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/groupapiGetAllGroupIdByUserIdResponse"
+              "$ref": "#/definitions/groupGetAllGroupIdByUserIdResponse"
             }
           },
           "default": {
@@ -55,7 +55,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/groupapiCreateGroupMemberResponse"
+              "$ref": "#/definitions/groupCreateGroupMemberResponse"
             }
           },
           "default": {
@@ -71,7 +71,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/groupapiCreateGroupMemberRequest"
+              "$ref": "#/definitions/groupCreateGroupMemberRequest"
             }
           }
         ],
@@ -88,7 +88,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/groupapiGetAllGroupMembersResponse"
+              "$ref": "#/definitions/groupGetAllGroupMembersResponse"
             }
           },
           "default": {
@@ -119,7 +119,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/groupapiUpdateGroupMemberResponse"
+              "$ref": "#/definitions/groupUpdateGroupMemberResponse"
             }
           },
           "default": {
@@ -183,7 +183,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/groupapiDeleteGroupMemberResponse"
+              "$ref": "#/definitions/groupDeleteGroupMemberResponse"
             }
           },
           "default": {
@@ -214,7 +214,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/groupapiCreateGroupResponse"
+              "$ref": "#/definitions/groupCreateGroupResponse"
             }
           },
           "default": {
@@ -230,7 +230,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/groupapiCreateGroupRequest"
+              "$ref": "#/definitions/groupCreateGroupRequest"
             }
           }
         ],
@@ -247,7 +247,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/groupapiUpdateGroupResponse"
+              "$ref": "#/definitions/groupUpdateGroupResponse"
             }
           },
           "default": {
@@ -314,7 +314,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/groupapiGetGroupResponse"
+              "$ref": "#/definitions/groupGetGroupResponse"
             }
           },
           "default": {
@@ -343,7 +343,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/groupapiDeleteGroupResponse"
+              "$ref": "#/definitions/groupDeleteGroupResponse"
             }
           },
           "default": {
@@ -374,7 +374,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/groupapiGetAllGroupByUserIdResponse"
+              "$ref": "#/definitions/groupGetAllGroupByUserIdResponse"
             }
           },
           "default": {
@@ -399,39 +399,39 @@
     }
   },
   "definitions": {
-    "groupapiCreateGroupMemberRequest": {
+    "groupCreateGroupMemberRequest": {
       "type": "object",
       "properties": {
         "groupMember": {
-          "$ref": "#/definitions/groupapiGroupMemberRequest"
+          "$ref": "#/definitions/groupGroupMemberRequest"
         }
       }
     },
-    "groupapiCreateGroupMemberResponse": {
+    "groupCreateGroupMemberResponse": {
       "type": "object",
       "properties": {
         "groupMember": {
-          "$ref": "#/definitions/groupapiGroupMemberResponse"
+          "$ref": "#/definitions/groupGroupMemberResponse"
         }
       }
     },
-    "groupapiCreateGroupRequest": {
+    "groupCreateGroupRequest": {
       "type": "object",
       "properties": {
         "group": {
-          "$ref": "#/definitions/groupapiGroupRequest"
+          "$ref": "#/definitions/groupGroupRequest"
         }
       }
     },
-    "groupapiCreateGroupResponse": {
+    "groupCreateGroupResponse": {
       "type": "object",
       "properties": {
         "group": {
-          "$ref": "#/definitions/groupapiGroupResponse"
+          "$ref": "#/definitions/groupGroupResponse"
         }
       }
     },
-    "groupapiDeleteGroupMemberResponse": {
+    "groupDeleteGroupMemberResponse": {
       "type": "object",
       "properties": {
         "deleted": {
@@ -439,7 +439,7 @@
         }
       }
     },
-    "groupapiDeleteGroupResponse": {
+    "groupDeleteGroupResponse": {
       "type": "object",
       "properties": {
         "deleted": {
@@ -447,19 +447,19 @@
         }
       }
     },
-    "groupapiGetAllGroupByUserIdResponse": {
+    "groupGetAllGroupByUserIdResponse": {
       "type": "object",
       "properties": {
         "groups": {
           "type": "array",
           "items": {
             "type": "object",
-            "$ref": "#/definitions/groupapiGroupResponse"
+            "$ref": "#/definitions/groupGroupResponse"
           }
         }
       }
     },
-    "groupapiGetAllGroupIdByUserIdResponse": {
+    "groupGetAllGroupIdByUserIdResponse": {
       "type": "object",
       "properties": {
         "groupIds": {
@@ -470,27 +470,27 @@
         }
       }
     },
-    "groupapiGetAllGroupMembersResponse": {
+    "groupGetAllGroupMembersResponse": {
       "type": "object",
       "properties": {
         "groupMembers": {
           "type": "array",
           "items": {
             "type": "object",
-            "$ref": "#/definitions/groupapiGroupMemberResponse"
+            "$ref": "#/definitions/groupGroupMemberResponse"
           }
         }
       }
     },
-    "groupapiGetGroupResponse": {
+    "groupGetGroupResponse": {
       "type": "object",
       "properties": {
         "group": {
-          "$ref": "#/definitions/groupapiGroupResponse"
+          "$ref": "#/definitions/groupGroupResponse"
         }
       }
     },
-    "groupapiGroupMemberRequest": {
+    "groupGroupMemberRequest": {
       "type": "object",
       "properties": {
         "groupId": {
@@ -505,7 +505,7 @@
         }
       }
     },
-    "groupapiGroupMemberResponse": {
+    "groupGroupMemberResponse": {
       "type": "object",
       "properties": {
         "id": {
@@ -531,7 +531,7 @@
         }
       }
     },
-    "groupapiGroupRequest": {
+    "groupGroupRequest": {
       "type": "object",
       "properties": {
         "name": {
@@ -549,7 +549,7 @@
         }
       }
     },
-    "groupapiGroupResponse": {
+    "groupGroupResponse": {
       "type": "object",
       "properties": {
         "id": {
@@ -578,19 +578,19 @@
         }
       }
     },
-    "groupapiUpdateGroupMemberResponse": {
+    "groupUpdateGroupMemberResponse": {
       "type": "object",
       "properties": {
         "groupMember": {
-          "$ref": "#/definitions/groupapiGroupMemberResponse"
+          "$ref": "#/definitions/groupGroupMemberResponse"
         }
       }
     },
-    "groupapiUpdateGroupResponse": {
+    "groupUpdateGroupResponse": {
       "type": "object",
       "properties": {
         "group": {
-          "$ref": "#/definitions/groupapiGroupResponse"
+          "$ref": "#/definitions/groupGroupResponse"
         }
       }
     },

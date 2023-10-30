@@ -2,6 +2,7 @@ package grpc
 
 import (
 	"context"
+	"log/slog"
 
 	"github.com/dinhcanh303/go-microservices/cmd/post/config"
 	domainComment "github.com/dinhcanh303/go-microservices/internal/comment/domain"
@@ -12,7 +13,6 @@ import (
 	"github.com/dinhcanh303/go-microservices/proto/gen"
 	"github.com/google/uuid"
 	"github.com/google/wire"
-	"github.com/pkg/errors"
 	"github.com/samber/lo"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
@@ -41,13 +41,13 @@ func (c *commentGRPCClient) GetCommentsByPostID(ctx context.Context, postId uuid
 	client := gen.NewCommentServiceClient(c.conn)
 
 	res, err := client.GetCommentsByPostID(ctx, &gen.GetCommentsByPostIDRequest{
-		PostID: postId.String(),
+		PostId: postId.String(),
 	})
-	if err != nil {
-		return nil, errors.Wrap(err, "commentGRPCClient.GetCommentsByPostID failed")
-
-	}
 	results := make([]*sharedkernel.CommentHasChildren, 0)
+	if err != nil {
+		slog.Warn("commentGRPCClient.GetCommentsByPostID failed", err)
+		return results, nil
+	}
 	for _, item := range res.Comments {
 		results = append(results, &sharedkernel.CommentHasChildren{
 			ID:              uuid.MustParse(item.Id),
@@ -56,12 +56,12 @@ func (c *commentGRPCClient) GetCommentsByPostID(ctx context.Context, postId uuid
 			PostID:          uuid.MustParse(item.PostId),
 			ReplyToID:       utils.StringToNullUUID(item.ReplyToId),
 			ParentCommentID: utils.StringToNullUUID(item.ParentCommentId),
-			Children: lo.Map(item.Children, func(value *gen.CommentResponseHasLike, _ int) *domainComment.CommentHasLike {
+			Children: lo.Map(item.Children, func(value *gen.CommentHasLike, _ int) *domainComment.CommentHasLike {
 				return &domainComment.CommentHasLike{
 					ID:      uuid.MustParse(value.Id),
 					UserID:  uuid.MustParse(value.UserId),
 					Content: value.Content,
-					Likes: lo.Map(item.Likes, func(value *gen.LikeResponseInComment, _ int) *domainLike.Like {
+					Likes: lo.Map(item.Likes, func(value *gen.Like, _ int) *domainLike.Like {
 						return &domainLike.Like{
 							ID:           uuid.MustParse(value.Id),
 							UserID:       uuid.MustParse(value.UserId),
@@ -79,7 +79,7 @@ func (c *commentGRPCClient) GetCommentsByPostID(ctx context.Context, postId uuid
 					UpdatedAt:       value.UpdatedAt.AsTime(),
 				}
 			}),
-			Likes: lo.Map(item.Likes, func(value *gen.LikeResponseInComment, _ int) *domainLike.Like {
+			Likes: lo.Map(item.Likes, func(value *gen.Like, _ int) *domainLike.Like {
 				return &domainLike.Like{
 					ID:           uuid.MustParse(value.Id),
 					UserID:       uuid.MustParse(value.UserId),

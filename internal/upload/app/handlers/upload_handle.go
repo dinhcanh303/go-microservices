@@ -3,6 +3,7 @@ package handlers
 import (
 	"context"
 	"log/slog"
+	"slices"
 
 	"net/http"
 
@@ -82,6 +83,10 @@ func (s *UploadHandler) UpdateAttachment(ctx echo.Context) error {
 	if err := ctx.Bind(updateAttachment); err != nil {
 		return responses.ErrorResponse(ctx, http.StatusNotFound, responses.ErrorString("Bind failed", err))
 	}
+	attachableType := updateAttachment.AttachableType
+	if !checkAttachmentTypeByCondition(attachableType, nil) {
+		return responses.ErrorResponse(ctx, http.StatusNotFound, responses.ErrorString("Attachment Type isn't correct", nil))
+	}
 	attachmentId, err := uuid.Parse(id)
 	if err != nil {
 		return responses.ErrorResponse(ctx, http.StatusNotFound, responses.ErrorString("Parse failed", err))
@@ -92,7 +97,7 @@ func (s *UploadHandler) UpdateAttachment(ctx echo.Context) error {
 	}
 	attachment, err := s.uc.UpdateAttachment(context.Background(), &domain.Attachment{
 		ID:             attachmentId,
-		AttachableType: updateAttachment.AttachableType,
+		AttachableType: attachableType,
 		AttachableID:   attachableId,
 	})
 	if err != nil {
@@ -108,6 +113,10 @@ func (s *UploadHandler) UpdateAttachmentsByIds(ctx echo.Context) error {
 	if err := ctx.Bind(updateAttachment); err != nil {
 		return responses.ErrorResponse(ctx, http.StatusNotFound, responses.ErrorString("Bind failed", err))
 	}
+	attachableType := updateAttachment.AttachableType
+	if !checkAttachmentTypeByCondition(attachableType, nil) {
+		return responses.ErrorResponse(ctx, http.StatusNotFound, responses.ErrorString("Attachment Type isn't correct", nil))
+	}
 	attachmentIds := make([]uuid.UUID, 1)
 	for _, id := range updateAttachment.AttachmentIds {
 		attachmentId, err := uuid.Parse(id)
@@ -122,7 +131,7 @@ func (s *UploadHandler) UpdateAttachmentsByIds(ctx echo.Context) error {
 		return responses.ErrorResponse(ctx, http.StatusNotFound, responses.ErrorString("Parse failed", err))
 	}
 	attachment, err := s.uc.UpdateAttachmentsByIds(context.Background(), attachmentIds, &domain.Attachment{
-		AttachableType: updateAttachment.AttachableType,
+		AttachableType: attachableType,
 		AttachableID:   attachableId,
 	})
 	if err != nil {
@@ -139,4 +148,12 @@ func (s *UploadHandler) UploadFile(ctx echo.Context) error {
 		return responses.ErrorResponse(ctx, http.StatusNotFound, responses.ErrorString("Handler Uploadfile failed", err))
 	}
 	return responses.Response(ctx, http.StatusOK, attachments)
+}
+func checkAttachmentTypeByCondition(attachableType string, condition []string) bool {
+	temp := []string{"Attachment/Post", "Attachment/Comment", "Attachment/Group"}
+
+	if len(condition) > 0 || condition == nil {
+		temp = condition
+	}
+	return slices.Contains(temp, attachableType)
 }

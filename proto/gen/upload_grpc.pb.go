@@ -19,7 +19,7 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	UploadService_GetAttachmentsByType_FullMethodName = "/go.microsevices.proto.uploadapi.UploadService/GetAttachmentsByType"
+	UploadService_GetAttachmentsByType_FullMethodName = "/upload.UploadService/GetAttachmentsByType"
 )
 
 // UploadServiceClient is the client API for UploadService service.
@@ -96,7 +96,7 @@ func _UploadService_GetAttachmentsByType_Handler(srv interface{}, ctx context.Co
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var UploadService_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "go.microsevices.proto.uploadapi.UploadService",
+	ServiceName: "upload.UploadService",
 	HandlerType: (*UploadServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{

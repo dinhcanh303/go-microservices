@@ -78,8 +78,8 @@ func (c *commentGRPCServer) CreateComment(ctx context.Context, request *gen.Crea
 	if err != nil {
 		return nil, errors.Wrap(err, "uc.CreateComment failed")
 	}
-	res := &gen.CreateCommentResponse{
-		Comment: &gen.CommentResponse{
+	return &gen.CreateCommentResponse{
+		Comment: &gen.Comment{
 			Id:              comment.ID.String(),
 			PostId:          comment.PostID.String(),
 			ReplyToId:       comment.ReplyToID.UUID.String(),
@@ -89,8 +89,7 @@ func (c *commentGRPCServer) CreateComment(ctx context.Context, request *gen.Crea
 			CreatedAt:       timestamppb.New(comment.CreatedAt),
 			UpdatedAt:       timestamppb.New(comment.UpdatedAt),
 		},
-	}
-	return res, nil
+	}, nil
 }
 
 // DeleteComment implements gen.CommentServiceServer.
@@ -121,7 +120,7 @@ func (c *commentGRPCServer) GetComment(ctx context.Context, request *gen.GetComm
 		return nil, errors.Wrap(err, "failed to get comment")
 	}
 	return &gen.GetCommentResponse{
-		Comment: &gen.CommentResponse{
+		Comment: &gen.Comment{
 			Id:              comment.ID.String(),
 			PostId:          comment.PostID.String(),
 			ReplyToId:       comment.ReplyToID.UUID.String(),
@@ -137,7 +136,7 @@ func (c *commentGRPCServer) GetComment(ctx context.Context, request *gen.GetComm
 // ListCommentByPostID implements gen.CommentServiceServer.
 func (c *commentGRPCServer) GetCommentsByPostID(ctx context.Context, request *gen.GetCommentsByPostIDRequest) (*gen.GetCommentsByPostIDResponse, error) {
 	slog.Info("GET: GetCommentsByPostID")
-	postId, err := uuid.Parse(request.PostID)
+	postId, err := uuid.Parse(request.PostId)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to parse")
 	}
@@ -147,7 +146,7 @@ func (c *commentGRPCServer) GetCommentsByPostID(ctx context.Context, request *ge
 		return nil, errors.Wrap(err, "failed to get comments by post ID")
 	}
 	for _, comment := range comments {
-		res.Comments = append(res.Comments, &gen.GetCommentsResponse{
+		res.Comments = append(res.Comments, &gen.CommentHasCommentAndLike{
 			Id:              comment.ID.String(),
 			PostId:          comment.PostID.String(),
 			UserId:          comment.UserID.String(),
@@ -156,8 +155,8 @@ func (c *commentGRPCServer) GetCommentsByPostID(ctx context.Context, request *ge
 			ParentCommentId: comment.ParentCommentID.UUID.String(),
 			CreatedAt:       timestamppb.New(comment.CreatedAt),
 			UpdatedAt:       timestamppb.New(comment.UpdatedAt),
-			Likes: lo.Map(comment.Likes, func(item *domain2.Like, _ int) *gen.LikeResponseInComment {
-				return &gen.LikeResponseInComment{
+			Likes: lo.Map(comment.Likes, func(item *domain2.Like, _ int) *gen.Like {
+				return &gen.Like{
 					Id:           item.ID.String(),
 					UserId:       item.UserID.String(),
 					Emoji:        item.Emoji,
@@ -167,15 +166,15 @@ func (c *commentGRPCServer) GetCommentsByPostID(ctx context.Context, request *ge
 					UpdatedAt:    timestamppb.New(item.UpdatedAt),
 				}
 			}),
-			Children: lo.Map(comment.Children, func(item *domain.CommentHasLike, _ int) *gen.CommentResponseHasLike {
-				return &gen.CommentResponseHasLike{
+			Children: lo.Map(comment.Children, func(item *domain.CommentHasLike, _ int) *gen.CommentHasLike {
+				return &gen.CommentHasLike{
 					Id:        item.ID.String(),
 					PostId:    item.PostID.String(),
 					UserId:    item.UserID.String(),
 					ReplyToId: item.ReplyToID.UUID.String(),
 					Content:   item.Content,
-					Likes: lo.Map(item.Likes, func(item *domain2.Like, _ int) *gen.LikeResponseInComment {
-						return &gen.LikeResponseInComment{
+					Likes: lo.Map(item.Likes, func(item *domain2.Like, _ int) *gen.Like {
+						return &gen.Like{
 							Id:           item.ID.String(),
 							UserId:       item.UserID.String(),
 							Emoji:        item.Emoji,
@@ -211,7 +210,7 @@ func (c *commentGRPCServer) UpdateComment(ctx context.Context, request *gen.Upda
 		return nil, errors.Wrap(err, "uc.UpdateComment failed")
 	}
 	res := &gen.UpdateCommentResponse{
-		Comment: &gen.CommentResponse{
+		Comment: &gen.Comment{
 			Id:              comment.ID.String(),
 			PostId:          comment.PostID.String(),
 			ReplyToId:       comment.ReplyToID.UUID.String(),

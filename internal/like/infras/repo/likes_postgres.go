@@ -52,6 +52,7 @@ func (rp *likeRepo) Create(ctx context.Context, like *domain.Like) (*domain.Like
 		Emoji:        result.Emoji,
 		LikeableType: result.LikeableType,
 		LikeableID:   result.LikeableID,
+		UserID:       result.UserID,
 		CreatedAt:    result.CreatedAt,
 		UpdatedAt:    result.UpdatedAt,
 	}, tx.Commit()
@@ -90,6 +91,7 @@ func (rp *likeRepo) GetLikesByCommentID(ctx context.Context, commentID uuid.UUID
 			Emoji:        item.Emoji,
 			LikeableType: item.LikeableType,
 			LikeableID:   item.LikeableID,
+			UserID:       item.UserID,
 			CreatedAt:    item.CreatedAt,
 			UpdatedAt:    item.UpdatedAt,
 		}
@@ -114,6 +116,7 @@ func (rp *likeRepo) GetLikesByPostID(ctx context.Context, postID uuid.UUID) ([]*
 			Emoji:        item.Emoji,
 			LikeableType: item.LikeableType,
 			LikeableID:   item.LikeableID,
+			UserID:       item.UserID,
 			CreatedAt:    item.CreatedAt,
 			UpdatedAt:    item.UpdatedAt,
 		}
@@ -144,6 +147,7 @@ func (rp *likeRepo) Update(ctx context.Context, like *domain.Like) (*domain.Like
 		Emoji:        result.Emoji,
 		LikeableType: result.LikeableType,
 		LikeableID:   result.LikeableID,
+		UserID:       result.UserID,
 		CreatedAt:    result.CreatedAt,
 		UpdatedAt:    result.UpdatedAt,
 	}, tx.Commit()

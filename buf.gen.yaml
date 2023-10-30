@@ -14,3 +14,8 @@ plugins:
       - paths=source_relative
   - plugin: buf.build/grpc-ecosystem/openapiv2:v2.16.2
     out: third_party/openapiv2
+    opt:
+      - allow_merge=true
+      - merge_file_name=go-microservices
+
+    

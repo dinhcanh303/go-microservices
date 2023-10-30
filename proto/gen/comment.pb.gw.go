@@ -248,14 +248,14 @@ func request_CommentService_GetCommentsByPostID_0(ctx context.Context, marshaler
 		_   = err
 	)
 
-	val, ok = pathParams["postID"]
+	val, ok = pathParams["post_id"]
 	if !ok {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "postID")
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "post_id")
 	}
 
-	protoReq.PostID, err = runtime.String(val)
+	protoReq.PostId, err = runtime.String(val)
 	if err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "postID", err)
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "post_id", err)
 	}
 
 	msg, err := client.GetCommentsByPostID(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
@@ -274,14 +274,14 @@ func local_request_CommentService_GetCommentsByPostID_0(ctx context.Context, mar
 		_   = err
 	)
 
-	val, ok = pathParams["postID"]
+	val, ok = pathParams["post_id"]
 	if !ok {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "postID")
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "post_id")
 	}
 
-	protoReq.PostID, err = runtime.String(val)
+	protoReq.PostId, err = runtime.String(val)
 	if err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "postID", err)
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "post_id", err)
 	}
 
 	msg, err := server.GetCommentsByPostID(ctx, &protoReq)
@@ -355,7 +355,7 @@ func RegisterCommentServiceHandlerServer(ctx context.Context, mux *runtime.Serve
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/go.microsevices.proto.commentapi.CommentService/CreateComment", runtime.WithHTTPPathPattern("/v1/api/comments"))
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/comment.CommentService/CreateComment", runtime.WithHTTPPathPattern("/v1/api/comments"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -380,7 +380,7 @@ func RegisterCommentServiceHandlerServer(ctx context.Context, mux *runtime.Serve
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/go.microsevices.proto.commentapi.CommentService/GetComment", runtime.WithHTTPPathPattern("/v1/api/comments/{id}"))
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/comment.CommentService/GetComment", runtime.WithHTTPPathPattern("/v1/api/comments/{id}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -405,7 +405,7 @@ func RegisterCommentServiceHandlerServer(ctx context.Context, mux *runtime.Serve
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/go.microsevices.proto.commentapi.CommentService/UpdateComment", runtime.WithHTTPPathPattern("/v1/api/comments/{comment.id}"))
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/comment.CommentService/UpdateComment", runtime.WithHTTPPathPattern("/v1/api/comments/{comment.id}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -430,7 +430,7 @@ func RegisterCommentServiceHandlerServer(ctx context.Context, mux *runtime.Serve
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/go.microsevices.proto.commentapi.CommentService/DeleteComment", runtime.WithHTTPPathPattern("/v1/api/comments/{id}"))
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/comment.CommentService/DeleteComment", runtime.WithHTTPPathPattern("/v1/api/comments/{id}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -455,7 +455,7 @@ func RegisterCommentServiceHandlerServer(ctx context.Context, mux *runtime.Serve
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/go.microsevices.proto.commentapi.CommentService/GetCommentsByPostID", runtime.WithHTTPPathPattern("/v1/api/posts/{postID}/comments"))
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/comment.CommentService/GetCommentsByPostID", runtime.WithHTTPPathPattern("/v1/api/posts/{post_id}/comments"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -480,7 +480,7 @@ func RegisterCommentServiceHandlerServer(ctx context.Context, mux *runtime.Serve
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/go.microsevices.proto.commentapi.CommentService/CountCommentByCommentID", runtime.WithHTTPPathPattern("/v1/api/comments/{id}/count"))
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/comment.CommentService/CountCommentByCommentID", runtime.WithHTTPPathPattern("/v1/api/comments/{id}/count"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -544,7 +544,7 @@ func RegisterCommentServiceHandlerClient(ctx context.Context, mux *runtime.Serve
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/go.microsevices.proto.commentapi.CommentService/CreateComment", runtime.WithHTTPPathPattern("/v1/api/comments"))
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/comment.CommentService/CreateComment", runtime.WithHTTPPathPattern("/v1/api/comments"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -566,7 +566,7 @@ func RegisterCommentServiceHandlerClient(ctx context.Context, mux *runtime.Serve
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/go.microsevices.proto.commentapi.CommentService/GetComment", runtime.WithHTTPPathPattern("/v1/api/comments/{id}"))
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/comment.CommentService/GetComment", runtime.WithHTTPPathPattern("/v1/api/comments/{id}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -588,7 +588,7 @@ func RegisterCommentServiceHandlerClient(ctx context.Context, mux *runtime.Serve
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/go.microsevices.proto.commentapi.CommentService/UpdateComment", runtime.WithHTTPPathPattern("/v1/api/comments/{comment.id}"))
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/comment.CommentService/UpdateComment", runtime.WithHTTPPathPattern("/v1/api/comments/{comment.id}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -610,7 +610,7 @@ func RegisterCommentServiceHandlerClient(ctx context.Context, mux *runtime.Serve
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/go.microsevices.proto.commentapi.CommentService/DeleteComment", runtime.WithHTTPPathPattern("/v1/api/comments/{id}"))
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/comment.CommentService/DeleteComment", runtime.WithHTTPPathPattern("/v1/api/comments/{id}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -632,7 +632,7 @@ func RegisterCommentServiceHandlerClient(ctx context.Context, mux *runtime.Serve
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/go.microsevices.proto.commentapi.CommentService/GetCommentsByPostID", runtime.WithHTTPPathPattern("/v1/api/posts/{postID}/comments"))
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/comment.CommentService/GetCommentsByPostID", runtime.WithHTTPPathPattern("/v1/api/posts/{post_id}/comments"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -654,7 +654,7 @@ func RegisterCommentServiceHandlerClient(ctx context.Context, mux *runtime.Serve
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/go.microsevices.proto.commentapi.CommentService/CountCommentByCommentID", runtime.WithHTTPPathPattern("/v1/api/comments/{id}/count"))
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/comment.CommentService/CountCommentByCommentID", runtime.WithHTTPPathPattern("/v1/api/comments/{id}/count"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -682,7 +682,7 @@ var (
 
 	pattern_CommentService_DeleteComment_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3}, []string{"v1", "api", "comments", "id"}, ""))
 
-	pattern_CommentService_GetCommentsByPostID_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3, 2, 4}, []string{"v1", "api", "posts", "postID", "comments"}, ""))
+	pattern_CommentService_GetCommentsByPostID_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3, 2, 4}, []string{"v1", "api", "posts", "post_id", "comments"}, ""))
 
 	pattern_CommentService_CountCommentByCommentID_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3, 2, 4}, []string{"v1", "api", "comments", "id", "count"}, ""))
 )

@@ -2,6 +2,7 @@ package grpc
 
 import (
 	"context"
+	"log/slog"
 
 	"github.com/dinhcanh303/go-microservices/cmd/post/config"
 	domainLike "github.com/dinhcanh303/go-microservices/internal/like/domain"
@@ -9,7 +10,6 @@ import (
 	"github.com/dinhcanh303/go-microservices/proto/gen"
 	"github.com/google/uuid"
 	"github.com/google/wire"
-	"github.com/pkg/errors"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 )
@@ -22,13 +22,13 @@ type likeGRPCClient struct {
 func (l *likeGRPCClient) GetLikesByPostID(ctx context.Context, postId uuid.UUID) ([]*domainLike.Like, error) {
 	client := gen.NewLikeServiceClient(l.conn)
 	res, err := client.GetLikesByPostID(ctx, &gen.GetLikesByPostIDRequest{
-		PostID: postId.String(),
+		PostId: postId.String(),
 	})
-	if err != nil {
-		return nil, errors.Wrap(err, "likeGRPCClient.GetLikesByPostID failed")
-
-	}
 	results := make([]*domainLike.Like, 0)
+	if err != nil {
+		slog.Warn("likeGRPCClient.GetLikesByPostID failed", err)
+		return results, nil
+	}
 	for _, item := range res.Likes {
 		results = append(results, &domainLike.Like{
 			ID:           uuid.MustParse(item.Id),

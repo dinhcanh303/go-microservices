@@ -43,7 +43,7 @@ func NewGRPCLikeServer(
 }
 func (l *likeGRPCServer) GetLikesByPostID(ctx context.Context, request *gen.GetLikesByPostIDRequest) (*gen.GetLikesByPostIDResponse, error) {
 	slog.Info("GET: GetLikesByPostID")
-	postId, err := uuid.Parse(request.PostID)
+	postId, err := uuid.Parse(request.PostId)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to parse")
 	}
@@ -52,8 +52,8 @@ func (l *likeGRPCServer) GetLikesByPostID(ctx context.Context, request *gen.GetL
 		return nil, errors.Wrap(err, "uc.GetLikesByPostID failed")
 	}
 	res := &gen.GetLikesByPostIDResponse{
-		Likes: lo.Map(likes, func(item *domain.Like, _ int) *gen.LikeResponse {
-			return &gen.LikeResponse{
+		Likes: lo.Map(likes, func(item *domain.Like, _ int) *gen.Like {
+			return &gen.Like{
 				Id:           item.ID.String(),
 				UserId:       item.UserID.String(),
 				Emoji:        item.Emoji,
@@ -69,7 +69,7 @@ func (l *likeGRPCServer) GetLikesByPostID(ctx context.Context, request *gen.GetL
 
 func (l *likeGRPCServer) GetLikesByCommentID(ctx context.Context, request *gen.GetLikesByCommentIDRequest) (*gen.GetLikesByCommentIDResponse, error) {
 	slog.Info("GET: GetLikesByCommentID")
-	commentId, err := uuid.Parse(request.CommentID)
+	commentId, err := uuid.Parse(request.CommentId)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to parse")
 	}
@@ -78,8 +78,8 @@ func (l *likeGRPCServer) GetLikesByCommentID(ctx context.Context, request *gen.G
 		return nil, errors.Wrap(err, "uc.GetLikesByCommentID failed")
 	}
 	res := &gen.GetLikesByCommentIDResponse{
-		Likes: lo.Map(likes, func(item *domain.Like, _ int) *gen.LikeResponse {
-			return &gen.LikeResponse{
+		Likes: lo.Map(likes, func(item *domain.Like, _ int) *gen.Like {
+			return &gen.Like{
 				Id:           item.ID.String(),
 				UserId:       item.UserID.String(),
 				Emoji:        item.Emoji,
@@ -122,7 +122,7 @@ func (l *likeGRPCServer) CreateLike(ctx context.Context, request *gen.CreateLike
 		return nil, errors.Wrap(err, "uc.CreateLike failed")
 	}
 	res := &gen.CreateLikeResponse{
-		Like: &gen.LikeResponse{
+		Like: &gen.Like{
 			Id:           like.ID.String(),
 			Emoji:        like.Emoji,
 			LikeableType: like.LikeableType,
@@ -168,7 +168,7 @@ func (l *likeGRPCServer) UpdateLike(ctx context.Context, request *gen.UpdateLike
 		return nil, errors.Wrap(err, "uc.UpdateLike failed")
 	}
 	res := &gen.UpdateLikeResponse{
-		Like: &gen.LikeResponse{
+		Like: &gen.Like{
 			Id:           like.ID.String(),
 			Emoji:        like.Emoji,
 			LikeableType: like.LikeableType,

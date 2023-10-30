@@ -1,9 +1,14 @@
 version: "3"
 
 services:
-  postgres:
+  postgres-master:
     image: postgres:14-alpine
     environment:
+      - POSTGRES_PGAUDIT_LOG=READ,WRITE
+      - POSTGRES_LOG_HOSTNAME=true
+      - POSTGRES_REPLICATION_MODE=master
+      - POSTGRES_REPLICATION_USER=postgres
+      - POSTGRES_REPLICATION_PASSWORD=P@ssw0rd
       - POSTGRES_DB=postgres
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=P@ssw0rd
@@ -12,6 +17,28 @@ services:
       test: [ "CMD-SHELL", "pg_isready -d $${POSTGRES_DB} -U $${POSTGRES_USER}"]
     ports:
       - 5432:5432
+    networks:
+      - microservices-network
+  postgres-slave:
+    image: postgres:14-alpine
+    environment:
+      - POSTGRES_MASTER_HOST=postgresql-master
+      - POSTGRES_PGAUDIT_LOG=READ
+      - POSTGRES_LOG_HOSTNAME=true
+      - POSTGRES_REPLICATION_MODE=slave
+      - POSTGRES_REPLICATION_USER=postgres
+      - POSTGRES_REPLICATION_PASSWORD=P@ssw0rd
+      - POSTGRES_MASTER_PORT_NUMBER=5432
+      - POSTGRES_DB=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=P@ssw0rd
+    healthcheck:
+      # test: ["CMD", "pg_isready"]
+      test: [ "CMD-SHELL", "pg_isready -d $${POSTGRES_DB} -U $${POSTGRES_USER}"]
+    ports:
+      - 5433:5432
+    depends_on:
+      - postgresql-master
     networks:
       - microservices-network
   rabbitmq:
@@ -69,7 +96,9 @@ services:
     ports:
       - 5001:5001
     depends_on:
-      postgres:
+      postgres-master:
+        condition: service_healthy
+      postgres-slave:
         condition: service_healthy
     networks:
       - microservices-network
@@ -83,10 +112,15 @@ services:
       IN_DOCKER: "true"
       PG_URL: postgres://postgres:P@ssw0rd@postgres:5432/postgres
       PG_DSN_URL: host=postgres user=postgres password=P@ssw0rd dbname=postgres sslmode=disable
+      LIKE_CLIENT_URL: like:5004
+      COMMENT_CLIENT_URL: comment:5003
+      UPLOAD_CLIENT_URL: upload:5006
     ports:
       - 5002:5002
     depends_on:
-      postgres:
+      postgres-master:
+        condition: service_healthy
+      postgres-slave:
         condition: service_healthy
     networks:
       - microservices-network
@@ -104,7 +138,9 @@ services:
     ports:
       - 5003:5003
     depends_on:
-      postgres:
+      postgres-master:
+        condition: service_healthy
+      postgres-slave:
         condition: service_healthy
     networks:
       - microservices-network
@@ -121,7 +157,9 @@ services:
     ports:
       - 5004:5004
     depends_on:
-      postgres:
+      postgres-master:
+        condition: service_healthy
+      postgres-slave:
         condition: service_healthy
     networks:
       - microservices-network
@@ -130,7 +168,6 @@ services:
       context: .
       dockerfile: ./docker/Dockerfile-upload
     image: go-microservices-upload
-
     env_file:
       - .env
     environment:
@@ -138,13 +175,13 @@ services:
       IN_DOCKER: "true"
       PG_URL: postgres://postgres:P@ssw0rd@postgres:5432/postgres
       PG_DSN_URL: host=postgres user=postgres password=P@ssw0rd dbname=postgres sslmode=disable
-      MINIO_KMS_KES_CERT_FILE: path/to/certs/public.crt
-      MINIO_KMS_KES_KEY_FILE: path/to/certs/private.key
     ports:
       - 5005:5005
       - 5006:5006
     depends_on:
-      postgres:
+      postgres-master:
+        condition: service_healthy
+      postgres-slave:
         condition: service_healthy
     networks:
       - microservices-network

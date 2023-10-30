@@ -196,14 +196,14 @@ func request_LikeService_GetLikesByPostID_0(ctx context.Context, marshaler runti
 		_   = err
 	)
 
-	val, ok = pathParams["postID"]
+	val, ok = pathParams["post_id"]
 	if !ok {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "postID")
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "post_id")
 	}
 
-	protoReq.PostID, err = runtime.String(val)
+	protoReq.PostId, err = runtime.String(val)
 	if err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "postID", err)
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "post_id", err)
 	}
 
 	msg, err := client.GetLikesByPostID(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
@@ -222,14 +222,14 @@ func local_request_LikeService_GetLikesByPostID_0(ctx context.Context, marshaler
 		_   = err
 	)
 
-	val, ok = pathParams["postID"]
+	val, ok = pathParams["post_id"]
 	if !ok {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "postID")
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "post_id")
 	}
 
-	protoReq.PostID, err = runtime.String(val)
+	protoReq.PostId, err = runtime.String(val)
 	if err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "postID", err)
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "post_id", err)
 	}
 
 	msg, err := server.GetLikesByPostID(ctx, &protoReq)
@@ -248,14 +248,14 @@ func request_LikeService_GetLikesByCommentID_0(ctx context.Context, marshaler ru
 		_   = err
 	)
 
-	val, ok = pathParams["commentID"]
+	val, ok = pathParams["comment_id"]
 	if !ok {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "commentID")
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "comment_id")
 	}
 
-	protoReq.CommentID, err = runtime.String(val)
+	protoReq.CommentId, err = runtime.String(val)
 	if err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "commentID", err)
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "comment_id", err)
 	}
 
 	msg, err := client.GetLikesByCommentID(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
@@ -274,14 +274,14 @@ func local_request_LikeService_GetLikesByCommentID_0(ctx context.Context, marsha
 		_   = err
 	)
 
-	val, ok = pathParams["commentID"]
+	val, ok = pathParams["comment_id"]
 	if !ok {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "commentID")
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "comment_id")
 	}
 
-	protoReq.CommentID, err = runtime.String(val)
+	protoReq.CommentId, err = runtime.String(val)
 	if err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "commentID", err)
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "comment_id", err)
 	}
 
 	msg, err := server.GetLikesByCommentID(ctx, &protoReq)
@@ -303,7 +303,7 @@ func RegisterLikeServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/go.microsevices.proto.likeapi.LikeService/CreateLike", runtime.WithHTTPPathPattern("/v1/api/likes"))
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/like.LikeService/CreateLike", runtime.WithHTTPPathPattern("/v1/api/likes"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -328,7 +328,7 @@ func RegisterLikeServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/go.microsevices.proto.likeapi.LikeService/UpdateLike", runtime.WithHTTPPathPattern("/v1/api/likes/{like.id}"))
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/like.LikeService/UpdateLike", runtime.WithHTTPPathPattern("/v1/api/likes/{like.id}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -353,7 +353,7 @@ func RegisterLikeServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/go.microsevices.proto.likeapi.LikeService/DeleteLike", runtime.WithHTTPPathPattern("/v1/api/likes/{id}"))
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/like.LikeService/DeleteLike", runtime.WithHTTPPathPattern("/v1/api/likes/{id}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -378,7 +378,7 @@ func RegisterLikeServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/go.microsevices.proto.likeapi.LikeService/GetLikesByPostID", runtime.WithHTTPPathPattern("/v1/api/posts/{postID}/likes"))
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/like.LikeService/GetLikesByPostID", runtime.WithHTTPPathPattern("/v1/api/posts/{post_id}/likes"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -403,7 +403,7 @@ func RegisterLikeServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/go.microsevices.proto.likeapi.LikeService/GetLikesByCommentID", runtime.WithHTTPPathPattern("/v1/api/comments/{commentID}/likes"))
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/like.LikeService/GetLikesByCommentID", runtime.WithHTTPPathPattern("/v1/api/comments/{comment_id}/likes"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -467,7 +467,7 @@ func RegisterLikeServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/go.microsevices.proto.likeapi.LikeService/CreateLike", runtime.WithHTTPPathPattern("/v1/api/likes"))
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/like.LikeService/CreateLike", runtime.WithHTTPPathPattern("/v1/api/likes"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -489,7 +489,7 @@ func RegisterLikeServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/go.microsevices.proto.likeapi.LikeService/UpdateLike", runtime.WithHTTPPathPattern("/v1/api/likes/{like.id}"))
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/like.LikeService/UpdateLike", runtime.WithHTTPPathPattern("/v1/api/likes/{like.id}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -511,7 +511,7 @@ func RegisterLikeServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/go.microsevices.proto.likeapi.LikeService/DeleteLike", runtime.WithHTTPPathPattern("/v1/api/likes/{id}"))
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/like.LikeService/DeleteLike", runtime.WithHTTPPathPattern("/v1/api/likes/{id}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -533,7 +533,7 @@ func RegisterLikeServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/go.microsevices.proto.likeapi.LikeService/GetLikesByPostID", runtime.WithHTTPPathPattern("/v1/api/posts/{postID}/likes"))
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/like.LikeService/GetLikesByPostID", runtime.WithHTTPPathPattern("/v1/api/posts/{post_id}/likes"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -555,7 +555,7 @@ func RegisterLikeServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/go.microsevices.proto.likeapi.LikeService/GetLikesByCommentID", runtime.WithHTTPPathPattern("/v1/api/comments/{commentID}/likes"))
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/like.LikeService/GetLikesByCommentID", runtime.WithHTTPPathPattern("/v1/api/comments/{comment_id}/likes"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -581,9 +581,9 @@ var (
 
 	pattern_LikeService_DeleteLike_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3}, []string{"v1", "api", "likes", "id"}, ""))
 
-	pattern_LikeService_GetLikesByPostID_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3, 2, 4}, []string{"v1", "api", "posts", "postID", "likes"}, ""))
+	pattern_LikeService_GetLikesByPostID_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3, 2, 4}, []string{"v1", "api", "posts", "post_id", "likes"}, ""))
 
-	pattern_LikeService_GetLikesByCommentID_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3, 2, 4}, []string{"v1", "api", "comments", "commentID", "likes"}, ""))
+	pattern_LikeService_GetLikesByCommentID_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3, 2, 4}, []string{"v1", "api", "comments", "comment_id", "likes"}, ""))
 )
 
 var (

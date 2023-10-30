@@ -16,7 +16,7 @@
     "application/json"
   ],
   "paths": {
-    "/v1/api/comments/{commentID}/likes": {
+    "/v1/api/comments/{commentId}/likes": {
       "get": {
         "summary": "Get Like by Comment ID",
         "operationId": "LikeService_GetLikesByCommentID",
@@ -24,7 +24,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/likeapiGetLikesByCommentIDResponse"
+              "$ref": "#/definitions/likeGetLikesByCommentIDResponse"
             }
           },
           "default": {
@@ -36,7 +36,7 @@
         },
         "parameters": [
           {
-            "name": "commentID",
+            "name": "commentId",
             "in": "path",
             "required": true,
             "type": "string"
@@ -55,7 +55,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/likeapiCreateLikeResponse"
+              "$ref": "#/definitions/likeCreateLikeResponse"
             }
           },
           "default": {
@@ -71,7 +71,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/likeapiCreateLikeRequest"
+              "$ref": "#/definitions/likeCreateLikeRequest"
             }
           }
         ],
@@ -88,7 +88,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/likeapiDeleteLikeResponse"
+              "$ref": "#/definitions/likeDeleteLikeResponse"
             }
           },
           "default": {
@@ -119,7 +119,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/likeapiUpdateLikeResponse"
+              "$ref": "#/definitions/likeUpdateLikeResponse"
             }
           },
           "default": {
@@ -160,7 +160,7 @@
         ]
       }
     },
-    "/v1/api/posts/{postID}/likes": {
+    "/v1/api/posts/{postId}/likes": {
       "get": {
         "summary": "Get Like by Post ID",
         "operationId": "LikeService_GetLikesByPostID",
@@ -168,7 +168,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/likeapiGetLikesByPostIDResponse"
+              "$ref": "#/definitions/likeGetLikesByPostIDResponse"
             }
           },
           "default": {
@@ -180,7 +180,7 @@
         },
         "parameters": [
           {
-            "name": "postID",
+            "name": "postId",
             "in": "path",
             "required": true,
             "type": "string"
@@ -193,23 +193,23 @@
     }
   },
   "definitions": {
-    "likeapiCreateLikeRequest": {
+    "likeCreateLikeRequest": {
       "type": "object",
       "properties": {
         "like": {
-          "$ref": "#/definitions/likeapiLikeRequest"
+          "$ref": "#/definitions/likeLikeRequest"
         }
       }
     },
-    "likeapiCreateLikeResponse": {
+    "likeCreateLikeResponse": {
       "type": "object",
       "properties": {
         "like": {
-          "$ref": "#/definitions/likeapiLikeResponse"
+          "$ref": "#/definitions/likeLike"
         }
       }
     },
-    "likeapiDeleteLikeResponse": {
+    "likeDeleteLikeResponse": {
       "type": "object",
       "properties": {
         "deleted": {
@@ -217,48 +217,31 @@
         }
       }
     },
-    "likeapiGetLikesByCommentIDResponse": {
+    "likeGetLikesByCommentIDResponse": {
       "type": "object",
       "properties": {
         "likes": {
           "type": "array",
           "items": {
             "type": "object",
-            "$ref": "#/definitions/likeapiLikeResponse"
+            "$ref": "#/definitions/likeLike"
           }
         }
       }
     },
-    "likeapiGetLikesByPostIDResponse": {
+    "likeGetLikesByPostIDResponse": {
       "type": "object",
       "properties": {
         "likes": {
           "type": "array",
           "items": {
             "type": "object",
-            "$ref": "#/definitions/likeapiLikeResponse"
+            "$ref": "#/definitions/likeLike"
           }
         }
       }
     },
-    "likeapiLikeRequest": {
-      "type": "object",
-      "properties": {
-        "emoji": {
-          "type": "string"
-        },
-        "likeableType": {
-          "type": "string"
-        },
-        "likeableId": {
-          "type": "string"
-        },
-        "userId": {
-          "type": "string"
-        }
-      }
-    },
-    "likeapiLikeResponse": {
+    "likeLike": {
       "type": "object",
       "properties": {
         "id": {
@@ -286,7 +269,24 @@
         }
       }
     },
-    "likeapiLikeUpdateRequest": {
+    "likeLikeRequest": {
+      "type": "object",
+      "properties": {
+        "emoji": {
+          "type": "string"
+        },
+        "likeableType": {
+          "type": "string"
+        },
+        "likeableId": {
+          "type": "string"
+        },
+        "userId": {
+          "type": "string"
+        }
+      }
+    },
+    "likeLikeUpdateRequest": {
       "type": "object",
       "properties": {
         "id": {
@@ -297,11 +297,11 @@
         }
       }
     },
-    "likeapiUpdateLikeResponse": {
+    "likeUpdateLikeResponse": {
       "type": "object",
       "properties": {
         "like": {
-          "$ref": "#/definitions/likeapiLikeResponse"
+          "$ref": "#/definitions/likeLike"
         }
       }
     },

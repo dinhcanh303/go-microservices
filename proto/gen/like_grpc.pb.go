@@ -19,11 +19,11 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	LikeService_CreateLike_FullMethodName          = "/go.microsevices.proto.likeapi.LikeService/CreateLike"
-	LikeService_UpdateLike_FullMethodName          = "/go.microsevices.proto.likeapi.LikeService/UpdateLike"
-	LikeService_DeleteLike_FullMethodName          = "/go.microsevices.proto.likeapi.LikeService/DeleteLike"
-	LikeService_GetLikesByPostID_FullMethodName    = "/go.microsevices.proto.likeapi.LikeService/GetLikesByPostID"
-	LikeService_GetLikesByCommentID_FullMethodName = "/go.microsevices.proto.likeapi.LikeService/GetLikesByCommentID"
+	LikeService_CreateLike_FullMethodName          = "/like.LikeService/CreateLike"
+	LikeService_UpdateLike_FullMethodName          = "/like.LikeService/UpdateLike"
+	LikeService_DeleteLike_FullMethodName          = "/like.LikeService/DeleteLike"
+	LikeService_GetLikesByPostID_FullMethodName    = "/like.LikeService/GetLikesByPostID"
+	LikeService_GetLikesByCommentID_FullMethodName = "/like.LikeService/GetLikesByCommentID"
 )
 
 // LikeServiceClient is the client API for LikeService service.
@@ -228,7 +228,7 @@ func _LikeService_GetLikesByCommentID_Handler(srv interface{}, ctx context.Conte
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var LikeService_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "go.microsevices.proto.likeapi.LikeService",
+	ServiceName: "like.LikeService",
 	HandlerType: (*LikeServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{

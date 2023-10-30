@@ -287,7 +287,7 @@ func RegisterPostServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/go.microsevices.proto.postapi.PostService/CreatePost", runtime.WithHTTPPathPattern("/v1/api/posts"))
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/post.PostService/CreatePost", runtime.WithHTTPPathPattern("/v1/api/posts"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -312,7 +312,7 @@ func RegisterPostServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/go.microsevices.proto.postapi.PostService/GetPost", runtime.WithHTTPPathPattern("/v1/api/posts/{id}"))
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/post.PostService/GetPost", runtime.WithHTTPPathPattern("/v1/api/posts/{id}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -337,7 +337,7 @@ func RegisterPostServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/go.microsevices.proto.postapi.PostService/UpdatePost", runtime.WithHTTPPathPattern("/v1/api/posts/{post.id}"))
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/post.PostService/UpdatePost", runtime.WithHTTPPathPattern("/v1/api/posts/{post.id}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -362,7 +362,7 @@ func RegisterPostServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/go.microsevices.proto.postapi.PostService/DeletePost", runtime.WithHTTPPathPattern("/v1/api/posts/{id}"))
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/post.PostService/DeletePost", runtime.WithHTTPPathPattern("/v1/api/posts/{id}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -387,7 +387,7 @@ func RegisterPostServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/go.microsevices.proto.postapi.PostService/ListPost", runtime.WithHTTPPathPattern("/v1/api/posts"))
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/post.PostService/ListPost", runtime.WithHTTPPathPattern("/v1/api/posts"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -451,7 +451,7 @@ func RegisterPostServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/go.microsevices.proto.postapi.PostService/CreatePost", runtime.WithHTTPPathPattern("/v1/api/posts"))
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/post.PostService/CreatePost", runtime.WithHTTPPathPattern("/v1/api/posts"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -473,7 +473,7 @@ func RegisterPostServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/go.microsevices.proto.postapi.PostService/GetPost", runtime.WithHTTPPathPattern("/v1/api/posts/{id}"))
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/post.PostService/GetPost", runtime.WithHTTPPathPattern("/v1/api/posts/{id}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -495,7 +495,7 @@ func RegisterPostServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/go.microsevices.proto.postapi.PostService/UpdatePost", runtime.WithHTTPPathPattern("/v1/api/posts/{post.id}"))
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/post.PostService/UpdatePost", runtime.WithHTTPPathPattern("/v1/api/posts/{post.id}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -517,7 +517,7 @@ func RegisterPostServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/go.microsevices.proto.postapi.PostService/DeletePost", runtime.WithHTTPPathPattern("/v1/api/posts/{id}"))
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/post.PostService/DeletePost", runtime.WithHTTPPathPattern("/v1/api/posts/{id}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -539,7 +539,7 @@ func RegisterPostServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/go.microsevices.proto.postapi.PostService/ListPost", runtime.WithHTTPPathPattern("/v1/api/posts"))
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/post.PostService/ListPost", runtime.WithHTTPPathPattern("/v1/api/posts"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return

@@ -1,10 +1,13 @@
 syntax="proto3";
 
-package go.microsevices.proto.postapi;
+package post;
 
 import "google/api/annotations.proto";
 import "protoc-gen-openapiv2/options/annotations.proto";
 import "google/protobuf/timestamp.proto";
+import "upload.proto";
+import "like.proto";
+import "comment.proto";
 
 option go_package = "github.com/dinhcanh303/go-microsevices/proto/gen";
 
@@ -17,7 +20,6 @@ service PostService {
         option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
             summary: "Create Post"
             description: ""
-            tags: "Post"
         };
     }
     rpc GetPost(GetPostRequest) returns (GetPostResponse){
@@ -27,7 +29,6 @@ service PostService {
         option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
             summary: "Get Post"
             description: ""
-            tags: "Post"
         };
     }
     rpc UpdatePost(UpdatePostRequest) returns (UpdatePostResponse){
@@ -38,7 +39,6 @@ service PostService {
         option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
             summary: "Update Post"
             description: ""
-            tags: "Post"
         };
     }
     rpc DeletePost(DeletePostRequest) returns (DeletePostResponse){
@@ -48,7 +48,6 @@ service PostService {
         option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
             summary: "Delete Post"
             description: ""
-            tags: "Post"
         };
     }
     rpc ListPost(ListPostRequest) returns (ListPostResponse){
@@ -56,9 +55,8 @@ service PostService {
             get: "/v1/api/posts"
         };
         option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
-            summary: "Delete Post"
+            summary: "List Post"
             description: ""
-            tags: "Post"
         };
     }
 }
@@ -81,9 +79,9 @@ message DeletePostResponse {
 }
 message GetPostResponse {
     PostResponse post = 1;
-    repeated AttachmentInPost attachments = 2;
-    repeated Like likes = 3;
-    repeated Comment comments = 4;
+    repeated upload.Attachment attachments = 2;
+    repeated like.Like likes = 3;
+    repeated comment.CommentHasCommentAndLike comments = 4;
 }
 message UpdatePostRequest {
     PostResponse post = 1;
@@ -115,38 +113,4 @@ message PostResponse {
     string group_id = 6;
     google.protobuf.Timestamp created_at = 7;
     google.protobuf.Timestamp updated_at = 8;
-}
-message AttachmentInPost {
-    string id = 1;
-    string attachable_type = 2;
-    string attachable_id = 3;
-    string user_id = 4;
-    string filename = 5;
-    string extension = 6;
-    string mime_type = 7;
-    string folder = 8;
-    string url = 9;
-    string url_thumbnail = 10;
-    google.protobuf.Timestamp created_at = 11;
-    google.protobuf.Timestamp updated_at = 12;
-}
-message Like {
-    string id =1;
-    string emoji =2;
-    string likeable_type =3;
-    string likeable_id =4;
-    string user_id = 5;
-    google.protobuf.Timestamp created_at = 6;
-    google.protobuf.Timestamp updated_at = 7;
-}
-message Comment {
-    string id = 1;
-    string post_id = 2;
-    string user_id = 3;
-    string reply_to_id = 4;
-    string content = 5;
-    string parent_comment_id = 6;
-    repeated Like likes = 7;
-    google.protobuf.Timestamp created_at = 8;
-    google.protobuf.Timestamp updated_at = 9;
 }

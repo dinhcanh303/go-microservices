@@ -1,6 +1,6 @@
 syntax="proto3";
 
-package go.microsevices.proto.likeapi;
+package like;
 
 import "google/api/annotations.proto";
 import "protoc-gen-openapiv2/options/annotations.proto";
@@ -17,7 +17,6 @@ service LikeService {
         option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
             summary: "Create Like"
             description: ""
-            tags: "Like"
         };
     }
     rpc UpdateLike(UpdateLikeRequest) returns (UpdateLikeResponse){
@@ -28,7 +27,6 @@ service LikeService {
         option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
             summary: "Update Like"
             description: ""
-            tags: "Like"
         };
     }
     rpc DeleteLike(DeleteLikeRequest) returns (DeleteLikeResponse){
@@ -38,27 +36,24 @@ service LikeService {
         option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
             summary: "Delete Like"
             description: ""
-            tags: "Like"
         };
     }
     rpc GetLikesByPostID(GetLikesByPostIDRequest) returns (GetLikesByPostIDResponse){
         option (google.api.http) = {
-            get: "/v1/api/posts/{postID}/likes"
+            get: "/v1/api/posts/{post_id}/likes"
         };
         option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
             summary: "Get Like by Post ID"
             description: ""
-            tags: "Post"
         };
     }
     rpc GetLikesByCommentID(GetLikesByCommentIDRequest) returns (GetLikesByCommentIDResponse){
         option (google.api.http) = {
-            get: "/v1/api/comments/{commentID}/likes"
+            get: "/v1/api/comments/{comment_id}/likes"
         };
         option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
             summary: "Get Like by Comment ID"
             description: ""
-            tags: "Comment"
         };
     }
 }
@@ -68,13 +63,13 @@ message CreateLikeRequest {
     LikeRequest like =1;
 }
 message CreateLikeResponse {
-    LikeResponse like = 1;
+    Like like = 1;
 }
 message UpdateLikeRequest {
     LikeUpdateRequest like = 1;
 }
 message UpdateLikeResponse {
-    LikeResponse like = 1;
+    Like like = 1;
 }
 message DeleteLikeRequest {
     string id = 1;
@@ -93,7 +88,20 @@ message LikeUpdateRequest {
     string id = 1;
     string emoji = 2;
 }
-message LikeResponse {
+
+message GetLikesByPostIDRequest {
+    string post_id = 1;
+}
+message GetLikesByCommentIDRequest {
+    string comment_id = 1;
+}
+message GetLikesByPostIDResponse {
+    repeated Like likes = 1;
+}
+message GetLikesByCommentIDResponse {
+    repeated Like likes = 1;
+}
+message Like {
     string id =1;
     string emoji =2;
     string likeable_type =3;
@@ -101,16 +109,4 @@ message LikeResponse {
     string user_id = 5;
     google.protobuf.Timestamp created_at = 6;
     google.protobuf.Timestamp updated_at = 7;
-}
-message GetLikesByPostIDRequest {
-    string postID = 1;
-}
-message GetLikesByCommentIDRequest {
-    string commentID = 1;
-}
-message GetLikesByPostIDResponse {
-    repeated LikeResponse likes = 1;
-}
-message GetLikesByCommentIDResponse {
-    repeated LikeResponse likes = 1;
 }

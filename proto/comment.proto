@@ -1,10 +1,11 @@
 syntax="proto3";
 
-package go.microsevices.proto.commentapi;
+package comment;
 
 import "google/api/annotations.proto";
 import "protoc-gen-openapiv2/options/annotations.proto";
 import "google/protobuf/timestamp.proto";
+import "like.proto";
 
 option go_package = "github.com/dinhcanh303/go-microsevices/proto/gen";
 
@@ -17,7 +18,6 @@ service CommentService {
         option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
             summary: "Create Comment"
             description: ""
-            tags: "Comment"
         };
     }
     rpc GetComment(GetCommentRequest) returns (GetCommentResponse){
@@ -27,7 +27,6 @@ service CommentService {
         option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
             summary: "Get Comment"
             description: ""
-            tags: "Comment"
         };
     }
     rpc UpdateComment(UpdateCommentRequest) returns (UpdateCommentResponse){
@@ -38,7 +37,6 @@ service CommentService {
         option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
             summary: "Update Comment"
             description: ""
-            tags: "Comment"
         };
     }
     rpc DeleteComment(DeleteCommentRequest) returns (DeleteCommentResponse){
@@ -48,17 +46,15 @@ service CommentService {
         option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
             summary: "Delete Comment"
             description: ""
-            tags: "Comment"
         };
     }
     rpc GetCommentsByPostID(GetCommentsByPostIDRequest) returns (GetCommentsByPostIDResponse){
         option (google.api.http) = {
-            get: "/v1/api/posts/{postID}/comments"
+            get: "/v1/api/posts/{post_id}/comments"
         };
         option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
             summary: "Get Comment By Post ID"
             description: ""
-            tags: "Post"
         };
     }
     rpc CountCommentByCommentID(CountCommentByCommentIDRequest) returns (CountCommentByCommentIDResponse){
@@ -68,7 +64,6 @@ service CommentService {
         option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
             summary: "Count Comment By Comment ID"
             description: ""
-            tags: "Comment"
         };
     }
 }
@@ -78,19 +73,19 @@ message CreateCommentRequest {
     CommentRequest comment =1;
 }
 message CreateCommentResponse {
-    CommentResponse comment = 1;
+    Comment comment = 1;
 }
 message GetCommentRequest {
     string id = 1;
 }
 message GetCommentResponse {
-    CommentResponse comment = 1;
+    Comment comment = 1;
 }
 message UpdateCommentRequest {
-    CommentResponse comment = 1;
+    Comment comment = 1;
 }
 message UpdateCommentResponse {
-    CommentResponse comment = 1;
+    Comment comment = 1;
 }
 message DeleteCommentRequest {
     string id = 1;
@@ -99,7 +94,7 @@ message DeleteCommentResponse {
     bool deleted = 1;
 }
 message GetCommentsByPostIDRequest {
-    string postID =1;
+    string post_id =1;
 }
 message CountCommentByCommentIDRequest {
     string id = 1;
@@ -108,18 +103,16 @@ message CountCommentByCommentIDResponse {
     int64 count = 1;
 }
 message GetCommentsByPostIDResponse {
-    repeated GetCommentsResponse comments = 1;
+    repeated CommentHasCommentAndLike comments = 1;
 }
-
 message CommentRequest {
     string post_id = 1;
     string user_id = 2;
     string reply_to_id = 3;
     string content = 4;
     string parent_comment_id = 5;
-
 }
-message CommentResponse {
+message Comment {
     string id = 1;
     string post_id = 2;
     string user_id = 3;
@@ -129,39 +122,26 @@ message CommentResponse {
     google.protobuf.Timestamp created_at = 8;
     google.protobuf.Timestamp updated_at = 9;
 }
-
-message CommentResponseHasLike {
+message CommentHasLike {
     string id = 1;
     string post_id = 2;
     string user_id = 3;
     string reply_to_id = 4;
     string content = 5;
     string parent_comment_id = 6;
-    repeated LikeResponseInComment likes = 7;
+    repeated like.Like likes = 7;
     google.protobuf.Timestamp created_at = 8;
     google.protobuf.Timestamp updated_at = 9;
 }
-
-
-message GetCommentsResponse {
+message CommentHasCommentAndLike {
     string id = 1;
     string post_id = 2;
     string user_id = 3;
     string reply_to_id = 4;
     string content = 5;
     string parent_comment_id = 6;
-    repeated CommentResponseHasLike children = 7;
-    repeated LikeResponseInComment likes = 8;
+    repeated CommentHasLike children = 7;
+    repeated like.Like likes = 8;
     google.protobuf.Timestamp created_at = 9;
     google.protobuf.Timestamp updated_at = 10;
-    
-}
-message LikeResponseInComment {
-    string id =1;
-    string emoji =2;
-    string likeable_type =3;
-    string likeable_id =4;
-    string user_id = 5;
-    google.protobuf.Timestamp created_at = 6;
-    google.protobuf.Timestamp updated_at = 7;
 }

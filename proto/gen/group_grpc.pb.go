@@ -19,16 +19,16 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	GroupService_CreateGroup_FullMethodName           = "/go.microsevices.proto.groupapi.GroupService/CreateGroup"
-	GroupService_GetGroup_FullMethodName              = "/go.microsevices.proto.groupapi.GroupService/GetGroup"
-	GroupService_UpdateGroup_FullMethodName           = "/go.microsevices.proto.groupapi.GroupService/UpdateGroup"
-	GroupService_DeleteGroup_FullMethodName           = "/go.microsevices.proto.groupapi.GroupService/DeleteGroup"
-	GroupService_GetAllGroupByUserId_FullMethodName   = "/go.microsevices.proto.groupapi.GroupService/GetAllGroupByUserId"
-	GroupService_GetAllGroupIdByUserId_FullMethodName = "/go.microsevices.proto.groupapi.GroupService/GetAllGroupIdByUserId"
-	GroupService_CreateGroupMember_FullMethodName     = "/go.microsevices.proto.groupapi.GroupService/CreateGroupMember"
-	GroupService_UpdateGroupMember_FullMethodName     = "/go.microsevices.proto.groupapi.GroupService/UpdateGroupMember"
-	GroupService_DeleteGroupMember_FullMethodName     = "/go.microsevices.proto.groupapi.GroupService/DeleteGroupMember"
-	GroupService_GetAllGroupMembers_FullMethodName    = "/go.microsevices.proto.groupapi.GroupService/GetAllGroupMembers"
+	GroupService_CreateGroup_FullMethodName           = "/group.GroupService/CreateGroup"
+	GroupService_GetGroup_FullMethodName              = "/group.GroupService/GetGroup"
+	GroupService_UpdateGroup_FullMethodName           = "/group.GroupService/UpdateGroup"
+	GroupService_DeleteGroup_FullMethodName           = "/group.GroupService/DeleteGroup"
+	GroupService_GetAllGroupByUserId_FullMethodName   = "/group.GroupService/GetAllGroupByUserId"
+	GroupService_GetAllGroupIdByUserId_FullMethodName = "/group.GroupService/GetAllGroupIdByUserId"
+	GroupService_CreateGroupMember_FullMethodName     = "/group.GroupService/CreateGroupMember"
+	GroupService_UpdateGroupMember_FullMethodName     = "/group.GroupService/UpdateGroupMember"
+	GroupService_DeleteGroupMember_FullMethodName     = "/group.GroupService/DeleteGroupMember"
+	GroupService_GetAllGroupMembers_FullMethodName    = "/group.GroupService/GetAllGroupMembers"
 )
 
 // GroupServiceClient is the client API for GroupService service.
@@ -395,7 +395,7 @@ func _GroupService_GetAllGroupMembers_Handler(srv interface{}, ctx context.Conte
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var GroupService_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "go.microsevices.proto.groupapi.GroupService",
+	ServiceName: "group.GroupService",
 	HandlerType: (*GroupServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{

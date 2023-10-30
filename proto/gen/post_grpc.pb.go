@@ -19,11 +19,11 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	PostService_CreatePost_FullMethodName = "/go.microsevices.proto.postapi.PostService/CreatePost"
-	PostService_GetPost_FullMethodName    = "/go.microsevices.proto.postapi.PostService/GetPost"
-	PostService_UpdatePost_FullMethodName = "/go.microsevices.proto.postapi.PostService/UpdatePost"
-	PostService_DeletePost_FullMethodName = "/go.microsevices.proto.postapi.PostService/DeletePost"
-	PostService_ListPost_FullMethodName   = "/go.microsevices.proto.postapi.PostService/ListPost"
+	PostService_CreatePost_FullMethodName = "/post.PostService/CreatePost"
+	PostService_GetPost_FullMethodName    = "/post.PostService/GetPost"
+	PostService_UpdatePost_FullMethodName = "/post.PostService/UpdatePost"
+	PostService_DeletePost_FullMethodName = "/post.PostService/DeletePost"
+	PostService_ListPost_FullMethodName   = "/post.PostService/ListPost"
 )
 
 // PostServiceClient is the client API for PostService service.
@@ -228,7 +228,7 @@ func _PostService_ListPost_Handler(srv interface{}, ctx context.Context, dec fun
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var PostService_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "go.microsevices.proto.postapi.PostService",
+	ServiceName: "post.PostService",
 	HandlerType: (*PostServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{

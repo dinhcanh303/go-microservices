@@ -108,10 +108,15 @@ func main() {
 
 	mux.Handle("/", gw)
 
+	//server swagger
+	fs := http.FileServer(http.Dir("swagger"))
+	slog.Info("FILE", fs)
+	mux.Handle("/swagger/", http.StripPrefix("/swagger/", fs))
 	s := &http.Server{
 		Addr:    fmt.Sprintf("%s:%d", cfg.Host, cfg.Port),
 		Handler: allowCORS(withLogger(mux)),
 	}
+
 	//goroutine
 	go func() {
 		<-ctx.Done()

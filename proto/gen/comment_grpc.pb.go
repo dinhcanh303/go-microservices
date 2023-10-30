@@ -19,12 +19,12 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	CommentService_CreateComment_FullMethodName           = "/go.microsevices.proto.commentapi.CommentService/CreateComment"
-	CommentService_GetComment_FullMethodName              = "/go.microsevices.proto.commentapi.CommentService/GetComment"
-	CommentService_UpdateComment_FullMethodName           = "/go.microsevices.proto.commentapi.CommentService/UpdateComment"
-	CommentService_DeleteComment_FullMethodName           = "/go.microsevices.proto.commentapi.CommentService/DeleteComment"
-	CommentService_GetCommentsByPostID_FullMethodName     = "/go.microsevices.proto.commentapi.CommentService/GetCommentsByPostID"
-	CommentService_CountCommentByCommentID_FullMethodName = "/go.microsevices.proto.commentapi.CommentService/CountCommentByCommentID"
+	CommentService_CreateComment_FullMethodName           = "/comment.CommentService/CreateComment"
+	CommentService_GetComment_FullMethodName              = "/comment.CommentService/GetComment"
+	CommentService_UpdateComment_FullMethodName           = "/comment.CommentService/UpdateComment"
+	CommentService_DeleteComment_FullMethodName           = "/comment.CommentService/DeleteComment"
+	CommentService_GetCommentsByPostID_FullMethodName     = "/comment.CommentService/GetCommentsByPostID"
+	CommentService_CountCommentByCommentID_FullMethodName = "/comment.CommentService/CountCommentByCommentID"
 )
 
 // CommentServiceClient is the client API for CommentService service.
@@ -261,7 +261,7 @@ func _CommentService_CountCommentByCommentID_Handler(srv interface{}, ctx contex
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var CommentService_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "go.microsevices.proto.commentapi.CommentService",
+	ServiceName: "comment.CommentService",
 	HandlerType: (*CommentServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{

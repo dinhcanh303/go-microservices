@@ -5,7 +5,7 @@ import (
 
 	"github.com/dinhcanh303/go-microservices/cmd/comment/config"
 	"github.com/dinhcanh303/go-microservices/internal/comment/domain"
-	domain2 "github.com/dinhcanh303/go-microservices/internal/like/domain"
+	domainLike "github.com/dinhcanh303/go-microservices/internal/like/domain"
 	"github.com/dinhcanh303/go-microservices/proto/gen"
 	"github.com/google/uuid"
 	"github.com/google/wire"
@@ -20,19 +20,19 @@ type likeGRPCClient struct {
 }
 
 // GetLikesByPostID implements domain.LikeDomainService.
-func (l *likeGRPCClient) GetLikesByCommentID(ctx context.Context, commentId uuid.UUID) ([]*domain2.Like, error) {
+func (l *likeGRPCClient) GetLikesByCommentID(ctx context.Context, commentId uuid.UUID) ([]*domainLike.Like, error) {
 	client := gen.NewLikeServiceClient(l.conn)
 	res, err := client.GetLikesByCommentID(ctx, &gen.GetLikesByCommentIDRequest{
-		CommentID: commentId.String(),
+		CommentId: commentId.String(),
 	})
 	if err != nil {
 		return nil, errors.Wrap(err, "commentGRPCClient.GetCommentsByPostID failed")
 
 	}
 	slog.Info("RES LIKES::", res)
-	results := make([]*domain2.Like, 0)
+	results := make([]*domainLike.Like, 0)
 	for _, item := range res.Likes {
-		results = append(results, &domain2.Like{
+		results = append(results, &domainLike.Like{
 			ID:           uuid.MustParse(item.Id),
 			UserID:       uuid.MustParse(item.UserId),
 			Emoji:        item.Emoji,

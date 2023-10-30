@@ -1,8 +1,13 @@
 {
   "swagger": "2.0",
   "info": {
-    "title": "common.proto",
-    "version": "1.0.0"
+    "title": "Go Microservices",
+    "version": "1.0.0",
+    "contact": {
+      "name": "Dinh Canh",
+      "url": "https://github.com/dinhcanh303",
+      "email": "dinhcanhng303@gmail.com"
+    }
   },
   "schemes": [
     "https"

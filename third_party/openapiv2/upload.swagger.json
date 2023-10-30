@@ -24,7 +24,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/uploadapiGetAttachmentsByTypeResponse"
+              "$ref": "#/definitions/uploadGetAttachmentsByTypeResponse"
             }
           },
           "default": {
@@ -85,7 +85,7 @@
         }
       }
     },
-    "uploadapiAttachment": {
+    "uploadAttachment": {
       "type": "object",
       "properties": {
         "id": {
@@ -128,14 +128,14 @@
         }
       }
     },
-    "uploadapiGetAttachmentsByTypeResponse": {
+    "uploadGetAttachmentsByTypeResponse": {
       "type": "object",
       "properties": {
         "attachments": {
           "type": "array",
           "items": {
             "type": "object",
-            "$ref": "#/definitions/uploadapiAttachment"
+            "$ref": "#/definitions/uploadAttachment"
           }
         }
       }

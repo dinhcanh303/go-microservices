@@ -26,7 +26,7 @@ content-type: application/json
     "content" :"who is that who is that",
     "status" : 1,
     "user_id" :"526c0b00-677d-11ee-8390-0242ac150004",
-    "group_id": "8d694e9c-1a35-4c98-97d6-14838c0de767"
+    "group_id": "c78b7c1f-58ae-4ec4-923e-6c7225dbdfcc"
     }
   
 }
@@ -45,7 +45,7 @@ content-type: application/json
 }
 
 ###Get Post
-GET {{host}}/v1/api/posts/51bd5a4f-c1b2-4163-bb90-d80b9d24a369 HTTP/1.1
+GET {{host}}/v1/api/posts/120d1c98-4cb9-499d-9ddd-01351ddb3781 HTTP/1.1
 content-type: application/json
 
 {}

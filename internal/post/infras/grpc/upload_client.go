@@ -2,6 +2,7 @@ package grpc
 
 import (
 	"context"
+	"log/slog"
 
 	"github.com/dinhcanh303/go-microservices/cmd/post/config"
 	"github.com/dinhcanh303/go-microservices/internal/post/domain"
@@ -9,7 +10,6 @@ import (
 	"github.com/dinhcanh303/go-microservices/proto/gen"
 	"github.com/google/uuid"
 	"github.com/google/wire"
-	"github.com/pkg/errors"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 )
@@ -25,11 +25,11 @@ func (u *uploadGRPCClient) GetAttachmentsByType(ctx context.Context, attachableT
 		AttachableType: attachableType,
 		AttachableId:   attachableId.String(),
 	})
-	if err != nil {
-		return nil, errors.Wrap(err, "uploadGRPCClient.GetAttachmentsByType failed")
-
-	}
 	results := make([]*domainUpload.Attachment, 0)
+	if err != nil {
+		slog.Warn("uploadGRPCClient.GetAttachmentsByType failed", err)
+		return results, nil
+	}
 	for _, item := range res.Attachments {
 		results = append(results, &domainUpload.Attachment{
 			ID:             uuid.MustParse(item.Id),
