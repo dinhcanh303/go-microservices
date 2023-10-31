@@ -1,1 +1,1 @@
-DROP TABLE IF EXISTS "like";
+-- DROP TABLE IF EXISTS "like";

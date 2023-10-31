@@ -1,1 +1,1 @@
-DROP TABLE IF EXISTS "upload";
+-- DROP TABLE IF EXISTS "upload";
