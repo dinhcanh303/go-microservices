@@ -145,15 +145,14 @@ func (s *UploadHandler) UploadFile(ctx echo.Context) error {
 	slog.Info("POST: UploadFile")
 	attachments, err := s.uc.UploadFile(ctx)
 	if err != nil {
-		return responses.ErrorResponse(ctx, http.StatusNotFound, responses.ErrorString("Handler Uploadfile failed", err))
+		return responses.ErrorResponse(ctx, http.StatusNotFound, responses.ErrorString("Handler Upload file failed", err))
 	}
 	return responses.Response(ctx, http.StatusOK, attachments)
 }
 func checkAttachmentTypeByCondition(attachableType string, condition []string) bool {
 	temp := []string{"Attachment/Post", "Attachment/Comment", "Attachment/Group"}
-
-	if len(condition) > 0 || condition == nil {
-		temp = condition
+	if condition == nil || len(condition) != 0 {
+		condition = temp
 	}
-	return slices.Contains(temp, attachableType)
+	return slices.Contains(condition, attachableType)
 }

@@ -14,19 +14,30 @@ type usecase struct {
 }
 
 // GetPostsByFeed implements UseCase.
-func (*usecase) GetPostsByFeed(ctx context.Context, userIds, groupIds string, limit int32, offset int32) ([]*domain.PostExtra, error) {
-	panic("unimplemented")
+func (uc *usecase) GetPostsByFeed(ctx context.Context, userIds []uuid.UUID, groupIds []uuid.NullUUID, limit int32, offset int32) ([]*domain.Post, error) {
+	posts, err := uc.postRepo.GetByFeed(ctx, userIds, groupIds, limit, offset)
+	if err != nil {
+		return nil, errors.Wrap(err, "uc.GetPostsByFeed failed")
+	}
+	return posts, nil
 }
 
 // GetPostsByGroupId implements UseCase.
-func (*usecase) GetPostsByGroupId(ctx context.Context, groupId uuid.UUID, limit int32, offset int32) ([]*domain.PostExtra, error) {
-	panic("unimplemented")
+func (uc *usecase) GetPostsByGroupId(ctx context.Context, groupId uuid.UUID, limit int32, offset int32) ([]*domain.Post, error) {
+	posts, err := uc.postRepo.GetByGroupId(ctx, groupId, limit, offset)
+	if err != nil {
+		return nil, errors.Wrap(err, "uc.GetPostsByGroupId failed")
+	}
+	return posts, nil
 }
 
 // GetPostsByUserId implements UseCase.
-func (*usecase) GetPostsByUserId(ctx context.Context, userId uuid.UUID, limit int32, offset int32) ([]*domain.PostExtra, error) {
-
-	panic("unimplemented")
+func (uc *usecase) GetPostsByUserId(ctx context.Context, userId uuid.UUID, limit int32, offset int32) ([]*domain.Post, error) {
+	posts, err := uc.postRepo.GetByUserId(ctx, userId, limit, offset)
+	if err != nil {
+		return nil, errors.Wrap(err, "uc.GetPostsByUserId failed")
+	}
+	return posts, nil
 }
 
 var _ UseCase = (*usecase)(nil)

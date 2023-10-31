@@ -31,8 +31,8 @@ WHERE user_id = $1 AND group_id IS NULL LIMIT $2 OFFSET $3;
 -- name: GetByFeed :many
 SELECT *
 FROM post.posts
-WHERE user_id IN ($1)
-   OR group_id IN ($2)
-LIMIT $3 OFFSET $4;
+WHERE user_id IN (sqlc.slice(User_ids))
+   OR group_id IN (sqlc.slice(Group_ids))
+LIMIT $1 OFFSET $2;
 -- name: Delete :exec
 DELETE FROM post.posts WHERE id = $1;

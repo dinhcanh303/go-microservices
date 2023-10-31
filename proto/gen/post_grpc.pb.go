@@ -19,11 +19,13 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	PostService_CreatePost_FullMethodName = "/post.PostService/CreatePost"
-	PostService_GetPost_FullMethodName    = "/post.PostService/GetPost"
-	PostService_UpdatePost_FullMethodName = "/post.PostService/UpdatePost"
-	PostService_DeletePost_FullMethodName = "/post.PostService/DeletePost"
-	PostService_ListPost_FullMethodName   = "/post.PostService/ListPost"
+	PostService_CreatePost_FullMethodName        = "/post.PostService/CreatePost"
+	PostService_GetPost_FullMethodName           = "/post.PostService/GetPost"
+	PostService_GetPostsByFeed_FullMethodName    = "/post.PostService/GetPostsByFeed"
+	PostService_GetPostsByGroupId_FullMethodName = "/post.PostService/GetPostsByGroupId"
+	PostService_GetPostsByUserId_FullMethodName  = "/post.PostService/GetPostsByUserId"
+	PostService_UpdatePost_FullMethodName        = "/post.PostService/UpdatePost"
+	PostService_DeletePost_FullMethodName        = "/post.PostService/DeletePost"
 )
 
 // PostServiceClient is the client API for PostService service.
@@ -32,9 +34,11 @@ const (
 type PostServiceClient interface {
 	CreatePost(ctx context.Context, in *CreatePostRequest, opts ...grpc.CallOption) (*CreatePostResponse, error)
 	GetPost(ctx context.Context, in *GetPostRequest, opts ...grpc.CallOption) (*GetPostResponse, error)
+	GetPostsByFeed(ctx context.Context, in *GetPostsByFeedRequest, opts ...grpc.CallOption) (*GetPostsByFeedResponse, error)
+	GetPostsByGroupId(ctx context.Context, in *GetPostsByGroupIdRequest, opts ...grpc.CallOption) (*GetPostsByGroupIdResponse, error)
+	GetPostsByUserId(ctx context.Context, in *GetPostsByUserIdRequest, opts ...grpc.CallOption) (*GetPostsByUserIdResponse, error)
 	UpdatePost(ctx context.Context, in *UpdatePostRequest, opts ...grpc.CallOption) (*UpdatePostResponse, error)
 	DeletePost(ctx context.Context, in *DeletePostRequest, opts ...grpc.CallOption) (*DeletePostResponse, error)
-	ListPost(ctx context.Context, in *ListPostRequest, opts ...grpc.CallOption) (*ListPostResponse, error)
 }
 
 type postServiceClient struct {
@@ -63,6 +67,33 @@ func (c *postServiceClient) GetPost(ctx context.Context, in *GetPostRequest, opt
 	return out, nil
 }
 
+func (c *postServiceClient) GetPostsByFeed(ctx context.Context, in *GetPostsByFeedRequest, opts ...grpc.CallOption) (*GetPostsByFeedResponse, error) {
+	out := new(GetPostsByFeedResponse)
+	err := c.cc.Invoke(ctx, PostService_GetPostsByFeed_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *postServiceClient) GetPostsByGroupId(ctx context.Context, in *GetPostsByGroupIdRequest, opts ...grpc.CallOption) (*GetPostsByGroupIdResponse, error) {
+	out := new(GetPostsByGroupIdResponse)
+	err := c.cc.Invoke(ctx, PostService_GetPostsByGroupId_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *postServiceClient) GetPostsByUserId(ctx context.Context, in *GetPostsByUserIdRequest, opts ...grpc.CallOption) (*GetPostsByUserIdResponse, error) {
+	out := new(GetPostsByUserIdResponse)
+	err := c.cc.Invoke(ctx, PostService_GetPostsByUserId_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *postServiceClient) UpdatePost(ctx context.Context, in *UpdatePostRequest, opts ...grpc.CallOption) (*UpdatePostResponse, error) {
 	out := new(UpdatePostResponse)
 	err := c.cc.Invoke(ctx, PostService_UpdatePost_FullMethodName, in, out, opts...)
@@ -81,24 +112,17 @@ func (c *postServiceClient) DeletePost(ctx context.Context, in *DeletePostReques
 	return out, nil
 }
 
-func (c *postServiceClient) ListPost(ctx context.Context, in *ListPostRequest, opts ...grpc.CallOption) (*ListPostResponse, error) {
-	out := new(ListPostResponse)
-	err := c.cc.Invoke(ctx, PostService_ListPost_FullMethodName, in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
 // PostServiceServer is the server API for PostService service.
 // All implementations must embed UnimplementedPostServiceServer
 // for forward compatibility
 type PostServiceServer interface {
 	CreatePost(context.Context, *CreatePostRequest) (*CreatePostResponse, error)
 	GetPost(context.Context, *GetPostRequest) (*GetPostResponse, error)
+	GetPostsByFeed(context.Context, *GetPostsByFeedRequest) (*GetPostsByFeedResponse, error)
+	GetPostsByGroupId(context.Context, *GetPostsByGroupIdRequest) (*GetPostsByGroupIdResponse, error)
+	GetPostsByUserId(context.Context, *GetPostsByUserIdRequest) (*GetPostsByUserIdResponse, error)
 	UpdatePost(context.Context, *UpdatePostRequest) (*UpdatePostResponse, error)
 	DeletePost(context.Context, *DeletePostRequest) (*DeletePostResponse, error)
-	ListPost(context.Context, *ListPostRequest) (*ListPostResponse, error)
 	mustEmbedUnimplementedPostServiceServer()
 }
 
@@ -112,14 +136,20 @@ func (UnimplementedPostServiceServer) CreatePost(context.Context, *CreatePostReq
 func (UnimplementedPostServiceServer) GetPost(context.Context, *GetPostRequest) (*GetPostResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetPost not implemented")
 }
+func (UnimplementedPostServiceServer) GetPostsByFeed(context.Context, *GetPostsByFeedRequest) (*GetPostsByFeedResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetPostsByFeed not implemented")
+}
+func (UnimplementedPostServiceServer) GetPostsByGroupId(context.Context, *GetPostsByGroupIdRequest) (*GetPostsByGroupIdResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetPostsByGroupId not implemented")
+}
+func (UnimplementedPostServiceServer) GetPostsByUserId(context.Context, *GetPostsByUserIdRequest) (*GetPostsByUserIdResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetPostsByUserId not implemented")
+}
 func (UnimplementedPostServiceServer) UpdatePost(context.Context, *UpdatePostRequest) (*UpdatePostResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdatePost not implemented")
 }
 func (UnimplementedPostServiceServer) DeletePost(context.Context, *DeletePostRequest) (*DeletePostResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeletePost not implemented")
-}
-func (UnimplementedPostServiceServer) ListPost(context.Context, *ListPostRequest) (*ListPostResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method ListPost not implemented")
 }
 func (UnimplementedPostServiceServer) mustEmbedUnimplementedPostServiceServer() {}
 
@@ -170,6 +200,60 @@ func _PostService_GetPost_Handler(srv interface{}, ctx context.Context, dec func
 	return interceptor(ctx, in, info, handler)
 }
 
+func _PostService_GetPostsByFeed_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetPostsByFeedRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PostServiceServer).GetPostsByFeed(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: PostService_GetPostsByFeed_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PostServiceServer).GetPostsByFeed(ctx, req.(*GetPostsByFeedRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _PostService_GetPostsByGroupId_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetPostsByGroupIdRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PostServiceServer).GetPostsByGroupId(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: PostService_GetPostsByGroupId_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PostServiceServer).GetPostsByGroupId(ctx, req.(*GetPostsByGroupIdRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _PostService_GetPostsByUserId_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetPostsByUserIdRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PostServiceServer).GetPostsByUserId(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: PostService_GetPostsByUserId_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PostServiceServer).GetPostsByUserId(ctx, req.(*GetPostsByUserIdRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _PostService_UpdatePost_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(UpdatePostRequest)
 	if err := dec(in); err != nil {
@@ -206,24 +290,6 @@ func _PostService_DeletePost_Handler(srv interface{}, ctx context.Context, dec f
 	return interceptor(ctx, in, info, handler)
 }
 
-func _PostService_ListPost_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ListPostRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(PostServiceServer).ListPost(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: PostService_ListPost_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(PostServiceServer).ListPost(ctx, req.(*ListPostRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
 // PostService_ServiceDesc is the grpc.ServiceDesc for PostService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -240,16 +306,24 @@ var PostService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _PostService_GetPost_Handler,
 		},
 		{
+			MethodName: "GetPostsByFeed",
+			Handler:    _PostService_GetPostsByFeed_Handler,
+		},
+		{
+			MethodName: "GetPostsByGroupId",
+			Handler:    _PostService_GetPostsByGroupId_Handler,
+		},
+		{
+			MethodName: "GetPostsByUserId",
+			Handler:    _PostService_GetPostsByUserId_Handler,
+		},
+		{
 			MethodName: "UpdatePost",
 			Handler:    _PostService_UpdatePost_Handler,
 		},
 		{
 			MethodName: "DeletePost",
 			Handler:    _PostService_DeletePost_Handler,
-		},
-		{
-			MethodName: "ListPost",
-			Handler:    _PostService_ListPost_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

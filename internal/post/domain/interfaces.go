@@ -5,7 +5,7 @@ import (
 
 	"github.com/dinhcanh303/go-microservices/internal/like/domain"
 	sharedkernel "github.com/dinhcanh303/go-microservices/internal/pkg/shared_kernel"
-	domain2 "github.com/dinhcanh303/go-microservices/internal/upload/domain"
+	domainUpload "github.com/dinhcanh303/go-microservices/internal/upload/domain"
 	"github.com/google/uuid"
 )
 
@@ -17,6 +17,6 @@ type (
 		GetLikesByPostID(ctx context.Context, postId uuid.UUID) ([]*domain.Like, error)
 	}
 	UploadDomainService interface {
-		GetAttachmentsByType(ctx context.Context, attachableType string, attachableId uuid.UUID) ([]*domain2.Attachment, error)
+		GetAttachmentsByType(ctx context.Context, attachableType string, attachableId uuid.UUID) ([]*domainUpload.Attachment, error)
 	}
 )

@@ -54,8 +54,8 @@ func (c *commentGRPCClient) GetCommentsByPostID(ctx context.Context, postId uuid
 			UserID:          uuid.MustParse(item.UserId),
 			Content:         item.Content,
 			PostID:          uuid.MustParse(item.PostId),
-			ReplyToID:       utils.StringToNullUUID(item.ReplyToId),
-			ParentCommentID: utils.StringToNullUUID(item.ParentCommentId),
+			ReplyToID:       utils.StringToNullUUIDNormal(item.ReplyToId),
+			ParentCommentID: utils.StringToNullUUIDNormal(item.ParentCommentId),
 			Children: lo.Map(item.Children, func(value *gen.CommentHasLike, _ int) *domainComment.CommentHasLike {
 				return &domainComment.CommentHasLike{
 					ID:      uuid.MustParse(value.Id),
@@ -73,8 +73,8 @@ func (c *commentGRPCClient) GetCommentsByPostID(ctx context.Context, postId uuid
 						}
 					}),
 					PostID:          uuid.MustParse(value.PostId),
-					ReplyToID:       utils.StringToNullUUID(value.ReplyToId),
-					ParentCommentID: utils.StringToNullUUID(value.ParentCommentId),
+					ReplyToID:       utils.StringToNullUUIDNormal(value.ReplyToId),
+					ParentCommentID: utils.StringToNullUUIDNormal(value.ParentCommentId),
 					CreatedAt:       value.CreatedAt.AsTime(),
 					UpdatedAt:       value.UpdatedAt.AsTime(),
 				}

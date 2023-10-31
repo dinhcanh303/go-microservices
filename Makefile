@@ -50,7 +50,7 @@ docker-compose-start:
 .PHONY: docker-compose-start
 
 docker-compose-stop:
-	docker-compose down --remove-orphans -v
+	docker-compose down
 .PHONY: docker-compose-stop
 
 docker-compose-core: docker-compose-core-stop docker-compose-core-start

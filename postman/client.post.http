@@ -22,11 +22,11 @@ content-type: application/json
 {
   "post": 
     {
-    "title" : "Hom nay la ngay 16/10/2023",
+    "title" : "Cai gi vay troi",
     "content" :"who is that who is that",
     "status" : 1,
     "user_id" :"526c0b00-677d-11ee-8390-0242ac150004",
-    "group_id": "c78b7c1f-58ae-4ec4-923e-6c7225dbdfcc"
+    "group_id": "9f9b24d9-cd0a-4e73-9b99-bc02a8681982"
     }
   
 }
@@ -45,7 +45,19 @@ content-type: application/json
 }
 
 ###Get Post
-GET {{host}}/v1/api/posts/120d1c98-4cb9-499d-9ddd-01351ddb3781 HTTP/1.1
+GET {{host}}/v1/api/posts/7bd3cafa-9d93-44dd-8b24-fd623abce12b HTTP/1.1
+content-type: application/json
+
+{}
+
+###Get Posts By UserId
+GET {{host}}/v1/api/users/526c0b00-677d-11ee-8390-0242ac150004/posts?limit=10&offset=0 HTTP/1.1
+content-type: application/json
+
+{}
+
+###Get Posts Of Feed
+GET {{host}}/v1/api/posts?user_ids=526c0b00-677d-11ee-8390-0242ac150004&group_ids=9f9b24d9-cd0a-4e73-9b99-bc02a8681982&limit=10&offset=0 HTTP/1.1
 content-type: application/json
 
 {}

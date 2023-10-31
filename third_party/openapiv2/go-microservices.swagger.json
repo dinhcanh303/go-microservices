@@ -297,6 +297,39 @@
         ]
       }
     },
+    "/v1/api/feed": {
+      "post": {
+        "summary": "Get Feed",
+        "operationId": "PostService_GetPostsByFeed",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/postGetPostsByFeedResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/postGetPostsByFeedRequest"
+            }
+          }
+        ],
+        "tags": [
+          "PostService"
+        ]
+      }
+    },
     "/v1/api/group-ids/{userId}": {
       "get": {
         "summary": "Get all group id by user id",
@@ -587,6 +620,51 @@
         ]
       }
     },
+    "/v1/api/groups/{groupId}/posts": {
+      "get": {
+        "summary": "Get Posts By Group ID",
+        "operationId": "PostService_GetPostsByGroupId",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/postGetPostsByGroupIdResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "groupId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          }
+        ],
+        "tags": [
+          "PostService"
+        ]
+      }
+    },
     "/v1/api/groups/{id}": {
       "get": {
         "summary": "Get group",
@@ -792,49 +870,6 @@
       }
     },
     "/v1/api/posts": {
-      "get": {
-        "summary": "Delete Post",
-        "operationId": "PostService_ListPost",
-        "responses": {
-          "200": {
-            "description": "A successful response.",
-            "schema": {
-              "$ref": "#/definitions/postListPostResponse"
-            }
-          },
-          "default": {
-            "description": "An unexpected error response.",
-            "schema": {
-              "$ref": "#/definitions/rpcStatus"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "id",
-            "in": "query",
-            "required": false,
-            "type": "string"
-          },
-          {
-            "name": "offset",
-            "in": "query",
-            "required": false,
-            "type": "integer",
-            "format": "int64"
-          },
-          {
-            "name": "limit",
-            "in": "query",
-            "required": false,
-            "type": "integer",
-            "format": "int64"
-          }
-        ],
-        "tags": [
-          "PostService"
-        ]
-      },
       "post": {
         "summary": "Create Post",
         "operationId": "PostService_CreatePost",
@@ -1056,6 +1091,51 @@
         ],
         "tags": [
           "LikeService"
+        ]
+      }
+    },
+    "/v1/api/users/{userId}/posts": {
+      "get": {
+        "summary": "Get Posts By User ID",
+        "operationId": "PostService_GetPostsByUserId",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/postGetPostsByUserIdResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          }
+        ],
+        "tags": [
+          "PostService"
         ]
       }
     }
@@ -1616,14 +1696,63 @@
         }
       }
     },
-    "postListPostResponse": {
+    "postGetPostsByFeedRequest": {
       "type": "object",
       "properties": {
-        "post": {
+        "userIds": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "groupIds": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "limit": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "offset": {
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "postGetPostsByFeedResponse": {
+      "type": "object",
+      "properties": {
+        "posts": {
           "type": "array",
           "items": {
             "type": "object",
-            "$ref": "#/definitions/postPostResponse"
+            "$ref": "#/definitions/postGetPostResponse"
+          }
+        }
+      }
+    },
+    "postGetPostsByGroupIdResponse": {
+      "type": "object",
+      "properties": {
+        "posts": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/postGetPostResponse"
+          }
+        }
+      }
+    },
+    "postGetPostsByUserIdResponse": {
+      "type": "object",
+      "properties": {
+        "posts": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/postGetPostResponse"
           }
         }
       }

@@ -11,10 +11,19 @@ option go_package = "github.com/dinhcanh303/go-microsevices/proto/gen";
 service UploadService {
     rpc GetAttachmentsByType(GetAttachmentsByTypeRequest) returns (GetAttachmentsByTypeResponse) {
         option (google.api.http) = {
-            post: "/v1/api/attachments"
+            get: "/v1/api/attachments"
         };
         option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
             summary: "GetAttachmentsByType"
+            description: ""
+        };
+    }
+    rpc UpdateAttachment(UpdateAttachmentRequest) returns (UpdateAttachmentResponse) {
+        option (google.api.http) = {
+            put: "/v1/api/attachments/{id}"
+        };
+        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+            summary: "UpdateAttachment"
             description: ""
         };
     }
@@ -23,8 +32,15 @@ message GetAttachmentsByTypeRequest{
     string attachable_type = 1;
     string attachable_id = 2;
 }
+message UpdateAttachmentRequest{
+    string attachable_type = 1;
+    string attachable_id = 2;
+}
 message GetAttachmentsByTypeResponse{
     repeated Attachment attachments = 1;
+}
+message UpdateAttachmentResponse{
+    Attachment attachment = 1;
 }
 message Attachment {
     string id = 1;

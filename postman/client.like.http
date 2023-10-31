@@ -9,7 +9,7 @@ content-type: application/json
     {
     "emoji" : "cry",
     "likeable_type" :"Like/Post",
-    "likeable_id" : "120d1c98-4cb9-499d-9ddd-01351ddb3781",
+    "likeable_id" : "7bd3cafa-9d93-44dd-8b24-fd623abce12b",
     "user_id" :"526c0b00-677d-11ee-8390-0242ac150004"
     }
 }

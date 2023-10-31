@@ -164,6 +164,344 @@ func (x *GetPostRequest) GetId() string {
 	return ""
 }
 
+type GetPostsByFeedRequest struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	UserIds  []string `protobuf:"bytes,1,rep,name=user_ids,json=userIds,proto3" json:"user_ids,omitempty"`
+	GroupIds []string `protobuf:"bytes,2,rep,name=group_ids,json=groupIds,proto3" json:"group_ids,omitempty"`
+	Limit    int32    `protobuf:"varint,3,opt,name=limit,proto3" json:"limit,omitempty"`
+	Offset   int32    `protobuf:"varint,4,opt,name=offset,proto3" json:"offset,omitempty"`
+}
+
+func (x *GetPostsByFeedRequest) Reset() {
+	*x = GetPostsByFeedRequest{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_post_proto_msgTypes[3]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *GetPostsByFeedRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetPostsByFeedRequest) ProtoMessage() {}
+
+func (x *GetPostsByFeedRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_post_proto_msgTypes[3]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetPostsByFeedRequest.ProtoReflect.Descriptor instead.
+func (*GetPostsByFeedRequest) Descriptor() ([]byte, []int) {
+	return file_post_proto_rawDescGZIP(), []int{3}
+}
+
+func (x *GetPostsByFeedRequest) GetUserIds() []string {
+	if x != nil {
+		return x.UserIds
+	}
+	return nil
+}
+
+func (x *GetPostsByFeedRequest) GetGroupIds() []string {
+	if x != nil {
+		return x.GroupIds
+	}
+	return nil
+}
+
+func (x *GetPostsByFeedRequest) GetLimit() int32 {
+	if x != nil {
+		return x.Limit
+	}
+	return 0
+}
+
+func (x *GetPostsByFeedRequest) GetOffset() int32 {
+	if x != nil {
+		return x.Offset
+	}
+	return 0
+}
+
+type GetPostsByFeedResponse struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Posts []*GetPostResponse `protobuf:"bytes,1,rep,name=posts,proto3" json:"posts,omitempty"`
+}
+
+func (x *GetPostsByFeedResponse) Reset() {
+	*x = GetPostsByFeedResponse{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_post_proto_msgTypes[4]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *GetPostsByFeedResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetPostsByFeedResponse) ProtoMessage() {}
+
+func (x *GetPostsByFeedResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_post_proto_msgTypes[4]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetPostsByFeedResponse.ProtoReflect.Descriptor instead.
+func (*GetPostsByFeedResponse) Descriptor() ([]byte, []int) {
+	return file_post_proto_rawDescGZIP(), []int{4}
+}
+
+func (x *GetPostsByFeedResponse) GetPosts() []*GetPostResponse {
+	if x != nil {
+		return x.Posts
+	}
+	return nil
+}
+
+type GetPostsByGroupIdRequest struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	GroupId string `protobuf:"bytes,1,opt,name=group_id,json=groupId,proto3" json:"group_id,omitempty"`
+	Limit   int32  `protobuf:"varint,2,opt,name=limit,proto3" json:"limit,omitempty"`
+	Offset  int32  `protobuf:"varint,3,opt,name=offset,proto3" json:"offset,omitempty"`
+}
+
+func (x *GetPostsByGroupIdRequest) Reset() {
+	*x = GetPostsByGroupIdRequest{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_post_proto_msgTypes[5]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *GetPostsByGroupIdRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetPostsByGroupIdRequest) ProtoMessage() {}
+
+func (x *GetPostsByGroupIdRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_post_proto_msgTypes[5]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetPostsByGroupIdRequest.ProtoReflect.Descriptor instead.
+func (*GetPostsByGroupIdRequest) Descriptor() ([]byte, []int) {
+	return file_post_proto_rawDescGZIP(), []int{5}
+}
+
+func (x *GetPostsByGroupIdRequest) GetGroupId() string {
+	if x != nil {
+		return x.GroupId
+	}
+	return ""
+}
+
+func (x *GetPostsByGroupIdRequest) GetLimit() int32 {
+	if x != nil {
+		return x.Limit
+	}
+	return 0
+}
+
+func (x *GetPostsByGroupIdRequest) GetOffset() int32 {
+	if x != nil {
+		return x.Offset
+	}
+	return 0
+}
+
+type GetPostsByGroupIdResponse struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Posts []*GetPostResponse `protobuf:"bytes,1,rep,name=posts,proto3" json:"posts,omitempty"`
+}
+
+func (x *GetPostsByGroupIdResponse) Reset() {
+	*x = GetPostsByGroupIdResponse{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_post_proto_msgTypes[6]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *GetPostsByGroupIdResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetPostsByGroupIdResponse) ProtoMessage() {}
+
+func (x *GetPostsByGroupIdResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_post_proto_msgTypes[6]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetPostsByGroupIdResponse.ProtoReflect.Descriptor instead.
+func (*GetPostsByGroupIdResponse) Descriptor() ([]byte, []int) {
+	return file_post_proto_rawDescGZIP(), []int{6}
+}
+
+func (x *GetPostsByGroupIdResponse) GetPosts() []*GetPostResponse {
+	if x != nil {
+		return x.Posts
+	}
+	return nil
+}
+
+type GetPostsByUserIdRequest struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	UserId string `protobuf:"bytes,1,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
+	Limit  int32  `protobuf:"varint,2,opt,name=limit,proto3" json:"limit,omitempty"`
+	Offset int32  `protobuf:"varint,3,opt,name=offset,proto3" json:"offset,omitempty"`
+}
+
+func (x *GetPostsByUserIdRequest) Reset() {
+	*x = GetPostsByUserIdRequest{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_post_proto_msgTypes[7]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *GetPostsByUserIdRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetPostsByUserIdRequest) ProtoMessage() {}
+
+func (x *GetPostsByUserIdRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_post_proto_msgTypes[7]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetPostsByUserIdRequest.ProtoReflect.Descriptor instead.
+func (*GetPostsByUserIdRequest) Descriptor() ([]byte, []int) {
+	return file_post_proto_rawDescGZIP(), []int{7}
+}
+
+func (x *GetPostsByUserIdRequest) GetUserId() string {
+	if x != nil {
+		return x.UserId
+	}
+	return ""
+}
+
+func (x *GetPostsByUserIdRequest) GetLimit() int32 {
+	if x != nil {
+		return x.Limit
+	}
+	return 0
+}
+
+func (x *GetPostsByUserIdRequest) GetOffset() int32 {
+	if x != nil {
+		return x.Offset
+	}
+	return 0
+}
+
+type GetPostsByUserIdResponse struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Posts []*GetPostResponse `protobuf:"bytes,1,rep,name=posts,proto3" json:"posts,omitempty"`
+}
+
+func (x *GetPostsByUserIdResponse) Reset() {
+	*x = GetPostsByUserIdResponse{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_post_proto_msgTypes[8]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *GetPostsByUserIdResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetPostsByUserIdResponse) ProtoMessage() {}
+
+func (x *GetPostsByUserIdResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_post_proto_msgTypes[8]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetPostsByUserIdResponse.ProtoReflect.Descriptor instead.
+func (*GetPostsByUserIdResponse) Descriptor() ([]byte, []int) {
+	return file_post_proto_rawDescGZIP(), []int{8}
+}
+
+func (x *GetPostsByUserIdResponse) GetPosts() []*GetPostResponse {
+	if x != nil {
+		return x.Posts
+	}
+	return nil
+}
+
 type DeletePostRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -175,7 +513,7 @@ type DeletePostRequest struct {
 func (x *DeletePostRequest) Reset() {
 	*x = DeletePostRequest{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_post_proto_msgTypes[3]
+		mi := &file_post_proto_msgTypes[9]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -188,7 +526,7 @@ func (x *DeletePostRequest) String() string {
 func (*DeletePostRequest) ProtoMessage() {}
 
 func (x *DeletePostRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_post_proto_msgTypes[3]
+	mi := &file_post_proto_msgTypes[9]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -201,7 +539,7 @@ func (x *DeletePostRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeletePostRequest.ProtoReflect.Descriptor instead.
 func (*DeletePostRequest) Descriptor() ([]byte, []int) {
-	return file_post_proto_rawDescGZIP(), []int{3}
+	return file_post_proto_rawDescGZIP(), []int{9}
 }
 
 func (x *DeletePostRequest) GetId() string {
@@ -222,7 +560,7 @@ type DeletePostResponse struct {
 func (x *DeletePostResponse) Reset() {
 	*x = DeletePostResponse{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_post_proto_msgTypes[4]
+		mi := &file_post_proto_msgTypes[10]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -235,7 +573,7 @@ func (x *DeletePostResponse) String() string {
 func (*DeletePostResponse) ProtoMessage() {}
 
 func (x *DeletePostResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_post_proto_msgTypes[4]
+	mi := &file_post_proto_msgTypes[10]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -248,7 +586,7 @@ func (x *DeletePostResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeletePostResponse.ProtoReflect.Descriptor instead.
 func (*DeletePostResponse) Descriptor() ([]byte, []int) {
-	return file_post_proto_rawDescGZIP(), []int{4}
+	return file_post_proto_rawDescGZIP(), []int{10}
 }
 
 func (x *DeletePostResponse) GetDeleted() bool {
@@ -272,7 +610,7 @@ type GetPostResponse struct {
 func (x *GetPostResponse) Reset() {
 	*x = GetPostResponse{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_post_proto_msgTypes[5]
+		mi := &file_post_proto_msgTypes[11]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -285,7 +623,7 @@ func (x *GetPostResponse) String() string {
 func (*GetPostResponse) ProtoMessage() {}
 
 func (x *GetPostResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_post_proto_msgTypes[5]
+	mi := &file_post_proto_msgTypes[11]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -298,7 +636,7 @@ func (x *GetPostResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetPostResponse.ProtoReflect.Descriptor instead.
 func (*GetPostResponse) Descriptor() ([]byte, []int) {
-	return file_post_proto_rawDescGZIP(), []int{5}
+	return file_post_proto_rawDescGZIP(), []int{11}
 }
 
 func (x *GetPostResponse) GetPost() *PostResponse {
@@ -340,7 +678,7 @@ type UpdatePostRequest struct {
 func (x *UpdatePostRequest) Reset() {
 	*x = UpdatePostRequest{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_post_proto_msgTypes[6]
+		mi := &file_post_proto_msgTypes[12]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -353,7 +691,7 @@ func (x *UpdatePostRequest) String() string {
 func (*UpdatePostRequest) ProtoMessage() {}
 
 func (x *UpdatePostRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_post_proto_msgTypes[6]
+	mi := &file_post_proto_msgTypes[12]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -366,7 +704,7 @@ func (x *UpdatePostRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdatePostRequest.ProtoReflect.Descriptor instead.
 func (*UpdatePostRequest) Descriptor() ([]byte, []int) {
-	return file_post_proto_rawDescGZIP(), []int{6}
+	return file_post_proto_rawDescGZIP(), []int{12}
 }
 
 func (x *UpdatePostRequest) GetPost() *PostResponse {
@@ -387,7 +725,7 @@ type UpdatePostResponse struct {
 func (x *UpdatePostResponse) Reset() {
 	*x = UpdatePostResponse{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_post_proto_msgTypes[7]
+		mi := &file_post_proto_msgTypes[13]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -400,7 +738,7 @@ func (x *UpdatePostResponse) String() string {
 func (*UpdatePostResponse) ProtoMessage() {}
 
 func (x *UpdatePostResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_post_proto_msgTypes[7]
+	mi := &file_post_proto_msgTypes[13]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -413,7 +751,7 @@ func (x *UpdatePostResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdatePostResponse.ProtoReflect.Descriptor instead.
 func (*UpdatePostResponse) Descriptor() ([]byte, []int) {
-	return file_post_proto_rawDescGZIP(), []int{7}
+	return file_post_proto_rawDescGZIP(), []int{13}
 }
 
 func (x *UpdatePostResponse) GetPost() *PostResponse {
@@ -436,7 +774,7 @@ type ListPostRequest struct {
 func (x *ListPostRequest) Reset() {
 	*x = ListPostRequest{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_post_proto_msgTypes[8]
+		mi := &file_post_proto_msgTypes[14]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -449,7 +787,7 @@ func (x *ListPostRequest) String() string {
 func (*ListPostRequest) ProtoMessage() {}
 
 func (x *ListPostRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_post_proto_msgTypes[8]
+	mi := &file_post_proto_msgTypes[14]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -462,7 +800,7 @@ func (x *ListPostRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListPostRequest.ProtoReflect.Descriptor instead.
 func (*ListPostRequest) Descriptor() ([]byte, []int) {
-	return file_post_proto_rawDescGZIP(), []int{8}
+	return file_post_proto_rawDescGZIP(), []int{14}
 }
 
 func (x *ListPostRequest) GetId() string {
@@ -497,7 +835,7 @@ type ListPostResponse struct {
 func (x *ListPostResponse) Reset() {
 	*x = ListPostResponse{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_post_proto_msgTypes[9]
+		mi := &file_post_proto_msgTypes[15]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -510,7 +848,7 @@ func (x *ListPostResponse) String() string {
 func (*ListPostResponse) ProtoMessage() {}
 
 func (x *ListPostResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_post_proto_msgTypes[9]
+	mi := &file_post_proto_msgTypes[15]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -523,7 +861,7 @@ func (x *ListPostResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListPostResponse.ProtoReflect.Descriptor instead.
 func (*ListPostResponse) Descriptor() ([]byte, []int) {
-	return file_post_proto_rawDescGZIP(), []int{9}
+	return file_post_proto_rawDescGZIP(), []int{15}
 }
 
 func (x *ListPostResponse) GetPost() []*PostResponse {
@@ -548,7 +886,7 @@ type PostRequest struct {
 func (x *PostRequest) Reset() {
 	*x = PostRequest{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_post_proto_msgTypes[10]
+		mi := &file_post_proto_msgTypes[16]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -561,7 +899,7 @@ func (x *PostRequest) String() string {
 func (*PostRequest) ProtoMessage() {}
 
 func (x *PostRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_post_proto_msgTypes[10]
+	mi := &file_post_proto_msgTypes[16]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -574,7 +912,7 @@ func (x *PostRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PostRequest.ProtoReflect.Descriptor instead.
 func (*PostRequest) Descriptor() ([]byte, []int) {
-	return file_post_proto_rawDescGZIP(), []int{10}
+	return file_post_proto_rawDescGZIP(), []int{16}
 }
 
 func (x *PostRequest) GetTitle() string {
@@ -630,7 +968,7 @@ type PostResponse struct {
 func (x *PostResponse) Reset() {
 	*x = PostResponse{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_post_proto_msgTypes[11]
+		mi := &file_post_proto_msgTypes[17]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -643,7 +981,7 @@ func (x *PostResponse) String() string {
 func (*PostResponse) ProtoMessage() {}
 
 func (x *PostResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_post_proto_msgTypes[11]
+	mi := &file_post_proto_msgTypes[17]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -656,7 +994,7 @@ func (x *PostResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PostResponse.ProtoReflect.Descriptor instead.
 func (*PostResponse) Descriptor() ([]byte, []int) {
-	return file_post_proto_rawDescGZIP(), []int{11}
+	return file_post_proto_rawDescGZIP(), []int{17}
 }
 
 func (x *PostResponse) GetId() string {
@@ -738,7 +1076,41 @@ var file_post_proto_rawDesc = []byte{
 	0x74, 0x2e, 0x50, 0x6f, 0x73, 0x74, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x52, 0x04,
 	0x70, 0x6f, 0x73, 0x74, 0x22, 0x20, 0x0a, 0x0e, 0x47, 0x65, 0x74, 0x50, 0x6f, 0x73, 0x74, 0x52,
 	0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x0e, 0x0a, 0x02, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01,
-	0x28, 0x09, 0x52, 0x02, 0x69, 0x64, 0x22, 0x23, 0x0a, 0x11, 0x44, 0x65, 0x6c, 0x65, 0x74, 0x65,
+	0x28, 0x09, 0x52, 0x02, 0x69, 0x64, 0x22, 0x7d, 0x0a, 0x15, 0x47, 0x65, 0x74, 0x50, 0x6f, 0x73,
+	0x74, 0x73, 0x42, 0x79, 0x46, 0x65, 0x65, 0x64, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12,
+	0x19, 0x0a, 0x08, 0x75, 0x73, 0x65, 0x72, 0x5f, 0x69, 0x64, 0x73, 0x18, 0x01, 0x20, 0x03, 0x28,
+	0x09, 0x52, 0x07, 0x75, 0x73, 0x65, 0x72, 0x49, 0x64, 0x73, 0x12, 0x1b, 0x0a, 0x09, 0x67, 0x72,
+	0x6f, 0x75, 0x70, 0x5f, 0x69, 0x64, 0x73, 0x18, 0x02, 0x20, 0x03, 0x28, 0x09, 0x52, 0x08, 0x67,
+	0x72, 0x6f, 0x75, 0x70, 0x49, 0x64, 0x73, 0x12, 0x14, 0x0a, 0x05, 0x6c, 0x69, 0x6d, 0x69, 0x74,
+	0x18, 0x03, 0x20, 0x01, 0x28, 0x05, 0x52, 0x05, 0x6c, 0x69, 0x6d, 0x69, 0x74, 0x12, 0x16, 0x0a,
+	0x06, 0x6f, 0x66, 0x66, 0x73, 0x65, 0x74, 0x18, 0x04, 0x20, 0x01, 0x28, 0x05, 0x52, 0x06, 0x6f,
+	0x66, 0x66, 0x73, 0x65, 0x74, 0x22, 0x45, 0x0a, 0x16, 0x47, 0x65, 0x74, 0x50, 0x6f, 0x73, 0x74,
+	0x73, 0x42, 0x79, 0x46, 0x65, 0x65, 0x64, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12,
+	0x2b, 0x0a, 0x05, 0x70, 0x6f, 0x73, 0x74, 0x73, 0x18, 0x01, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x15,
+	0x2e, 0x70, 0x6f, 0x73, 0x74, 0x2e, 0x47, 0x65, 0x74, 0x50, 0x6f, 0x73, 0x74, 0x52, 0x65, 0x73,
+	0x70, 0x6f, 0x6e, 0x73, 0x65, 0x52, 0x05, 0x70, 0x6f, 0x73, 0x74, 0x73, 0x22, 0x63, 0x0a, 0x18,
+	0x47, 0x65, 0x74, 0x50, 0x6f, 0x73, 0x74, 0x73, 0x42, 0x79, 0x47, 0x72, 0x6f, 0x75, 0x70, 0x49,
+	0x64, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x19, 0x0a, 0x08, 0x67, 0x72, 0x6f, 0x75,
+	0x70, 0x5f, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x07, 0x67, 0x72, 0x6f, 0x75,
+	0x70, 0x49, 0x64, 0x12, 0x14, 0x0a, 0x05, 0x6c, 0x69, 0x6d, 0x69, 0x74, 0x18, 0x02, 0x20, 0x01,
+	0x28, 0x05, 0x52, 0x05, 0x6c, 0x69, 0x6d, 0x69, 0x74, 0x12, 0x16, 0x0a, 0x06, 0x6f, 0x66, 0x66,
+	0x73, 0x65, 0x74, 0x18, 0x03, 0x20, 0x01, 0x28, 0x05, 0x52, 0x06, 0x6f, 0x66, 0x66, 0x73, 0x65,
+	0x74, 0x22, 0x48, 0x0a, 0x19, 0x47, 0x65, 0x74, 0x50, 0x6f, 0x73, 0x74, 0x73, 0x42, 0x79, 0x47,
+	0x72, 0x6f, 0x75, 0x70, 0x49, 0x64, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x2b,
+	0x0a, 0x05, 0x70, 0x6f, 0x73, 0x74, 0x73, 0x18, 0x01, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x15, 0x2e,
+	0x70, 0x6f, 0x73, 0x74, 0x2e, 0x47, 0x65, 0x74, 0x50, 0x6f, 0x73, 0x74, 0x52, 0x65, 0x73, 0x70,
+	0x6f, 0x6e, 0x73, 0x65, 0x52, 0x05, 0x70, 0x6f, 0x73, 0x74, 0x73, 0x22, 0x60, 0x0a, 0x17, 0x47,
+	0x65, 0x74, 0x50, 0x6f, 0x73, 0x74, 0x73, 0x42, 0x79, 0x55, 0x73, 0x65, 0x72, 0x49, 0x64, 0x52,
+	0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x17, 0x0a, 0x07, 0x75, 0x73, 0x65, 0x72, 0x5f, 0x69,
+	0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x06, 0x75, 0x73, 0x65, 0x72, 0x49, 0x64, 0x12,
+	0x14, 0x0a, 0x05, 0x6c, 0x69, 0x6d, 0x69, 0x74, 0x18, 0x02, 0x20, 0x01, 0x28, 0x05, 0x52, 0x05,
+	0x6c, 0x69, 0x6d, 0x69, 0x74, 0x12, 0x16, 0x0a, 0x06, 0x6f, 0x66, 0x66, 0x73, 0x65, 0x74, 0x18,
+	0x03, 0x20, 0x01, 0x28, 0x05, 0x52, 0x06, 0x6f, 0x66, 0x66, 0x73, 0x65, 0x74, 0x22, 0x47, 0x0a,
+	0x18, 0x47, 0x65, 0x74, 0x50, 0x6f, 0x73, 0x74, 0x73, 0x42, 0x79, 0x55, 0x73, 0x65, 0x72, 0x49,
+	0x64, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x2b, 0x0a, 0x05, 0x70, 0x6f, 0x73,
+	0x74, 0x73, 0x18, 0x01, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x15, 0x2e, 0x70, 0x6f, 0x73, 0x74, 0x2e,
+	0x47, 0x65, 0x74, 0x50, 0x6f, 0x73, 0x74, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x52,
+	0x05, 0x70, 0x6f, 0x73, 0x74, 0x73, 0x22, 0x23, 0x0a, 0x11, 0x44, 0x65, 0x6c, 0x65, 0x74, 0x65,
 	0x50, 0x6f, 0x73, 0x74, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x0e, 0x0a, 0x02, 0x69,
 	0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x02, 0x69, 0x64, 0x22, 0x2e, 0x0a, 0x12, 0x44,
 	0x65, 0x6c, 0x65, 0x74, 0x65, 0x50, 0x6f, 0x73, 0x74, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73,
@@ -799,7 +1171,7 @@ var file_post_proto_rawDesc = []byte{
 	0x64, 0x61, 0x74, 0x65, 0x64, 0x5f, 0x61, 0x74, 0x18, 0x08, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x1a,
 	0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66,
 	0x2e, 0x54, 0x69, 0x6d, 0x65, 0x73, 0x74, 0x61, 0x6d, 0x70, 0x52, 0x09, 0x75, 0x70, 0x64, 0x61,
-	0x74, 0x65, 0x64, 0x41, 0x74, 0x32, 0x9d, 0x04, 0x0a, 0x0b, 0x50, 0x6f, 0x73, 0x74, 0x53, 0x65,
+	0x74, 0x65, 0x64, 0x41, 0x74, 0x32, 0xdc, 0x06, 0x0a, 0x0b, 0x50, 0x6f, 0x73, 0x74, 0x53, 0x65,
 	0x72, 0x76, 0x69, 0x63, 0x65, 0x12, 0x69, 0x0a, 0x0a, 0x43, 0x72, 0x65, 0x61, 0x74, 0x65, 0x50,
 	0x6f, 0x73, 0x74, 0x12, 0x17, 0x2e, 0x70, 0x6f, 0x73, 0x74, 0x2e, 0x43, 0x72, 0x65, 0x61, 0x74,
 	0x65, 0x50, 0x6f, 0x73, 0x74, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x18, 0x2e, 0x70,
@@ -813,31 +1185,50 @@ var file_post_proto_rawDesc = []byte{
 	0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x27, 0x92, 0x41, 0x0a, 0x12, 0x08, 0x47,
 	0x65, 0x74, 0x20, 0x50, 0x6f, 0x73, 0x74, 0x82, 0xd3, 0xe4, 0x93, 0x02, 0x14, 0x12, 0x12, 0x2f,
 	0x76, 0x31, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x70, 0x6f, 0x73, 0x74, 0x73, 0x2f, 0x7b, 0x69, 0x64,
-	0x7d, 0x12, 0x73, 0x0a, 0x0a, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x50, 0x6f, 0x73, 0x74, 0x12,
-	0x17, 0x2e, 0x70, 0x6f, 0x73, 0x74, 0x2e, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x50, 0x6f, 0x73,
-	0x74, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x18, 0x2e, 0x70, 0x6f, 0x73, 0x74, 0x2e,
-	0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x50, 0x6f, 0x73, 0x74, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e,
-	0x73, 0x65, 0x22, 0x32, 0x92, 0x41, 0x0d, 0x12, 0x0b, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x20,
-	0x50, 0x6f, 0x73, 0x74, 0x82, 0xd3, 0xe4, 0x93, 0x02, 0x1c, 0x3a, 0x01, 0x2a, 0x1a, 0x17, 0x2f,
-	0x76, 0x31, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x70, 0x6f, 0x73, 0x74, 0x73, 0x2f, 0x7b, 0x70, 0x6f,
-	0x73, 0x74, 0x2e, 0x69, 0x64, 0x7d, 0x12, 0x6b, 0x0a, 0x0a, 0x44, 0x65, 0x6c, 0x65, 0x74, 0x65,
-	0x50, 0x6f, 0x73, 0x74, 0x12, 0x17, 0x2e, 0x70, 0x6f, 0x73, 0x74, 0x2e, 0x44, 0x65, 0x6c, 0x65,
-	0x74, 0x65, 0x50, 0x6f, 0x73, 0x74, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x18, 0x2e,
-	0x70, 0x6f, 0x73, 0x74, 0x2e, 0x44, 0x65, 0x6c, 0x65, 0x74, 0x65, 0x50, 0x6f, 0x73, 0x74, 0x52,
-	0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x2a, 0x92, 0x41, 0x0d, 0x12, 0x0b, 0x44, 0x65,
-	0x6c, 0x65, 0x74, 0x65, 0x20, 0x50, 0x6f, 0x73, 0x74, 0x82, 0xd3, 0xe4, 0x93, 0x02, 0x14, 0x2a,
-	0x12, 0x2f, 0x76, 0x31, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x70, 0x6f, 0x73, 0x74, 0x73, 0x2f, 0x7b,
-	0x69, 0x64, 0x7d, 0x12, 0x60, 0x0a, 0x08, 0x4c, 0x69, 0x73, 0x74, 0x50, 0x6f, 0x73, 0x74, 0x12,
-	0x15, 0x2e, 0x70, 0x6f, 0x73, 0x74, 0x2e, 0x4c, 0x69, 0x73, 0x74, 0x50, 0x6f, 0x73, 0x74, 0x52,
-	0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x16, 0x2e, 0x70, 0x6f, 0x73, 0x74, 0x2e, 0x4c, 0x69,
-	0x73, 0x74, 0x50, 0x6f, 0x73, 0x74, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x25,
-	0x92, 0x41, 0x0d, 0x12, 0x0b, 0x44, 0x65, 0x6c, 0x65, 0x74, 0x65, 0x20, 0x50, 0x6f, 0x73, 0x74,
-	0x82, 0xd3, 0xe4, 0x93, 0x02, 0x0f, 0x12, 0x0d, 0x2f, 0x76, 0x31, 0x2f, 0x61, 0x70, 0x69, 0x2f,
-	0x70, 0x6f, 0x73, 0x74, 0x73, 0x42, 0x32, 0x5a, 0x30, 0x67, 0x69, 0x74, 0x68, 0x75, 0x62, 0x2e,
-	0x63, 0x6f, 0x6d, 0x2f, 0x64, 0x69, 0x6e, 0x68, 0x63, 0x61, 0x6e, 0x68, 0x33, 0x30, 0x33, 0x2f,
-	0x67, 0x6f, 0x2d, 0x6d, 0x69, 0x63, 0x72, 0x6f, 0x73, 0x65, 0x76, 0x69, 0x63, 0x65, 0x73, 0x2f,
-	0x70, 0x72, 0x6f, 0x74, 0x6f, 0x2f, 0x67, 0x65, 0x6e, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f,
-	0x33,
+	0x7d, 0x12, 0x71, 0x0a, 0x0e, 0x47, 0x65, 0x74, 0x50, 0x6f, 0x73, 0x74, 0x73, 0x42, 0x79, 0x46,
+	0x65, 0x65, 0x64, 0x12, 0x1b, 0x2e, 0x70, 0x6f, 0x73, 0x74, 0x2e, 0x47, 0x65, 0x74, 0x50, 0x6f,
+	0x73, 0x74, 0x73, 0x42, 0x79, 0x46, 0x65, 0x65, 0x64, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74,
+	0x1a, 0x1c, 0x2e, 0x70, 0x6f, 0x73, 0x74, 0x2e, 0x47, 0x65, 0x74, 0x50, 0x6f, 0x73, 0x74, 0x73,
+	0x42, 0x79, 0x46, 0x65, 0x65, 0x64, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x24,
+	0x92, 0x41, 0x0a, 0x12, 0x08, 0x47, 0x65, 0x74, 0x20, 0x46, 0x65, 0x65, 0x64, 0x82, 0xd3, 0xe4,
+	0x93, 0x02, 0x11, 0x3a, 0x01, 0x2a, 0x22, 0x0c, 0x2f, 0x76, 0x31, 0x2f, 0x61, 0x70, 0x69, 0x2f,
+	0x66, 0x65, 0x65, 0x64, 0x12, 0x97, 0x01, 0x0a, 0x11, 0x47, 0x65, 0x74, 0x50, 0x6f, 0x73, 0x74,
+	0x73, 0x42, 0x79, 0x47, 0x72, 0x6f, 0x75, 0x70, 0x49, 0x64, 0x12, 0x1e, 0x2e, 0x70, 0x6f, 0x73,
+	0x74, 0x2e, 0x47, 0x65, 0x74, 0x50, 0x6f, 0x73, 0x74, 0x73, 0x42, 0x79, 0x47, 0x72, 0x6f, 0x75,
+	0x70, 0x49, 0x64, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x1f, 0x2e, 0x70, 0x6f, 0x73,
+	0x74, 0x2e, 0x47, 0x65, 0x74, 0x50, 0x6f, 0x73, 0x74, 0x73, 0x42, 0x79, 0x47, 0x72, 0x6f, 0x75,
+	0x70, 0x49, 0x64, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x41, 0x92, 0x41, 0x17,
+	0x12, 0x15, 0x47, 0x65, 0x74, 0x20, 0x50, 0x6f, 0x73, 0x74, 0x73, 0x20, 0x42, 0x79, 0x20, 0x47,
+	0x72, 0x6f, 0x75, 0x70, 0x20, 0x49, 0x44, 0x82, 0xd3, 0xe4, 0x93, 0x02, 0x21, 0x12, 0x1f, 0x2f,
+	0x76, 0x31, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x67, 0x72, 0x6f, 0x75, 0x70, 0x73, 0x2f, 0x7b, 0x67,
+	0x72, 0x6f, 0x75, 0x70, 0x5f, 0x69, 0x64, 0x7d, 0x2f, 0x70, 0x6f, 0x73, 0x74, 0x73, 0x12, 0x91,
+	0x01, 0x0a, 0x10, 0x47, 0x65, 0x74, 0x50, 0x6f, 0x73, 0x74, 0x73, 0x42, 0x79, 0x55, 0x73, 0x65,
+	0x72, 0x49, 0x64, 0x12, 0x1d, 0x2e, 0x70, 0x6f, 0x73, 0x74, 0x2e, 0x47, 0x65, 0x74, 0x50, 0x6f,
+	0x73, 0x74, 0x73, 0x42, 0x79, 0x55, 0x73, 0x65, 0x72, 0x49, 0x64, 0x52, 0x65, 0x71, 0x75, 0x65,
+	0x73, 0x74, 0x1a, 0x1e, 0x2e, 0x70, 0x6f, 0x73, 0x74, 0x2e, 0x47, 0x65, 0x74, 0x50, 0x6f, 0x73,
+	0x74, 0x73, 0x42, 0x79, 0x55, 0x73, 0x65, 0x72, 0x49, 0x64, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e,
+	0x73, 0x65, 0x22, 0x3e, 0x92, 0x41, 0x16, 0x12, 0x14, 0x47, 0x65, 0x74, 0x20, 0x50, 0x6f, 0x73,
+	0x74, 0x73, 0x20, 0x42, 0x79, 0x20, 0x55, 0x73, 0x65, 0x72, 0x20, 0x49, 0x44, 0x82, 0xd3, 0xe4,
+	0x93, 0x02, 0x1f, 0x12, 0x1d, 0x2f, 0x76, 0x31, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x75, 0x73, 0x65,
+	0x72, 0x73, 0x2f, 0x7b, 0x75, 0x73, 0x65, 0x72, 0x5f, 0x69, 0x64, 0x7d, 0x2f, 0x70, 0x6f, 0x73,
+	0x74, 0x73, 0x12, 0x73, 0x0a, 0x0a, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x50, 0x6f, 0x73, 0x74,
+	0x12, 0x17, 0x2e, 0x70, 0x6f, 0x73, 0x74, 0x2e, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x50, 0x6f,
+	0x73, 0x74, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x18, 0x2e, 0x70, 0x6f, 0x73, 0x74,
+	0x2e, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x50, 0x6f, 0x73, 0x74, 0x52, 0x65, 0x73, 0x70, 0x6f,
+	0x6e, 0x73, 0x65, 0x22, 0x32, 0x92, 0x41, 0x0d, 0x12, 0x0b, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65,
+	0x20, 0x50, 0x6f, 0x73, 0x74, 0x82, 0xd3, 0xe4, 0x93, 0x02, 0x1c, 0x3a, 0x01, 0x2a, 0x1a, 0x17,
+	0x2f, 0x76, 0x31, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x70, 0x6f, 0x73, 0x74, 0x73, 0x2f, 0x7b, 0x70,
+	0x6f, 0x73, 0x74, 0x2e, 0x69, 0x64, 0x7d, 0x12, 0x6b, 0x0a, 0x0a, 0x44, 0x65, 0x6c, 0x65, 0x74,
+	0x65, 0x50, 0x6f, 0x73, 0x74, 0x12, 0x17, 0x2e, 0x70, 0x6f, 0x73, 0x74, 0x2e, 0x44, 0x65, 0x6c,
+	0x65, 0x74, 0x65, 0x50, 0x6f, 0x73, 0x74, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x18,
+	0x2e, 0x70, 0x6f, 0x73, 0x74, 0x2e, 0x44, 0x65, 0x6c, 0x65, 0x74, 0x65, 0x50, 0x6f, 0x73, 0x74,
+	0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x2a, 0x92, 0x41, 0x0d, 0x12, 0x0b, 0x44,
+	0x65, 0x6c, 0x65, 0x74, 0x65, 0x20, 0x50, 0x6f, 0x73, 0x74, 0x82, 0xd3, 0xe4, 0x93, 0x02, 0x14,
+	0x2a, 0x12, 0x2f, 0x76, 0x31, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x70, 0x6f, 0x73, 0x74, 0x73, 0x2f,
+	0x7b, 0x69, 0x64, 0x7d, 0x42, 0x32, 0x5a, 0x30, 0x67, 0x69, 0x74, 0x68, 0x75, 0x62, 0x2e, 0x63,
+	0x6f, 0x6d, 0x2f, 0x64, 0x69, 0x6e, 0x68, 0x63, 0x61, 0x6e, 0x68, 0x33, 0x30, 0x33, 0x2f, 0x67,
+	0x6f, 0x2d, 0x6d, 0x69, 0x63, 0x72, 0x6f, 0x73, 0x65, 0x76, 0x69, 0x63, 0x65, 0x73, 0x2f, 0x70,
+	0x72, 0x6f, 0x74, 0x6f, 0x2f, 0x67, 0x65, 0x6e, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -852,52 +1243,65 @@ func file_post_proto_rawDescGZIP() []byte {
 	return file_post_proto_rawDescData
 }
 
-var file_post_proto_msgTypes = make([]protoimpl.MessageInfo, 12)
+var file_post_proto_msgTypes = make([]protoimpl.MessageInfo, 18)
 var file_post_proto_goTypes = []interface{}{
-	(*CreatePostRequest)(nil),        // 0: post.CreatePostRequest
-	(*CreatePostResponse)(nil),       // 1: post.CreatePostResponse
-	(*GetPostRequest)(nil),           // 2: post.GetPostRequest
-	(*DeletePostRequest)(nil),        // 3: post.DeletePostRequest
-	(*DeletePostResponse)(nil),       // 4: post.DeletePostResponse
-	(*GetPostResponse)(nil),          // 5: post.GetPostResponse
-	(*UpdatePostRequest)(nil),        // 6: post.UpdatePostRequest
-	(*UpdatePostResponse)(nil),       // 7: post.UpdatePostResponse
-	(*ListPostRequest)(nil),          // 8: post.ListPostRequest
-	(*ListPostResponse)(nil),         // 9: post.ListPostResponse
-	(*PostRequest)(nil),              // 10: post.PostRequest
-	(*PostResponse)(nil),             // 11: post.PostResponse
-	(*Attachment)(nil),               // 12: upload.Attachment
-	(*Like)(nil),                     // 13: like.Like
-	(*CommentHasCommentAndLike)(nil), // 14: comment.CommentHasCommentAndLike
-	(*timestamppb.Timestamp)(nil),    // 15: google.protobuf.Timestamp
+	(*CreatePostRequest)(nil),         // 0: post.CreatePostRequest
+	(*CreatePostResponse)(nil),        // 1: post.CreatePostResponse
+	(*GetPostRequest)(nil),            // 2: post.GetPostRequest
+	(*GetPostsByFeedRequest)(nil),     // 3: post.GetPostsByFeedRequest
+	(*GetPostsByFeedResponse)(nil),    // 4: post.GetPostsByFeedResponse
+	(*GetPostsByGroupIdRequest)(nil),  // 5: post.GetPostsByGroupIdRequest
+	(*GetPostsByGroupIdResponse)(nil), // 6: post.GetPostsByGroupIdResponse
+	(*GetPostsByUserIdRequest)(nil),   // 7: post.GetPostsByUserIdRequest
+	(*GetPostsByUserIdResponse)(nil),  // 8: post.GetPostsByUserIdResponse
+	(*DeletePostRequest)(nil),         // 9: post.DeletePostRequest
+	(*DeletePostResponse)(nil),        // 10: post.DeletePostResponse
+	(*GetPostResponse)(nil),           // 11: post.GetPostResponse
+	(*UpdatePostRequest)(nil),         // 12: post.UpdatePostRequest
+	(*UpdatePostResponse)(nil),        // 13: post.UpdatePostResponse
+	(*ListPostRequest)(nil),           // 14: post.ListPostRequest
+	(*ListPostResponse)(nil),          // 15: post.ListPostResponse
+	(*PostRequest)(nil),               // 16: post.PostRequest
+	(*PostResponse)(nil),              // 17: post.PostResponse
+	(*Attachment)(nil),                // 18: upload.Attachment
+	(*Like)(nil),                      // 19: like.Like
+	(*CommentHasCommentAndLike)(nil),  // 20: comment.CommentHasCommentAndLike
+	(*timestamppb.Timestamp)(nil),     // 21: google.protobuf.Timestamp
 }
 var file_post_proto_depIdxs = []int32{
-	10, // 0: post.CreatePostRequest.post:type_name -> post.PostRequest
-	11, // 1: post.CreatePostResponse.post:type_name -> post.PostResponse
-	11, // 2: post.GetPostResponse.post:type_name -> post.PostResponse
-	12, // 3: post.GetPostResponse.attachments:type_name -> upload.Attachment
-	13, // 4: post.GetPostResponse.likes:type_name -> like.Like
-	14, // 5: post.GetPostResponse.comments:type_name -> comment.CommentHasCommentAndLike
-	11, // 6: post.UpdatePostRequest.post:type_name -> post.PostResponse
-	11, // 7: post.UpdatePostResponse.post:type_name -> post.PostResponse
-	11, // 8: post.ListPostResponse.post:type_name -> post.PostResponse
-	15, // 9: post.PostResponse.created_at:type_name -> google.protobuf.Timestamp
-	15, // 10: post.PostResponse.updated_at:type_name -> google.protobuf.Timestamp
-	0,  // 11: post.PostService.CreatePost:input_type -> post.CreatePostRequest
-	2,  // 12: post.PostService.GetPost:input_type -> post.GetPostRequest
-	6,  // 13: post.PostService.UpdatePost:input_type -> post.UpdatePostRequest
-	3,  // 14: post.PostService.DeletePost:input_type -> post.DeletePostRequest
-	8,  // 15: post.PostService.ListPost:input_type -> post.ListPostRequest
-	1,  // 16: post.PostService.CreatePost:output_type -> post.CreatePostResponse
-	5,  // 17: post.PostService.GetPost:output_type -> post.GetPostResponse
-	7,  // 18: post.PostService.UpdatePost:output_type -> post.UpdatePostResponse
-	4,  // 19: post.PostService.DeletePost:output_type -> post.DeletePostResponse
-	9,  // 20: post.PostService.ListPost:output_type -> post.ListPostResponse
-	16, // [16:21] is the sub-list for method output_type
-	11, // [11:16] is the sub-list for method input_type
-	11, // [11:11] is the sub-list for extension type_name
-	11, // [11:11] is the sub-list for extension extendee
-	0,  // [0:11] is the sub-list for field type_name
+	16, // 0: post.CreatePostRequest.post:type_name -> post.PostRequest
+	17, // 1: post.CreatePostResponse.post:type_name -> post.PostResponse
+	11, // 2: post.GetPostsByFeedResponse.posts:type_name -> post.GetPostResponse
+	11, // 3: post.GetPostsByGroupIdResponse.posts:type_name -> post.GetPostResponse
+	11, // 4: post.GetPostsByUserIdResponse.posts:type_name -> post.GetPostResponse
+	17, // 5: post.GetPostResponse.post:type_name -> post.PostResponse
+	18, // 6: post.GetPostResponse.attachments:type_name -> upload.Attachment
+	19, // 7: post.GetPostResponse.likes:type_name -> like.Like
+	20, // 8: post.GetPostResponse.comments:type_name -> comment.CommentHasCommentAndLike
+	17, // 9: post.UpdatePostRequest.post:type_name -> post.PostResponse
+	17, // 10: post.UpdatePostResponse.post:type_name -> post.PostResponse
+	17, // 11: post.ListPostResponse.post:type_name -> post.PostResponse
+	21, // 12: post.PostResponse.created_at:type_name -> google.protobuf.Timestamp
+	21, // 13: post.PostResponse.updated_at:type_name -> google.protobuf.Timestamp
+	0,  // 14: post.PostService.CreatePost:input_type -> post.CreatePostRequest
+	2,  // 15: post.PostService.GetPost:input_type -> post.GetPostRequest
+	3,  // 16: post.PostService.GetPostsByFeed:input_type -> post.GetPostsByFeedRequest
+	5,  // 17: post.PostService.GetPostsByGroupId:input_type -> post.GetPostsByGroupIdRequest
+	7,  // 18: post.PostService.GetPostsByUserId:input_type -> post.GetPostsByUserIdRequest
+	12, // 19: post.PostService.UpdatePost:input_type -> post.UpdatePostRequest
+	9,  // 20: post.PostService.DeletePost:input_type -> post.DeletePostRequest
+	1,  // 21: post.PostService.CreatePost:output_type -> post.CreatePostResponse
+	11, // 22: post.PostService.GetPost:output_type -> post.GetPostResponse
+	4,  // 23: post.PostService.GetPostsByFeed:output_type -> post.GetPostsByFeedResponse
+	6,  // 24: post.PostService.GetPostsByGroupId:output_type -> post.GetPostsByGroupIdResponse
+	8,  // 25: post.PostService.GetPostsByUserId:output_type -> post.GetPostsByUserIdResponse
+	13, // 26: post.PostService.UpdatePost:output_type -> post.UpdatePostResponse
+	10, // 27: post.PostService.DeletePost:output_type -> post.DeletePostResponse
+	21, // [21:28] is the sub-list for method output_type
+	14, // [14:21] is the sub-list for method input_type
+	14, // [14:14] is the sub-list for extension type_name
+	14, // [14:14] is the sub-list for extension extendee
+	0,  // [0:14] is the sub-list for field type_name
 }
 
 func init() { file_post_proto_init() }
@@ -946,7 +1350,7 @@ func file_post_proto_init() {
 			}
 		}
 		file_post_proto_msgTypes[3].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*DeletePostRequest); i {
+			switch v := v.(*GetPostsByFeedRequest); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -958,7 +1362,7 @@ func file_post_proto_init() {
 			}
 		}
 		file_post_proto_msgTypes[4].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*DeletePostResponse); i {
+			switch v := v.(*GetPostsByFeedResponse); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -970,7 +1374,7 @@ func file_post_proto_init() {
 			}
 		}
 		file_post_proto_msgTypes[5].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*GetPostResponse); i {
+			switch v := v.(*GetPostsByGroupIdRequest); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -982,7 +1386,7 @@ func file_post_proto_init() {
 			}
 		}
 		file_post_proto_msgTypes[6].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*UpdatePostRequest); i {
+			switch v := v.(*GetPostsByGroupIdResponse); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -994,7 +1398,7 @@ func file_post_proto_init() {
 			}
 		}
 		file_post_proto_msgTypes[7].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*UpdatePostResponse); i {
+			switch v := v.(*GetPostsByUserIdRequest); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1006,7 +1410,7 @@ func file_post_proto_init() {
 			}
 		}
 		file_post_proto_msgTypes[8].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*ListPostRequest); i {
+			switch v := v.(*GetPostsByUserIdResponse); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1018,7 +1422,7 @@ func file_post_proto_init() {
 			}
 		}
 		file_post_proto_msgTypes[9].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*ListPostResponse); i {
+			switch v := v.(*DeletePostRequest); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1030,7 +1434,7 @@ func file_post_proto_init() {
 			}
 		}
 		file_post_proto_msgTypes[10].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*PostRequest); i {
+			switch v := v.(*DeletePostResponse); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1042,6 +1446,78 @@ func file_post_proto_init() {
 			}
 		}
 		file_post_proto_msgTypes[11].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*GetPostResponse); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_post_proto_msgTypes[12].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*UpdatePostRequest); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_post_proto_msgTypes[13].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*UpdatePostResponse); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_post_proto_msgTypes[14].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*ListPostRequest); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_post_proto_msgTypes[15].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*ListPostResponse); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_post_proto_msgTypes[16].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*PostRequest); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_post_proto_msgTypes[17].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*PostResponse); i {
 			case 0:
 				return &v.state
@@ -1060,7 +1536,7 @@ func file_post_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_post_proto_rawDesc,
 			NumEnums:      0,
-			NumMessages:   12,
+			NumMessages:   18,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

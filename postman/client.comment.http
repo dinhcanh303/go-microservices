@@ -7,10 +7,10 @@ content-type: application/json
 {
   "comment": 
     {
-    "post_id" : "120d1c98-4cb9-499d-9ddd-01351ddb3781",
+    "post_id" : "7bd3cafa-9d93-44dd-8b24-fd623abce12b",
     "user_id" :"526c0b00-677d-11ee-8390-0242ac150004",
     //"reply_to_id" : 1,
-    "content" :"Hello my friend"
+    "content" :"Hi"
     }
 }
 
@@ -21,11 +21,11 @@ content-type: application/json
 {
   "comment": 
     {
-    "post_id" : "3b68c889-c24c-4e53-90e4-807fcdb1a6b1",
+    "post_id" : "7bd3cafa-9d93-44dd-8b24-fd623abce12b",
     "user_id" :"526c0b00-677d-11ee-8390-0242ac150004",
     //"reply_to_id" : 1,
-    "content" :"Hello 3",
-    "parent_comment_id" : "2d21ca29-a9c9-4da3-8807-f50c364a0eb6"
+    "content" :"Hi a",
+    "parent_comment_id" : "7e12749e-25e2-4c64-87b5-a3e903418fda"
     }
 }
 
