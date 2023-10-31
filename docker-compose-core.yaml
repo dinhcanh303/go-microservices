@@ -1,18 +1,51 @@
 version: "3"
 
 services:
-  postgres:
-    image: postgres:14-alpine
+  pg-master:
+    build:
+      context: .
+      dockerfile: ./docker/pg-master/Dockerfile
+    image: go-microservices-pg-master
     environment:
-      - POSTGRES_DB=postgres
       - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=P@ssw0rd
+      - POSTGRES_DB=postgres
+      - POSTGRES_PASSWORD=123456789
+      - POSTGRES_MASTER=pg_slave
+      # - PG_STANDBY=true #enable if switch to standby
+      # - PG_REWIND=true #enable if need sync WAL
+      - PG_REP_USER=rep_postgres
+      - PG_REP_PASSWORD=123456789
     healthcheck:
-      test: ["CMD", "pg_isready"]
+      test: [ "CMD-SHELL", "pg_isready -d $${POSTGRES_DB} -U $${POSTGRES_USER}"]
     ports:
-      - "5432:5432"
+      - 5432:5432
+    volumes:
+      - mdata:/var/lib/postgresql/data
     networks:
-      - microsevices-network
+      - microservices-network
+  pg-slave:
+    build:
+      context: .
+      dockerfile: ./docker/pg-slave/Dockerfile
+    image: go-microservices-pg-slave
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=123456789
+      - POSTGRES_DB=postgres
+      - POSTGRES_MASTER=pg_master
+      - PG_STANDBY=true
+      - PG_REP_USER=rep_postgres
+      - PG_REP_PASSWORD=123456789
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -d $${POSTGRES_DB} -U $${POSTGRES_USER}"]
+    ports:
+      - 5433:5432
+    volumes:
+      - sdata:/var/lib/postgresql/data
+    depends_on:
+      - pg-master
+    networks:
+      - microservices-network
 
   rabbitmq:
     image: rabbitmq:3.11-management-alpine
@@ -28,7 +61,9 @@ services:
       - "5672:5672"
       - "15672:15672"
     networks:
-      - microsevices-network
-
+      - microservices-network
+volumes:
+  mdata:
+  sdata:
 networks:
-  microsevices-network:
+  microservices-network:
