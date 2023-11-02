@@ -31,6 +31,29 @@ services:
       - 15672:15672
     networks:
       - microservices-network
+  redis:
+    image: redis
+    container_name: go-microservices-redis
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      - REDIS_PASSWORD=password
+      - REDIS_REPLICATION_mode=master
+    ports:
+      - "6379:6379"
+    networks:
+      - microservices-network
+  redisinsight:
+    image: redislabs/redisinsight
+    container_name: go-microservices-redisinsight
+    restart: unless-stopped
+    volumes:
+      - redis_data:/var/lib/redis
+    ports:
+      - "8001:8001"
+    networks:
+      - microservices-network
   proxy:
     build:
       context: .
@@ -135,7 +158,6 @@ services:
       context: .
       dockerfile: ./docker/Dockerfile-upload
     image: go-microservices-upload
-
     env_file:
       - .env
     environment:
@@ -169,5 +191,6 @@ services:
   #     - microservices-network
 volumes:
   postgres_data: {}
+  redis_data: {}
 networks:
   microservices-network:

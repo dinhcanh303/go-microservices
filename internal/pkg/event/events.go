@@ -9,7 +9,6 @@ type CommentNoti struct {
 	sharedkernel.DomainEvent
 	CommentID      uuid.UUID `json:"commentId"`
 	CommentContent string    `json:"commentContent"`
-	CommentContent string    `json:"commentContent"`
 }
 
 // ID              uuid.UUID     `json:"id"`

@@ -14,6 +14,7 @@ require (
 	github.com/minio/minio-go/v7 v7.0.63
 	github.com/pkg/errors v0.9.1
 	github.com/rabbitmq/amqp091-go v1.9.0
+	github.com/redis/go-redis/v9 v9.3.0
 	github.com/samber/lo v1.38.1
 	github.com/sirupsen/logrus v1.9.3
 	go.uber.org/automaxprocs v1.5.3
@@ -32,6 +33,8 @@ require (
 
 require (
 	github.com/BurntSushi/toml v1.3.2 // indirect
+	github.com/cespare/xxhash/v2 v2.2.0 // indirect
+	github.com/dgryski/go-rendezvous v0.0.0-20200823014737-9f7001d12a5f // indirect
 	github.com/dustin/go-humanize v1.0.1 // indirect
 	github.com/golang/protobuf v1.5.3 // indirect
 	github.com/hashicorp/errwrap v1.1.0 // indirect

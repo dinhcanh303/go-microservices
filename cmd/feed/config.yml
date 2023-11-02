@@ -10,6 +10,12 @@ postgres:
   pool_max: 2
   dsn_url: host=127.0.0.1 user=postgres password=P@ssw0rd dbname=postgres sslmode=disable
 
+redis:
+  pool_size: 300
+  host: '0.0.0.0'
+  port: 6379
+  database: 0
+
 logger:
   log_level: 'debug'
   rollbar_env: 'group-service'
