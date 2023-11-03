@@ -1,59 +1,6 @@
 version: "3"
 
 services:
-  postgres:
-    image: postgres:14-alpine
-    environment:
-      - POSTGRES_DB=postgres
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=P@ssw0rd
-    healthcheck:
-      # test: ["CMD", "pg_isready"]
-      test: [ "CMD-SHELL", "pg_isready -d $${POSTGRES_DB} -U $${POSTGRES_USER}"]
-    ports:
-      - 5432:5432
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-    networks:
-      - microservices-network
-  rabbitmq:
-    image: rabbitmq:3.11-management-alpine
-    environment:
-      RABBITMQ_DEFAULT_USER: guest
-      RABBITMQ_DEFAULT_PASS: guest
-    healthcheck:
-      test: rabbitmq-diagnostics -q ping
-      interval: 30s
-      timeout: 30s
-      retries: 3
-    ports:
-      - 5672:5672
-      - 15672:15672
-    networks:
-      - microservices-network
-  redis:
-    image: redis
-    container_name: go-microservices-redis
-    restart: unless-stopped
-    env_file:
-      - .env
-    environment:
-      - REDIS_PASSWORD=password
-      - REDIS_REPLICATION_mode=master
-    ports:
-      - "6379:6379"
-    networks:
-      - microservices-network
-  redisinsight:
-    image: redislabs/redisinsight
-    container_name: go-microservices-redisinsight
-    restart: unless-stopped
-    volumes:
-      - redis_data:/var/lib/redis
-    ports:
-      - "8001:8001"
-    networks:
-      - microservices-network
   proxy:
     build:
       context: .
@@ -94,8 +41,7 @@ services:
     ports:
       - 5001:5001
     depends_on:
-      postgres:
-        condition: service_healthy
+      - post
     networks:
       - microservices-network
   post:
@@ -114,8 +60,7 @@ services:
     ports:
       - 5002:5002
     depends_on:
-      postgres:
-        condition: service_healthy
+      - comment
     networks:
       - microservices-network
   comment:
@@ -133,8 +78,7 @@ services:
     ports:
       - 5003:5003
     depends_on:
-      postgres:
-        condition: service_healthy
+      - like
     networks:
       - microservices-network
   like:
@@ -150,8 +94,7 @@ services:
     ports:
       - 5004:5004
     depends_on:
-      postgres:
-        condition: service_healthy
+      - upload
     networks:
       - microservices-network
   upload:
@@ -169,9 +112,6 @@ services:
     ports:
       - 5005:5005
       - 5006:5006
-    depends_on:
-      postgres:
-        condition: service_healthy
     networks:
       - microservices-network
   # web:
@@ -188,8 +128,17 @@ services:
   #     - proxy
   #   networks:
   #     - microservices-network
-volumes:
-  postgres_data: {}
-  redis_data: {}
+
+
 networks:
+  postgres:
+    external: true
+    name: postgres
+  rabbitmq:
+    external: true
+    name: rabbitmq
+  redis:
+    external: true
+    name: redis
   microservices-network:
+    driver: bridge

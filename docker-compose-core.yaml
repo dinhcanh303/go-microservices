@@ -1,52 +1,21 @@
 version: "3"
 
 services:
-  pg-master:
-    build:
-      context: .
-      dockerfile: ./docker/pg-master/Dockerfile
-    image: go-microservices-pg-master
+  postgres:
+    image: postgres:14-alpine
     environment:
-      - POSTGRES_USER=postgres
       - POSTGRES_DB=postgres
-      - POSTGRES_PASSWORD=123456789
-      - POSTGRES_MASTER=pg_slave
-      # - PG_STANDBY=true #enable if switch to standby
-      # - PG_REWIND=true #enable if need sync WAL
-      - PG_REP_USER=rep_postgres
-      - PG_REP_PASSWORD=123456789
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=P@ssw0rd
     healthcheck:
+      # test: ["CMD", "pg_isready"]
       test: [ "CMD-SHELL", "pg_isready -d $${POSTGRES_DB} -U $${POSTGRES_USER}"]
     ports:
       - 5432:5432
     volumes:
-      - mdata:/var/lib/postgresql/data
+      - postgres_data:/var/lib/postgresql/data
     networks:
-      - microservices-network
-  pg-slave:
-    build:
-      context: .
-      dockerfile: ./docker/pg-slave/Dockerfile
-    image: go-microservices-pg-slave
-    environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=123456789
-      - POSTGRES_DB=postgres
-      - POSTGRES_MASTER=pg_master
-      - PG_STANDBY=true
-      - PG_REP_USER=rep_postgres
-      - PG_REP_PASSWORD=123456789
-    healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -d $${POSTGRES_DB} -U $${POSTGRES_USER}"]
-    ports:
-      - 5433:5432
-    volumes:
-      - sdata:/var/lib/postgresql/data
-    depends_on:
-      - pg-master
-    networks:
-      - microservices-network
-
+      - microservices-core-network
   rabbitmq:
     image: rabbitmq:3.11-management-alpine
     environment:
@@ -58,12 +27,39 @@ services:
       timeout: 30s
       retries: 3
     ports:
-      - "5672:5672"
-      - "15672:15672"
+      - 5672:5672
+      - 15672:15672
     networks:
-      - microservices-network
+      - microservices-core-network
+  redis:
+    image: redis
+    container_name: go-microservices-redis
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      - REDIS_PASSWORD=password
+      - REDIS_REPLICATION_mode=master
+    ports:
+      - "6379:6379"
+    networks:
+      - microservices-core-network
+  redisinsight:
+    image: redislabs/redisinsight
+    container_name: go-microservices-redisinsight
+    restart: unless-stopped
+    volumes:
+      - redis_data:/var/lib/redis
+    ports:
+      - "8001:8001"
+    networks:
+      - microservices-core-network
 volumes:
-  mdata:
-  sdata:
+  postgres_data: {}
+  redis_data: {}
+
 networks:
-  microservices-network:
+  microservices-core-network:
+    external : true
+    driver: bridge
+
