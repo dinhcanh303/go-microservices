@@ -2,7 +2,7 @@
 SELECT * FROM upload.attachments WHERE id = $1;
 
 -- name: GetByIds :many
-SELECT * FROM upload.attachments WHERE id IN (sqlc.slice(attachmentIds));
+SELECT * FROM upload.attachments WHERE id = ANY($1::uuid[]);
 
 -- name: GetAttachmentsByType :many
 SELECT * FROM upload.attachments WHERE attachable_type = $1 AND attachable_id = $2;
@@ -30,12 +30,12 @@ WHERE id = $1 RETURNING *;
 -- name: UpdateByIds :many
 UPDATE upload.attachments 
 SET
-    attachable_type = $1,
-    attachable_id = $2
-WHERE id IN (sqlc.slice(attachmentIds)) RETURNING *;
+    attachable_type = $2,
+    attachable_id = $3
+WHERE id = ANY($1::uuid[]) RETURNING *;
 
 -- name: Delete :exec
 DELETE FROM upload.attachments WHERE id = $1;
 
 -- name: DeleteByIds :exec
-DELETE FROM upload.attachments WHERE id IN (sqlc.slice(attachmentIds));
+DELETE FROM upload.attachments WHERE id = ANY($1::uuid[]);

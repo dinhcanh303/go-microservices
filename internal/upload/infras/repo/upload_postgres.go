@@ -63,7 +63,6 @@ func (rp *attachmentRepo) UpdateByIds(ctx context.Context, attachmentIds []uuid.
 	}
 	qtx := querier.WithTx(tx)
 	results, err := qtx.UpdateByIds(ctx, postgresql.UpdateByIdsParams{
-		Attachmentids: attachmentIds,
 		AttachableType: sql.NullString{
 			String: attachment.AttachableType,
 			Valid:  attachment.AttachableType != "",
@@ -72,6 +71,7 @@ func (rp *attachmentRepo) UpdateByIds(ctx context.Context, attachmentIds []uuid.
 			UUID:  attachment.AttachableID,
 			Valid: true,
 		},
+		Column1: attachmentIds,
 	})
 	if err != nil {
 		return nil, errors.Wrap(err, "qtx.UpdateByIds(ctx, postgresql.UpdateByIdsParams) failed")
@@ -95,7 +95,7 @@ func (rp *attachmentRepo) UpdateByIds(ctx context.Context, attachmentIds []uuid.
 }
 
 // DeleteByIds implements uploads.AttachmentRepo.
-func (rp *attachmentRepo) DeleteByIds(ctx context.Context, attachmenIds []uuid.UUID) (bool, error) {
+func (rp *attachmentRepo) DeleteByIds(ctx context.Context, attachmentIds []uuid.UUID) (bool, error) {
 	db := rp.pg.GetDB()
 	querier := postgresql.New(db)
 	tx, err := db.Begin()
@@ -103,11 +103,11 @@ func (rp *attachmentRepo) DeleteByIds(ctx context.Context, attachmenIds []uuid.U
 		return false, errors.Wrap(err, "attachmentRepo.DeleteByIds db failed")
 	}
 	qtx := querier.WithTx(tx)
-	err = qtx.DeleteByIds(ctx, attachmenIds)
+	err = qtx.DeleteByIds(ctx, attachmentIds)
 	if err != nil {
 		return false, errors.Wrap(err, "attachmentRepo.DeleteByIds db failed")
 	}
-	return true, nil
+	return true, tx.Commit()
 }
 
 // GetByIds implements uploads.AttachmentRepo.

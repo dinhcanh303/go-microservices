@@ -8,9 +8,9 @@ package postgresql
 import (
 	"context"
 	"database/sql"
-	"strings"
 
 	"github.com/google/uuid"
+	"github.com/lib/pq"
 )
 
 const create = `-- name: Create :one
@@ -77,21 +77,11 @@ func (q *Queries) Delete(ctx context.Context, id uuid.UUID) error {
 }
 
 const deleteByIds = `-- name: DeleteByIds :exec
-DELETE FROM upload.attachments WHERE id IN ($1)
+DELETE FROM upload.attachments WHERE id = ANY($1::uuid[])
 `
 
-func (q *Queries) DeleteByIds(ctx context.Context, attachmentids []uuid.UUID) error {
-	query := deleteByIds
-	var queryParams []interface{}
-	if len(attachmentids) > 0 {
-		for _, v := range attachmentids {
-			queryParams = append(queryParams, v)
-		}
-		query = strings.Replace(query, "/*SLICE:attachmentids*/?", strings.Repeat(",?", len(attachmentids))[1:], 1)
-	} else {
-		query = strings.Replace(query, "/*SLICE:attachmentids*/?", "NULL", 1)
-	}
-	_, err := q.db.ExecContext(ctx, query, queryParams...)
+func (q *Queries) DeleteByIds(ctx context.Context, dollar_1 []uuid.UUID) error {
+	_, err := q.db.ExecContext(ctx, deleteByIds, pq.Array(dollar_1))
 	return err
 }
 
@@ -165,21 +155,11 @@ func (q *Queries) GetAttachmentsByType(ctx context.Context, arg GetAttachmentsBy
 }
 
 const getByIds = `-- name: GetByIds :many
-SELECT id, attachable_type, attachable_id, user_id, filename, extension, mime_type, folder, url, url_thumbnail, created_at, updated_at FROM upload.attachments WHERE id IN ($1)
+SELECT id, attachable_type, attachable_id, user_id, filename, extension, mime_type, folder, url, url_thumbnail, created_at, updated_at FROM upload.attachments WHERE id = ANY($1::uuid[])
 `
 
-func (q *Queries) GetByIds(ctx context.Context, attachmentids []uuid.UUID) ([]UploadAttachment, error) {
-	query := getByIds
-	var queryParams []interface{}
-	if len(attachmentids) > 0 {
-		for _, v := range attachmentids {
-			queryParams = append(queryParams, v)
-		}
-		query = strings.Replace(query, "/*SLICE:attachmentids*/?", strings.Repeat(",?", len(attachmentids))[1:], 1)
-	} else {
-		query = strings.Replace(query, "/*SLICE:attachmentids*/?", "NULL", 1)
-	}
-	rows, err := q.db.QueryContext(ctx, query, queryParams...)
+func (q *Queries) GetByIds(ctx context.Context, dollar_1 []uuid.UUID) ([]UploadAttachment, error) {
+	rows, err := q.db.QueryContext(ctx, getByIds, pq.Array(dollar_1))
 	if err != nil {
 		return nil, err
 	}
@@ -251,31 +231,19 @@ func (q *Queries) Update(ctx context.Context, arg UpdateParams) (UploadAttachmen
 const updateByIds = `-- name: UpdateByIds :many
 UPDATE upload.attachments 
 SET
-    attachable_type = $1,
-    attachable_id = $2
-WHERE id IN ($3) RETURNING id, attachable_type, attachable_id, user_id, filename, extension, mime_type, folder, url, url_thumbnail, created_at, updated_at
+    attachable_type = $2,
+    attachable_id = $3
+WHERE id = ANY($1::uuid[]) RETURNING id, attachable_type, attachable_id, user_id, filename, extension, mime_type, folder, url, url_thumbnail, created_at, updated_at
 `
 
 type UpdateByIdsParams struct {
+	Column1        []uuid.UUID    `json:"column_1"`
 	AttachableType sql.NullString `json:"attachable_type"`
 	AttachableID   uuid.NullUUID  `json:"attachable_id"`
-	Attachmentids  []uuid.UUID    `json:"attachmentids"`
 }
 
 func (q *Queries) UpdateByIds(ctx context.Context, arg UpdateByIdsParams) ([]UploadAttachment, error) {
-	query := updateByIds
-	var queryParams []interface{}
-	queryParams = append(queryParams, arg.AttachableType)
-	queryParams = append(queryParams, arg.AttachableID)
-	if len(arg.Attachmentids) > 0 {
-		for _, v := range arg.Attachmentids {
-			queryParams = append(queryParams, v)
-		}
-		query = strings.Replace(query, "/*SLICE:attachmentids*/?", strings.Repeat(",?", len(arg.Attachmentids))[1:], 1)
-	} else {
-		query = strings.Replace(query, "/*SLICE:attachmentids*/?", "NULL", 1)
-	}
-	rows, err := q.db.QueryContext(ctx, query, queryParams...)
+	rows, err := q.db.QueryContext(ctx, updateByIds, pq.Array(arg.Column1), arg.AttachableType, arg.AttachableID)
 	if err != nil {
 		return nil, err
 	}

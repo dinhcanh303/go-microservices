@@ -14,7 +14,7 @@ type usecase struct {
 }
 
 // GetPostsByFeed implements UseCase.
-func (uc *usecase) GetPostsByFeed(ctx context.Context, userIds []uuid.UUID, groupIds []uuid.NullUUID, limit int32, offset int32) ([]*domain.Post, error) {
+func (uc *usecase) GetPostsByFeed(ctx context.Context, userIds []uuid.UUID, groupIds []uuid.UUID, limit int32, offset int32) ([]*domain.Post, error) {
 	posts, err := uc.postRepo.GetByFeed(ctx, userIds, groupIds, limit, offset)
 	if err != nil {
 		return nil, errors.Wrap(err, "uc.GetPostsByFeed failed")

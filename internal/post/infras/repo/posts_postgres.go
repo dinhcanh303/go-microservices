@@ -27,14 +27,15 @@ var _ posts.PostRepo = (*postRepo)(nil)
 var RepositoryPostSet = wire.NewSet(NewPostRepo)
 
 // GetByFeed implements posts.PostRepo.
-func (rp *postRepo) GetByFeed(ctx context.Context, userIds []uuid.UUID, groupIds []uuid.NullUUID, limit int32, offset int32) ([]*domain.Post, error) {
+func (rp *postRepo) GetByFeed(ctx context.Context, userIds []uuid.UUID, groupIds []uuid.UUID, limit int32, offset int32) ([]*domain.Post, error) {
 	db := rp.pg.GetDB()
 	querier := postgresql.New(db)
+
 	results, err := querier.GetByFeed(ctx, postgresql.GetByFeedParams{
-		UserIds:  userIds,
-		GroupIds: groupIds,
-		Limit:    limit,
-		Offset:   offset,
+		Column1: userIds,
+		Column2: groupIds,
+		Limit:   limit,
+		Offset:  offset,
 	})
 	if err != nil {
 		return nil, errors.Wrap(err, "qtx.GetByFeed(ctx, userIds, groupIds, limit, offset) failed")

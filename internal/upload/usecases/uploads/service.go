@@ -118,14 +118,14 @@ func (s *uploadService) UploadFile(echoCtx echo.Context) ([]*domain.Attachment, 
 	if err != nil {
 		return nil, errors.Wrap(err, "Get Upload Form Error")
 	}
-	slog.Info("FORMDATA::", form)
+	slog.Info("FORM DATA::", form)
 	files := form.File["files"]
 	id := form.Value["user_id"][0]
 	userId, err := uuid.Parse(id)
 	if err != nil {
 		return nil, errors.Wrap(err, "Parse User Id Error")
 	}
-	results := make([]*domain.Attachment, 1)
+	results := make([]*domain.Attachment, 0)
 	for _, file := range files {
 		buffer, err := file.Open()
 		if err != nil {

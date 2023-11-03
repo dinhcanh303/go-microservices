@@ -8,9 +8,9 @@ package postgresql
 import (
 	"context"
 	"database/sql"
-	"strings"
 
 	"github.com/google/uuid"
+	"github.com/lib/pq"
 )
 
 const create = `-- name: Create :one
@@ -90,40 +90,25 @@ func (q *Queries) Get(ctx context.Context, id uuid.UUID) (PostPost, error) {
 const getByFeed = `-- name: GetByFeed :many
 SELECT id, user_id, group_id, title, content, status, created_at, updated_at
 FROM post.posts
-WHERE user_id IN ($3)
-   OR group_id IN ($4)
-LIMIT $1 OFFSET $2
+WHERE user_id = ANY($1::uuid[])
+   OR group_id = ANY($2::uuid[])
+LIMIT $3 OFFSET $4
 `
 
 type GetByFeedParams struct {
-	Limit    int32           `json:"limit"`
-	Offset   int32           `json:"offset"`
-	UserIds  []uuid.UUID     `json:"user_ids"`
-	GroupIds []uuid.NullUUID `json:"group_ids"`
+	Column1 []uuid.UUID `json:"column_1"`
+	Column2 []uuid.UUID `json:"column_2"`
+	Limit   int32       `json:"limit"`
+	Offset  int32       `json:"offset"`
 }
 
 func (q *Queries) GetByFeed(ctx context.Context, arg GetByFeedParams) ([]PostPost, error) {
-	query := getByFeed
-	var queryParams []interface{}
-	queryParams = append(queryParams, arg.Limit)
-	queryParams = append(queryParams, arg.Offset)
-	if len(arg.UserIds) > 0 {
-		for _, v := range arg.UserIds {
-			queryParams = append(queryParams, v)
-		}
-		query = strings.Replace(query, "/*SLICE:user_ids*/?", strings.Repeat(",?", len(arg.UserIds))[1:], 1)
-	} else {
-		query = strings.Replace(query, "/*SLICE:user_ids*/?", "NULL", 1)
-	}
-	if len(arg.GroupIds) > 0 {
-		for _, v := range arg.GroupIds {
-			queryParams = append(queryParams, v)
-		}
-		query = strings.Replace(query, "/*SLICE:group_ids*/?", strings.Repeat(",?", len(arg.GroupIds))[1:], 1)
-	} else {
-		query = strings.Replace(query, "/*SLICE:group_ids*/?", "NULL", 1)
-	}
-	rows, err := q.db.QueryContext(ctx, query, queryParams...)
+	rows, err := q.db.QueryContext(ctx, getByFeed,
+		pq.Array(arg.Column1),
+		pq.Array(arg.Column2),
+		arg.Limit,
+		arg.Offset,
+	)
 	if err != nil {
 		return nil, err
 	}

@@ -107,5 +107,7 @@ func configureRoutes(echo *echo.Echo, handlers handlers.UploadHandler) {
 	echo.GET("/attachments/:id", handlers.GetAttachment)
 	echo.POST("/upload", handlers.UploadFile)
 	echo.DELETE("/attachments/:id", handlers.DeleteAttachment)
+	echo.DELETE("/attachments", handlers.DeleteAttachmentsByIds)
 	echo.PUT("/attachments/:id", handlers.UpdateAttachment)
+	echo.POST("/attachments", handlers.UpdateAttachmentsByIds)
 }

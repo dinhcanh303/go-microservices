@@ -31,7 +31,10 @@ var UploadHandlerSet = wire.NewSet(NewUploadHandler)
 // DeleteAttachment implements uploads.UseCase.
 func (s *UploadHandler) DeleteAttachmentsByIds(ctx echo.Context) error {
 	deleteAttachments := new(request.DeleteAttachmentsByIdsRequest)
-	attachmentIds := make([]uuid.UUID, 1)
+	if err := ctx.Bind(deleteAttachments); err != nil {
+		return responses.ErrorResponse(ctx, http.StatusNotFound, responses.ErrorString("Bind failed", err))
+	}
+	attachmentIds := make([]uuid.UUID, 0)
 	for _, id := range deleteAttachments.AttachmentIds {
 		attachmentId, err := uuid.Parse(id)
 		if err != nil {
@@ -117,7 +120,7 @@ func (s *UploadHandler) UpdateAttachmentsByIds(ctx echo.Context) error {
 	if !checkAttachmentTypeByCondition(attachableType, nil) {
 		return responses.ErrorResponse(ctx, http.StatusNotFound, responses.ErrorString("Attachment Type isn't correct", nil))
 	}
-	attachmentIds := make([]uuid.UUID, 1)
+	attachmentIds := make([]uuid.UUID, 0)
 	for _, id := range updateAttachment.AttachmentIds {
 		attachmentId, err := uuid.Parse(id)
 		if err != nil {

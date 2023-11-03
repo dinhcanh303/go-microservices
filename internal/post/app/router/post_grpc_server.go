@@ -116,7 +116,7 @@ func (g *postGRPCServer) GetPostsByFeed(ctx context.Context, request *gen.GetPos
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to parse user ids")
 	}
-	groupIds, err := utils.ConvertArStringToArNullUUID(request.GroupIds)
+	groupIds, err := utils.ConvertArStringToArUUID(request.GroupIds)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to parse group ids")
 	}
@@ -211,7 +211,10 @@ func (g *postGRPCServer) UpdatePost(ctx context.Context, request *gen.UpdatePost
 // private function
 func manyPostResponse(posts []*domain.Post, g *postGRPCServer, ctx context.Context) []*gen.GetPostResponse {
 	results := make([]*gen.GetPostResponse, 0)
+	// channel := make(chan *gen.GetPostResponse, len(posts))
+	// var wg sync.WaitGroup
 	for _, post := range posts {
+		// wg.Add(1)
 		likes, err := g.likeDomainService.GetLikesByPostID(ctx, post.ID)
 		if err != nil {
 			slog.Warn("likeDomainService.GetLikesByPostID failed", err)
