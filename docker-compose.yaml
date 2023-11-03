@@ -165,8 +165,6 @@ services:
       IN_DOCKER: "true"
       PG_URL: postgres://postgres:P@ssw0rd@postgres:5432/postgres
       PG_DSN_URL: host=postgres user=postgres password=P@ssw0rd dbname=postgres sslmode=disable
-      MINIO_KMS_KES_CERT_FILE: path/to/certs/public.crt
-      MINIO_KMS_KES_KEY_FILE: path/to/certs/private.key
     ports:
       - 5005:5005
       - 5006:5006
