@@ -73,7 +73,7 @@ func local_request_UploadService_GetAttachmentsByType_0(ctx context.Context, mar
 // Note that using this registration option will cause many gRPC library features to stop working. Consider using RegisterUploadServiceHandlerFromEndpoint instead.
 func RegisterUploadServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux, server UploadServiceServer) error {
 
-	mux.Handle("POST", pattern_UploadService_GetAttachmentsByType_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("GET", pattern_UploadService_GetAttachmentsByType_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		var stream runtime.ServerTransportStream
@@ -139,7 +139,7 @@ func RegisterUploadServiceHandler(ctx context.Context, mux *runtime.ServeMux, co
 // "UploadServiceClient" to call the correct interceptors.
 func RegisterUploadServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux, client UploadServiceClient) error {
 
-	mux.Handle("POST", pattern_UploadService_GetAttachmentsByType_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("GET", pattern_UploadService_GetAttachmentsByType_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)

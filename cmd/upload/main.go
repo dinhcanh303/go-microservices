@@ -54,6 +54,13 @@ func main() {
 	}()
 	e := echo.New()
 	cleanup := prepareApp(ctx, cancel, cfg, cfgMinio, e, server)
+	// Echo Server
+	echoServerReady := make(chan struct{})
+	go func() {
+		e.Start(fmt.Sprintf(":%v", cfg.HTTPEcho.PortEcho))
+		slog.Info("🌏 start server Echo...", cfg.HTTPEcho.PortEcho)
+		close(echoServerReady)
+	}()
 
 	//gRPC Server
 	address := fmt.Sprintf("%s:%d", cfg.HTTP.Host, cfg.HTTP.Port)
@@ -65,8 +72,6 @@ func main() {
 		<-ctx.Done()
 	}
 	slog.Info("🌏 start server...", "address", address)
-	// Echo Server
-	e.Logger.Print(e.Start(fmt.Sprintf(":%v", cfg.HTTPEcho.PortEcho)))
 
 	defer func() {
 		if err1 := l.Close(); err != nil {
@@ -80,6 +85,9 @@ func main() {
 		cancel()
 		<-ctx.Done()
 	}
+	//Wait for the Echo server to start
+	<-echoServerReady
+
 	quit := make(chan os.Signal, 1)
 	signal.Notify(quit, os.Interrupt, syscall.SIGTERM)
 	select {
@@ -90,7 +98,6 @@ func main() {
 		cleanup()
 		slog.Info("ctx.Done", "app done", done)
 	}
-
 }
 
 func prepareApp(ctx context.Context, cancel context.CancelFunc, cfg *config.Config, cfgMinio *configs.Minio, echo *echo.Echo, server *grpc.Server) func() {

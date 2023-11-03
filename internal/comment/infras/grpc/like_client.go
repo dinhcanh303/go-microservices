@@ -10,7 +10,6 @@ import (
 	"github.com/google/uuid"
 	"github.com/google/wire"
 	"github.com/pkg/errors"
-	"golang.org/x/exp/slog"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 )
@@ -29,7 +28,6 @@ func (l *likeGRPCClient) GetLikesByCommentID(ctx context.Context, commentId uuid
 		return nil, errors.Wrap(err, "commentGRPCClient.GetCommentsByPostID failed")
 
 	}
-	slog.Info("RES LIKES::", res)
 	results := make([]*domainLike.Like, 0)
 	for _, item := range res.Likes {
 		results = append(results, &domainLike.Like{

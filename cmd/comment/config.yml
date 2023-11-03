@@ -9,6 +9,9 @@ http:
 like_client:
   like_url: 0.0.0.0:5004
 
+upload_client:
+  upload_url: 0.0.0.0:5006
+
 postgres:
   pool_max: 2
   dsn_url: host=127.0.0.1 user=postgres password=P@ssw0rd dbname=postgres sslmode=disable

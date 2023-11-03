@@ -6,6 +6,7 @@ import "google/api/annotations.proto";
 import "protoc-gen-openapiv2/options/annotations.proto";
 import "google/protobuf/timestamp.proto";
 import "like.proto";
+import "upload.proto";
 
 option go_package = "github.com/dinhcanh303/go-microsevices/proto/gen";
 
@@ -130,8 +131,9 @@ message CommentHasLike {
     string content = 5;
     string parent_comment_id = 6;
     repeated like.Like likes = 7;
-    google.protobuf.Timestamp created_at = 8;
-    google.protobuf.Timestamp updated_at = 9;
+    repeated upload.Attachment attachments = 8;
+    google.protobuf.Timestamp created_at = 9;
+    google.protobuf.Timestamp updated_at = 10;
 }
 message CommentHasCommentAndLike {
     string id = 1;
@@ -142,6 +144,7 @@ message CommentHasCommentAndLike {
     string parent_comment_id = 6;
     repeated CommentHasLike children = 7;
     repeated like.Like likes = 8;
-    google.protobuf.Timestamp created_at = 9;
-    google.protobuf.Timestamp updated_at = 10;
+    repeated upload.Attachment attachments = 9;
+    google.protobuf.Timestamp created_at = 10;
+    google.protobuf.Timestamp updated_at = 11;
 }

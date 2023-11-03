@@ -26,6 +26,7 @@ func InitApp(
 		repo.RepositorySet,
 		commentsUC.UseCaseSet,
 		infrasGRPC.LikeGRPCClientSet,
+		infrasGRPC.UploadGRPCClientSet,
 	))
 }
 func dbEngineFunc(url postgres.DBConnString) (postgres.DBEngine, func(), error) {

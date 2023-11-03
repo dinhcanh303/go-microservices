@@ -14,13 +14,13 @@
       "name": "LikeService"
     },
     {
+      "name": "UploadService"
+    },
+    {
       "name": "CommentService"
     },
     {
       "name": "GroupService"
-    },
-    {
-      "name": "UploadService"
     },
     {
       "name": "PostService"
@@ -37,7 +37,7 @@
   ],
   "paths": {
     "/v1/api/attachments": {
-      "post": {
+      "get": {
         "summary": "GetAttachmentsByType",
         "operationId": "UploadService_GetAttachmentsByType",
         "responses": {
@@ -1207,6 +1207,13 @@
             "$ref": "#/definitions/likeLike"
           }
         },
+        "attachments": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/uploadAttachment"
+          }
+        },
         "createdAt": {
           "type": "string",
           "format": "date-time"
@@ -1243,6 +1250,13 @@
           "items": {
             "type": "object",
             "$ref": "#/definitions/likeLike"
+          }
+        },
+        "attachments": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/uploadAttachment"
           }
         },
         "createdAt": {

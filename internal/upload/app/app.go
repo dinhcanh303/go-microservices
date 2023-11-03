@@ -14,6 +14,7 @@ type App struct {
 	CfgMinio         *configs.Minio
 	PG               postgres.DBEngine
 	UC               uploads.UseCase
+	UcGRPC           uploads.UseCaseGRPC
 	Handler          *handlers.UploadHandler
 	UploadGRPCServer gen.UploadServiceServer
 }
@@ -23,6 +24,7 @@ func New(
 	cfgMinio *configs.Minio,
 	pg postgres.DBEngine,
 	uc uploads.UseCase,
+	UcGRPC uploads.UseCaseGRPC,
 	handler *handlers.UploadHandler,
 	uploadGRPCServer gen.UploadServiceServer,
 ) *App {
@@ -30,6 +32,7 @@ func New(
 		Cfg:              cfg,
 		CfgMinio:         cfgMinio,
 		UC:               uc,
+		UcGRPC:           UcGRPC,
 		PG:               pg,
 		Handler:          handler,
 		UploadGRPCServer: uploadGRPCServer,

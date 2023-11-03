@@ -45,6 +45,7 @@ func (g *uploadGRPCServer) GetAttachmentsByType(
 	request *gen.GetAttachmentsByTypeRequest,
 ) (*gen.GetAttachmentsByTypeResponse, error) {
 	slog.Info("GET: GetAttachmentsByType")
+	slog.Info("ID", request.AttachableId)
 	attachableId, err := uuid.Parse(request.AttachableId)
 	if err != nil {
 		return nil, errors.Wrap(err, "Failed to parse")

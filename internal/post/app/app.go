@@ -15,6 +15,7 @@ type App struct {
 	PostGRPCServer   gen.PostServiceServer
 	CommentDomainSvc domain.CommentDomainService
 	LikeDomainSvc    domain.LikeDomainService
+	UploadDomainSvc  domain.UploadDomainService
 }
 
 func New(
@@ -23,7 +24,8 @@ func New(
 	uc posts.UseCase,
 	postGRPCServer gen.PostServiceServer,
 	commentDomainSvc domain.CommentDomainService,
-	likeDomainSvc domain.LikeDomainService) *App {
+	likeDomainSvc domain.LikeDomainService,
+	uploadDomainSvc domain.UploadDomainService) *App {
 	return &App{
 		Cfg:              cfg,
 		UC:               uc,
@@ -31,5 +33,6 @@ func New(
 		PostGRPCServer:   postGRPCServer,
 		CommentDomainSvc: commentDomainSvc,
 		LikeDomainSvc:    likeDomainSvc,
+		UploadDomainSvc:  uploadDomainSvc,
 	}
 }

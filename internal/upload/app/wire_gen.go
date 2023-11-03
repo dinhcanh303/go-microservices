@@ -32,10 +32,10 @@ func InitApp(cfg *config.Config, cfgMinio *configs.Minio, dbConnStr postgres.DBC
 		return nil, nil, err
 	}
 	useCase := uploads.NewUploadService(attachmentRepo, minioService)
-	uploadHandler := handlers.NewUploadHandler(useCase)
 	useCaseGRPC := uploads.NewUploadGRPCService(attachmentRepo)
+	uploadHandler := handlers.NewUploadHandler(useCase)
 	uploadServiceServer := router.NewGRPCUploadServer(grpcServer, cfg, useCaseGRPC)
-	app := New(cfg, cfgMinio, dbEngine, useCase, uploadHandler, uploadServiceServer)
+	app := New(cfg, cfgMinio, dbEngine, useCase, useCaseGRPC, uploadHandler, uploadServiceServer)
 	return app, func() {
 		cleanup2()
 		cleanup()

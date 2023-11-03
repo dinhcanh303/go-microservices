@@ -14,6 +14,7 @@ type App struct {
 	UC                comments.UseCase
 	CommentGRPCServer gen.CommentServiceServer
 	LikeDomainSvc     domain.LikeDomainService
+	UploadDomainSvc   domain.UploadDomainService
 }
 
 func New(
@@ -21,12 +22,14 @@ func New(
 	pg postgres.DBEngine,
 	uc comments.UseCase,
 	commentGRPCServer gen.CommentServiceServer,
-	likeDomainSvc domain.LikeDomainService) *App {
+	likeDomainSvc domain.LikeDomainService,
+	uploadDomainSvc domain.UploadDomainService) *App {
 	return &App{
 		Cfg:               cfg,
 		UC:                uc,
 		PG:                pg,
 		CommentGRPCServer: commentGRPCServer,
 		LikeDomainSvc:     likeDomainSvc,
+		UploadDomainSvc:   uploadDomainSvc,
 	}
 }

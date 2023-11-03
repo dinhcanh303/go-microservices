@@ -41,7 +41,7 @@ func InitApp(cfg *config.Config, dbConnStr postgres.DBConnString, grpcServer *gr
 		return nil, nil, err
 	}
 	postServiceServer := router.NewGRPCPostServer(grpcServer, cfg, useCase, uploadDomainService, commentDomainService, likeDomainService)
-	app := New(cfg, dbEngine, useCase, postServiceServer, commentDomainService, likeDomainService)
+	app := New(cfg, dbEngine, useCase, postServiceServer, commentDomainService, likeDomainService, uploadDomainService)
 	return app, func() {
 		cleanup()
 	}, nil

@@ -129,6 +129,7 @@ services:
       PG_URL: postgres://postgres:P@ssw0rd@postgres:5432/postgres
       PG_DSN_URL: host=postgres user=postgres password=P@ssw0rd dbname=postgres sslmode=disable
       LIKE_CLIENT_URL: like:5004
+      UPLOAD_CLIENT_URL: upload:5006
     ports:
       - 5003:5003
     depends_on:

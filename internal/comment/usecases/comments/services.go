@@ -4,8 +4,9 @@ import (
 	"context"
 
 	"github.com/dinhcanh303/go-microservices/internal/comment/domain"
-	domain2 "github.com/dinhcanh303/go-microservices/internal/like/domain"
+	domainLike "github.com/dinhcanh303/go-microservices/internal/like/domain"
 	sharedkernel "github.com/dinhcanh303/go-microservices/internal/pkg/shared_kernel"
+	domainUpload "github.com/dinhcanh303/go-microservices/internal/upload/domain"
 	"github.com/google/uuid"
 	"github.com/google/wire"
 	"github.com/pkg/errors"
@@ -15,8 +16,9 @@ import (
 const UUID_NULL string = "00000000-0000-0000-0000-000000000000"
 
 type service struct {
-	commentRepo   CommentRepo
-	likeDomainSvc domain.LikeDomainService
+	commentRepo     CommentRepo
+	likeDomainSvc   domain.LikeDomainService
+	uploadDomainSvc domain.UploadDomainService
 }
 
 var _ UseCase = (*service)(nil)
@@ -24,10 +26,12 @@ var _ UseCase = (*service)(nil)
 var UseCaseSet = wire.NewSet(NewService)
 
 func NewService(commentRepo CommentRepo,
-	likeDomainSvc domain.LikeDomainService) UseCase {
+	likeDomainSvc domain.LikeDomainService,
+	uploadDomainSvc domain.UploadDomainService) UseCase {
 	return &service{
-		commentRepo:   commentRepo,
-		likeDomainSvc: likeDomainSvc,
+		commentRepo:     commentRepo,
+		likeDomainSvc:   likeDomainSvc,
+		uploadDomainSvc: uploadDomainSvc,
 	}
 }
 
@@ -80,7 +84,12 @@ func (s *service) GetCommentsByPostID(ctx context.Context, postId uuid.UUID) ([]
 		likes, err := s.likeDomainSvc.GetLikesByCommentID(ctx, comment.ID)
 		slog.Info("LIKE::", likes)
 		if err != nil {
-			likes = make([]*domain2.Like, 0)
+			likes = make([]*domainLike.Like, 0)
+		}
+		attachments, err := s.uploadDomainSvc.GetAttachmentsByType(ctx, "Attachment/Comment", comment.ID)
+		slog.Info("LIKE::", likes)
+		if err != nil {
+			attachments = make([]*domainUpload.Attachment, 0)
 		}
 		commentHasChildren := &sharedkernel.CommentHasChildren{
 			ID:              comments[i].ID,
@@ -90,6 +99,7 @@ func (s *service) GetCommentsByPostID(ctx context.Context, postId uuid.UUID) ([]
 			PostID:          comments[i].PostID,
 			ParentCommentID: comments[i].ParentCommentID,
 			Likes:           likes,
+			Attachments:     attachments,
 			CreatedAt:       comments[i].CreatedAt,
 			UpdatedAt:       comments[i].UpdatedAt,
 		}
@@ -101,6 +111,7 @@ func (s *service) GetCommentsByPostID(ctx context.Context, postId uuid.UUID) ([]
 			PostID:          comments[i].PostID,
 			ParentCommentID: comments[i].ParentCommentID,
 			Likes:           likes,
+			Attachments:     attachments,
 			CreatedAt:       comments[i].CreatedAt,
 			UpdatedAt:       comments[i].UpdatedAt,
 		}

@@ -6,7 +6,8 @@ import (
 	"github.com/dinhcanh303/go-microservices/cmd/comment/config"
 	"github.com/dinhcanh303/go-microservices/internal/comment/domain"
 	"github.com/dinhcanh303/go-microservices/internal/comment/usecases/comments"
-	domain2 "github.com/dinhcanh303/go-microservices/internal/like/domain"
+	domainLike "github.com/dinhcanh303/go-microservices/internal/like/domain"
+	domainUpload "github.com/dinhcanh303/go-microservices/internal/upload/domain"
 	"github.com/dinhcanh303/go-microservices/proto/gen"
 	"github.com/google/uuid"
 	"github.com/google/wire"
@@ -155,7 +156,7 @@ func (c *commentGRPCServer) GetCommentsByPostID(ctx context.Context, request *ge
 			ParentCommentId: comment.ParentCommentID.UUID.String(),
 			CreatedAt:       timestamppb.New(comment.CreatedAt),
 			UpdatedAt:       timestamppb.New(comment.UpdatedAt),
-			Likes: lo.Map(comment.Likes, func(item *domain2.Like, _ int) *gen.Like {
+			Likes: lo.Map(comment.Likes, func(item *domainLike.Like, _ int) *gen.Like {
 				return &gen.Like{
 					Id:           item.ID.String(),
 					UserId:       item.UserID.String(),
@@ -166,6 +167,22 @@ func (c *commentGRPCServer) GetCommentsByPostID(ctx context.Context, request *ge
 					UpdatedAt:    timestamppb.New(item.UpdatedAt),
 				}
 			}),
+			Attachments: lo.Map(comment.Attachments, func(item *domainUpload.Attachment, _ int) *gen.Attachment {
+				return &gen.Attachment{
+					Id:             item.ID.String(),
+					UserId:         item.UserID.String(),
+					AttachableType: item.AttachableType,
+					AttachableId:   item.AttachableID.String(),
+					Filename:       item.FileName,
+					Url:            item.URL,
+					UrlThumbnail:   item.URLThumbnail,
+					Extension:      item.Extension,
+					MimeType:       item.MimeType,
+					Folder:         item.Folder,
+					CreatedAt:      timestamppb.New(item.CreatedAt),
+					UpdatedAt:      timestamppb.New(item.UpdatedAt),
+				}
+			}),
 			Children: lo.Map(comment.Children, func(item *domain.CommentHasLike, _ int) *gen.CommentHasLike {
 				return &gen.CommentHasLike{
 					Id:        item.ID.String(),
@@ -173,7 +190,7 @@ func (c *commentGRPCServer) GetCommentsByPostID(ctx context.Context, request *ge
 					UserId:    item.UserID.String(),
 					ReplyToId: item.ReplyToID.UUID.String(),
 					Content:   item.Content,
-					Likes: lo.Map(item.Likes, func(item *domain2.Like, _ int) *gen.Like {
+					Likes: lo.Map(item.Likes, func(item *domainLike.Like, _ int) *gen.Like {
 						return &gen.Like{
 							Id:           item.ID.String(),
 							UserId:       item.UserID.String(),
@@ -182,6 +199,22 @@ func (c *commentGRPCServer) GetCommentsByPostID(ctx context.Context, request *ge
 							LikeableId:   item.LikeableID.String(),
 							CreatedAt:    timestamppb.New(item.CreatedAt),
 							UpdatedAt:    timestamppb.New(item.UpdatedAt),
+						}
+					}),
+					Attachments: lo.Map(comment.Attachments, func(item *domainUpload.Attachment, _ int) *gen.Attachment {
+						return &gen.Attachment{
+							Id:             item.ID.String(),
+							UserId:         item.UserID.String(),
+							AttachableType: item.AttachableType,
+							AttachableId:   item.AttachableID.String(),
+							Filename:       item.FileName,
+							Url:            item.URL,
+							UrlThumbnail:   item.URLThumbnail,
+							Extension:      item.Extension,
+							MimeType:       item.MimeType,
+							Folder:         item.Folder,
+							CreatedAt:      timestamppb.New(item.CreatedAt),
+							UpdatedAt:      timestamppb.New(item.UpdatedAt),
 						}
 					}),
 					ParentCommentId: item.ParentCommentID.UUID.String(),
