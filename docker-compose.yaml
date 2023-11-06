@@ -128,17 +128,7 @@ services:
   #     - proxy
   #   networks:
   #     - microservices-network
-
-
 networks:
-  postgres:
-    external: true
-    name: postgres
-  rabbitmq:
-    external: true
-    name: rabbitmq
-  redis:
-    external: true
-    name: redis
   microservices-network:
-    driver: bridge
+    name: microservices-network
+    external: true
