@@ -56,11 +56,12 @@ docker-compose-stop:
 docker-compose-core: docker-compose-core-stop docker-compose-core-start
 
 docker-compose-core-start:
-	docker-compose -f docker-compose-core.yaml up --build
+	docker-compose -f docker-compose-core.yaml up --build -d
 .PHONY: docker-compose-core-start
 
 docker-compose-core-stop:
-	docker-compose -f docker-compose-core.yaml down --remove-orphans -v
+	docker-compose -f docker-compose-core.yaml down 
+# --remove-orphans -v
 .PHONY: docker-compose-core-stop
 
 docker-compose-build:

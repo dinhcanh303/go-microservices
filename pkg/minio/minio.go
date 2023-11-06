@@ -15,7 +15,8 @@ import (
 	configs "github.com/dinhcanh303/go-microservices/pkg/config"
 	minioV7 "github.com/minio/minio-go/v7"
 	"github.com/minio/minio-go/v7/pkg/credentials"
-	"github.com/pkg/errors"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 type minio struct {
@@ -45,7 +46,7 @@ func (m *minio) DeleteFile(ctx context.Context, fileName string) (bool, error) {
 	}
 	err := client.RemoveObject(ctx, m.cf.BucketName, fileName, opts)
 	if err != nil {
-		return false, errors.Wrap(err, "minio.DeleteFile failed")
+		return false, status.Error(codes.AlreadyExists, "RemoveObject failed")
 	}
 	return true, nil
 }
@@ -71,7 +72,6 @@ func (m *minio) UploadFile(ctx context.Context, file *multipart.FileHeader, buff
 		Url:          urlFile,
 		UrlThumbnail: urlFile,
 	}
-	slog.Info("MINIO FILE::", fileInfo)
 	if err != nil {
 		log.Fatalln(err)
 	}
@@ -97,7 +97,7 @@ func minioClient(config *configs.Minio) (*minioV7.Client, error) {
 		},
 	})
 	if err != nil {
-		return nil, errors.Wrap(err, "Client Minio failed:")
+		return nil, status.Error(codes.Unknown, "Client Minio failed")
 	}
 	return minioClient, nil
 }

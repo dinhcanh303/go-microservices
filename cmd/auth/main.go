@@ -8,13 +8,10 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/dinhcanh303/go-microservices/cmd/upload/config"
-	"github.com/dinhcanh303/go-microservices/internal/upload/app"
-	"github.com/dinhcanh303/go-microservices/internal/upload/app/handlers"
-	configs "github.com/dinhcanh303/go-microservices/pkg/config"
+	"github.com/dinhcanh303/go-microservices/cmd/group/config"
+	"github.com/dinhcanh303/go-microservices/internal/group/app"
 	"github.com/dinhcanh303/go-microservices/pkg/logger"
 	"github.com/dinhcanh303/go-microservices/pkg/postgres"
-	"github.com/labstack/echo/v4"
 	"github.com/sirupsen/logrus"
 	"go.uber.org/automaxprocs/maxprocs"
 	"golang.org/x/exp/slog"
@@ -22,15 +19,12 @@ import (
 )
 
 func main() {
+	slog.Info("Build main group started")
 	_, err := maxprocs.Set()
 	if err != nil {
 		slog.Error("Failed set max process", err)
 	}
 	ctx, cancel := context.WithCancel(context.Background())
-	cfgMinio, err := configs.NewConfigMinio()
-	if err != nil {
-		slog.Error("Failed get config", err)
-	}
 	cfg, err := config.NewConfig()
 	if err != nil {
 		slog.Error("Failed get config", err)
@@ -52,15 +46,7 @@ func main() {
 		defer server.GracefulStop()
 		<-ctx.Done()
 	}()
-	e := echo.New()
-	cleanup := prepareApp(ctx, cancel, cfg, cfgMinio, e, server)
-	// Echo Server
-	echoServerReady := make(chan struct{})
-	go func() {
-		e.Start(fmt.Sprintf(":%v", cfg.HTTPEcho.PortEcho))
-		slog.Info("🌏 start server Echo...", cfg.HTTPEcho.PortEcho)
-		close(echoServerReady)
-	}()
+	cleanup := prepareApp(ctx, cancel, cfg, server)
 
 	//gRPC Server
 	address := fmt.Sprintf("%s:%d", cfg.HTTP.Host, cfg.HTTP.Port)
@@ -72,7 +58,6 @@ func main() {
 		<-ctx.Done()
 	}
 	slog.Info("🌏 start server...", "address", address)
-
 	defer func() {
 		if err1 := l.Close(); err != nil {
 			slog.Error("failed to close", err1, "network", network, "address", address)
@@ -85,8 +70,6 @@ func main() {
 		cancel()
 		<-ctx.Done()
 	}
-	//Wait for the Echo server to start
-	<-echoServerReady
 
 	quit := make(chan os.Signal, 1)
 	signal.Notify(quit, os.Interrupt, syscall.SIGTERM)
@@ -98,24 +81,15 @@ func main() {
 		cleanup()
 		slog.Info("ctx.Done", "app done", done)
 	}
+
 }
 
-func prepareApp(ctx context.Context, cancel context.CancelFunc, cfg *config.Config, cfgMinio *configs.Minio, echo *echo.Echo, server *grpc.Server) func() {
-	app, cleanup, err := app.InitApp(cfg, cfgMinio, postgres.DBConnString(cfg.PG.DsnURL), server)
+func prepareApp(ctx context.Context, cancel context.CancelFunc, cfg *config.Config, server *grpc.Server) func() {
+	_, cleanup, err := app.InitApp(cfg, postgres.DBConnString(cfg.PG.DsnURL), server)
 	if err != nil {
 		slog.Error("Failed init app", err)
 		cancel()
 		<-ctx.Done()
 	}
-	configureRoutes(echo, *app.Handler)
 	return cleanup
-}
-func configureRoutes(echo *echo.Echo, handlers handlers.UploadHandler) {
-	g := echo.Group("/v1/api")
-	g.GET("/attachments/:id", handlers.GetAttachment)
-	g.POST("/upload", handlers.UploadFile)
-	g.DELETE("/attachments/:id", handlers.DeleteAttachment)
-	g.DELETE("/attachments", handlers.DeleteAttachmentsByIds)
-	g.PUT("/attachments/:id", handlers.UpdateAttachment)
-	g.POST("/attachments", handlers.UpdateAttachmentsByIds)
 }
