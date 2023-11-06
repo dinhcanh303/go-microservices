@@ -12,7 +12,6 @@ import (
 	"github.com/google/wire"
 	"github.com/pkg/errors"
 	"github.com/samber/lo"
-	"golang.org/x/exp/slog"
 )
 
 type groupRepo struct {
@@ -21,7 +20,6 @@ type groupRepo struct {
 
 // GetAllGroupByUserId implements groups.GroupRepo.
 func (rp *groupRepo) GetAllGroupByUserId(ctx context.Context, userId uuid.UUID) ([]*domain.Group, error) {
-	slog.Info("Repo GetAllGroupByUserId")
 	db := rp.pg.GetDB()
 	querier := postgresql.New(db)
 	results, err := querier.GetAllGroupByUserId(ctx, userId)
@@ -41,7 +39,6 @@ func (rp *groupRepo) GetAllGroupByUserId(ctx context.Context, userId uuid.UUID) 
 	}), nil
 }
 func (rp *groupRepo) GetAllGroupIdByUserId(ctx context.Context, userId uuid.UUID) ([]string, error) {
-	slog.Info("Repo GetAllGroupByUserId")
 	db := rp.pg.GetDB()
 	querier := postgresql.New(db)
 	results, err := querier.GetAllGroupIdByUserId(ctx, userId)
@@ -63,7 +60,6 @@ var RepositoryGroupSet = wire.NewSet(NewGroupRepo)
 
 // Create implements groups.GroupRepo.
 func (rp *groupRepo) Create(ctx context.Context, group *domain.Group) (*domain.Group, error) {
-	slog.Info("Repo Postgresql")
 	db := rp.pg.GetDB()
 	querier := postgresql.New(db)
 	tx, err := db.Begin()
@@ -71,7 +67,6 @@ func (rp *groupRepo) Create(ctx context.Context, group *domain.Group) (*domain.G
 		return nil, errors.Wrap(err, "CreateGroupRepo")
 	}
 	qtx := querier.WithTx(tx)
-	slog.Info("QTX")
 	result, err := qtx.Create(ctx, postgresql.CreateParams{
 		ID:          uuid.New(),
 		Name:        group.Name,

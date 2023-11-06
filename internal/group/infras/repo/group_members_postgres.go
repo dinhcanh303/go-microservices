@@ -3,7 +3,6 @@ package repo
 import (
 	"context"
 	"database/sql"
-	"log/slog"
 
 	"github.com/dinhcanh303/go-microservices/internal/group/domain"
 	"github.com/dinhcanh303/go-microservices/internal/group/infras/postgresql"
@@ -21,7 +20,6 @@ type groupMemberRepo struct {
 
 // CountGroupMember implements groupmembers.GroupMemberRepo.
 func (rp *groupMemberRepo) CountGroupMembers(ctx context.Context, groupId uuid.UUID) (int64, error) {
-	slog.Info("Repo CountGroupMember")
 	db := rp.pg.GetDB()
 	querier := postgresql.New(db)
 	tx, err := db.Begin()
@@ -38,7 +36,6 @@ func (rp *groupMemberRepo) CountGroupMembers(ctx context.Context, groupId uuid.U
 
 // CreateGroupMember implements groupmembers.GroupMemberRepo.
 func (rp *groupMemberRepo) CreateGroupMember(ctx context.Context, groupMember *domain.GroupMember) (*domain.GroupMember, error) {
-	slog.Info("Repo CreateGroupMember")
 	db := rp.pg.GetDB()
 	querier := postgresql.New(db)
 	tx, err := db.Begin()
@@ -68,7 +65,6 @@ func (rp *groupMemberRepo) CreateGroupMember(ctx context.Context, groupMember *d
 
 // DeleteAllGroupMembersByGroupId implements groupmembers.GroupMemberRepo.
 func (rp *groupMemberRepo) DeleteAllGroupMembersByGroupId(ctx context.Context, groupId uuid.UUID) error {
-	slog.Info("Repo DeleteAllGroupMembersByGroupId")
 	db := rp.pg.GetDB()
 	querier := postgresql.New(db)
 	tx, err := db.Begin()
@@ -85,7 +81,6 @@ func (rp *groupMemberRepo) DeleteAllGroupMembersByGroupId(ctx context.Context, g
 
 // DeleteGroupMember implements groupmembers.GroupMemberRepo.
 func (rp *groupMemberRepo) DeleteGroupMember(ctx context.Context, id uuid.UUID) (bool, error) {
-	slog.Info("Repo DeleteGroupMember")
 	db := rp.pg.GetDB()
 	querier := postgresql.New(db)
 	tx, err := db.Begin()
@@ -102,7 +97,6 @@ func (rp *groupMemberRepo) DeleteGroupMember(ctx context.Context, id uuid.UUID) 
 
 // GetAllGroupMember implements groupmembers.GroupMemberRepo.
 func (rp *groupMemberRepo) GetAllGroupMembers(ctx context.Context, groupId uuid.UUID) ([]*domain.GroupMember, error) {
-	slog.Info("Repo GetAllGroupMember")
 	db := rp.pg.GetDB()
 	querier := postgresql.New(db)
 	results, err := querier.GetAllGroupMembers(ctx, groupId)
@@ -123,7 +117,6 @@ func (rp *groupMemberRepo) GetAllGroupMembers(ctx context.Context, groupId uuid.
 
 // UpdateGroupMember implements groupmembers.GroupMemberRepo.
 func (rp *groupMemberRepo) UpdateGroupMember(ctx context.Context, groupMember *domain.GroupMember) (*domain.GroupMember, error) {
-	slog.Info("Repo UpdateGroupMember")
 	db := rp.pg.GetDB()
 	querier := postgresql.New(db)
 	tx, err := db.Begin()
