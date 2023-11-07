@@ -3,6 +3,7 @@ module github.com/dinhcanh303/go-microservices
 go 1.20
 
 require (
+	github.com/go-ldap/ldap/v3 v3.4.6
 	github.com/golang-migrate/migrate/v4 v4.16.2
 	github.com/golang/glog v1.1.2
 	github.com/google/uuid v1.3.1
@@ -17,6 +18,7 @@ require (
 	github.com/redis/go-redis/v9 v9.3.0
 	github.com/samber/lo v1.38.1
 	github.com/sirupsen/logrus v1.9.3
+	github.com/sqlc-dev/pqtype v0.3.0
 	go.uber.org/automaxprocs v1.5.3
 	golang.org/x/exp v0.0.0-20230905200255-921286631fa9
 	google.golang.org/genproto/googleapis/api v0.0.0-20231002182017-d307bd883b97
@@ -25,8 +27,8 @@ require (
 )
 
 require (
-	github.com/davecgh/go-spew v1.1.1 // indirect
-	github.com/pmezard/go-difflib v1.0.0 // indirect
+	github.com/Azure/go-ntlmssp v0.0.0-20221128193559-754e69321358 // indirect
+	github.com/go-asn1-ber/asn1-ber v1.5.5 // indirect
 )
 
 require (
@@ -50,7 +52,7 @@ require (
 	github.com/klauspost/compress v1.16.7 // indirect
 	github.com/klauspost/cpuid/v2 v2.2.5 // indirect
 	github.com/labstack/gommon v0.4.0 // indirect
-	github.com/lib/pq v1.10.7 // indirect
+	github.com/lib/pq v1.10.7
 	github.com/mattn/go-colorable v0.1.13 // indirect
 	github.com/mattn/go-isatty v0.0.19 // indirect
 	github.com/minio/md5-simd v1.1.2 // indirect
@@ -58,7 +60,7 @@ require (
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
 	github.com/modern-go/reflect2 v1.0.2 // indirect
 	github.com/rs/xid v1.5.0 // indirect
-	github.com/stretchr/testify v1.8.4
+	github.com/stretchr/testify v1.8.4 // indirect
 	github.com/valyala/bytebufferpool v1.0.0 // indirect
 	github.com/valyala/fasttemplate v1.2.2 // indirect
 	go.uber.org/atomic v1.9.0 // indirect
