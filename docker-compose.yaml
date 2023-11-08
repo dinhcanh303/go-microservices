@@ -18,6 +18,8 @@ services:
       GRPC_LIKE_PORT: 5004
       GRPC_UPLOAD_HOST: 'upload'
       GRPC_UPLOAD_PORT: 5006
+      GRPC_AUTH_HOST: 'auth'
+      GRPC_AUTH_PORT: 5007
     ports:
       - 5000:5000
     depends_on:
@@ -26,6 +28,7 @@ services:
       - comment
       - like
       - upload
+      - auth
     networks:
       - microservices-network
   group:
@@ -112,6 +115,24 @@ services:
     ports:
       - 5005:5005
       - 5006:5006
+    networks:
+      - microservices-network
+  auth:
+    build:
+      context: .
+      dockerfile: ./docker/Dockerfile-auth
+    image: go-microservices-auth
+    env_file:
+      - .env
+    environment:
+      APP_NAME: 'auth-service in docker'
+      IN_DOCKER: "true"
+      PG_URL: postgres://postgres:P@ssw0rd@postgres:5432/postgres
+      PG_DSN_URL: host=postgres user=postgres password=P@ssw0rd dbname=postgres sslmode=disable
+    ports:
+      - 5007:5007
+    depends_on:
+      - upload
     networks:
       - microservices-network
   # web:

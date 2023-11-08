@@ -25,7 +25,8 @@ wire:
 	cd internal/post/app && wire && cd - && \
 	cd internal/comment/app && wire && cd - && \
 	cd internal/like/app && wire && cd - && \
-	cd internal/upload/app && wire && cd -
+	cd internal/upload/app && wire && cd - && \
+	cd internal/auth/app && wire && cd -
 .PHONY: wire
 
 proto-gen:
@@ -60,7 +61,7 @@ docker-compose-core-start:
 .PHONY: docker-compose-core-start
 
 docker-compose-core-stop:
-	docker-compose -f docker-compose-core.yaml down 
+	docker-compose -f docker-compose-core.yaml down
 # --remove-orphans -v
 .PHONY: docker-compose-core-stop
 
