@@ -27,11 +27,11 @@ func (rp *userRepo) CreateUser(ctx context.Context, user *domain.User) (*domain.
 	}
 	qtx := querier.WithTx(tx)
 	result, err := qtx.CreateUser(ctx, postgresql.CreateUserParams{
-		ID:       user.ID,
-		Email:    user.Email,
-		Password: user.Password,
-		FistName: user.FistName,
-		LastName: user.LastName,
+		ID:        user.ID,
+		Email:     user.Email,
+		Password:  user.Password,
+		FirstName: user.FirstName,
+		LastName:  user.LastName,
 		FullName: sql.NullString{
 			String: user.FullName,
 			Valid:  user.FullName != "",
@@ -60,7 +60,7 @@ func (rp *userRepo) GetUser(ctx context.Context, userID uuid.UUID) (*domain.User
 	return &domain.User{
 		ID:        user.ID,
 		Email:     user.Email,
-		FistName:  user.FistName,
+		FirstName: user.FirstName,
 		LastName:  user.LastName,
 		FullName:  user.FullName.String,
 		Password:  user.Password,
@@ -80,7 +80,7 @@ func (rp *userRepo) GetUserByEmail(ctx context.Context, email string) (*domain.U
 	return &domain.User{
 		ID:        user.ID,
 		Email:     user.Email,
-		FistName:  user.FistName,
+		FirstName: user.FirstName,
 		LastName:  user.LastName,
 		FullName:  user.FullName.String,
 		Password:  user.Password,
@@ -95,4 +95,4 @@ func NewUserRepo(pg postgres.DBEngine) auth.UserRepo {
 	return &userRepo{pg: pg}
 }
 
-var UserRepoSet = wire.NewSet()
+var UserRepoSet = wire.NewSet(NewUserRepo)

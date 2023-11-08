@@ -8,8 +8,9 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/dinhcanh303/go-microservices/cmd/group/config"
-	"github.com/dinhcanh303/go-microservices/internal/group/app"
+	"github.com/dinhcanh303/go-microservices/cmd/auth/config"
+	"github.com/dinhcanh303/go-microservices/internal/auth/app"
+	configs "github.com/dinhcanh303/go-microservices/pkg/config"
 	"github.com/dinhcanh303/go-microservices/pkg/logger"
 	"github.com/dinhcanh303/go-microservices/pkg/postgres"
 	"github.com/sirupsen/logrus"
@@ -29,6 +30,10 @@ func main() {
 	if err != nil {
 		slog.Error("Failed get config", err)
 	}
+	cfgLdap, err := configs.NewLdapConfig()
+	if err != nil {
+		slog.Error("Failed get config Ldap", err)
+	}
 	slog.Info("⚡ Init App", "name", cfg.Name, "version", cfg.Version)
 
 	//set up logrus
@@ -46,7 +51,7 @@ func main() {
 		defer server.GracefulStop()
 		<-ctx.Done()
 	}()
-	cleanup := prepareApp(ctx, cancel, cfg, server)
+	cleanup := prepareApp(ctx, cancel, cfg, cfgLdap, server)
 
 	//gRPC Server
 	address := fmt.Sprintf("%s:%d", cfg.HTTP.Host, cfg.HTTP.Port)
@@ -84,8 +89,8 @@ func main() {
 
 }
 
-func prepareApp(ctx context.Context, cancel context.CancelFunc, cfg *config.Config, server *grpc.Server) func() {
-	_, cleanup, err := app.InitApp(cfg, postgres.DBConnString(cfg.PG.DsnURL), server)
+func prepareApp(ctx context.Context, cancel context.CancelFunc, cfg *config.Config, cfgLdap *configs.Ldap, server *grpc.Server) func() {
+	_, cleanup, err := app.InitApp(cfg, cfgLdap, postgres.DBConnString(cfg.PG.DsnURL), server)
 	if err != nil {
 		slog.Error("Failed init app", err)
 		cancel()

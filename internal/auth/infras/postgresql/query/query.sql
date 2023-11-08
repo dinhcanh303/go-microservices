@@ -4,7 +4,7 @@ INSERT INTO auth.users
         id,
         email,
         password,
-        fist_name,
+        first_name,
         last_name,
         full_name
     )
@@ -29,7 +29,7 @@ SELECT * FROM auth.keys WHERE refresh_tokens_used = $1;
 DELETE FROM auth.keys WHERE id = $1;
 
 -- name: DeleteKeyByUserID :exec
-DELETE FROM auth.users WHERE user_id = $1;
+DELETE FROM auth.keys WHERE user_id = $1;
 
 -- name: CreateKey :one 
 INSERT INTO auth.keys

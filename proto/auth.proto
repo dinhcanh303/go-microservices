@@ -62,7 +62,7 @@ message SignInResponse{
 message SignUpRequest{
     string email = 1;
     string password = 2;
-    string firt_name = 3;
+    string first_name = 3;
     string last_name = 4;
 }
 

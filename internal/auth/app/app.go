@@ -2,27 +2,31 @@ package app
 
 import (
 	"github.com/dinhcanh303/go-microservices/cmd/auth/config"
-	"github.com/dinhcanh303/go-microservices/internal/auth/usecases/apikeys"
+	"github.com/dinhcanh303/go-microservices/internal/auth/usecases/auth"
+	configs "github.com/dinhcanh303/go-microservices/pkg/config"
 	"github.com/dinhcanh303/go-microservices/pkg/postgres"
 	"github.com/dinhcanh303/go-microservices/proto/gen"
 )
 
 type App struct {
-	Cfg             *config.Config
-	PG              postgres.DBEngine
-	UCApiKey        apikeys.UseCase
-	GroupGRPCServer gen.GroupServiceServer
+	Cfg            *config.Config
+	CfgLdap        *configs.Ldap
+	PG             postgres.DBEngine
+	UC             auth.UseCase
+	AuthGRPCServer gen.AuthServiceServer
 }
 
 func New(
 	cfg *config.Config,
+	cfgLdap *configs.Ldap,
 	pg postgres.DBEngine,
-	ucApiKey apikeys.UseCase,
-	groupGRPCServer gen.GroupServiceServer) *App {
+	uc auth.UseCase,
+	authGRPCServer gen.AuthServiceServer) *App {
 	return &App{
-		Cfg:             cfg,
-		UCApiKey:        ucApiKey,
-		PG:              pg,
-		GroupGRPCServer: groupGRPCServer,
+		Cfg:            cfg,
+		CfgLdap:        cfgLdap,
+		UC:             uc,
+		PG:             pg,
+		AuthGRPCServer: authGRPCServer,
 	}
 }

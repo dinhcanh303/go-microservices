@@ -7,12 +7,11 @@ CREATE TABLE
     auth.users (
         id uuid NOT NULL DEFAULT (uuid_generate_v4()),
         email VARCHAR(255) NOT NULL UNIQUE,
-        fist_name VARCHAR(255) NOT NULL,
+        first_name VARCHAR(255) NOT NULL,
         last_name VARCHAR(255) NOT NULL,
         full_name VARCHAR(255) DEFAULT NULL,
         password VARCHAR(255) NOT NULL,
-        user_id uuid NOT NULL,
-        roles JSON DEFAULT '[]', 
+        roles VARCHAR(20) DEFAULT 'user', 
         created_at timestamp with time zone NOT NULL DEFAULT current_timestamp,
         updated_at timestamp with time zone NOT NULL DEFAULT (now()),
         CONSTRAINT pk_users PRIMARY KEY (id)
@@ -38,5 +37,5 @@ CREATE TABLE
         updated_at timestamp with time zone NOT NULL DEFAULT (now()),
         FOREIGN KEY (user_id) REFERENCES auth.users (id)
 );
-CREATE INDEX ix_auth_key_token ON auth.key_tokens (user_id);
+CREATE INDEX ix_auth_key_token ON auth.keys (user_id);
 COMMIT;

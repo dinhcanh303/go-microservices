@@ -51,20 +51,20 @@ INSERT INTO auth.users
         id,
         email,
         password,
-        fist_name,
+        first_name,
         last_name,
         full_name
     )
-VALUES ($1, $2, $3, $4, $5, $6) RETURNING id, email, fist_name, last_name, full_name, password, user_id, roles, created_at, updated_at
+VALUES ($1, $2, $3, $4, $5, $6) RETURNING id, email, first_name, last_name, full_name, password, roles, created_at, updated_at
 `
 
 type CreateUserParams struct {
-	ID       uuid.UUID      `json:"id"`
-	Email    string         `json:"email"`
-	Password string         `json:"password"`
-	FistName string         `json:"fist_name"`
-	LastName string         `json:"last_name"`
-	FullName sql.NullString `json:"full_name"`
+	ID        uuid.UUID      `json:"id"`
+	Email     string         `json:"email"`
+	Password  string         `json:"password"`
+	FirstName string         `json:"first_name"`
+	LastName  string         `json:"last_name"`
+	FullName  sql.NullString `json:"full_name"`
 }
 
 func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (AuthUser, error) {
@@ -72,7 +72,7 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (AuthUse
 		arg.ID,
 		arg.Email,
 		arg.Password,
-		arg.FistName,
+		arg.FirstName,
 		arg.LastName,
 		arg.FullName,
 	)
@@ -80,11 +80,10 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (AuthUse
 	err := row.Scan(
 		&i.ID,
 		&i.Email,
-		&i.FistName,
+		&i.FirstName,
 		&i.LastName,
 		&i.FullName,
 		&i.Password,
-		&i.UserID,
 		&i.Roles,
 		&i.CreatedAt,
 		&i.UpdatedAt,
@@ -102,7 +101,7 @@ func (q *Queries) DeleteKeyByID(ctx context.Context, id int64) error {
 }
 
 const deleteKeyByUserID = `-- name: DeleteKeyByUserID :exec
-DELETE FROM auth.users WHERE user_id = $1
+DELETE FROM auth.keys WHERE user_id = $1
 `
 
 func (q *Queries) DeleteKeyByUserID(ctx context.Context, userID uuid.UUID) error {
@@ -171,7 +170,7 @@ func (q *Queries) FindKeyByUserID(ctx context.Context, userID uuid.UUID) (AuthKe
 }
 
 const getUser = `-- name: GetUser :one
-SELECT id, email, fist_name, last_name, full_name, password, user_id, roles, created_at, updated_at FROM auth.users WHERE id = $1
+SELECT id, email, first_name, last_name, full_name, password, roles, created_at, updated_at FROM auth.users WHERE id = $1
 `
 
 func (q *Queries) GetUser(ctx context.Context, id uuid.UUID) (AuthUser, error) {
@@ -180,11 +179,10 @@ func (q *Queries) GetUser(ctx context.Context, id uuid.UUID) (AuthUser, error) {
 	err := row.Scan(
 		&i.ID,
 		&i.Email,
-		&i.FistName,
+		&i.FirstName,
 		&i.LastName,
 		&i.FullName,
 		&i.Password,
-		&i.UserID,
 		&i.Roles,
 		&i.CreatedAt,
 		&i.UpdatedAt,
@@ -193,7 +191,7 @@ func (q *Queries) GetUser(ctx context.Context, id uuid.UUID) (AuthUser, error) {
 }
 
 const getUserByEmail = `-- name: GetUserByEmail :one
-SELECT id, email, fist_name, last_name, full_name, password, user_id, roles, created_at, updated_at FROM auth.users WHERE email = $1
+SELECT id, email, first_name, last_name, full_name, password, roles, created_at, updated_at FROM auth.users WHERE email = $1
 `
 
 func (q *Queries) GetUserByEmail(ctx context.Context, email string) (AuthUser, error) {
@@ -202,11 +200,10 @@ func (q *Queries) GetUserByEmail(ctx context.Context, email string) (AuthUser, e
 	err := row.Scan(
 		&i.ID,
 		&i.Email,
-		&i.FistName,
+		&i.FirstName,
 		&i.LastName,
 		&i.FullName,
 		&i.Password,
-		&i.UserID,
 		&i.Roles,
 		&i.CreatedAt,
 		&i.UpdatedAt,

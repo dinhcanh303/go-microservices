@@ -5,6 +5,7 @@ import (
 
 	"github.com/dinhcanh303/go-microservices/internal/auth/domain"
 	"github.com/google/uuid"
+	"github.com/google/wire"
 	"github.com/pkg/errors"
 )
 
@@ -82,3 +83,11 @@ func (s *service) FindKeyByUserID(ctx context.Context, userID uuid.UUID) (*domai
 }
 
 var _ UseCase = (*service)(nil)
+
+func NewUseCase(repo KeyRepo) UseCase {
+	return &service{
+		repo: repo,
+	}
+}
+
+var UseCaseSet = wire.NewSet(NewUseCase)
