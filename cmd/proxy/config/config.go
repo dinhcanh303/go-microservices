@@ -28,6 +28,8 @@ type (
 		LikePort    int    `env-required:"true" yaml:"like_port" env:"GRPC_LIKE_PORT"`
 		UploadHost  string `env-required:"true" yaml:"upload_host" env:"GRPC_UPLOAD_HOST"`
 		UploadPort  int    `env-required:"true" yaml:"upload_port" env:"GRPC_UPLOAD_PORT"`
+		AuthHost    string `env-required:"true" yaml:"auth_host" env:"GRPC_AUTH_HOST"`
+		AuthPort    int    `env-required:"true" yaml:"auth_port" env:"GRPC_AUTH_PORT"`
 	}
 )
 

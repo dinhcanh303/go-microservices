@@ -28,6 +28,7 @@ func newGateway(
 	commentEndpoint := fmt.Sprintf("%s:%d", cfg.CommentHost, cfg.CommentPort)
 	likeEndpoint := fmt.Sprintf("%s:%d", cfg.LikeHost, cfg.LikePort)
 	uploadEndpoint := fmt.Sprintf("%s:%d", cfg.UploadHost, cfg.UploadPort)
+	authEndpoint := fmt.Sprintf("%s:%d", cfg.AuthHost, cfg.AuthPort)
 
 	mux := gwruntime.NewServeMux(opts...)
 	dialOpts := []grpc.DialOption{grpc.WithTransportCredentials(insecure.NewCredentials())}
@@ -49,6 +50,10 @@ func newGateway(
 		return nil, err
 	}
 	err = gen.RegisterUploadServiceHandlerFromEndpoint(ctx, mux, uploadEndpoint, dialOpts)
+	if err != nil {
+		return nil, err
+	}
+	err = gen.RegisterAuthServiceHandlerFromEndpoint(ctx, mux, authEndpoint, dialOpts)
 	if err != nil {
 		return nil, err
 	}
