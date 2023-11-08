@@ -3,6 +3,8 @@ package token
 import (
 	"errors"
 	"time"
+
+	"github.com/google/uuid"
 )
 
 var (
@@ -11,23 +13,31 @@ var (
 )
 
 type Payload struct {
-	Data      interface{} `json:"data"`
-	IssuedAt  time.Time   `json:"issued_at"`
-	ExpiredAt time.Time   `json:"expired_at"`
+	ID        uuid.UUID `json:"id"`
+	Email     string    `json:"email"`
+	FullName  string    `json:"full_name"`
+	Role      string    `json:"role"`
+	AvatarUrl string    `json:"avatar_url"`
+	IssuedAt  time.Time `json:"issued_at"`
+	ExpiredAt time.Time `json:"expired_at"`
 }
 
-func NewPayload(data interface{}, duration time.Duration) (*Payload, error) {
-	payload := &Payload{
-		Data:      data,
-		IssuedAt:  time.Now(),
-		ExpiredAt: time.Now().Add(duration),
-	}
-	return payload, nil
-}
-
+// Valid implements jwt.Claims.
 func (payload *Payload) Valid() error {
 	if time.Now().After(payload.ExpiredAt) {
 		return ErrExpiredToken
 	}
 	return nil
+}
+
+func NewPayload(id uuid.UUID, email, fullName, role, avatarUrl string, duration time.Duration) *Payload {
+	return &Payload{
+		ID:        id,
+		Email:     email,
+		FullName:  fullName,
+		Role:      role,
+		AvatarUrl: avatarUrl,
+		IssuedAt:  time.Now(),
+		ExpiredAt: time.Now().Add(duration),
+	}
 }

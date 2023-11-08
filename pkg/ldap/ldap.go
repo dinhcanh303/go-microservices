@@ -4,6 +4,7 @@ import (
 	"crypto/tls"
 	"errors"
 	"fmt"
+	"log/slog"
 
 	configs "github.com/dinhcanh303/go-microservices/pkg/config"
 	"github.com/go-ldap/ldap/v3"
@@ -18,10 +19,6 @@ type ldapClient struct {
 
 // Authenticate implements LdapClient.
 func (l *ldapClient) Authenticate(username string, password string) (bool, map[string]string, error) {
-	err := l.Connect()
-	if err != nil {
-		return false, nil, err
-	}
 	if l.config.LdapBindDN != "" && l.config.LdapPassword != "" {
 		err := l.conn.Bind(l.config.LdapBindDN, l.config.LdapPassword)
 		if err != nil {
@@ -71,24 +68,29 @@ func (l *ldapClient) Close() {
 	}
 }
 
-// Connect implements LdapClient.
-func (l *ldapClient) Connect() error {
+var _ LdapClient = (*ldapClient)(nil)
+
+func NewLdapClient(config *configs.Ldap, attributes []string) (LdapClient, error) {
+	l := &ldapClient{
+		config:     config,
+		attributes: attributes,
+	}
 	if l.conn == nil {
-		var ldapConn *ldap.Conn
 		var err error
 		address := fmt.Sprintf("%s:%d", l.config.LdapHost, l.config.LdapPort)
 		if !l.config.LdapSSL {
-			ldapConn, err = ldap.Dial("tcp", address)
+			l.conn, err = ldap.Dial("tcp", address)
 			if err != nil {
-				return err
+				return nil, err
 			}
 			if !l.config.LdapTLS {
 				err = l.conn.StartTLS(&tls.Config{
 					InsecureSkipVerify: true,
 				})
 				if err != nil {
-					return err
+					return nil, err
 				}
+				slog.Info("Connect Ldap InsecureSkipVerify")
 			}
 		} else {
 			config := &tls.Config{
@@ -98,14 +100,12 @@ func (l *ldapClient) Connect() error {
 			if l.clientCertificates != nil && len(l.clientCertificates) > 0 {
 				config.Certificates = l.clientCertificates
 			}
-			ldapConn, err = ldap.DialTLS("tcp", address, config)
+			l.conn, err = ldap.DialTLS("tcp", address, config)
 			if err != nil {
-				return err
+				return nil, err
 			}
+			slog.Info("Connect Ldap DialTLS")
 		}
-		l.conn = ldapConn
 	}
-	return nil
+	return l, nil
 }
-
-var _ LdapClient = (*ldapClient)(nil)

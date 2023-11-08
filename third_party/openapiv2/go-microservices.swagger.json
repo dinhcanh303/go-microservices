@@ -1244,7 +1244,7 @@
         "password": {
           "type": "string"
         },
-        "firtName": {
+        "firstName": {
           "type": "string"
         },
         "lastName": {

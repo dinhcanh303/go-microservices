@@ -1,0 +1,42 @@
+package token
+
+import (
+	"testing"
+	"time"
+
+	"github.com/dinhcanh303/go-microservices/pkg/utils"
+	"github.com/stretchr/testify/require"
+)
+
+func TestJWT(t *testing.T) {
+	maker := NewJWTMaker()
+	id := utils.RandomUUID()
+	email := utils.RandomEmailCompany()
+	fullName := utils.RandomString(8)
+	avatarUrl := utils.RandomString(10)
+	role := utils.User
+	duration := time.Minute
+	issuedAt := time.Now()
+	expiredAt := issuedAt.Add(duration)
+	token, err := maker.CreateToken(&Payload{
+		ID:        id,
+		Email:     email,
+		FullName:  fullName,
+		Role:      role,
+		AvatarUrl: avatarUrl,
+		IssuedAt:  issuedAt,
+		ExpiredAt: expiredAt,
+	}, "abc")
+	require.NoError(t, err)
+	require.NotEmpty(t, token)
+
+	payload, err := maker.VerifyToken(token, "abc")
+	require.NoError(t, err)
+	require.Equal(t, id, payload.ID)
+	require.Equal(t, email, payload.Email)
+	require.Equal(t, fullName, payload.FullName)
+	require.Equal(t, avatarUrl, payload.AvatarUrl)
+	require.Equal(t, role, payload.Role)
+	require.WithinDuration(t, issuedAt, payload.IssuedAt, time.Second)
+	require.WithinDuration(t, expiredAt, payload.ExpiredAt, time.Second)
+}
