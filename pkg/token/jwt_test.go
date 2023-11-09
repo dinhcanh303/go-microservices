@@ -18,6 +18,9 @@ func TestJWT(t *testing.T) {
 	duration := time.Minute
 	issuedAt := time.Now()
 	expiredAt := issuedAt.Add(duration)
+	publicKey, err := utils.GenerateRandomHexBytes(64)
+	require.NoError(t, err)
+	require.NotEmpty(t, publicKey)
 	token, err := maker.CreateToken(&Payload{
 		ID:        id,
 		Email:     email,
@@ -26,11 +29,10 @@ func TestJWT(t *testing.T) {
 		AvatarUrl: avatarUrl,
 		IssuedAt:  issuedAt,
 		ExpiredAt: expiredAt,
-	}, "abc")
+	}, publicKey)
 	require.NoError(t, err)
 	require.NotEmpty(t, token)
-
-	payload, err := maker.VerifyToken(token, "abc")
+	payload, err := maker.VerifyToken(token, publicKey)
 	require.NoError(t, err)
 	require.Equal(t, id, payload.ID)
 	require.Equal(t, email, payload.Email)

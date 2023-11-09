@@ -26,6 +26,9 @@ func ComparePassword(hashedPassword string, password string) (bool, error) {
 
 // Hash  Bcrypt.
 func HashPassword(password string, options ...func(*hashOptions)) (string, error) {
+	if len(password) < 8 {
+		return "", errors.New("password must be less than 8 characters")
+	}
 	opts := hashOptions{cost: DefaultCost}
 	for _, opt := range options {
 		opt(&opts)

@@ -10,9 +10,10 @@ import (
 
 	"github.com/dinhcanh303/go-microservices/cmd/proxy/config"
 	"github.com/dinhcanh303/go-microservices/pkg/logger"
+	"github.com/dinhcanh303/go-microservices/pkg/middleware"
 	"github.com/dinhcanh303/go-microservices/proto/gen"
 	"github.com/golang/glog"
-	gwruntime "github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
+	gatewayRuntime "github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"github.com/sirupsen/logrus"
 	"golang.org/x/exp/slog"
 	"google.golang.org/grpc"
@@ -22,7 +23,7 @@ import (
 func newGateway(
 	ctx context.Context,
 	cfg *config.Config,
-	opts []gwruntime.ServeMuxOption) (http.Handler, error) {
+	opts []gatewayRuntime.ServeMuxOption) (http.Handler, error) {
 	groupEndpoint := fmt.Sprintf("%s:%d", cfg.GroupHost, cfg.GroupPort)
 	postEndpoint := fmt.Sprintf("%s:%d", cfg.PostHost, cfg.PostPort)
 	commentEndpoint := fmt.Sprintf("%s:%d", cfg.CommentHost, cfg.CommentPort)
@@ -30,7 +31,7 @@ func newGateway(
 	uploadEndpoint := fmt.Sprintf("%s:%d", cfg.UploadHost, cfg.UploadPort)
 	authEndpoint := fmt.Sprintf("%s:%d", cfg.AuthHost, cfg.AuthPort)
 
-	mux := gwruntime.NewServeMux(opts...)
+	mux := gatewayRuntime.NewServeMux(opts...)
 	dialOpts := []grpc.DialOption{grpc.WithTransportCredentials(insecure.NewCredentials())}
 
 	err := gen.RegisterGroupServiceHandlerFromEndpoint(ctx, mux, groupEndpoint, dialOpts)
@@ -72,6 +73,7 @@ func allowCORS(h http.Handler) http.Handler {
 			h.ServeHTTP(w, r)
 		})
 }
+
 func preflightHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	headers := []string{"*"}
@@ -119,7 +121,7 @@ func main() {
 	mux.Handle("/swagger/", http.StripPrefix("/swagger/", fs))
 	s := &http.Server{
 		Addr:    fmt.Sprintf("%s:%d", cfg.Host, cfg.Port),
-		Handler: allowCORS(withLogger(mux)),
+		Handler: allowCORS(middleware.RateLimit(&cfg.Request, withLogger(mux))),
 	}
 
 	//goroutine

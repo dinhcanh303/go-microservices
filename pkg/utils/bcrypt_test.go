@@ -12,12 +12,16 @@ func TestBcrypt(t *testing.T) {
 	require.NoError(t, err)
 	require.NotEmpty(t, hashedPassword1)
 
-	check, err := ComparePassword(password, hashedPassword1)
+	check, err := ComparePassword(hashedPassword1, password)
 	require.NoError(t, err)
 	require.Equal(t, check, true)
 
 	wrongPassword := RandomString(6)
-	check, err = ComparePassword(wrongPassword, hashedPassword1)
+	_, err = HashPassword(wrongPassword)
+	require.EqualError(t, err, "password must be less than 8 characters")
+
+	wrongPassword2 := RandomString(8)
+	check, err = ComparePassword(hashedPassword1, wrongPassword2)
 	require.NoError(t, err)
 	require.Equal(t, check, false)
 

@@ -31,7 +31,7 @@ CREATE TABLE
         user_id uuid NOT NULL,
         public_key VARCHAR(255) NOT NULL,
         private_key VARCHAR(255) NOT NULL,
-        refresh_token VARCHAR(255) NOT NULL,
+        refresh_token TEXT DEFAULT NULL,
         refresh_tokens_used JSON DEFAULT '[]',
         created_at timestamp with time zone NOT NULL DEFAULT current_timestamp,
         updated_at timestamp with time zone NOT NULL DEFAULT (now()),

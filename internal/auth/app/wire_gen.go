@@ -15,6 +15,7 @@ import (
 	"github.com/dinhcanh303/go-microservices/pkg/config"
 	"github.com/dinhcanh303/go-microservices/pkg/ldap"
 	"github.com/dinhcanh303/go-microservices/pkg/postgres"
+	"github.com/dinhcanh303/go-microservices/pkg/token"
 	"google.golang.org/grpc"
 	"log/slog"
 )
@@ -34,7 +35,8 @@ func InitApp(cfg *config.Config, cfgLdap *configs.Ldap, dbConnStr postgres.DBCon
 		cleanup()
 		return nil, nil, err
 	}
-	authUseCase := auth.NewUseCase(userRepo, useCase, ldapClient)
+	jwt := jwtFunc()
+	authUseCase := auth.NewUseCase(userRepo, useCase, ldapClient, jwt)
 	authServiceServer := router.NewAuthGRPCServer(grpcServer, cfg, authUseCase)
 	app := New(cfg, cfgLdap, dbEngine, authUseCase, authServiceServer)
 	return app, func() {
@@ -60,4 +62,9 @@ func ldapClientFunc(config2 *configs.Ldap) (ldap.LdapClient, func(), error) {
 		return nil, nil, err
 	}
 	return ldapClient, func() { ldapClient.Close() }, nil
+}
+
+func jwtFunc() token.JWT {
+	jwt := token.NewJWTMaker()
+	return jwt
 }

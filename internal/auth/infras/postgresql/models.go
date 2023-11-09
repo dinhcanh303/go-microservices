@@ -26,7 +26,7 @@ type AuthKey struct {
 	UserID            uuid.UUID             `json:"user_id"`
 	PublicKey         string                `json:"public_key"`
 	PrivateKey        string                `json:"private_key"`
-	RefreshToken      string                `json:"refresh_token"`
+	RefreshToken      sql.NullString        `json:"refresh_token"`
 	RefreshTokensUsed pqtype.NullRawMessage `json:"refresh_tokens_used"`
 	CreatedAt         time.Time             `json:"created_at"`
 	UpdatedAt         time.Time             `json:"updated_at"`

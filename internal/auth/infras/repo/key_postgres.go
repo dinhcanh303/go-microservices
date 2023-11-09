@@ -40,7 +40,7 @@ func (rp *keyRepo) CreateKey(ctx context.Context, key *domain.Key) (*domain.Key,
 		PublicKey:         result.PublicKey,
 		PrivateKey:        result.PrivateKey,
 		UserID:            result.UserID,
-		RefreshToken:      result.RefreshToken,
+		RefreshToken:      result.RefreshToken.String,
 		RefreshTokensUsed: result.RefreshTokensUsed.RawMessage,
 		CreatedAt:         result.CreatedAt,
 		UpdatedAt:         result.UpdatedAt,
@@ -83,7 +83,7 @@ func (rp *keyRepo) UpdateKeyByUserID(ctx context.Context, key *domain.Key) (*dom
 		PublicKey:         result.PublicKey,
 		PrivateKey:        result.PrivateKey,
 		UserID:            result.UserID,
-		RefreshToken:      result.RefreshToken,
+		RefreshToken:      result.RefreshToken.String,
 		RefreshTokensUsed: result.RefreshTokensUsed.RawMessage,
 		CreatedAt:         result.CreatedAt,
 		UpdatedAt:         result.UpdatedAt,
@@ -127,7 +127,10 @@ func (rp *keyRepo) FindKeyByRefreshToken(ctx context.Context, refreshToken strin
 	db := rp.pg.GetDB()
 	querier := postgresql.New(db)
 
-	key, err := querier.FindKeyByRefreshToken(ctx, refreshToken)
+	key, err := querier.FindKeyByRefreshToken(ctx, sql.NullString{
+		String: refreshToken,
+		Valid:  refreshToken != "",
+	})
 	if err != nil {
 		return nil, errors.Wrap(err, "keyRepo.UpdateKey failed")
 	}
@@ -136,7 +139,7 @@ func (rp *keyRepo) FindKeyByRefreshToken(ctx context.Context, refreshToken strin
 		UserID:            key.UserID,
 		PublicKey:         key.PublicKey,
 		PrivateKey:        key.PrivateKey,
-		RefreshToken:      key.RefreshToken,
+		RefreshToken:      key.RefreshToken.String,
 		RefreshTokensUsed: key.RefreshTokensUsed.RawMessage,
 		CreatedAt:         key.CreatedAt,
 		UpdatedAt:         key.UpdatedAt,
@@ -162,7 +165,7 @@ func (rp *keyRepo) FindKeyByUserID(ctx context.Context, userID uuid.UUID) (*doma
 		UserID:            key.UserID,
 		PublicKey:         key.PublicKey,
 		PrivateKey:        key.PrivateKey,
-		RefreshToken:      key.RefreshToken,
+		RefreshToken:      key.RefreshToken.String,
 		RefreshTokensUsed: key.RefreshTokensUsed.RawMessage,
 		CreatedAt:         key.CreatedAt,
 		UpdatedAt:         key.UpdatedAt,

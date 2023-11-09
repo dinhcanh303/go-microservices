@@ -14,6 +14,7 @@ import (
 	configs "github.com/dinhcanh303/go-microservices/pkg/config"
 	"github.com/dinhcanh303/go-microservices/pkg/ldap"
 	"github.com/dinhcanh303/go-microservices/pkg/postgres"
+	"github.com/dinhcanh303/go-microservices/pkg/token"
 	"github.com/google/wire"
 	"google.golang.org/grpc"
 )
@@ -28,6 +29,7 @@ func InitApp(
 		New,
 		dbEngineFunc,
 		ldapClientFunc,
+		jwtFunc,
 		router.AuthGRPCServerSet,
 		auth.UseCaseSet,
 		keys.UseCaseSet,
@@ -49,4 +51,8 @@ func ldapClientFunc(config *configs.Ldap) (ldap.LdapClient, func(), error) {
 		return nil, nil, err
 	}
 	return ldapClient, func() { ldapClient.Close() }, nil
+}
+func jwtFunc() token.JWT {
+	jwt := token.NewJWTMaker()
+	return jwt
 }

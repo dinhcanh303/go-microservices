@@ -7,13 +7,12 @@ import (
 	domainLike "github.com/dinhcanh303/go-microservices/internal/like/domain"
 	sharedkernel "github.com/dinhcanh303/go-microservices/internal/pkg/shared_kernel"
 	domainUpload "github.com/dinhcanh303/go-microservices/internal/upload/domain"
+	"github.com/dinhcanh303/go-microservices/pkg/constant"
 	"github.com/google/uuid"
 	"github.com/google/wire"
 	"github.com/pkg/errors"
 	"golang.org/x/exp/slog"
 )
-
-const UUID_NULL string = "00000000-0000-0000-0000-000000000000"
 
 type service struct {
 	commentRepo     CommentRepo
@@ -116,7 +115,7 @@ func (s *service) GetCommentsByPostID(ctx context.Context, postId uuid.UUID) ([]
 			UpdatedAt:       comments[i].UpdatedAt,
 		}
 		commentMap[comment.ID] = commentHasChildren
-		if comment.ParentCommentID.UUID.String() != UUID_NULL {
+		if comment.ParentCommentID.UUID.String() != constant.NullUUID {
 			parentComment, exists := commentMap[comment.ParentCommentID.UUID]
 			if exists {
 				parentComment.Children = append(parentComment.Children, results)

@@ -12,10 +12,11 @@ import (
 
 type (
 	Config struct {
-		configs.App  `yaml:"app"`
-		configs.HTTP `yaml:"http"`
-		configs.Log  `yaml:"logger"`
-		GRPC         `yaml:"grpc"`
+		configs.App     `yaml:"app"`
+		configs.HTTP    `yaml:"http"`
+		configs.Log     `yaml:"logger"`
+		configs.Request `yaml:"request"`
+		GRPC            `yaml:"grpc"`
 	}
 	GRPC struct {
 		GroupHost   string `env-required:"true" yaml:"group_host" env:"GRPC_GROUP_HOST"`

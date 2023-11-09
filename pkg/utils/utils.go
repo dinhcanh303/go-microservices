@@ -4,6 +4,7 @@ import (
 	"log/slog"
 
 	"github.com/google/uuid"
+	"github.com/joho/godotenv"
 	"github.com/pkg/errors"
 )
 
@@ -67,4 +68,11 @@ func ConvertArStringToArNullUUID(strings []string) ([]uuid.NullUUID, error) {
 		uuids = append(uuids, uuid)
 	}
 	return uuids, nil
+}
+func LoadFileEnvOnLocal() error {
+	err := godotenv.Load("../../.env")
+	if err != nil {
+		return err
+	}
+	return nil
 }

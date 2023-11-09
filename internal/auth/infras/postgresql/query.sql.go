@@ -113,7 +113,7 @@ const findKeyByRefreshToken = `-- name: FindKeyByRefreshToken :one
 SELECT id, user_id, public_key, private_key, refresh_token, refresh_tokens_used, created_at, updated_at FROM auth.keys WHERE refresh_token = $1
 `
 
-func (q *Queries) FindKeyByRefreshToken(ctx context.Context, refreshToken string) (AuthKey, error) {
+func (q *Queries) FindKeyByRefreshToken(ctx context.Context, refreshToken sql.NullString) (AuthKey, error) {
 	row := q.db.QueryRowContext(ctx, findKeyByRefreshToken, refreshToken)
 	var i AuthKey
 	err := row.Scan(

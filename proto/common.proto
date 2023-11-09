@@ -25,3 +25,10 @@ option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_swagger) = {
 };
 
 
+enum Role {
+    USER = 0;
+    ADMIN = 1;
+}
+
+
+
