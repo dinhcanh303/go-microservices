@@ -70,6 +70,7 @@ func ConvertArStringToArNullUUID(strings []string) ([]uuid.NullUUID, error) {
 	return uuids, nil
 }
 func LoadFileEnvOnLocal() error {
+
 	err := godotenv.Load("../../.env")
 	if err != nil {
 		return err

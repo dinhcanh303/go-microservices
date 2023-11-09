@@ -3,6 +3,15 @@ export
 
 all: build test
 
+server:
+	cd cmd/auth/ && go run main.go & \
+	# cd cmd/upload/ && go run main.go &  \
+	# cd cmd/like/ && go run main.go &  \
+	# cd cmd/comment/ && go run main.go &  \
+	# cd cmd/post/ && go run main.go &  \
+	# cd cmd/group/ && go run main.go &  \
+	cd cmd/proxy/ && go run main.go &
+.PHONY: server
 sqlc: 
 	sqlc generate
 .PHONY: sqlc
@@ -21,7 +30,7 @@ env:
 	docker run --env-file .env upload
 
 wire:
-	cd internal/group/app && wire && cd - && \
+	cd internal/group/app && wire &&  \
 	cd internal/post/app && wire && cd - && \
 	cd internal/comment/app && wire && cd - && \
 	cd internal/like/app && wire && cd - && \
