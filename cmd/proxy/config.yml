@@ -20,6 +20,12 @@ grpc:
   auth_host: '0.0.0.0'
   auth_port: 5007
 
+request:
+  request_per_second: 50
+  request_burst: 100
+  request_max: 5
+  durations_second: 10
+
 logger:
   log_level: 'debug'
   rollbar_env: 'reverse-proxy'
