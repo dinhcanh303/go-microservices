@@ -19,6 +19,9 @@ type ldapClient struct {
 
 // Authenticate implements LdapClient.
 func (l *ldapClient) Authenticate(username string, password string) (bool, map[string]string, error) {
+	if err := l.Connect(); err != nil {
+		return false, nil, err
+	}
 	if l.config.LdapBindDN != "" && l.config.LdapPassword != "" {
 		err := l.conn.Bind(l.config.LdapBindDN, l.config.LdapPassword)
 		if err != nil {
@@ -67,28 +70,21 @@ func (l *ldapClient) Close() {
 		l.conn = nil
 	}
 }
-
-var _ LdapClient = (*ldapClient)(nil)
-
-func NewLdapClient(config *configs.Ldap, attributes []string) (LdapClient, error) {
-	l := &ldapClient{
-		config:     config,
-		attributes: attributes,
-	}
+func (l *ldapClient) Connect() error {
 	if l.conn == nil {
 		var err error
 		address := fmt.Sprintf("%s:%d", l.config.LdapHost, l.config.LdapPort)
 		if !l.config.LdapSSL {
 			l.conn, err = ldap.Dial("tcp", address)
 			if err != nil {
-				return nil, err
+				return err
 			}
 			if !l.config.LdapTLS {
 				err = l.conn.StartTLS(&tls.Config{
 					InsecureSkipVerify: true,
 				})
 				if err != nil {
-					return nil, err
+					return err
 				}
 				slog.Info("Connect Ldap InsecureSkipVerify")
 			}
@@ -102,10 +98,19 @@ func NewLdapClient(config *configs.Ldap, attributes []string) (LdapClient, error
 			}
 			l.conn, err = ldap.DialTLS("tcp", address, config)
 			if err != nil {
-				return nil, err
+				return err
 			}
 			slog.Info("Connect Ldap DialTLS")
 		}
 	}
-	return l, nil
+	return nil
+}
+
+var _ LdapClient = (*ldapClient)(nil)
+
+func NewLdapClient(config *configs.Ldap, attributes []string) LdapClient {
+	return &ldapClient{
+		config:     config,
+		attributes: attributes,
+	}
 }

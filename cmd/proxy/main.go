@@ -112,16 +112,14 @@ func main() {
 	if err != nil {
 		slog.Error("failed to create a new gateway", err)
 	}
-
 	mux.Handle("/", gw)
-
 	//server swagger
 	fs := http.FileServer(http.Dir("swagger"))
 	slog.Info("FILE", fs)
 	mux.Handle("/swagger/", http.StripPrefix("/swagger/", fs))
 	s := &http.Server{
 		Addr:    fmt.Sprintf("%s:%d", cfg.Host, cfg.Port),
-		Handler: allowCORS(middleware.RateLimit(&cfg.Request, withLogger(mux))),
+		Handler: allowCORS(middleware.AuthMiddleware(withLogger(mux))),
 	}
 
 	//goroutine

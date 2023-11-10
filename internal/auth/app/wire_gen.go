@@ -17,7 +17,6 @@ import (
 	"github.com/dinhcanh303/go-microservices/pkg/postgres"
 	"github.com/dinhcanh303/go-microservices/pkg/token"
 	"google.golang.org/grpc"
-	"log/slog"
 )
 
 // Injectors from wire.go:
@@ -56,11 +55,7 @@ func dbEngineFunc(url postgres.DBConnString) (postgres.DBEngine, func(), error) 
 }
 
 func ldapClientFunc(config2 *configs.Ldap) (ldap.LdapClient, func(), error) {
-	ldapClient, err := ldap.NewLdapClient(config2, []string{""})
-	if err != nil {
-		slog.Warn("Connect failed:", err)
-		return nil, nil, err
-	}
+	ldapClient := ldap.NewLdapClient(config2, []string{""})
 	return ldapClient, func() { ldapClient.Close() }, nil
 }
 

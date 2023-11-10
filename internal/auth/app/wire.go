@@ -4,8 +4,6 @@
 package app
 
 import (
-	"log/slog"
-
 	"github.com/dinhcanh303/go-microservices/cmd/auth/config"
 	"github.com/dinhcanh303/go-microservices/internal/auth/app/router"
 	"github.com/dinhcanh303/go-microservices/internal/auth/infras/repo"
@@ -45,11 +43,7 @@ func dbEngineFunc(url postgres.DBConnString) (postgres.DBEngine, func(), error) 
 	return db, func() { db.Close() }, nil
 }
 func ldapClientFunc(config *configs.Ldap) (ldap.LdapClient, func(), error) {
-	ldapClient, err := ldap.NewLdapClient(config, []string{""})
-	if err != nil {
-		slog.Warn("Connect failed:", err)
-		return nil, nil, err
-	}
+	ldapClient := ldap.NewLdapClient(config, []string{""})
 	return ldapClient, func() { ldapClient.Close() }, nil
 }
 func jwtFunc() token.JWT {

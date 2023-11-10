@@ -59,6 +59,9 @@ func NewPostgresDB(url DBConnString) (DBEngine, error) {
 		time.Sleep(pg.connTimeout)
 		pg.connAttempts--
 	}
+	if err != nil {
+		return nil, err
+	}
 	slog.Info("📰 connected to postgresdb 🎉")
 	return pg, nil
 }
