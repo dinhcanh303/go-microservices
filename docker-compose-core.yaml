@@ -41,7 +41,7 @@ services:
       - REDIS_PASSWORD=password
       - REDIS_REPLICATION_mode=master
     ports:
-      - "6379:6379"
+      - 6379:6379
     networks:
       - microservices-network
   redisinsight:
@@ -51,7 +51,17 @@ services:
     volumes:
       - redis_data:/var/lib/redis
     ports:
-      - "8002:8001"
+      - 8002:8001
+    networks:
+      - microservices-network
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.11.0
+    container_name: go-microservices-elasticsearch
+    environment:
+      - xpack.security.enabled=false
+      - "discovery.type=single-node"
+    ports:
+      - 9200:9200
     networks:
       - microservices-network
 volumes:
