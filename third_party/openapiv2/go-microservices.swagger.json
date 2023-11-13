@@ -39,7 +39,7 @@
     "application/json"
   ],
   "paths": {
-    "/v1/api/attachments": {
+    "/attachments": {
       "get": {
         "summary": "GetAttachmentsByType",
         "operationId": "UploadService_GetAttachmentsByType",
@@ -76,7 +76,7 @@
         ]
       }
     },
-    "/v1/api/comments": {
+    "/comments": {
       "post": {
         "summary": "Create Comment",
         "operationId": "CommentService_CreateComment",
@@ -109,7 +109,7 @@
         ]
       }
     },
-    "/v1/api/comments/{comment.id}": {
+    "/comments/{comment.id}": {
       "put": {
         "summary": "Update Comment",
         "operationId": "CommentService_UpdateComment",
@@ -178,7 +178,7 @@
         ]
       }
     },
-    "/v1/api/comments/{commentId}/likes": {
+    "/comments/{commentId}/likes": {
       "get": {
         "summary": "Get Like by Comment ID",
         "operationId": "LikeService_GetLikesByCommentID",
@@ -209,7 +209,7 @@
         ]
       }
     },
-    "/v1/api/comments/{id}": {
+    "/comments/{id}": {
       "get": {
         "summary": "Get Comment",
         "operationId": "CommentService_GetComment",
@@ -269,7 +269,7 @@
         ]
       }
     },
-    "/v1/api/comments/{id}/count": {
+    "/comments/{id}/count": {
       "get": {
         "summary": "Count Comment By Comment ID",
         "operationId": "CommentService_CountCommentByCommentID",
@@ -300,7 +300,7 @@
         ]
       }
     },
-    "/v1/api/feed": {
+    "/feed": {
       "post": {
         "summary": "Get Feed",
         "operationId": "PostService_GetPostsByFeed",
@@ -333,7 +333,7 @@
         ]
       }
     },
-    "/v1/api/group-ids/{userId}": {
+    "/group-ids/{userId}": {
       "get": {
         "summary": "Get all group id by user id",
         "operationId": "GroupService_GetAllGroupIdByUserId",
@@ -364,7 +364,7 @@
         ]
       }
     },
-    "/v1/api/group-members": {
+    "/group-members": {
       "post": {
         "summary": "Create group member",
         "operationId": "GroupService_CreateGroupMember",
@@ -397,7 +397,7 @@
         ]
       }
     },
-    "/v1/api/group-members/{groupId}": {
+    "/group-members/{groupId}": {
       "get": {
         "summary": "Get all group member",
         "operationId": "GroupService_GetAllGroupMembers",
@@ -428,7 +428,7 @@
         ]
       }
     },
-    "/v1/api/group-members/{groupMember.id}": {
+    "/group-members/{groupMember.id}": {
       "put": {
         "summary": "Update group member",
         "operationId": "GroupService_UpdateGroupMember",
@@ -492,7 +492,7 @@
         ]
       }
     },
-    "/v1/api/group-members/{id}": {
+    "/group-members/{id}": {
       "delete": {
         "summary": "Delete group member",
         "operationId": "GroupService_DeleteGroupMember",
@@ -523,7 +523,7 @@
         ]
       }
     },
-    "/v1/api/groups": {
+    "/groups": {
       "post": {
         "summary": "Create group",
         "operationId": "GroupService_CreateGroup",
@@ -556,7 +556,7 @@
         ]
       }
     },
-    "/v1/api/groups/{group.id}": {
+    "/groups/{group.id}": {
       "put": {
         "summary": "Update group",
         "operationId": "GroupService_UpdateGroup",
@@ -623,7 +623,7 @@
         ]
       }
     },
-    "/v1/api/groups/{groupId}/posts": {
+    "/groups/{groupId}/posts": {
       "get": {
         "summary": "Get Posts By Group ID",
         "operationId": "PostService_GetPostsByGroupId",
@@ -668,7 +668,7 @@
         ]
       }
     },
-    "/v1/api/groups/{id}": {
+    "/groups/{id}": {
       "get": {
         "summary": "Get group",
         "operationId": "GroupService_GetGroup",
@@ -728,7 +728,7 @@
         ]
       }
     },
-    "/v1/api/groups/{userId}": {
+    "/groups/{userId}": {
       "get": {
         "summary": "Get all group member",
         "operationId": "GroupService_GetAllGroupByUserId",
@@ -759,7 +759,7 @@
         ]
       }
     },
-    "/v1/api/likes": {
+    "/likes": {
       "post": {
         "summary": "Create Like",
         "operationId": "LikeService_CreateLike",
@@ -792,7 +792,7 @@
         ]
       }
     },
-    "/v1/api/likes/{id}": {
+    "/likes/{id}": {
       "delete": {
         "summary": "Delete Like",
         "operationId": "LikeService_DeleteLike",
@@ -823,7 +823,7 @@
         ]
       }
     },
-    "/v1/api/likes/{like.id}": {
+    "/likes/{like.id}": {
       "put": {
         "summary": "Update Like",
         "operationId": "LikeService_UpdateLike",
@@ -872,7 +872,7 @@
         ]
       }
     },
-    "/v1/api/posts": {
+    "/posts": {
       "post": {
         "summary": "Create Post",
         "operationId": "PostService_CreatePost",
@@ -905,7 +905,7 @@
         ]
       }
     },
-    "/v1/api/posts/{id}": {
+    "/posts/{id}": {
       "get": {
         "summary": "Get Post",
         "operationId": "PostService_GetPost",
@@ -965,7 +965,7 @@
         ]
       }
     },
-    "/v1/api/posts/{post.id}": {
+    "/posts/{post.id}": {
       "put": {
         "summary": "Update Post",
         "operationId": "PostService_UpdatePost",
@@ -1035,7 +1035,7 @@
         ]
       }
     },
-    "/v1/api/posts/{postId}/comments": {
+    "/posts/{postId}/comments": {
       "get": {
         "summary": "Get Comment By Post ID",
         "operationId": "CommentService_GetCommentsByPostID",
@@ -1066,7 +1066,7 @@
         ]
       }
     },
-    "/v1/api/posts/{postId}/likes": {
+    "/posts/{postId}/likes": {
       "get": {
         "summary": "Get Like by Post ID",
         "operationId": "LikeService_GetLikesByPostID",
@@ -1097,7 +1097,7 @@
         ]
       }
     },
-    "/v1/api/signin": {
+    "/signin": {
       "post": {
         "summary": "SignIn application",
         "operationId": "AuthService_SignIn",
@@ -1130,7 +1130,7 @@
         ]
       }
     },
-    "/v1/api/signup": {
+    "/signup": {
       "post": {
         "summary": "SignUp application",
         "operationId": "AuthService_SignUp",
@@ -1163,7 +1163,7 @@
         ]
       }
     },
-    "/v1/api/users/{userId}/posts": {
+    "/users/{userId}/posts": {
       "get": {
         "summary": "Get Posts By User ID",
         "operationId": "PostService_GetPostsByUserId",

@@ -81,7 +81,7 @@ func RegisterUploadServiceHandlerServer(ctx context.Context, mux *runtime.ServeM
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/upload.UploadService/GetAttachmentsByType", runtime.WithHTTPPathPattern("/v1/api/attachments"))
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/upload.UploadService/GetAttachmentsByType", runtime.WithHTTPPathPattern("/attachments"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -145,7 +145,7 @@ func RegisterUploadServiceHandlerClient(ctx context.Context, mux *runtime.ServeM
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/upload.UploadService/GetAttachmentsByType", runtime.WithHTTPPathPattern("/v1/api/attachments"))
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/upload.UploadService/GetAttachmentsByType", runtime.WithHTTPPathPattern("/attachments"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -165,7 +165,7 @@ func RegisterUploadServiceHandlerClient(ctx context.Context, mux *runtime.ServeM
 }
 
 var (
-	pattern_UploadService_GetAttachmentsByType_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"v1", "api", "attachments"}, ""))
+	pattern_UploadService_GetAttachmentsByType_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0}, []string{"attachments"}, ""))
 )
 
 var (
