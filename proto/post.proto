@@ -14,7 +14,7 @@ option go_package = "github.com/dinhcanh303/go-microsevices/proto/gen";
 service PostService {
     rpc CreatePost(CreatePostRequest) returns (CreatePostResponse){
         option (google.api.http) = {
-            post: "/v1/api/posts"
+            post: "/posts"
             body: "*"
         };
         option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
@@ -24,7 +24,7 @@ service PostService {
     }
     rpc GetPost(GetPostRequest) returns (GetPostResponse){
         option (google.api.http) = {
-            get: "/v1/api/posts/{id}"
+            get: "/posts/{id}"
         };
         option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
             summary: "Get Post"
@@ -33,7 +33,7 @@ service PostService {
     }
     rpc GetPostsByFeed(GetPostsByFeedRequest) returns (GetPostsByFeedResponse){
         option (google.api.http) = {
-            post: "/v1/api/feed"
+            post: "/feed"
             body: "*"
         };
         option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
@@ -43,7 +43,7 @@ service PostService {
     }
     rpc GetPostsByGroupId(GetPostsByGroupIdRequest) returns (GetPostsByGroupIdResponse){
         option (google.api.http) = {
-            get: "/v1/api/groups/{group_id}/posts"
+            get: "/groups/{group_id}/posts"
         };
         option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
             summary: "Get Posts By Group ID"
@@ -52,7 +52,7 @@ service PostService {
     }
     rpc GetPostsByUserId(GetPostsByUserIdRequest) returns (GetPostsByUserIdResponse){
         option (google.api.http) = {
-            get: "/v1/api/users/{user_id}/posts"
+            get: "/users/{user_id}/posts"
         };
         option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
             summary: "Get Posts By User ID"
@@ -61,7 +61,7 @@ service PostService {
     }
     rpc UpdatePost(UpdatePostRequest) returns (UpdatePostResponse){
         option (google.api.http) = {
-            put: "/v1/api/posts/{post.id}"
+            put: "/posts/{post.id}"
             body: "*"
         };
         option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
@@ -71,7 +71,7 @@ service PostService {
     }
     rpc DeletePost(DeletePostRequest) returns (DeletePostResponse){
         option (google.api.http) = {
-            delete: "/v1/api/posts/{id}"
+            delete: "/posts/{id}"
         };
         option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
             summary: "Delete Post"
