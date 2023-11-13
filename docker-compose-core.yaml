@@ -56,15 +56,15 @@ services:
       - 8002:8001
     networks:
       - microservices-network
-  elasticsearch:
-    image: docker.elastic.co/elasticsearch/elasticsearch:7.11.0
-    container_name: mcs-elasticsearch
-    environment:
-      - discovery.type=single-node
-    ports:
-      - "9200:9200"
-    networks:
-      - microservices-network
+  # elasticsearch:
+  #   image: docker.elastic.co/elasticsearch/elasticsearch:7.11.0
+  #   container_name: mcs-elasticsearch
+  #   environment:
+  #     - discovery.type=single-node
+  #   ports:
+  #     - "9200:9200"
+  #   networks:
+  #     - microservices-network
 volumes:
   postgres_data: {}
   redis_data: {}
