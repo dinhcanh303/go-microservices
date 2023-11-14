@@ -16,4 +16,5 @@ type UserRepo interface {
 type UseCase interface {
 	SignIn(ctx context.Context, email, password string) (*sharedkernel.UserAuth, error)
 	SignUp(ctx context.Context, email, password, fistName, lastName string) (*sharedkernel.UserAuth, error)
+	Logout(ctx context.Context, key *domain.Key) error
 }

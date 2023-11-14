@@ -25,6 +25,12 @@ type service struct {
 	jwt        token.JWT
 }
 
+// Logout implements UseCase.
+func (s *service) Logout(ctx context.Context, key *domain.Key) error {
+	err := s.ucKeys.DeleteKeyByID(ctx, key.ID)
+	return err
+}
+
 // SignIn implements UseCase.
 func (s *service) SignIn(ctx context.Context, email string, password string) (*sharedkernel.UserAuth, error) {
 	slog.Info("Service Auth:: SignIn")

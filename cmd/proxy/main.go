@@ -107,7 +107,6 @@ func main() {
 	slog.New(logger.NewLogrusHandler(logrus.StandardLogger()))
 
 	mux := http.NewServeMux()
-
 	gw, err := newGateway(ctx, cfg, nil)
 	if err != nil {
 		slog.Error("failed to create a new gateway", err)

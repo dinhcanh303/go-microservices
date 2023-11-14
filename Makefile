@@ -1,4 +1,4 @@
-include .env
+include .test.env
 export
 
 all: build test
@@ -91,7 +91,7 @@ run-like:
 
 run-upload:
 	cd cmd/upload && go mod tidy && go mod download && \
-	CGO_ENABLED=0 go run -tags migrate github.com/dinhcanh303/go-microservices/cmd/upload 
+	CGO_ENABLED=0 go run -tags migrate github.com/dinhcanh303/go-microservices/cmd/upload &
 .PHONY: run-upload
 
 run-auth:
