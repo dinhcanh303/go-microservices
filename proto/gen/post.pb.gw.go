@@ -425,7 +425,7 @@ func RegisterPostServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/post.PostService/CreatePost", runtime.WithHTTPPathPattern("/posts"))
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/post.PostService/CreatePost", runtime.WithHTTPPathPattern("/v1/posts"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -450,7 +450,7 @@ func RegisterPostServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/post.PostService/GetPost", runtime.WithHTTPPathPattern("/posts/{id}"))
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/post.PostService/GetPost", runtime.WithHTTPPathPattern("/v1/posts/{id}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -475,7 +475,7 @@ func RegisterPostServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/post.PostService/GetPostsByFeed", runtime.WithHTTPPathPattern("/feed"))
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/post.PostService/GetPostsByFeed", runtime.WithHTTPPathPattern("/v1/feed"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -500,7 +500,7 @@ func RegisterPostServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/post.PostService/GetPostsByGroupId", runtime.WithHTTPPathPattern("/groups/{group_id}/posts"))
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/post.PostService/GetPostsByGroupId", runtime.WithHTTPPathPattern("/v1/groups/{group_id}/posts"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -525,7 +525,7 @@ func RegisterPostServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/post.PostService/GetPostsByUserId", runtime.WithHTTPPathPattern("/users/{user_id}/posts"))
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/post.PostService/GetPostsByUserId", runtime.WithHTTPPathPattern("/v1/users/{user_id}/posts"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -550,7 +550,7 @@ func RegisterPostServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/post.PostService/UpdatePost", runtime.WithHTTPPathPattern("/posts/{post.id}"))
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/post.PostService/UpdatePost", runtime.WithHTTPPathPattern("/v1/posts/{post.id}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -575,7 +575,7 @@ func RegisterPostServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/post.PostService/DeletePost", runtime.WithHTTPPathPattern("/posts/{id}"))
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/post.PostService/DeletePost", runtime.WithHTTPPathPattern("/v1/posts/{id}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -639,7 +639,7 @@ func RegisterPostServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/post.PostService/CreatePost", runtime.WithHTTPPathPattern("/posts"))
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/post.PostService/CreatePost", runtime.WithHTTPPathPattern("/v1/posts"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -661,7 +661,7 @@ func RegisterPostServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/post.PostService/GetPost", runtime.WithHTTPPathPattern("/posts/{id}"))
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/post.PostService/GetPost", runtime.WithHTTPPathPattern("/v1/posts/{id}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -683,7 +683,7 @@ func RegisterPostServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/post.PostService/GetPostsByFeed", runtime.WithHTTPPathPattern("/feed"))
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/post.PostService/GetPostsByFeed", runtime.WithHTTPPathPattern("/v1/feed"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -705,7 +705,7 @@ func RegisterPostServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/post.PostService/GetPostsByGroupId", runtime.WithHTTPPathPattern("/groups/{group_id}/posts"))
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/post.PostService/GetPostsByGroupId", runtime.WithHTTPPathPattern("/v1/groups/{group_id}/posts"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -727,7 +727,7 @@ func RegisterPostServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/post.PostService/GetPostsByUserId", runtime.WithHTTPPathPattern("/users/{user_id}/posts"))
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/post.PostService/GetPostsByUserId", runtime.WithHTTPPathPattern("/v1/users/{user_id}/posts"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -749,7 +749,7 @@ func RegisterPostServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/post.PostService/UpdatePost", runtime.WithHTTPPathPattern("/posts/{post.id}"))
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/post.PostService/UpdatePost", runtime.WithHTTPPathPattern("/v1/posts/{post.id}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -771,7 +771,7 @@ func RegisterPostServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/post.PostService/DeletePost", runtime.WithHTTPPathPattern("/posts/{id}"))
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/post.PostService/DeletePost", runtime.WithHTTPPathPattern("/v1/posts/{id}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -791,19 +791,19 @@ func RegisterPostServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux
 }
 
 var (
-	pattern_PostService_CreatePost_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0}, []string{"posts"}, ""))
+	pattern_PostService_CreatePost_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"v1", "posts"}, ""))
 
-	pattern_PostService_GetPost_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 1, 0, 4, 1, 5, 1}, []string{"posts", "id"}, ""))
+	pattern_PostService_GetPost_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2}, []string{"v1", "posts", "id"}, ""))
 
-	pattern_PostService_GetPostsByFeed_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0}, []string{"feed"}, ""))
+	pattern_PostService_GetPostsByFeed_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"v1", "feed"}, ""))
 
-	pattern_PostService_GetPostsByGroupId_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 1, 0, 4, 1, 5, 1, 2, 2}, []string{"groups", "group_id", "posts"}, ""))
+	pattern_PostService_GetPostsByGroupId_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3}, []string{"v1", "groups", "group_id", "posts"}, ""))
 
-	pattern_PostService_GetPostsByUserId_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 1, 0, 4, 1, 5, 1, 2, 2}, []string{"users", "user_id", "posts"}, ""))
+	pattern_PostService_GetPostsByUserId_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3}, []string{"v1", "users", "user_id", "posts"}, ""))
 
-	pattern_PostService_UpdatePost_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 1, 0, 4, 1, 5, 1}, []string{"posts", "post.id"}, ""))
+	pattern_PostService_UpdatePost_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2}, []string{"v1", "posts", "post.id"}, ""))
 
-	pattern_PostService_DeletePost_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 1, 0, 4, 1, 5, 1}, []string{"posts", "id"}, ""))
+	pattern_PostService_DeletePost_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2}, []string{"v1", "posts", "id"}, ""))
 )
 
 var (

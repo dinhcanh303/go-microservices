@@ -9,7 +9,7 @@ option go_package = "github.com/dinhcanh303/go-microservice/proto/gen";
 service AuthService {
     rpc SignIn(SignInRequest) returns (SignInResponse){
         option (google.api.http) = {
-            post: "/signin",
+            post: "/v1/signin",
             body: "*"
         };
         option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
@@ -19,7 +19,7 @@ service AuthService {
     }
     rpc SignUp(SignUpRequest) returns (SignUpResponse){
         option (google.api.http) = {
-            post: "/signup",
+            post: "/v1/signup",
             body: "*"
         };
         option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {

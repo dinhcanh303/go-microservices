@@ -112,7 +112,7 @@ func main() {
 	if err != nil {
 		slog.Error("failed to create a new gateway", err)
 	}
-	mux.Handle("/api/v1/", gw)
+	mux.Handle("/api/", gw)
 	//server swagger
 	fs := http.FileServer(http.Dir("swagger"))
 	mux.Handle("/swagger/", http.StripPrefix("/swagger/", fs))
