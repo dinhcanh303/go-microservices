@@ -10,7 +10,6 @@ import (
 
 	"github.com/dinhcanh303/go-microservices/cmd/proxy/config"
 	"github.com/dinhcanh303/go-microservices/pkg/logger"
-	"github.com/dinhcanh303/go-microservices/pkg/middleware"
 	"github.com/dinhcanh303/go-microservices/proto/gen"
 	"github.com/golang/glog"
 	gatewayRuntime "github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
@@ -20,7 +19,7 @@ import (
 	"google.golang.org/grpc/credentials/insecure"
 )
 
-func newGatewayWithMiddleware(
+func newGateway(
 	ctx context.Context,
 	cfg *config.Config,
 	opts []gatewayRuntime.ServeMuxOption) (http.Handler, error) {
@@ -29,6 +28,8 @@ func newGatewayWithMiddleware(
 	commentEndpoint := fmt.Sprintf("%s:%d", cfg.CommentHost, cfg.CommentPort)
 	likeEndpoint := fmt.Sprintf("%s:%d", cfg.LikeHost, cfg.LikePort)
 	uploadEndpoint := fmt.Sprintf("%s:%d", cfg.UploadHost, cfg.UploadPort)
+	authEndpoint := fmt.Sprintf("%s:%d", cfg.AuthHost, cfg.AuthPort)
+
 	mux := gatewayRuntime.NewServeMux(opts...)
 	dialOpts := []grpc.DialOption{grpc.WithTransportCredentials(insecure.NewCredentials())}
 
@@ -52,16 +53,7 @@ func newGatewayWithMiddleware(
 	if err != nil {
 		return nil, err
 	}
-	return mux, nil
-}
-func newGatewayWithOutMiddleware(
-	ctx context.Context,
-	cfg *config.Config,
-	opts []gatewayRuntime.ServeMuxOption) (http.Handler, error) {
-	authEndpoint := fmt.Sprintf("%s:%d", cfg.AuthHost, cfg.AuthPort)
-	mux := gatewayRuntime.NewServeMux(opts...)
-	dialOpts := []grpc.DialOption{grpc.WithTransportCredentials(insecure.NewCredentials())}
-	err := gen.RegisterAuthServiceHandlerFromEndpoint(ctx, mux, authEndpoint, dialOpts)
+	err = gen.RegisterAuthServiceHandlerFromEndpoint(ctx, mux, authEndpoint, dialOpts)
 	if err != nil {
 		return nil, err
 	}
@@ -105,6 +97,7 @@ func main() {
 	if err != nil {
 		glog.Fatalf("Config error: %s", err)
 	}
+	slog.Info("Config::", cfg)
 	// set up logrus
 	logrus.SetFormatter(&logrus.JSONFormatter{})
 	logrus.SetOutput(os.Stdout)
@@ -112,20 +105,22 @@ func main() {
 
 	// integrate Logrus with the slog logger
 	slog.New(logger.NewLogrusHandler(logrus.StandardLogger()))
-	routerWithMiddleware := routerWithMiddleware(ctx, cfg)
-	routerWithoutMiddleware := routerWithoutMiddleware(ctx, cfg)
-	mux := http.NewServeMux()
-	//with middleware
-	mux.Handle("/api", routerWithMiddleware)
-	//without middleware
-	mux.Handle("/api", routerWithoutMiddleware)
-	//server swagger
-	// mux.Handle("/", routerWithStatic())
 
+	mux := http.NewServeMux()
+
+	gw, err := newGateway(ctx, cfg, nil)
+	if err != nil {
+		slog.Error("failed to create a new gateway", err)
+	}
+	mux.Handle("/api/v1/", gw)
+	//server swagger
+	fs := http.FileServer(http.Dir("swagger"))
+	mux.Handle("/swagger/", http.StripPrefix("/swagger/", fs))
 	s := &http.Server{
 		Addr:    fmt.Sprintf("%s:%d", cfg.Host, cfg.Port),
-		Handler: mux,
+		Handler: allowCORS(withLogger(mux)),
 	}
+
 	//goroutine
 	go func() {
 		<-ctx.Done()
@@ -135,33 +130,10 @@ func main() {
 			slog.Error("failed to shutdown http server", err)
 		}
 	}()
-	slog.Info("start listening...", "address", fmt.Sprintf("%s:%d", cfg.Host, cfg.Port))
+
+	slog.Info("🌏 start listening...", "address", fmt.Sprintf("%s:%d", cfg.Host, cfg.Port))
+
 	if err := s.ListenAndServe(); errors.Is(err, http.ErrServerClosed) {
 		slog.Error("failed to listen and serve", err)
 	}
-}
-func routerWithMiddleware(ctx context.Context, cfg *config.Config) http.Handler {
-	mux := http.NewServeMux()
-	gw, err := newGatewayWithMiddleware(ctx, cfg, nil)
-	if err != nil {
-		slog.Error("failed to create a new gateway", err)
-	}
-	mux.Handle("/api/v1", gw)
-	return allowCORS(middleware.AuthMiddleware(withLogger(mux)))
-}
-func routerWithoutMiddleware(ctx context.Context, cfg *config.Config) http.Handler {
-	mux := http.NewServeMux()
-	gw, err := newGatewayWithOutMiddleware(ctx, cfg, nil)
-	if err != nil {
-		slog.Error("failed to create a new gateway", err)
-	}
-	mux.Handle("/api/v1", gw)
-	return mux
-}
-func routerWithStatic() http.Handler {
-	mux := http.NewServeMux()
-	// Server Swagger
-	fs := http.FileServer(http.Dir("swagger"))
-	mux.Handle("/swagger/", http.StripPrefix("/swagger/", fs))
-	return mux
 }

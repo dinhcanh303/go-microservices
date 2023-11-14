@@ -3,15 +3,6 @@ export
 
 all: build test
 
-server:
-	# cd cmd/auth/ && go run main.go & \
-	# cd cmd/upload/ && go run main.go &  \
-	# cd cmd/like/ && go run main.go &  \
-	# cd cmd/comment/ && go run main.go &  \
-	# cd cmd/post/ && go run main.go &  \
-	cd cmd/group/ && go run main.go &  \
-	cd cmd/proxy/ && go run main.go &
-.PHONY: server
 sqlc: 
 	sqlc generate
 .PHONY: sqlc
@@ -25,9 +16,6 @@ clean:
 linter-golangci: ### check by golangci linter
 	golangci-lint run
 .PHONY: linter-golangci
-
-env:
-	docker run --env-file .env upload
 
 wire:
 	cd internal/group/app && wire && cd - &&  \
@@ -83,37 +71,37 @@ run: run-group run-post run-comment run-like run-upload run-auth run-proxy
 
 run-group:
 	cd cmd/group && go mod tidy && go mod download && \
-	CGO_ENABLED=0 go run -tags migrate github.com/dinhcanh303/go-microservices/cmd/group
+	CGO_ENABLED=0 go run -tags migrate github.com/dinhcanh303/go-microservices/cmd/group &
 .PHONY: run-group
 
 run-post:
 	cd cmd/post && go mod tidy && go mod download && \
-	CGO_ENABLED=0 go run -tags migrate github.com/dinhcanh303/go-microservices/cmd/post
+	CGO_ENABLED=0 go run -tags migrate github.com/dinhcanh303/go-microservices/cmd/post &
 .PHONY: run-post
 
 run-comment:
 	cd cmd/comment && go mod tidy && go mod download && \
-	CGO_ENABLED=0 go run -tags migrate github.com/dinhcanh303/go-microservices/cmd/comment
+	CGO_ENABLED=0 go run -tags migrate github.com/dinhcanh303/go-microservices/cmd/comment &
 .PHONY: run-comment
 
 run-like:
 	cd cmd/like && go mod tidy && go mod download && \
-	CGO_ENABLED=0 go run -tags migrate github.com/dinhcanh303/go-microservices/cmd/like
+	CGO_ENABLED=0 go run -tags migrate github.com/dinhcanh303/go-microservices/cmd/like &
 .PHONY: run-like
 
 run-upload:
 	cd cmd/upload && go mod tidy && go mod download && \
-	CGO_ENABLED=0 go run -tags migrate github.com/dinhcanh303/go-microservices/cmd/upload
+	CGO_ENABLED=0 go run -tags migrate github.com/dinhcanh303/go-microservices/cmd/upload 
 .PHONY: run-upload
 
 run-auth:
 	cd cmd/auth && go mod tidy && go mod download && \
-	CGO_ENABLED=0 go run -tags migrate github.com/dinhcanh303/go-microservices/cmd/auth
+	CGO_ENABLED=0 go run -tags migrate github.com/dinhcanh303/go-microservices/cmd/auth &
 .PHONY: run-auth
 
 run-proxy:
 	cd cmd/proxy && go mod tidy && go mod download && \
-	CGO_ENABLED=0 go run -tags migrate github.com/dinhcanh303/go-microservices/cmd/proxy
+	CGO_ENABLED=0 go run github.com/dinhcanh303/go-microservices/cmd/proxy &
 .PHONY: run-proxy
 
 run-web:

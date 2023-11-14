@@ -13,7 +13,6 @@ import (
 	configs "github.com/dinhcanh303/go-microservices/pkg/config"
 	"github.com/dinhcanh303/go-microservices/pkg/logger"
 	"github.com/dinhcanh303/go-microservices/pkg/postgres"
-	"github.com/dinhcanh303/go-microservices/pkg/utils"
 	"github.com/sirupsen/logrus"
 	"go.uber.org/automaxprocs/maxprocs"
 	"golang.org/x/exp/slog"
@@ -25,10 +24,6 @@ func main() {
 	_, err := maxprocs.Set()
 	if err != nil {
 		slog.Error("Failed set max process", err)
-	}
-	err = utils.LoadFileEnvOnLocal()
-	if err != nil {
-		slog.Error("Failed get config", err)
 	}
 	ctx, cancel := context.WithCancel(context.Background())
 	cfg, err := config.NewConfig()
