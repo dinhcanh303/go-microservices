@@ -40,10 +40,10 @@ func NewAuthGRPCServer(
 
 func (a *authGRPCServer) SignUp(ctx context.Context, request *gen.SignUpRequest) (*gen.SignUpResponse, error) {
 	slog.Info("POST:: SignUp")
-	violations := validation.ValidateSignUp(request)
-	if violations != nil {
-		return nil, errorPkg.InvalidArgumentError(violations)
-	}
+	// violations := validation.ValidateSignUp(request)
+	// if violations != nil {
+	// 	return nil, errorPkg.InvalidArgumentError(violations)
+	// }
 	signRes, err := a.uc.SignUp(ctx, request.Email, request.Password, request.FirstName, request.LastName)
 	if err != nil {
 		return nil, err
