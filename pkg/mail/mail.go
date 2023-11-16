@@ -15,8 +15,13 @@ type emailSender struct {
 
 // SendEmail implements EmailSender.
 func (sender *emailSender) SendEmail(subject string, content string, to []string, cc []string, bcc []string, attachFiles []string) error {
+	emailFromName := sender.cfg.FromName
+	emailFromAddress := sender.cfg.FromAddress
+	emailPassword := sender.cfg.Password
+	emailHost := sender.cfg.Host
+	emailPort := sender.cfg.Port
 	e := email.NewEmail()
-	e.From = fmt.Sprintf("%s<%s>", sender.cfg.FromName, sender.cfg.FromAddress)
+	e.From = fmt.Sprintf("%s<%s>", emailFromName, emailFromAddress)
 	e.Subject = subject
 	e.HTML = []byte(content)
 	e.To = to
@@ -28,12 +33,14 @@ func (sender *emailSender) SendEmail(subject string, content string, to []string
 			return fmt.Errorf("failed to attach file %s: %w", f, err)
 		}
 	}
-	smtpAuth := smtp.PlainAuth("", sender.cfg.Username, sender.cfg.Password, sender.cfg.Host)
-	smtpServerAddress := fmt.Sprintf("%s:%s", sender.cfg.Host, sender.cfg.Port)
-	if sender.cfg.Encryption == "tls" {
-		return e.SendWithTLS(smtpServerAddress, smtpAuth, &tls.Config{
-			InsecureSkipVerify: true,
-		})
+	smtpAuth := smtp.PlainAuth("", emailFromAddress, emailPassword, emailHost)
+	smtpServerAddress := fmt.Sprintf("%s:%s", emailHost, emailPort)
+	tlsConfig := &tls.Config{
+		InsecureSkipVerify: true,
+		ServerName:         emailHost,
+	}
+	if sender.cfg.Encryption == "tls1" {
+		return e.SendWithStartTLS(smtpServerAddress, smtpAuth, tlsConfig)
 	}
 	return e.Send(smtpServerAddress, smtpAuth)
 }

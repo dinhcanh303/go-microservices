@@ -11,7 +11,7 @@ option go_package = "github.com/dinhcanh303/go-microsevices/proto/gen";
 service UploadService {
     rpc GetAttachmentsByType(GetAttachmentsByTypeRequest) returns (GetAttachmentsByTypeResponse) {
         option (google.api.http) = {
-            get: "/v1/attachments"
+            get: "/api/v1/attachments"
         };
         option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
             summary: "GetAttachmentsByType"

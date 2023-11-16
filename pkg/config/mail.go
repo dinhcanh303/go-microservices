@@ -7,7 +7,6 @@ import (
 type Mail struct {
 	Host        string `env:"MAIL_HOST" env-default:"smtp.email.com"`
 	Port        string `env:"MAIL_PORT" env-default:"587"`
-	Username    string `env:"MAIL_USERNAME" env-default:"info@email.com"`
 	Password    string `env:"MAIL_PASSWORD" env-default:"password"`
 	Encryption  string `env:"MAIL_ENCRYPTION" env-default:"tls"`
 	FromAddress string `env:"MAIL_FROM_ADDRESS" env-default:"example@example.com"`

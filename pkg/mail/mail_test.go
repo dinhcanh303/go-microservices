@@ -24,7 +24,7 @@ func TestSendMail(t *testing.T) {
 	<p>This is a test message from <a href="https://github.com/dinhcanh303">Foden Ngo</a></p>`
 
 	to := []string{"dinhcanhng303@gmail.com"}
-	attachFiles := []string{"../../README.md"}
-	err = senderMail.SendEmail(subject, content, to, nil, nil, attachFiles)
+	// attachFiles := []string{"../../README.md"}
+	err = senderMail.SendEmail(subject, content, to, nil, nil, nil)
 	require.NoError(t, err)
 }

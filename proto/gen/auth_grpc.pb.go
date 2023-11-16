@@ -19,8 +19,9 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	AuthService_SignIn_FullMethodName = "/auth.AuthService/SignIn"
-	AuthService_SignUp_FullMethodName = "/auth.AuthService/SignUp"
+	AuthService_SignIn_FullMethodName          = "/auth.AuthService/SignIn"
+	AuthService_SignUp_FullMethodName          = "/auth.AuthService/SignUp"
+	AuthService_FindKeyByUserID_FullMethodName = "/auth.AuthService/FindKeyByUserID"
 )
 
 // AuthServiceClient is the client API for AuthService service.
@@ -29,6 +30,7 @@ const (
 type AuthServiceClient interface {
 	SignIn(ctx context.Context, in *SignInRequest, opts ...grpc.CallOption) (*SignInResponse, error)
 	SignUp(ctx context.Context, in *SignUpRequest, opts ...grpc.CallOption) (*SignUpResponse, error)
+	FindKeyByUserID(ctx context.Context, in *FindKeyByUserIdRequest, opts ...grpc.CallOption) (*FindKeyByUserIdResponse, error)
 }
 
 type authServiceClient struct {
@@ -57,12 +59,22 @@ func (c *authServiceClient) SignUp(ctx context.Context, in *SignUpRequest, opts 
 	return out, nil
 }
 
+func (c *authServiceClient) FindKeyByUserID(ctx context.Context, in *FindKeyByUserIdRequest, opts ...grpc.CallOption) (*FindKeyByUserIdResponse, error) {
+	out := new(FindKeyByUserIdResponse)
+	err := c.cc.Invoke(ctx, AuthService_FindKeyByUserID_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // AuthServiceServer is the server API for AuthService service.
 // All implementations must embed UnimplementedAuthServiceServer
 // for forward compatibility
 type AuthServiceServer interface {
 	SignIn(context.Context, *SignInRequest) (*SignInResponse, error)
 	SignUp(context.Context, *SignUpRequest) (*SignUpResponse, error)
+	FindKeyByUserID(context.Context, *FindKeyByUserIdRequest) (*FindKeyByUserIdResponse, error)
 	mustEmbedUnimplementedAuthServiceServer()
 }
 
@@ -75,6 +87,9 @@ func (UnimplementedAuthServiceServer) SignIn(context.Context, *SignInRequest) (*
 }
 func (UnimplementedAuthServiceServer) SignUp(context.Context, *SignUpRequest) (*SignUpResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SignUp not implemented")
+}
+func (UnimplementedAuthServiceServer) FindKeyByUserID(context.Context, *FindKeyByUserIdRequest) (*FindKeyByUserIdResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method FindKeyByUserID not implemented")
 }
 func (UnimplementedAuthServiceServer) mustEmbedUnimplementedAuthServiceServer() {}
 
@@ -125,6 +140,24 @@ func _AuthService_SignUp_Handler(srv interface{}, ctx context.Context, dec func(
 	return interceptor(ctx, in, info, handler)
 }
 
+func _AuthService_FindKeyByUserID_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(FindKeyByUserIdRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AuthServiceServer).FindKeyByUserID(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AuthService_FindKeyByUserID_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AuthServiceServer).FindKeyByUserID(ctx, req.(*FindKeyByUserIdRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // AuthService_ServiceDesc is the grpc.ServiceDesc for AuthService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -139,6 +172,10 @@ var AuthService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "SignUp",
 			Handler:    _AuthService_SignUp_Handler,
+		},
+		{
+			MethodName: "FindKeyByUserID",
+			Handler:    _AuthService_FindKeyByUserID_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

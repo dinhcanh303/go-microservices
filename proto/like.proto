@@ -11,7 +11,7 @@ option go_package = "github.com/dinhcanh303/go-microsevices/proto/gen";
 service LikeService {
     rpc CreateLike(CreateLikeRequest) returns (CreateLikeResponse){
         option (google.api.http) = {
-            post: "/v1/likes"
+            post: "/api/v1/likes"
             body: "*"
         };
         option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
@@ -21,7 +21,7 @@ service LikeService {
     }
     rpc UpdateLike(UpdateLikeRequest) returns (UpdateLikeResponse){
         option (google.api.http) = {
-            put: "/v1/likes/{like.id}"
+            put: "/api/v1/likes/{like.id}"
             body: "*"
         };
         option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
@@ -31,7 +31,7 @@ service LikeService {
     }
     rpc DeleteLike(DeleteLikeRequest) returns (DeleteLikeResponse){
         option (google.api.http) = {
-            delete: "/v1/likes/{id}"
+            delete: "/api/v1/likes/{id}"
         };
         option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
             summary: "Delete Like"
@@ -40,7 +40,7 @@ service LikeService {
     }
     rpc GetLikesByPostID(GetLikesByPostIDRequest) returns (GetLikesByPostIDResponse){
         option (google.api.http) = {
-            get: "/v1/posts/{post_id}/likes"
+            get: "/api/v1/posts/{post_id}/likes"
         };
         option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
             summary: "Get Like by Post ID"
@@ -49,7 +49,7 @@ service LikeService {
     }
     rpc GetLikesByCommentID(GetLikesByCommentIDRequest) returns (GetLikesByCommentIDResponse){
         option (google.api.http) = {
-            get: "/v1/comments/{comment_id}/likes"
+            get: "/api/v1/comments/{comment_id}/likes"
         };
         option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
             summary: "Get Like by Comment ID"

@@ -13,7 +13,7 @@ option go_package = "github.com/dinhcanh303/go-microsevices/proto/gen";
 service CommentService {
     rpc CreateComment(CreateCommentRequest) returns (CreateCommentResponse){
         option (google.api.http) = {
-            post: "/v1/comments"
+            post: "/api/v1/comments"
             body: "*"
         };
         option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
@@ -23,7 +23,7 @@ service CommentService {
     }
     rpc GetComment(GetCommentRequest) returns (GetCommentResponse){
         option (google.api.http) = {
-            get: "/v1/comments/{id}"
+            get: "/api/v1/comments/{id}"
         };
         option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
             summary: "Get Comment"
@@ -32,7 +32,7 @@ service CommentService {
     }
     rpc UpdateComment(UpdateCommentRequest) returns (UpdateCommentResponse){
         option (google.api.http) = {
-            put: "/v1/comments/{comment.id}"
+            put: "/api/v1/comments/{comment.id}"
             body: "*"
         };
         option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
@@ -42,7 +42,7 @@ service CommentService {
     }
     rpc DeleteComment(DeleteCommentRequest) returns (DeleteCommentResponse){
         option (google.api.http) = {
-            delete: "/v1/comments/{id}"
+            delete: "/api/v1/comments/{id}"
         };
         option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
             summary: "Delete Comment"
@@ -51,7 +51,7 @@ service CommentService {
     }
     rpc GetCommentsByPostID(GetCommentsByPostIDRequest) returns (GetCommentsByPostIDResponse){
         option (google.api.http) = {
-            get: "/v1/posts/{post_id}/comments"
+            get: "/api/v1/posts/{post_id}/comments"
         };
         option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
             summary: "Get Comment By Post ID"
@@ -60,7 +60,7 @@ service CommentService {
     }
     rpc CountCommentByCommentID(CountCommentByCommentIDRequest) returns (CountCommentByCommentIDResponse){
         option (google.api.http) = {
-            get: "/v1/comments/{id}/count"
+            get: "/api/v1/comments/{id}/count"
         };
         option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
             summary: "Count Comment By Comment ID"

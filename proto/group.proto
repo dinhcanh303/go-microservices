@@ -11,7 +11,7 @@ option go_package = "github.com/dinhcanh303/go-microsevices/proto/gen";
 service GroupService {
     rpc CreateGroup(CreateGroupRequest) returns (CreateGroupResponse){
         option (google.api.http) = {
-            post: "/v1/groups"
+            post: "/api/v1/groups"
             body: "*"
         };
         option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
@@ -21,7 +21,7 @@ service GroupService {
     }
     rpc GetGroup(GetGroupRequest) returns (GetGroupResponse){
         option (google.api.http) = {
-            get: "/v1/groups/{id}"
+            get: "/api/v1/groups/{id}"
         };
         option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
             summary: "Get group"
@@ -30,7 +30,7 @@ service GroupService {
     }
     rpc UpdateGroup(UpdateGroupRequest) returns (UpdateGroupResponse){
         option (google.api.http) = {
-            put: "/v1/groups/{group.id}"
+            put: "/api/v1/groups/{group.id}"
             body: "*"
         };
         option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
@@ -40,7 +40,7 @@ service GroupService {
     }
     rpc DeleteGroup(DeleteGroupRequest) returns (DeleteGroupResponse){
         option (google.api.http) = {
-            delete: "/v1/groups/{id}"
+            delete: "/api/v1/groups/{id}"
         };
         option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
             summary: "Delete group"
@@ -49,7 +49,7 @@ service GroupService {
     }
     rpc GetAllGroupByUserId(GetAllGroupByUserIdRequest) returns (GetAllGroupByUserIdResponse){
         option (google.api.http) = {
-            get: "/v1/groups/{user_id}"
+            get: "/api/v1/groups/{user_id}"
         };
         option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
             summary: "Get all group member"
@@ -58,7 +58,7 @@ service GroupService {
     }
     rpc GetAllGroupIdByUserId(GetAllGroupIdByUserIdRequest) returns (GetAllGroupIdByUserIdResponse){
         option (google.api.http) = {
-            get: "/v1/group-ids/{user_id}"
+            get: "/api/v1/group-ids/{user_id}"
         };
         option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
             summary: "Get all group id by user id",
@@ -68,7 +68,7 @@ service GroupService {
     // GroupMember
     rpc CreateGroupMember(CreateGroupMemberRequest) returns (CreateGroupMemberResponse){
         option (google.api.http) = {
-            post: "/v1/group-members"
+            post: "/api/v1/group-members"
             body: "*"
         };
         option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
@@ -78,7 +78,7 @@ service GroupService {
     }
     rpc UpdateGroupMember(UpdateGroupMemberRequest) returns (UpdateGroupMemberResponse){
         option (google.api.http) = {
-            put: "/v1/group-members/{group_member.id}"
+            put: "/api/v1/group-members/{group_member.id}"
             body: "*"
         };
         option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
@@ -88,7 +88,7 @@ service GroupService {
     }
     rpc DeleteGroupMember(DeleteGroupMemberRequest) returns (DeleteGroupMemberResponse){
         option (google.api.http) = {
-            delete: "/v1/group-members/{id}"
+            delete: "/api/v1/group-members/{id}"
         };
         option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
             summary: "Delete group member"
@@ -97,7 +97,7 @@ service GroupService {
     }
     rpc GetAllGroupMembers(GetAllGroupMembersRequest) returns (GetAllGroupMembersResponse){
         option (google.api.http) = {
-            get: "/v1/group-members/{groupId}"
+            get: "/api/v1/group-members/{groupId}"
         };
         option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
             summary: "Get all group member"

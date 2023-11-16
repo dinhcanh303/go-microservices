@@ -10,7 +10,7 @@ option go_package = "github.com/dinhcanh303/go-microservice/proto/gen";
 service AuthService {
     rpc SignIn(SignInRequest) returns (SignInResponse){
         option (google.api.http) = {
-            post: "/v1/signin",
+            post: "/api/v1/signin",
             body: "*"
         };
         option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
@@ -20,7 +20,7 @@ service AuthService {
     }
     rpc SignUp(SignUpRequest) returns (SignUpResponse){
         option (google.api.http) = {
-            post: "/v1/signup",
+            post: "/api/v1/signup",
             body: "*"
         };
         option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
@@ -28,29 +28,47 @@ service AuthService {
             description: ""
         };
     }
-    // rpc Logout(LoginRequest) returns (LoginResponse){
-    //     option (google.api.http) = {
-    //         post: "/v1/api/logout",
-    //         body: "*"
-    //     };
-    //     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
-    //         summary: "Logout application"
-    //         description: ""
-    //     };
-    // }
-    // rpc HandleRefreshToken(LoginRequest) returns (LoginResponse){
-    //     option (google.api.http) = {
-    //         post: "/v1/api/handle-refresh-token",
-    //         body: "*"
-    //     };
-    //     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
-    //         summary: "HandleRefreshToken application"
-    //         description: ""
-    //     };
-    // }
-    
+    rpc ValidateToken(ValidateTokenRequest) returns (ValidateTokenResponse){
+        option (google.api.http) = {
+            post: "/api/v1/validate-token",
+            body: "*"
+        };
+        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+            summary: "Validate Token"
+            description: ""
+        };
+    }
+    rpc RefreshToken(RefreshTokenRequest) returns (RefreshTokenResponse){
+        option (google.api.http) = {
+            post: "/api/v1/refresh-token",
+            body: "*"
+        };
+        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+            summary: "Refresh Token"
+            description: ""
+        };
+    }
 }
-
+message RefreshTokenRequest {
+    string refresh_token = 1;
+    string user_id = 2;
+}
+message RefreshTokenResponse {
+    string token = 1;
+}
+message ValidateTokenRequest {
+    string token = 1;
+}
+message ValidateTokenResponse {
+    Payload payload = 1;
+}
+message Payload {
+    string id = 1;
+    string email = 2;
+    string fullname = 3;
+    string role = 4;
+    string avatar_url = 5;
+}
 message SignInRequest{
     string email = 1;
     string password = 2;
