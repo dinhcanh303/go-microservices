@@ -65,6 +65,20 @@ services:
   #     - "9200:9200"
   #   networks:
   #     - microservices-network
+  # traefik:
+  #   image: traefik:v2.10.5
+  #   container_name: mcs-reverse-proxy
+  #   command:
+  #     - "--api.insecure=true"
+  #     - "--providers.docker=true"
+  #   volumes:
+  #     - /var/run/docker.sock:/var/run/docker.sock
+  #   ports:
+  #     - 80:80
+  #     - 443:443
+  #     - 8080:8080
+  #   networks:
+  #     - microservices-network
 volumes:
   postgres_data: {}
   redis_data: {}
