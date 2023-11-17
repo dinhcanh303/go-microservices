@@ -2,9 +2,11 @@ package redis
 
 import (
 	"context"
+	"fmt"
 	"log/slog"
 	"time"
 
+	configs "github.com/dinhcanh303/go-microservices/pkg/config"
 	"github.com/pkg/errors"
 	redisV9 "github.com/redis/go-redis/v9"
 )
@@ -20,7 +22,6 @@ const (
 	_poolTimeout     = 6 * time.Second
 	_poolSize        = 300
 	_database        = 0
-	_password        = ""
 )
 
 var ctx = context.Background()
@@ -33,6 +34,25 @@ type redis struct {
 	poolSize int
 
 	client *redisV9.Client
+}
+
+// Get implements RedisEngine.
+func (r *redis) Get(key string) ([]byte, bool, error) {
+}
+
+// Invalidate implements RedisEngine.
+func (*redis) Invalidate(key string) error {
+	panic("unimplemented")
+}
+
+// Set implements RedisEngine.
+func (*redis) Set(key string, value any, timeToLive time.Duration) error {
+	panic("unimplemented")
+}
+
+// Close implements RedisEngine.
+func (r *redis) Close() {
+	r.client.Close()
 }
 
 // Client implements RedisEngine.
@@ -50,16 +70,16 @@ func (r *redis) Configure(opts ...Option) RedisEngine {
 
 var _ RedisEngine = (*redis)(nil)
 
-func NewRedisClient(url RedisConnString) (RedisEngine, error) {
-	slog.Info("CONNECT_STRING", "connect string", url)
+func NewRedisClient(config *configs.Redis) (RedisEngine, error) {
 	redis := &redis{
 		poolSize: _poolSize,
 		database: _database,
-		password: _password,
+		password: config.Password,
 	}
+	urlRedis := fmt.Sprintf("%s:%s", config.Host, config.Port)
 	redis.client = redisV9.NewClient(
 		&redisV9.Options{
-			Addr:            string(url),
+			Addr:            urlRedis,
 			Password:        redis.password,
 			DB:              redis.database,
 			MaxRetries:      _maxRetries,

@@ -19,16 +19,16 @@ import (
 	"google.golang.org/grpc/credentials/insecure"
 )
 
-func newGateway(
+func newGatewayAuth(
 	ctx context.Context,
 	cfg *config.Config,
 	opts []gatewayRuntime.ServeMuxOption) (http.Handler, error) {
+
 	groupEndpoint := fmt.Sprintf("%s:%d", cfg.GroupHost, cfg.GroupPort)
 	postEndpoint := fmt.Sprintf("%s:%d", cfg.PostHost, cfg.PostPort)
 	commentEndpoint := fmt.Sprintf("%s:%d", cfg.CommentHost, cfg.CommentPort)
 	likeEndpoint := fmt.Sprintf("%s:%d", cfg.LikeHost, cfg.LikePort)
 	uploadEndpoint := fmt.Sprintf("%s:%d", cfg.UploadHost, cfg.UploadPort)
-	authEndpoint := fmt.Sprintf("%s:%d", cfg.AuthHost, cfg.AuthPort)
 
 	mux := gatewayRuntime.NewServeMux(opts...)
 	dialOpts := []grpc.DialOption{grpc.WithTransportCredentials(insecure.NewCredentials())}
@@ -53,7 +53,17 @@ func newGateway(
 	if err != nil {
 		return nil, err
 	}
-	err = gen.RegisterAuthServiceHandlerFromEndpoint(ctx, mux, authEndpoint, dialOpts)
+	return mux, nil
+}
+func newGateway(
+	ctx context.Context,
+	cfg *config.Config,
+	opts []gatewayRuntime.ServeMuxOption) (http.Handler, error) {
+	authEndpoint := fmt.Sprintf("%s:%d", cfg.AuthHost, cfg.AuthPort)
+	mux := gatewayRuntime.NewServeMux(opts...)
+	dialOpts := []grpc.DialOption{grpc.WithTransportCredentials(insecure.NewCredentials())}
+
+	err := gen.RegisterAuthServiceHandlerFromEndpoint(ctx, mux, authEndpoint, dialOpts)
 	if err != nil {
 		return nil, err
 	}
