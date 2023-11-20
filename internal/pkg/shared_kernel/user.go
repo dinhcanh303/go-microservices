@@ -9,3 +9,10 @@ type UserAuth struct {
 	AccessToken  string       `json:"access_token"`
 	RefreshToken string       `json:"refresh_token"`
 }
+type Payload struct {
+	ID        string `json:"id"`
+	Email     string `json:"email"`
+	FullName  string `json:"full_name"`
+	Role      string `json:"role"`
+	AvatarUrl string `json:"avatar_url"`
+}

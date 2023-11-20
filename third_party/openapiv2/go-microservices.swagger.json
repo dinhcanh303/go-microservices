@@ -761,13 +761,13 @@
     },
     "/api/v1/keys/{userId}": {
       "post": {
-        "summary": "Get Key",
+        "summary": "Find Key",
         "operationId": "AuthService_FindKeyByUserID",
         "responses": {
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/authFindKeyByUserIdResponse"
+              "$ref": "#/definitions/authFindKeyByUserIDResponse"
             }
           },
           "default": {
@@ -1136,6 +1136,39 @@
         ]
       }
     },
+    "/api/v1/refresh-token": {
+      "post": {
+        "summary": "Refresh Token",
+        "operationId": "AuthService_RefreshToken",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/authRefreshTokenResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/authRefreshTokenRequest"
+            }
+          }
+        ],
+        "tags": [
+          "AuthService"
+        ]
+      }
+    },
     "/api/v1/signin": {
       "post": {
         "summary": "SignIn application",
@@ -1249,15 +1282,7 @@
     }
   },
   "definitions": {
-    "authFindKeyByUserIdResponse": {
-      "type": "object",
-      "properties": {
-        "key": {
-          "$ref": "#/definitions/authKey"
-        }
-      }
-    },
-    "authKey": {
+    "authFindKeyByUserIDResponse": {
       "type": "object",
       "properties": {
         "id": {
@@ -1276,6 +1301,12 @@
         "refreshToken": {
           "type": "string"
         },
+        "refreshTokenUsed": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
         "createdAt": {
           "type": "string",
           "format": "date-time"
@@ -1283,6 +1314,31 @@
         "updatedAt": {
           "type": "string",
           "format": "date-time"
+        }
+      }
+    },
+    "authRefreshTokenRequest": {
+      "type": "object",
+      "properties": {
+        "refreshToken": {
+          "type": "string"
+        },
+        "userId": {
+          "type": "string"
+        }
+      }
+    },
+    "authRefreshTokenResponse": {
+      "type": "object",
+      "properties": {
+        "user": {
+          "$ref": "#/definitions/authUser"
+        },
+        "accessToken": {
+          "type": "string"
+        },
+        "refreshToken": {
+          "type": "string"
         }
       }
     },

@@ -2,12 +2,15 @@ package router
 
 import (
 	"context"
+	"encoding/json"
 	"log/slog"
 
-	"github.com/dinhcanh303/go-microservices/cmd/auth/config"
+	"github.com/dinhcanh303/go-microservices/cmd/gateway/config"
 	"github.com/dinhcanh303/go-microservices/internal/auth/app/validation"
 	"github.com/dinhcanh303/go-microservices/internal/auth/usecases/auth"
+	"github.com/dinhcanh303/go-microservices/internal/auth/usecases/keys"
 	errorPkg "github.com/dinhcanh303/go-microservices/pkg/error"
+	"github.com/dinhcanh303/go-microservices/pkg/utils"
 	"github.com/dinhcanh303/go-microservices/proto/gen"
 	"github.com/google/wire"
 	"google.golang.org/grpc"
@@ -17,8 +20,9 @@ import (
 
 type authGRPCServer struct {
 	gen.UnimplementedAuthServiceServer
-	cfg *config.Config
-	uc  auth.UseCase
+	cfg   *config.Config
+	uc    auth.UseCase
+	ucKey keys.UseCase
 }
 
 var _ gen.AuthServiceServer = (*authGRPCServer)(nil)
@@ -28,10 +32,12 @@ var AuthGRPCServerSet = wire.NewSet(NewAuthGRPCServer)
 func NewAuthGRPCServer(
 	grpcServer *grpc.Server,
 	cfg *config.Config,
-	uc auth.UseCase) gen.AuthServiceServer {
+	uc auth.UseCase,
+	ucKey keys.UseCase) gen.AuthServiceServer {
 	svc := authGRPCServer{
-		cfg: cfg,
-		uc:  uc,
+		cfg:   cfg,
+		uc:    uc,
+		ucKey: ucKey,
 	}
 	gen.RegisterAuthServiceServer(grpcServer, &svc)
 	reflection.Register(grpcServer)
@@ -84,5 +90,31 @@ func (a *authGRPCServer) SignIn(ctx context.Context, request *gen.SignInRequest)
 		},
 		AccessToken:  signRes.AccessToken,
 		RefreshToken: signRes.RefreshToken,
+	}, nil
+}
+func (a *authGRPCServer) FindKeyByUserID(ctx context.Context, request *gen.FindKeyByUserIDRequest) (*gen.FindKeyByUserIDResponse, error) {
+
+	userId, err := utils.StringToUUID(request.UserId)
+	if err != nil {
+		return nil, err
+	}
+	keyStore, err := a.ucKey.FindKeyByUserID(ctx, userId)
+	if err != nil {
+		return nil, err
+	}
+	var stringSlice []string
+	err = json.Unmarshal(keyStore.RefreshTokensUsed, &stringSlice)
+	if err != nil {
+		return nil, err
+	}
+	return &gen.FindKeyByUserIDResponse{
+		Id:               int32(keyStore.ID),
+		UserId:           keyStore.UserID.String(),
+		PublicKey:        keyStore.PublicKey,
+		PrivateKey:       keyStore.PrivateKey,
+		RefreshToken:     keyStore.RefreshToken,
+		RefreshTokenUsed: stringSlice,
+		CreatedAt:        timestamppb.New(keyStore.CreatedAt),
+		UpdatedAt:        timestamppb.New(keyStore.UpdatedAt),
 	}, nil
 }

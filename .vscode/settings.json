@@ -13,6 +13,7 @@
         "Infoln",
         "infras",
         "Logrus",
+        "logrus",
         "maxprocs",
         "openapiv",
         "ossp",
@@ -27,6 +28,13 @@
         "sslmode",
         "timestamppb",
         "usecase",
-        "usecases"
+        "usecases",
+        "apikeys",
+        "esapi",
+        "labstack",
+        "logrus",
+        "Minio",
+        "sharedkernel",
+        "stretchr",
     ]
 }

@@ -7,7 +7,7 @@
 package app
 
 import (
-	"github.com/dinhcanh303/go-microservices/cmd/auth/config"
+	"github.com/dinhcanh303/go-microservices/cmd/gateway/config"
 	"github.com/dinhcanh303/go-microservices/internal/auth/app/router"
 	"github.com/dinhcanh303/go-microservices/internal/auth/infras/repo"
 	"github.com/dinhcanh303/go-microservices/internal/auth/usecases/auth"
@@ -36,7 +36,7 @@ func InitApp(cfg *config.Config, cfgLdap *configs.Ldap, dbConnStr postgres.DBCon
 	}
 	jwt := jwtFunc()
 	authUseCase := auth.NewUseCase(userRepo, useCase, ldapClient, jwt)
-	authServiceServer := router.NewAuthGRPCServer(grpcServer, cfg, authUseCase)
+	authServiceServer := router.NewAuthGRPCServer(grpcServer, cfg, authUseCase, useCase)
 	app := New(cfg, cfgLdap, dbEngine, authUseCase, authServiceServer)
 	return app, func() {
 		cleanup2()

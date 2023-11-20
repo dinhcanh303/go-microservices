@@ -28,16 +28,6 @@ service AuthService {
             description: ""
         };
     }
-    rpc ValidateToken(ValidateTokenRequest) returns (ValidateTokenResponse){
-        option (google.api.http) = {
-            post: "/api/v1/validate-token",
-            body: "*"
-        };
-        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
-            summary: "Validate Token"
-            description: ""
-        };
-    }
     rpc RefreshToken(RefreshTokenRequest) returns (RefreshTokenResponse){
         option (google.api.http) = {
             post: "/api/v1/refresh-token",
@@ -48,19 +38,38 @@ service AuthService {
             description: ""
         };
     }
+    rpc FindKeyByUserID(FindKeyByUserIDRequest) returns (FindKeyByUserIDResponse){
+        option (google.api.http) = {
+            post: "/api/v1/keys/{user_id}",
+            body: "*"
+        };
+        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+            summary: "Find Key"
+            description: ""
+        };
+    }
 }
 message RefreshTokenRequest {
     string refresh_token = 1;
     string user_id = 2;
 }
 message RefreshTokenResponse {
-    string token = 1;
+    User user =1;
+    string access_token = 2;
+    string refresh_token = 3;
 }
-message ValidateTokenRequest {
-    string token = 1;
+message FindKeyByUserIDRequest {
+    string user_id = 1;
 }
-message ValidateTokenResponse {
-    Payload payload = 1;
+message FindKeyByUserIDResponse {
+    int32 id=1;
+    string user_id=2;
+    string public_key=3;
+    string private_key=4;
+    string refresh_token = 5;
+    repeated string refresh_token_used = 6;
+    google.protobuf.Timestamp created_at = 7;
+    google.protobuf.Timestamp updated_at = 8;
 }
 message Payload {
     string id = 1;

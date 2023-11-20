@@ -1,7 +1,7 @@
 package app
 
 import (
-	"github.com/dinhcanh303/go-microservices/cmd/auth/config"
+	"github.com/dinhcanh303/go-microservices/cmd/gateway/config"
 	"github.com/dinhcanh303/go-microservices/internal/auth/usecases/auth"
 	configs "github.com/dinhcanh303/go-microservices/pkg/config"
 	"github.com/dinhcanh303/go-microservices/pkg/postgres"

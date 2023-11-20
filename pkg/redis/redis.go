@@ -2,8 +2,10 @@ package redis
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"log/slog"
+	"sync"
 	"time"
 
 	configs "github.com/dinhcanh303/go-microservices/pkg/config"
@@ -32,22 +34,40 @@ type redis struct {
 	password string
 	database int
 	poolSize int
-
-	client *redisV9.Client
+	rwMutex  sync.Mutex
+	client   *redisV9.Client
 }
 
 // Get implements RedisEngine.
 func (r *redis) Get(key string) ([]byte, bool, error) {
+	byteValue, err := r.client.Get(ctx, key).Bytes()
+	if err == redisV9.Nil {
+		return nil, false, err
+	}
+	if err != nil {
+		return nil, false, err
+	}
+	return byteValue, true, nil
 }
 
 // Invalidate implements RedisEngine.
-func (*redis) Invalidate(key string) error {
-	panic("unimplemented")
+func (r *redis) Invalidate(key string) error {
+	r.rwMutex.Lock()
+	defer r.rwMutex.Unlock()
+	//Delete Key From Cache
+	return r.client.Del(ctx, key).Err()
 }
 
 // Set implements RedisEngine.
-func (*redis) Set(key string, value any, timeToLive time.Duration) error {
-	panic("unimplemented")
+func (r *redis) Set(key string, value any, timeToLive time.Duration) error {
+	r.rwMutex.Lock()
+	defer r.rwMutex.Unlock()
+	byteValue, err := json.Marshal(value)
+	if err != nil {
+		return err
+	}
+	//Set value to redis cache
+	return r.client.Set(ctx, key, byteValue, timeToLive).Err()
 }
 
 // Close implements RedisEngine.
