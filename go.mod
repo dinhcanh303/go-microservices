@@ -8,7 +8,6 @@ require (
 	github.com/golang/glog v1.1.2
 	github.com/google/uuid v1.3.1
 	github.com/google/wire v0.5.0
-	github.com/grpc-ecosystem/go-grpc-middleware v1.4.0
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.18.0
 	github.com/ilyakaznacheev/cleanenv v1.5.0
 	github.com/kyleconroy/sqlc v1.16.0
@@ -32,6 +31,8 @@ require (
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/go-asn1-ber/asn1-ber v1.5.5 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
+	github.com/robfig/cron/v3 v3.0.1 // indirect
+	github.com/spf13/cast v1.3.1 // indirect
 )
 
 require (
@@ -52,6 +53,7 @@ require (
 	github.com/golang/protobuf v1.5.3 // indirect
 	github.com/hashicorp/errwrap v1.1.0 // indirect
 	github.com/hashicorp/go-multierror v1.1.1 // indirect
+	github.com/hibiken/asynq v0.24.1
 	github.com/joho/godotenv v1.5.1
 	github.com/jordan-wright/email v4.0.1-0.20210109023952-943e75fe5223+incompatible
 	github.com/json-iterator/go v1.1.12 // indirect
