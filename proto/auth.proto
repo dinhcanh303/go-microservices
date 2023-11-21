@@ -41,7 +41,6 @@ service AuthService {
     rpc FindKeyByUserID(FindKeyByUserIDRequest) returns (FindKeyByUserIDResponse){
         option (google.api.http) = {
             post: "/api/v1/keys/{user_id}",
-            body: "*"
         };
         option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
             summary: "Find Key"

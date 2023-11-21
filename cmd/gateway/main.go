@@ -15,6 +15,7 @@ import (
 	"github.com/dinhcanh303/go-microservices/internal/auth/app"
 	configs "github.com/dinhcanh303/go-microservices/pkg/config"
 	"github.com/dinhcanh303/go-microservices/pkg/logger"
+	"github.com/dinhcanh303/go-microservices/pkg/middleware"
 	"github.com/dinhcanh303/go-microservices/pkg/postgres"
 	"github.com/dinhcanh303/go-microservices/proto/gen"
 	gatewayRuntime "github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
@@ -50,29 +51,27 @@ func main() {
 	//integrate Logrus with the slog logger
 	logrusHandle := logger.NewLogrusHandler(logrus.StandardLogger())
 	slog.New(logrusHandle)
-	go runGatewayServer(ctx, cancel, cfg)
 	runGrpcServer(ctx, cancel, cfg, cfgLdap)
-
 }
 
-func prepareApp(ctx context.Context, cancel context.CancelFunc, cfg *config.Config, cfgLdap *configs.Ldap, server *grpc.Server) func() {
-	_, cleanup, err := app.InitApp(cfg, cfgLdap, postgres.DBConnString(cfg.PG.DsnURL), server)
+func prepareApp(ctx context.Context, cancel context.CancelFunc, cfg *config.Config, cfgLdap *configs.Ldap, server *grpc.Server) (*app.App, func()) {
+	app, cleanup, err := app.InitApp(cfg, cfgLdap, postgres.DBConnString(cfg.PG.DsnURL), server)
 	if err != nil {
 		slog.Error("Failed init app", err)
 		cancel()
 		<-ctx.Done()
 	}
-	return cleanup
+	return app, cleanup
 }
-func runGrpcServer(ctx context.Context, cancel context.CancelFunc, cfg *config.Config, cfgLdap *configs.Ldap) {
+func runGrpcServer(ctx context.Context, cancel context.CancelFunc, cfg *config.Config, cfgLdap *configs.Ldap) *app.App {
 	server := grpc.NewServer()
 
 	go func() {
 		defer server.GracefulStop()
 		<-ctx.Done()
 	}()
-	cleanup := prepareApp(ctx, cancel, cfg, cfgLdap, server)
-
+	app, cleanup := prepareApp(ctx, cancel, cfg, cfgLdap, server)
+	go runGatewayServer(ctx, cancel, cfg, app)
 	//gRPC Server
 	address := fmt.Sprintf("%s:%d", cfg.AuthHost, cfg.AuthPort)
 	network := "tcp"
@@ -106,14 +105,15 @@ func runGrpcServer(ctx context.Context, cancel context.CancelFunc, cfg *config.C
 		cleanup()
 		slog.Info("ctx.Done", "app done", done)
 	}
+	return app
 }
-func runGatewayServer(ctx context.Context, cancel context.CancelFunc, cfg *config.Config) {
+func runGatewayServer(ctx context.Context, cancel context.CancelFunc, cfg *config.Config, app *app.App) {
 	mux := http.NewServeMux()
 	gw, err := newGateway(ctx, cfg, nil)
 	if err != nil {
 		slog.Error("failed to create a new gateway", err)
 	}
-	mux.Handle("/", gw)
+	mux.Handle("/", middleware.AuthMiddleware(gw, app))
 	//server swagger
 	fs := http.FileServer(http.Dir("swagger"))
 	mux.Handle("/swagger/", http.StripPrefix("/swagger/", fs))

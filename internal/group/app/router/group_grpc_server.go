@@ -185,7 +185,7 @@ func (g *groupGRPCServer) CreateGroup(ctx context.Context, request *gen.CreateGr
 	slog.Info("POST: CreateGroup")
 	userId, err := uuid.Parse(request.Group.UserId)
 	if err != nil {
-		return nil, errors.Wrap(err, "failed to parse")
+		return nil, errors.Wrap(err, "userID parse failed")
 	}
 	model := domain.Group{
 		Name:        request.Group.Name,

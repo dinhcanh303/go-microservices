@@ -2,7 +2,6 @@ package middleware
 
 import (
 	"context"
-	"encoding/json"
 	"net/http"
 
 	"github.com/dinhcanh303/go-microservices/internal/auth/app"
@@ -22,7 +21,8 @@ func AuthMiddleware(next http.Handler, app *app.App) http.Handler {
 			UserId: userId,
 		})
 		if err != nil {
-			http.Error(w, "Not Found KeyStore", http.StatusNotFound)
+			http.Error(w, err.Error(), http.StatusNotFound)
+			return
 		}
 		refreshToken := r.Header.Get(constant.RefreshToken)
 		if refreshToken != "" {
@@ -31,17 +31,31 @@ func AuthMiddleware(next http.Handler, app *app.App) http.Handler {
 				http.Error(w, "Unauthorized", http.StatusUnauthorized)
 				return
 			}
-			payloadByte, err := json.Marshal(payload)
-			r.Header.Set("keyStore", string(payloadByte))
+			ctx := setValueContext(r, payload, keyStore, refreshToken)
+			next.ServeHTTP(w, r.WithContext(ctx))
 		}
 		authorization := r.Header.Get(constant.Authorization)
 		if authorization == "" {
 			http.Error(w, "Unauthorized", http.StatusUnauthorized)
 			return
 		}
-
-		next.ServeHTTP(w, r)
+		payload, err := verifyToken(authorization, keyStore.PublicKey)
+		if err != nil {
+			http.Error(w, "Unauthorized", http.StatusUnauthorized)
+			return
+		}
+		ctx := setValueContext(r, payload, keyStore, "")
+		next.ServeHTTP(w, r.WithContext(ctx))
 	})
+}
+
+func setValueContext(r *http.Request, payload *token.Payload, key *gen.FindKeyByUserIDResponse, refreshToken string) context.Context {
+	ctx := context.WithValue(r.Context(), constant.KeyStore, key)
+	ctx = context.WithValue(ctx, constant.User, payload)
+	if refreshToken != "" {
+		ctx = context.WithValue(ctx, constant.RefreshToken, refreshToken)
+	}
+	return ctx
 }
 func verifyToken(refreshToken, secretKey string) (*token.Payload, error) {
 	jwt := token.NewJWTMaker()

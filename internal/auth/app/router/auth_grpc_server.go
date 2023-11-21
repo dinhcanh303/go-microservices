@@ -10,8 +10,8 @@ import (
 	"github.com/dinhcanh303/go-microservices/internal/auth/usecases/auth"
 	"github.com/dinhcanh303/go-microservices/internal/auth/usecases/keys"
 	errorPkg "github.com/dinhcanh303/go-microservices/pkg/error"
-	"github.com/dinhcanh303/go-microservices/pkg/utils"
 	"github.com/dinhcanh303/go-microservices/proto/gen"
+	"github.com/google/uuid"
 	"github.com/google/wire"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
@@ -93,8 +93,8 @@ func (a *authGRPCServer) SignIn(ctx context.Context, request *gen.SignInRequest)
 	}, nil
 }
 func (a *authGRPCServer) FindKeyByUserID(ctx context.Context, request *gen.FindKeyByUserIDRequest) (*gen.FindKeyByUserIDResponse, error) {
-
-	userId, err := utils.StringToUUID(request.UserId)
+	slog.Info("GET:: FindKeyByUserID")
+	userId, err := uuid.Parse(request.UserId)
 	if err != nil {
 		return nil, err
 	}
