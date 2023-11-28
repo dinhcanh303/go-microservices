@@ -113,7 +113,13 @@ func runGatewayServer(ctx context.Context, cancel context.CancelFunc, cfg *confi
 	if err != nil {
 		slog.Error("failed to create a new gateway", err)
 	}
-	mux.Handle("/", middleware.AuthMiddleware(gw, app))
+	gwAuth, err := newGatewayAuth(ctx, cfg, nil)
+	if err != nil {
+		slog.Error("failed to create a new gateway", err)
+	}
+	mux.Handle("/", gw)
+	mux.Handle("/", middleware.AuthMiddleware(gwAuth, app))
+	slog.InfoContext(ctx, "Context::")
 	//server swagger
 	fs := http.FileServer(http.Dir("swagger"))
 	mux.Handle("/swagger/", http.StripPrefix("/swagger/", fs))
@@ -138,7 +144,7 @@ func runGatewayServer(ctx context.Context, cancel context.CancelFunc, cfg *confi
 		slog.Error("failed to listen and serve", err)
 	}
 }
-func newGateway(
+func newGatewayAuth(
 	ctx context.Context,
 	cfg *config.Config,
 	opts []gatewayRuntime.ServeMuxOption) (http.Handler, error) {
@@ -148,7 +154,6 @@ func newGateway(
 	commentEndpoint := fmt.Sprintf("%s:%d", cfg.CommentHost, cfg.CommentPort)
 	likeEndpoint := fmt.Sprintf("%s:%d", cfg.LikeHost, cfg.LikePort)
 	uploadEndpoint := fmt.Sprintf("%s:%d", cfg.UploadHost, cfg.UploadPort)
-	authEndpoint := fmt.Sprintf("%s:%d", cfg.AuthHost, cfg.AuthPort)
 
 	mux := gatewayRuntime.NewServeMux(opts...)
 	dialOpts := []grpc.DialOption{grpc.WithTransportCredentials(insecure.NewCredentials())}
@@ -173,7 +178,19 @@ func newGateway(
 	if err != nil {
 		return nil, err
 	}
-	err = gen.RegisterAuthServiceHandlerFromEndpoint(ctx, mux, authEndpoint, dialOpts)
+	return mux, nil
+}
+func newGateway(
+	ctx context.Context,
+	cfg *config.Config,
+	opts []gatewayRuntime.ServeMuxOption) (http.Handler, error) {
+
+	authEndpoint := fmt.Sprintf("%s:%d", cfg.AuthHost, cfg.AuthPort)
+
+	mux := gatewayRuntime.NewServeMux(opts...)
+	dialOpts := []grpc.DialOption{grpc.WithTransportCredentials(insecure.NewCredentials())}
+
+	err := gen.RegisterAuthServiceHandlerFromEndpoint(ctx, mux, authEndpoint, dialOpts)
 	if err != nil {
 		return nil, err
 	}

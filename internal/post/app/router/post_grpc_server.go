@@ -144,9 +144,6 @@ func (g *postGRPCServer) GetPostsByUserId(ctx context.Context, request *gen.GetP
 
 func (g *postGRPCServer) GetPostsByGroupId(ctx context.Context, request *gen.GetPostsByGroupIdRequest) (*gen.GetPostsByGroupIdResponse, error) {
 	slog.Info("GET: GetPostsByGroupId")
-	slog.Info("GET ::", request.GroupId)
-	slog.Info("GET ::", request.GetLimit())
-	slog.Info("GET ::", request.GetOffset())
 	groupId, err := uuid.Parse(request.GroupId)
 	if err != nil {
 		return nil, errors.Wrap(err, "uuid.Parse failed")

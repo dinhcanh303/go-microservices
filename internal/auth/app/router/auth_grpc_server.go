@@ -92,6 +92,13 @@ func (a *authGRPCServer) SignIn(ctx context.Context, request *gen.SignInRequest)
 		RefreshToken: signRes.RefreshToken,
 	}, nil
 }
+
+// func (a *authGRPCServer) HandleRefreshToken(ctx context.Context) {
+// 	userId, email := "", ""
+// 	if slices.Contains(keyStore) {
+
+//		}
+//	}
 func (a *authGRPCServer) FindKeyByUserID(ctx context.Context, request *gen.FindKeyByUserIDRequest) (*gen.FindKeyByUserIDResponse, error) {
 	slog.Info("GET:: FindKeyByUserID")
 	userId, err := uuid.Parse(request.UserId)
