@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"log/slog"
 
-	"github.com/dinhcanh303/go-microservices/cmd/gateway/config"
+	"github.com/dinhcanh303/go-microservices/cmd/auth/config"
 	"github.com/dinhcanh303/go-microservices/internal/auth/app/validation"
 	"github.com/dinhcanh303/go-microservices/internal/auth/usecases/auth"
 	"github.com/dinhcanh303/go-microservices/internal/auth/usecases/keys"

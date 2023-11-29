@@ -1,41 +1,41 @@
 version: "3"
 
 services:
-  gateway:
-    build:
-      context: .
-      dockerfile: ./docker/Dockerfile-gateway
-    image: mcs-gateway
-    env_file:
-      - .env
-    environment:
-      APP_NAME: 'gateway-service in docker'
-      IN_DOCKER: "true"
-      PG_URL: postgres://postgres:P@ssw0rd@postgres:5432/postgres
-      PG_DSN_URL: host=postgres user=postgres password=P@ssw0rd dbname=postgres sslmode=disable
-      GRPC_GROUP_HOST: 'group'
-      GRPC_GROUP_PORT: 5001
-      GRPC_POST_HOST: 'post'
-      GRPC_POST_PORT: 5002
-      GRPC_COMMENT_HOST: 'comment'
-      GRPC_COMMENT_PORT: 5003
-      GRPC_LIKE_HOST: 'like'
-      GRPC_LIKE_PORT: 5004
-      GRPC_UPLOAD_HOST: 'upload'
-      GRPC_UPLOAD_PORT: 5006
-      GRPC_AUTH_HOST: 'gateway'
-      GRPC_AUTH_PORT: 5007
-    ports:
-      - 5000:5000
-      - 5007:5007
-    depends_on:
-      - group
-      - post
-      - comment
-      - like
-      - upload
-    networks:
-      - microservices-network
+  # gateway:
+  #   build:
+  #     context: .
+  #     dockerfile: ./docker/Dockerfile-gateway
+  #   image: mcs-gateway
+  #   env_file:
+  #     - .env
+  #   environment:
+  #     APP_NAME: 'gateway-service in docker'
+  #     IN_DOCKER: "true"
+  #     PG_URL: postgres://postgres:P@ssw0rd@postgres:5432/postgres
+  #     PG_DSN_URL: host=postgres user=postgres password=P@ssw0rd dbname=postgres sslmode=disable
+  #     GRPC_GROUP_HOST: 'group'
+  #     GRPC_GROUP_PORT: 5001
+  #     GRPC_POST_HOST: 'post'
+  #     GRPC_POST_PORT: 5002
+  #     GRPC_COMMENT_HOST: 'comment'
+  #     GRPC_COMMENT_PORT: 5003
+  #     GRPC_LIKE_HOST: 'like'
+  #     GRPC_LIKE_PORT: 5004
+  #     GRPC_UPLOAD_HOST: 'upload'
+  #     GRPC_UPLOAD_PORT: 5006
+  #     GRPC_AUTH_HOST: 'gateway'
+  #     GRPC_AUTH_PORT: 5007
+  #   ports:
+  #     - 5000:5000
+  #     - 5007:5007
+  #   depends_on:
+  #     - group
+  #     - post
+  #     - comment
+  #     - like
+  #     - upload
+  #   networks:
+  #     - microservices-network
   group:
     build:
       context: .
@@ -120,6 +120,29 @@ services:
     ports:
       - 5005:5005
       - 5006:5006
+    networks:
+      - microservices-network
+  auth:
+    build:
+      context: .
+      dockerfile: ./docker/Dockerfile-auth
+    image: mcs-auth
+    env_file:
+      - .env
+    environment:
+      APP_NAME: 'auth-service in docker'
+      IN_DOCKER: "true"
+      PG_URL: postgres://postgres:P@ssw0rd@postgres:5432/postgres
+      PG_DSN_URL: host=postgres user=postgres password=P@ssw0rd dbname=postgres sslmode=disable
+    ports:
+      - 5005:5005
+      - 5006:5006
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.post.rule=Host(`auth.domain.com`)"
+      - "traefik.http.routers.post.entrypoints=web"
+      - "traefik.http.services.post.loadbalancer.server.port=5007"
+      - "traefik.http.middlewares.test-auth.forwardauth.address=https://example.com/auth"
     networks:
       - microservices-network
   # web:

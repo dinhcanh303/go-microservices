@@ -4,7 +4,7 @@ import (
 	"context"
 	"testing"
 
-	"github.com/dinhcanh303/go-microservices/cmd/gateway/config"
+	"github.com/dinhcanh303/go-microservices/cmd/auth/config"
 	"github.com/dinhcanh303/go-microservices/internal/auth/domain"
 	"github.com/dinhcanh303/go-microservices/pkg/postgres"
 	"github.com/dinhcanh303/go-microservices/pkg/utils"

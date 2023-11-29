@@ -7,7 +7,7 @@
 package app
 
 import (
-	"github.com/dinhcanh303/go-microservices/cmd/gateway/config"
+	"github.com/dinhcanh303/go-microservices/cmd/auth/config"
 	"github.com/dinhcanh303/go-microservices/internal/auth/app/router"
 	"github.com/dinhcanh303/go-microservices/internal/auth/infras/repo"
 	"github.com/dinhcanh303/go-microservices/internal/auth/usecases/auth"
