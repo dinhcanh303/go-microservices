@@ -76,6 +76,72 @@
         ]
       }
     },
+    "/api/v1/auth/signin": {
+      "post": {
+        "summary": "SignIn application",
+        "operationId": "AuthService_SignIn",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/authSignInResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/authSignInRequest"
+            }
+          }
+        ],
+        "tags": [
+          "AuthService"
+        ]
+      }
+    },
+    "/api/v1/auth/signup": {
+      "post": {
+        "summary": "SignUp application",
+        "operationId": "AuthService_SignUp",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/authSignUpResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/authSignUpRequest"
+            }
+          }
+        ],
+        "tags": [
+          "AuthService"
+        ]
+      }
+    },
     "/api/v1/comments": {
       "post": {
         "summary": "Create Comment",
@@ -783,14 +849,6 @@
             "in": "path",
             "required": true,
             "type": "string"
-          },
-          {
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "type": "object"
-            }
           }
         ],
         "tags": [
@@ -1161,72 +1219,6 @@
             "required": true,
             "schema": {
               "$ref": "#/definitions/authRefreshTokenRequest"
-            }
-          }
-        ],
-        "tags": [
-          "AuthService"
-        ]
-      }
-    },
-    "/api/v1/signin": {
-      "post": {
-        "summary": "SignIn application",
-        "operationId": "AuthService_SignIn",
-        "responses": {
-          "200": {
-            "description": "A successful response.",
-            "schema": {
-              "$ref": "#/definitions/authSignInResponse"
-            }
-          },
-          "default": {
-            "description": "An unexpected error response.",
-            "schema": {
-              "$ref": "#/definitions/rpcStatus"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/authSignInRequest"
-            }
-          }
-        ],
-        "tags": [
-          "AuthService"
-        ]
-      }
-    },
-    "/api/v1/signup": {
-      "post": {
-        "summary": "SignUp application",
-        "operationId": "AuthService_SignUp",
-        "responses": {
-          "200": {
-            "description": "A successful response.",
-            "schema": {
-              "$ref": "#/definitions/authSignUpResponse"
-            }
-          },
-          "default": {
-            "description": "An unexpected error response.",
-            "schema": {
-              "$ref": "#/definitions/rpcStatus"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/authSignUpRequest"
             }
           }
         ],

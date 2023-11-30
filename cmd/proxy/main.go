@@ -57,6 +57,7 @@ func newGateway(
 	if err != nil {
 		return nil, err
 	}
+
 	return mux, nil
 }
 func allowCORS(h http.Handler) http.Handler {
