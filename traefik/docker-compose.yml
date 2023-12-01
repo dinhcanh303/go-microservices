@@ -14,68 +14,68 @@ services:
     #   - "--providers.docker.watch"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-      - ./traefik/:/etc/traefik/
+      - ./configs/:/etc/traefik/
     ports:
       - 80:80
       - 443:443
       - 8080:8080
     networks:
       - microservices-network
-      # - inbound
-#   prometheus:
-#     image: prom/prometheus
-#     volumes:
-#       - ./plugins/prometheus/:/etc/prometheus/
-#       - prometheus_data:/prometheus
-#     command:
-#       - '--config.file=/etc/prometheus/prometheus.yml'
-#       - '--storage.tsdb.path=/prometheus'
-#       - '--web.console.libraries=/usr/share/prometheus/console_libraries'
-#       - '--web.console.templates=/usr/share/prometheus/consoles'
-#     networks:
-#       - inbound
-#     deploy:
-#       labels:
-#         - "traefik.http.routers.prometheus.rule=Host(`prometheus.localhost`)"
-#         - "traefik.http.routers.prometheus.service=prometheus"
-#         - "traefik.http.services.prometheus.loadbalancer.server.port=9090"
-#         - "traefik.docker.network=inbound"
-#       placement:
-#         constraints:
-#         - node.role==manager
-#       restart_policy:
-#         condition: on-failure
-#   grafana:
-#     image: grafana/grafana
-#     depends_on:
-#       - prometheus
-#     volumes:
-#       - grafana_data:/var/lib/grafana
-#       - ./plugins/grafana/provisioning/:/etc/grafana/provisioning/
-#     env_file:
-#       - ./plugins/grafana/config.monitoring
-#     networks:
-#       - inbound
-#     user: "104"
-#     deploy:
-#       labels:
-#         - "traefik.http.routers.grafana.rule=Host(`grafana.localhost`)"
-#         - "traefik.http.routers.grafana.service=grafana"
-#         - "traefik.http.services.grafana.loadbalancer.server.port=3000"
-#         - "traefik.docker.network=inbound"
-#       placement:
-#         constraints:
-#           - node.role == manager
-#       restart_policy:
-#         condition: on-failure
-# volumes:
-#   prometheus_data: {}
-#   grafana_data: {}
+      - inbound
+  prometheus:
+    image: prom/prometheus
+    volumes:
+      - ./plugins/prometheus/:/etc/prometheus/
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/usr/share/prometheus/console_libraries'
+      - '--web.console.templates=/usr/share/prometheus/consoles'
+    networks:
+      - inbound
+    deploy:
+      labels:
+        - "traefik.http.routers.prometheus.rule=Host(`prometheus.localhost`)"
+        - "traefik.http.routers.prometheus.service=prometheus"
+        - "traefik.http.services.prometheus.loadbalancer.server.port=9090"
+        - "traefik.docker.network=inbound"
+      placement:
+        constraints:
+        - node.role==manager
+      restart_policy:
+        condition: on-failure
+  grafana:
+    image: grafana/grafana
+    depends_on:
+      - prometheus
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./plugins/grafana/provisioning/:/etc/grafana/provisioning/
+    env_file:
+      - ./plugins/grafana/config.monitoring
+    networks:
+      - inbound
+    user: "104"
+    deploy:
+      labels:
+        - "traefik.http.routers.grafana.rule=Host(`grafana.localhost`)"
+        - "traefik.http.routers.grafana.service=grafana"
+        - "traefik.http.services.grafana.loadbalancer.server.port=3000"
+        - "traefik.docker.network=inbound"
+      placement:
+        constraints:
+          - node.role == manager
+      restart_policy:
+        condition: on-failure
+volumes:
+  prometheus_data: {}
+  grafana_data: {}
 
 networks:
     microservices-network:
       name: microservices-network
       external: true
-    # inbound:
-    #   driver: bridge
-    #   name: inbound
+    inbound:
+      driver: bridge
+      name: inbound

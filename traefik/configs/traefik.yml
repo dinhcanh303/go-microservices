@@ -12,4 +12,7 @@ entryPoints:
 providers:
   file:
     filename: /etc/traefik/dynamic-config.yml
-    watch: true              
+    watch: true
+metrics:
+  prometheus:
+    addRoutersLabels: true
