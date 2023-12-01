@@ -28,6 +28,15 @@ service AuthService {
             description: ""
         };
     }
+    rpc Verify(VerifyRequest) returns (VerifyResponse){
+        option (google.api.http) = {
+            get: "/api/v1/auth/verify",
+        };
+        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+            summary: "Verify token"
+            description: ""
+        };
+    }
     rpc RefreshToken(RefreshTokenRequest) returns (RefreshTokenResponse){
         option (google.api.http) = {
             post: "/api/v1/refresh-token",
@@ -35,15 +44,6 @@ service AuthService {
         };
         option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
             summary: "Refresh Token"
-            description: ""
-        };
-    }
-    rpc FindKeyByUserID(FindKeyByUserIDRequest) returns (FindKeyByUserIDResponse){
-        option (google.api.http) = {
-            post: "/api/v1/keys/{user_id}",
-        };
-        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
-            summary: "Find Key"
             description: ""
         };
     }
@@ -56,19 +56,6 @@ message RefreshTokenResponse {
     User user =1;
     string access_token = 2;
     string refresh_token = 3;
-}
-message FindKeyByUserIDRequest {
-    string user_id = 1;
-}
-message FindKeyByUserIDResponse {
-    int32 id=1;
-    string user_id=2;
-    string public_key=3;
-    string private_key=4;
-    string refresh_token = 5;
-    repeated string refresh_token_used = 6;
-    google.protobuf.Timestamp created_at = 7;
-    google.protobuf.Timestamp updated_at = 8;
 }
 message Payload {
     string id = 1;
@@ -107,4 +94,10 @@ message User {
     string full_name = 5;
     google.protobuf.Timestamp created_at = 6;
     google.protobuf.Timestamp updated_at = 7;
+}
+message VerifyRequest{
+
+}
+message VerifyResponse{
+    
 }

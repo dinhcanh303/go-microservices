@@ -7,6 +7,7 @@ import (
 	"github.com/dinhcanh303/go-microservices/internal/group/domain"
 	"github.com/dinhcanh303/go-microservices/internal/group/usecases/groupmembers"
 	"github.com/dinhcanh303/go-microservices/internal/group/usecases/groups"
+	"github.com/dinhcanh303/go-microservices/pkg/utils"
 	"github.com/dinhcanh303/go-microservices/proto/gen"
 	"github.com/google/uuid"
 	"github.com/google/wire"
@@ -183,15 +184,16 @@ func (g *groupGRPCServer) GetAllGroupIdByUserId(ctx context.Context, request *ge
 
 func (g *groupGRPCServer) CreateGroup(ctx context.Context, request *gen.CreateGroupRequest) (*gen.CreateGroupResponse, error) {
 	slog.Info("POST: CreateGroup")
-	userId, err := uuid.Parse(request.Group.UserId)
+	payloadUser, err := utils.ExtractMetadataUser(ctx)
 	if err != nil {
-		return nil, errors.Wrap(err, "userID parse failed")
+		return nil, err
 	}
+	slog.Info("PAYLOAD::", payloadUser)
 	model := domain.Group{
 		Name:        request.Group.Name,
 		Description: request.Group.Description,
 		Status:      request.Group.Status,
-		UserID:      userId,
+		UserID:      payloadUser.ID,
 	}
 	group, err := g.ucGroup.CreateGroup(ctx, &model)
 	if err != nil {

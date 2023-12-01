@@ -29,7 +29,6 @@ func newGateway(
 	likeEndpoint := fmt.Sprintf("%s:%d", cfg.LikeHost, cfg.LikePort)
 	uploadEndpoint := fmt.Sprintf("%s:%d", cfg.UploadHost, cfg.UploadPort)
 	authEndpoint := fmt.Sprintf("%s:%d", cfg.AuthHost, cfg.AuthPort)
-
 	mux := gatewayRuntime.NewServeMux(opts...)
 	dialOpts := []grpc.DialOption{grpc.WithTransportCredentials(insecure.NewCredentials())}
 
@@ -108,7 +107,8 @@ func main() {
 	slog.New(logger.NewLogrusHandler(logrus.StandardLogger()))
 
 	mux := http.NewServeMux()
-	gw, err := newGateway(ctx, cfg, nil)
+
+	gw, err := newGateway(ctx, cfg, optionsServerMux())
 	if err != nil {
 		slog.Error("failed to create a new gateway", err)
 	}
@@ -125,15 +125,34 @@ func main() {
 	go func() {
 		<-ctx.Done()
 		slog.Info("shutting down the http server")
-
 		if err := s.Shutdown(context.Background()); err != nil {
 			slog.Error("failed to shutdown http server", err)
 		}
 	}()
 
 	slog.Info("🌏 start listening...", "address", fmt.Sprintf("%s:%d", cfg.Host, cfg.Port))
-
 	if err := s.ListenAndServe(); errors.Is(err, http.ErrServerClosed) {
 		slog.Error("failed to listen and serve", err)
 	}
+}
+func optionsServerMux() []gatewayRuntime.ServeMuxOption {
+	// jsonOption := gatewayRuntime.WithMarshalerOption(gatewayRuntime.MIMEWildcard, &gatewayRuntime.JSONPb{
+	// 	MarshalOptions: protojson.MarshalOptions{
+	// 		UseProtoNames: true,
+	// 	},
+	// 	UnmarshalOptions: protojson.UnmarshalOptions{
+	// 		DiscardUnknown: true,
+	// 	},
+	// })
+	mathOptions := gatewayRuntime.WithIncomingHeaderMatcher(
+		func(header string) (string, bool) {
+			switch header {
+			default:
+				return header, true
+			}
+		},
+	)
+	options := make([]gatewayRuntime.ServeMuxOption, 0)
+	options = append(options, mathOptions)
+	return options
 }
