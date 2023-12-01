@@ -1,0 +1,34 @@
+http:
+  routers:
+    auth:
+      rule: 'PathPrefix(`/api/v1/auth`)'
+      service: auth
+    proxy:
+      rule: 'PathPrefix(`/api/v1`)'
+      middlewares:
+        - auth
+      service: proxy
+  services:
+    auth:
+      loadBalancer:
+        servers:
+          - url: http://proxy:5000
+    proxy:
+      loadBalancer:
+        servers:
+          - url: http://proxy:5000
+  middlewares:
+    auth:
+      forwardAuth:
+        address: "http://proxy:5000/api/v1/auth/verify"
+        authResponseHeaders:
+          - "X-Forwarded-User"
+        trustForwardHeader: true
+# tcp:
+#   services:
+#     grpc-service:
+#       loadBalancer:
+#         servers:
+#           - address: "group:5001"
+#           - address: "post:5002"
+#           - address: "comment:5003"

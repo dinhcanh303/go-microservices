@@ -1,0 +1,15 @@
+## STATIC CONFIGURATION
+log:
+  level: INFO
+api:
+  insecure: true
+  dashboard: true
+
+entryPoints:
+  web:
+    address: ":80"
+
+providers:
+  file:
+    filename: /etc/traefik/dynamic-config.yml
+    watch: true              
