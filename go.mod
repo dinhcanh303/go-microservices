@@ -21,14 +21,13 @@ require (
 	github.com/sqlc-dev/pqtype v0.3.0
 	go.uber.org/automaxprocs v1.5.3
 	golang.org/x/exp v0.0.0-20230905200255-921286631fa9
+	google.golang.org/appengine v1.6.8
 	google.golang.org/genproto/googleapis/api v0.0.0-20231002182017-d307bd883b97
 	google.golang.org/grpc/cmd/protoc-gen-go-grpc v1.3.0
 	google.golang.org/protobuf v1.31.0
 )
 
 require (
-	cloud.google.com/go/compute v1.23.0 // indirect
-	cloud.google.com/go/compute/metadata v0.2.3 // indirect
 	github.com/Azure/go-ntlmssp v0.0.0-20221128193559-754e69321358 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/go-asn1-ber/asn1-ber v1.5.5 // indirect
@@ -36,7 +35,6 @@ require (
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/robfig/cron/v3 v3.0.1 // indirect
 	github.com/spf13/cast v1.3.1 // indirect
-	google.golang.org/appengine v1.6.8 // indirect
 )
 
 require (

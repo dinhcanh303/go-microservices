@@ -33,8 +33,7 @@ service PostService {
     }
     rpc GetPostsByFeed(GetPostsByFeedRequest) returns (GetPostsByFeedResponse){
         option (google.api.http) = {
-            post: "/api/v1/feed"
-            body: "*"
+            get: "/api/v1/feed"
         };
         option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
             summary: "Get Feed"
@@ -89,8 +88,6 @@ message GetPostRequest {
     string id = 1;
 }
 message GetPostsByFeedRequest {
-    repeated string user_ids = 1;
-    repeated string group_ids = 2;
     int32 limit = 3;
     int32 offset = 4;
 }

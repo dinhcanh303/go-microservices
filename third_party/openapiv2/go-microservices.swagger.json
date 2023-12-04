@@ -390,7 +390,7 @@
       }
     },
     "/api/v1/feed": {
-      "post": {
+      "get": {
         "summary": "Get Feed",
         "operationId": "PostService_GetPostsByFeed",
         "responses": {
@@ -409,12 +409,18 @@
         },
         "parameters": [
           {
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/postGetPostsByFeedRequest"
-            }
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
           }
         ],
         "tags": [
@@ -1962,31 +1968,6 @@
             "type": "object",
             "$ref": "#/definitions/commentCommentHasCommentAndLike"
           }
-        }
-      }
-    },
-    "postGetPostsByFeedRequest": {
-      "type": "object",
-      "properties": {
-        "userIds": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        },
-        "groupIds": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        },
-        "limit": {
-          "type": "integer",
-          "format": "int32"
-        },
-        "offset": {
-          "type": "integer",
-          "format": "int32"
         }
       }
     },

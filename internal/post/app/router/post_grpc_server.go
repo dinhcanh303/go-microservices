@@ -108,6 +108,10 @@ func (g *postGRPCServer) GetPost(ctx context.Context, request *gen.GetPostReques
 
 func (g *postGRPCServer) GetPostsByFeed(ctx context.Context, request *gen.GetPostsByFeedRequest) (*gen.GetPostsByFeedResponse, error) {
 	slog.Info("GET: GetPostsByFeed")
+	user, err := utils.ExtractMetadataUser(ctx)
+	if err != nil {
+		return nil, err
+	}
 	userIds, err := utils.ConvertArStringToArUUID(request.UserIds)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to parse user ids")
