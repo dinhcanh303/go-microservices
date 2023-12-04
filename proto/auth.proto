@@ -37,22 +37,33 @@ service AuthService {
             description: ""
         };
     }
-    rpc RefreshToken(RefreshTokenRequest) returns (RefreshTokenResponse){
+    rpc Logout(LogoutRequest) returns (LogoutResponse){
+        option (google.api.http) = {
+            get: "/api/v1/logout",
+        };
+        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+            summary: "Logout"
+            description: ""
+        };
+    }
+    rpc HandleRefreshToken(HandleRefreshTokenRequest) returns (HandleRefreshTokenResponse){
         option (google.api.http) = {
             post: "/api/v1/refresh-token",
             body: "*"
         };
         option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
-            summary: "Refresh Token"
+            summary: "Handle Refresh Token"
             description: ""
         };
     }
 }
-message RefreshTokenRequest {
-    string refresh_token = 1;
-    string user_id = 2;
+message LogoutRequest{}
+
+message LogoutResponse{}
+
+message HandleRefreshTokenRequest {
 }
-message RefreshTokenResponse {
+message HandleRefreshTokenResponse {
     User user =1;
     string access_token = 2;
     string refresh_token = 3;
