@@ -8,6 +8,11 @@ http:
       middlewares:
         - auth
       service: proxy
+    upload:
+      rule: 'PathPrefix(`/api/v1/attachments`)'
+      middlewares:
+        - auth
+      service: upload
   services:
     auth:
       loadBalancer:
@@ -17,18 +22,16 @@ http:
       loadBalancer:
         servers:
           - url: http://proxy:5000
+    upload:
+      loadBalancer:
+        servers:
+          - url: http://upload:5005
   middlewares:
     auth:
       forwardAuth:
         address: "http://proxy:5000/api/v1/auth/verify"
         authResponseHeaders:
-          - "X-Forwarded-User"
+          - "Grpc-Metadata-X-Auth-User"
+          - "Grpc-Metadata-X-Auth-Keystore"
+          - "Grpc-Metadata-X-Auth-Keystore-Used"
         trustForwardHeader: true
-# tcp:
-#   services:
-#     grpc-service:
-#       loadBalancer:
-#         servers:
-#           - address: "group:5001"
-#           - address: "post:5002"
-#           - address: "comment:5003"

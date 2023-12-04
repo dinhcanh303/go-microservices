@@ -5,12 +5,14 @@ const (
 	ApiKey        = "x-api-key"
 	ClientID      = "x-client-id"
 	Authorization = "authorization"
-	RefreshToken  = "refresh-token"
+	RefreshToken  = "refresh-Token"
 
 	//UUID
 	NullUUID = "00000000-0000-0000-0000-000000000000"
 	//Context
-	User = "X-Forwarded-User"
+	User         = "x-auth-user"
+	KeyStore     = "x-auth-keystore"
+	KeyStoreUsed = "x-auth-keystore-used"
 )
 
 var HeaderMap = []string{

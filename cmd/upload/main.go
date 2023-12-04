@@ -111,7 +111,7 @@ func prepareApp(ctx context.Context, cancel context.CancelFunc, cfg *config.Conf
 	return cleanup
 }
 func configureRoutes(echo *echo.Echo, handlers handlers.UploadHandler) {
-	g := echo.Group("/v1/api")
+	g := echo.Group("/api/v1")
 	g.GET("/attachments/:id", handlers.GetAttachment)
 	g.POST("/upload", handlers.UploadFile)
 	g.DELETE("/attachments/:id", handlers.DeleteAttachment)

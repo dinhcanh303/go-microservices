@@ -108,7 +108,8 @@ func main() {
 
 	mux := http.NewServeMux()
 
-	gw, err := newGateway(ctx, cfg, optionsServerMux())
+	// gw, err := newGateway(ctx, cfg, optionsServerMux())
+	gw, err := newGateway(ctx, cfg, nil)
 	if err != nil {
 		slog.Error("failed to create a new gateway", err)
 	}

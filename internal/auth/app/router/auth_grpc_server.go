@@ -4,14 +4,18 @@ import (
 	"context"
 	"fmt"
 	"log/slog"
+	"strconv"
+	"strings"
 
 	"github.com/dinhcanh303/go-microservices/cmd/auth/config"
 	"github.com/dinhcanh303/go-microservices/internal/auth/app/validation"
+	"github.com/dinhcanh303/go-microservices/internal/auth/domain"
 	"github.com/dinhcanh303/go-microservices/internal/auth/usecases/auth"
 	"github.com/dinhcanh303/go-microservices/internal/auth/usecases/keys"
 	"github.com/dinhcanh303/go-microservices/pkg/constant"
 	errorPkg "github.com/dinhcanh303/go-microservices/pkg/error"
 	"github.com/dinhcanh303/go-microservices/pkg/token"
+	"github.com/dinhcanh303/go-microservices/pkg/utils"
 	"github.com/dinhcanh303/go-microservices/proto/gen"
 	"github.com/google/uuid"
 	"github.com/google/wire"
@@ -102,11 +106,7 @@ func (a *authGRPCServer) Verify(ctx context.Context, request *gen.VerifyRequest)
 	if !ok {
 		return nil, errors.New("no headers found in the incoming context.")
 	}
-	slog.Info("Metadata::", md)
-	clientId := ""
-	if values := md.Get(constant.ClientID); len(values) > 0 {
-		clientId = values[0]
-	}
+	clientId := utils.GetKeyMetadata(md, constant.ClientID)
 	if clientId == "" {
 		return nil, errors.New("Invalid Request")
 	}
@@ -116,24 +116,18 @@ func (a *authGRPCServer) Verify(ctx context.Context, request *gen.VerifyRequest)
 	}
 	keyStore, err := a.ucKey.FindKeyByUserID(ctx, userId)
 	if err != nil {
-		return nil, err
+		return nil, errors.Wrap(err, "keystore::")
 	}
-	refreshToken := ""
-	if values := md.Get(constant.RefreshToken); len(values) > 0 {
-		refreshToken = values[0]
-	}
+	refreshToken := utils.GetKeyMetadata(md, constant.RefreshToken)
 	if refreshToken != "" {
 		payload, err := verifyToken(refreshToken, keyStore.PrivateKey)
 		if err != nil {
 			return nil, errors.New("Unauthorized")
 		}
-		grpc.SendHeader(ctx, addHeader(payload))
+		grpc.SendHeader(ctx, addHeader(payload, keyStore))
 		return &gen.VerifyResponse{}, nil
 	}
-	authorization := ""
-	if values := md.Get(constant.Authorization); len(values) > 0 {
-		authorization = values[0]
-	}
+	authorization := utils.GetKeyMetadata(md, constant.Authorization)
 	if authorization == "" {
 		return nil, errors.New("Unauthorized")
 	}
@@ -141,9 +135,7 @@ func (a *authGRPCServer) Verify(ctx context.Context, request *gen.VerifyRequest)
 	if err != nil {
 		return nil, errors.New("Unauthorized")
 	}
-	slog.Info("TEST RESPONSE HEADER:")
-	metadata.NewOutgoingContext(ctx, addHeader(payload))
-	grpc.SendHeader(ctx, addHeader(payload))
+	grpc.SendHeader(ctx, addHeader(payload, keyStore))
 	return &gen.VerifyResponse{}, nil
 }
 func verifyToken(refreshToken, secretKey string) (*token.Payload, error) {
@@ -154,13 +146,46 @@ func verifyToken(refreshToken, secretKey string) (*token.Payload, error) {
 	}
 	return payload, nil
 }
-func addHeader(payload *token.Payload) metadata.MD {
+func addHeader(payload *token.Payload, keyStore *domain.Key) metadata.MD {
+	keyStoreUsed, _ := utils.JsonRawMessageToArrayString(keyStore.RefreshTokensUsed)
+	keyStoreUsedString := strings.Join(keyStoreUsed, ",")
 	header := metadata.Pairs(
 		constant.User,
 		fmt.Sprintf("%s,%s,%s,%s,%s",
 			payload.ID.String(), payload.Email,
 			payload.FullName, payload.Role,
 			payload.AvatarUrl),
+		constant.KeyStore,
+		fmt.Sprintf("%s,%s,%s,%s,%s,%s",
+			strconv.FormatInt(keyStore.ID, 10), keyStore.UserID,
+			keyStore.PublicKey, keyStore.PrivateKey,
+			keyStore.RefreshToken, keyStore.RefreshTokensUsed,
+		),
+		constant.KeyStoreUsed, keyStoreUsedString,
 	)
 	return header
+}
+func (a *authGRPCServer) Logout(ctx context.Context, request *gen.LogoutRequest) (*gen.LogoutResponse, error) {
+	slog.Info("GET:: Logout")
+
+	keyStore, err := utils.ExtractMetadataKeyStore(ctx)
+	if err != nil {
+		return nil, err
+	}
+	slog.Info("KeyStore::", keyStore)
+	return &gen.LogoutResponse{}, nil
+}
+func (a *authGRPCServer) HandleRefreshToken(ctx context.Context, request *gen.HandleRefreshTokenRequest) (*gen.HandleRefreshTokenResponse, error) {
+	slog.Info("GET:: Logout")
+	user, err := utils.ExtractMetadataUser(ctx)
+	if err != nil {
+		return nil, err
+	}
+	keyStore, err := utils.ExtractMetadataKeyStore(ctx)
+	if err != nil {
+		return nil, err
+	}
+	slog.Info("User::", user)
+	slog.Info("KeyStore::", keyStore)
+	return &gen.HandleRefreshTokenResponse{}, nil
 }
