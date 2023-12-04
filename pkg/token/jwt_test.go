@@ -15,7 +15,7 @@ func TestJWT(t *testing.T) {
 	email := utils.RandomEmailCompany()
 	fullName := utils.RandomString(8)
 	avatarUrl := utils.RandomString(10)
-	role := "user"
+	role := utils.User
 	duration := time.Minute
 	issuedAt := time.Now()
 	expiredAt := issuedAt.Add(duration)
