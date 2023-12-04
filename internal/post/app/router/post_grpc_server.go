@@ -122,10 +122,12 @@ func (p *postGRPCServer) NewFeed(ctx context.Context, request *gen.NewFeedReques
 	if err != nil {
 		return nil, errors.Wrap(err, "failed get user id service auth")
 	}
+	slog.Info("U IDS::", userIds)
 	groupIds, err := p.groupDomainService.GetAllGroupIdByUserId(ctx, user.ID)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed get user id service group")
 	}
+	slog.Info("G IDS::", groupIds)
 	posts, err := p.uc.GetPostsByFeed(ctx, userIds, groupIds, request.Limit, request.Offset)
 	if err != nil {
 		return nil, errors.Wrap(err, "uc.GetPostsByFeed failed")

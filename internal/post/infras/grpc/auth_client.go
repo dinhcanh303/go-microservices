@@ -26,7 +26,7 @@ func (a *authGRPCClient) GetAllUserIdByUserId(ctx context.Context, userId uuid.U
 	})
 	results := make([]uuid.UUID, 0)
 	if err != nil {
-		slog.Warn("commentGRPCClient.GetCommentsByPostID failed", err)
+		slog.Warn("authGRPCClient.GetAllUserIdByUserId failed", err)
 		return results, nil
 	}
 	for _, item := range res.UserIds {

@@ -20,6 +20,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/google/wire"
 	"github.com/pkg/errors"
+	"github.com/samber/lo"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/reflection"
@@ -188,4 +189,20 @@ func (a *authGRPCServer) HandleRefreshToken(ctx context.Context, request *gen.Ha
 	slog.Info("User::", user)
 	slog.Info("KeyStore::", keyStore)
 	return &gen.HandleRefreshTokenResponse{}, nil
+}
+func (a *authGRPCServer) GetAllUserIdByUserId(ctx context.Context, request *gen.GetAllUserIdByUserIdRequest) (*gen.GetAllUserIdByUserIdResponse, error) {
+	slog.Info("GET:: GetAllUserIdByUserId")
+	userId, err := uuid.Parse(request.UserId)
+	if err != nil {
+		return nil, errors.New("failed to parse uuid")
+	}
+	userIds, err := a.uc.GetAllUserIdByUserId(ctx, userId)
+	if err != nil {
+		return nil, err
+	}
+	return &gen.GetAllUserIdByUserIdResponse{
+		UserIds: lo.Map(userIds, func(item uuid.UUID, _ int) string {
+			return item.String()
+		}),
+	}, nil
 }
