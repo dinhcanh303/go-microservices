@@ -19,11 +19,12 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	AuthService_SignIn_FullMethodName             = "/auth.AuthService/SignIn"
-	AuthService_SignUp_FullMethodName             = "/auth.AuthService/SignUp"
-	AuthService_Verify_FullMethodName             = "/auth.AuthService/Verify"
-	AuthService_Logout_FullMethodName             = "/auth.AuthService/Logout"
-	AuthService_HandleRefreshToken_FullMethodName = "/auth.AuthService/HandleRefreshToken"
+	AuthService_SignIn_FullMethodName               = "/auth.AuthService/SignIn"
+	AuthService_SignUp_FullMethodName               = "/auth.AuthService/SignUp"
+	AuthService_Verify_FullMethodName               = "/auth.AuthService/Verify"
+	AuthService_Logout_FullMethodName               = "/auth.AuthService/Logout"
+	AuthService_HandleRefreshToken_FullMethodName   = "/auth.AuthService/HandleRefreshToken"
+	AuthService_GetAllUserIdByUserId_FullMethodName = "/auth.AuthService/GetAllUserIdByUserId"
 )
 
 // AuthServiceClient is the client API for AuthService service.
@@ -35,6 +36,7 @@ type AuthServiceClient interface {
 	Verify(ctx context.Context, in *VerifyRequest, opts ...grpc.CallOption) (*VerifyResponse, error)
 	Logout(ctx context.Context, in *LogoutRequest, opts ...grpc.CallOption) (*LogoutResponse, error)
 	HandleRefreshToken(ctx context.Context, in *HandleRefreshTokenRequest, opts ...grpc.CallOption) (*HandleRefreshTokenResponse, error)
+	GetAllUserIdByUserId(ctx context.Context, in *GetAllUserIdByUserIdRequest, opts ...grpc.CallOption) (*GetAllUserIdByUserIdResponse, error)
 }
 
 type authServiceClient struct {
@@ -90,6 +92,15 @@ func (c *authServiceClient) HandleRefreshToken(ctx context.Context, in *HandleRe
 	return out, nil
 }
 
+func (c *authServiceClient) GetAllUserIdByUserId(ctx context.Context, in *GetAllUserIdByUserIdRequest, opts ...grpc.CallOption) (*GetAllUserIdByUserIdResponse, error) {
+	out := new(GetAllUserIdByUserIdResponse)
+	err := c.cc.Invoke(ctx, AuthService_GetAllUserIdByUserId_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // AuthServiceServer is the server API for AuthService service.
 // All implementations must embed UnimplementedAuthServiceServer
 // for forward compatibility
@@ -99,6 +110,7 @@ type AuthServiceServer interface {
 	Verify(context.Context, *VerifyRequest) (*VerifyResponse, error)
 	Logout(context.Context, *LogoutRequest) (*LogoutResponse, error)
 	HandleRefreshToken(context.Context, *HandleRefreshTokenRequest) (*HandleRefreshTokenResponse, error)
+	GetAllUserIdByUserId(context.Context, *GetAllUserIdByUserIdRequest) (*GetAllUserIdByUserIdResponse, error)
 	mustEmbedUnimplementedAuthServiceServer()
 }
 
@@ -120,6 +132,9 @@ func (UnimplementedAuthServiceServer) Logout(context.Context, *LogoutRequest) (*
 }
 func (UnimplementedAuthServiceServer) HandleRefreshToken(context.Context, *HandleRefreshTokenRequest) (*HandleRefreshTokenResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method HandleRefreshToken not implemented")
+}
+func (UnimplementedAuthServiceServer) GetAllUserIdByUserId(context.Context, *GetAllUserIdByUserIdRequest) (*GetAllUserIdByUserIdResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetAllUserIdByUserId not implemented")
 }
 func (UnimplementedAuthServiceServer) mustEmbedUnimplementedAuthServiceServer() {}
 
@@ -224,6 +239,24 @@ func _AuthService_HandleRefreshToken_Handler(srv interface{}, ctx context.Contex
 	return interceptor(ctx, in, info, handler)
 }
 
+func _AuthService_GetAllUserIdByUserId_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetAllUserIdByUserIdRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AuthServiceServer).GetAllUserIdByUserId(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AuthService_GetAllUserIdByUserId_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AuthServiceServer).GetAllUserIdByUserId(ctx, req.(*GetAllUserIdByUserIdRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // AuthService_ServiceDesc is the grpc.ServiceDesc for AuthService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -250,6 +283,10 @@ var AuthService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "HandleRefreshToken",
 			Handler:    _AuthService_HandleRefreshToken_Handler,
+		},
+		{
+			MethodName: "GetAllUserIdByUserId",
+			Handler:    _AuthService_GetAllUserIdByUserId_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

@@ -29,6 +29,8 @@ type postGRPCServer struct {
 	uploadDomainService  domain.UploadDomainService
 	commentDomainService domain.CommentDomainService
 	likeDomainService    domain.LikeDomainService
+	groupDomainService   domain.GroupDomainService
+	authDomainService    domain.AuthDomainService
 }
 
 var _ gen.PostServiceServer = (*postGRPCServer)(nil)
@@ -42,6 +44,8 @@ func NewGRPCPostServer(
 	uploadDomainService domain.UploadDomainService,
 	commentDomainService domain.CommentDomainService,
 	likeDomainService domain.LikeDomainService,
+	groupDomainService domain.GroupDomainService,
+	authDomainService domain.AuthDomainService,
 ) gen.PostServiceServer {
 	svc := postGRPCServer{
 		cfg:                  cfg,
@@ -49,13 +53,15 @@ func NewGRPCPostServer(
 		uploadDomainService:  uploadDomainService,
 		commentDomainService: commentDomainService,
 		likeDomainService:    likeDomainService,
+		groupDomainService:   groupDomainService,
+		authDomainService:    authDomainService,
 	}
 	gen.RegisterPostServiceServer(grpcServer, &svc)
 	reflection.Register(grpcServer)
 	return &svc
 }
 
-func (g *postGRPCServer) CreatePost(ctx context.Context, request *gen.CreatePostRequest) (*gen.CreatePostResponse, error) {
+func (p *postGRPCServer) CreatePost(ctx context.Context, request *gen.CreatePostRequest) (*gen.CreatePostResponse, error) {
 	slog.Info("POST: CreatePost")
 	userId, err := uuid.Parse(request.Post.UserId)
 	if err != nil {
@@ -72,7 +78,7 @@ func (g *postGRPCServer) CreatePost(ctx context.Context, request *gen.CreatePost
 			Valid: request.Post.GroupId != "",
 		},
 	}
-	post, err := g.uc.CreatePost(ctx, &model)
+	post, err := p.uc.CreatePost(ctx, &model)
 	if err != nil {
 		return nil, errors.Wrap(err, "uc.CreatePost failed")
 	}
@@ -90,85 +96,85 @@ func (g *postGRPCServer) CreatePost(ctx context.Context, request *gen.CreatePost
 	}
 	return res, nil
 }
-func (g *postGRPCServer) GetPost(ctx context.Context, request *gen.GetPostRequest) (*gen.GetPostResponse, error) {
+func (p *postGRPCServer) GetPost(ctx context.Context, request *gen.GetPostRequest) (*gen.GetPostResponse, error) {
 	slog.Info("GET: GetPost")
 	id, err := uuid.Parse(request.Id)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to parse id")
 	}
-	post, err := g.uc.GetPost(ctx, id)
+	post, err := p.uc.GetPost(ctx, id)
 	if err != nil {
 		return nil, errors.Wrap(err, "uc.GetPost failed")
 	}
 	posts := make([]*domain.Post, 0)
 	posts = append(posts, post)
-	results := manyPostResponse(posts, g, ctx)
+	results := manyPostResponse(posts, p, ctx)
 	return results[0], nil
 }
 
-func (g *postGRPCServer) GetPostsByFeed(ctx context.Context, request *gen.GetPostsByFeedRequest) (*gen.GetPostsByFeedResponse, error) {
-	slog.Info("GET: GetPostsByFeed")
+func (p *postGRPCServer) NewFeed(ctx context.Context, request *gen.NewFeedRequest) (*gen.NewFeedResponse, error) {
+	slog.Info("GET: NewFeed")
 	user, err := utils.ExtractMetadataUser(ctx)
 	if err != nil {
 		return nil, err
 	}
-	userIds, err := utils.ConvertArStringToArUUID(request.UserIds)
+	userIds, err := p.authDomainService.GetAllUserIdByUserId(ctx, user.ID)
 	if err != nil {
-		return nil, errors.Wrap(err, "failed to parse user ids")
+		return nil, errors.Wrap(err, "failed get user id service auth")
 	}
-	groupIds, err := utils.ConvertArStringToArUUID(request.GroupIds)
+	groupIds, err := p.groupDomainService.GetAllGroupIdByUserId(ctx, user.ID)
 	if err != nil {
-		return nil, errors.Wrap(err, "failed to parse group ids")
+		return nil, errors.Wrap(err, "failed get user id service group")
 	}
-	posts, err := g.uc.GetPostsByFeed(ctx, userIds, groupIds, request.Limit, request.Offset)
+	posts, err := p.uc.GetPostsByFeed(ctx, userIds, groupIds, request.Limit, request.Offset)
 	if err != nil {
 		return nil, errors.Wrap(err, "uc.GetPostsByFeed failed")
 	}
-	results := manyPostResponse(posts, g, ctx)
-	return &gen.GetPostsByFeedResponse{
+	results := manyPostResponse(posts, p, ctx)
+	return &gen.NewFeedResponse{
 		Posts: results,
 	}, nil
 }
 
-func (g *postGRPCServer) GetPostsByUserId(ctx context.Context, request *gen.GetPostsByUserIdRequest) (*gen.GetPostsByUserIdResponse, error) {
+func (p *postGRPCServer) GetPostsByUserId(ctx context.Context, request *gen.GetPostsByUserIdRequest) (*gen.GetPostsByUserIdResponse, error) {
 	slog.Info("GET: GetPostsByUserId")
 	userId, err := uuid.Parse(request.UserId)
 	if err != nil {
 		return nil, errors.Wrap(err, "uuid.Parse failed")
 	}
-	posts, err := g.uc.GetPostsByUserId(ctx, userId, request.Limit, request.Offset)
+	posts, err := p.uc.GetPostsByUserId(ctx, userId, request.Limit, request.Offset)
 	if err != nil {
 		return nil, errors.Wrap(err, "uc.GetPostsByUserId failed")
 	}
-	results := manyPostResponse(posts, g, ctx)
+	results := manyPostResponse(posts, p, ctx)
 	return &gen.GetPostsByUserIdResponse{
 		Posts: results,
 	}, nil
 }
 
-func (g *postGRPCServer) GetPostsByGroupId(ctx context.Context, request *gen.GetPostsByGroupIdRequest) (*gen.GetPostsByGroupIdResponse, error) {
+func (p *postGRPCServer) GetPostsByGroupId(ctx context.Context, request *gen.GetPostsByGroupIdRequest) (*gen.GetPostsByGroupIdResponse, error) {
 	slog.Info("GET: GetPostsByGroupId")
 	groupId, err := uuid.Parse(request.GroupId)
 	if err != nil {
 		return nil, errors.Wrap(err, "uuid.Parse failed")
 	}
-	posts, err := g.uc.GetPostsByGroupId(ctx, groupId, request.Limit, request.Offset)
+	posts, err := p.uc.GetPostsByGroupId(ctx, groupId, request.Limit, request.Offset)
 	if err != nil {
 		return nil, errors.Wrap(err, "uc.GetPostsByGroupId failed")
 	}
-	results := manyPostResponse(posts, g, ctx)
+	results := manyPostResponse(posts, p, ctx)
 	return &gen.GetPostsByGroupIdResponse{
 		Posts: results,
 	}, nil
 }
 
-func (g *postGRPCServer) DeletePost(ctx context.Context, request *gen.DeletePostRequest) (*gen.DeletePostResponse, error) {
+func (p *postGRPCServer) DeletePost(ctx context.Context, request *gen.DeletePostRequest) (*gen.DeletePostResponse, error) {
 	slog.Info("DELETE: DeletePost")
 	id, err := uuid.Parse(request.Id)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to parse id")
 	}
-	deleted, err := g.uc.DeletePost(ctx, id)
+	deleted, err := p.uc.DeletePost(ctx, id)
 	if err != nil {
 		return nil, errors.Wrap(err, "uc.GetPost failed")
 	}
@@ -177,7 +183,7 @@ func (g *postGRPCServer) DeletePost(ctx context.Context, request *gen.DeletePost
 		Deleted: deleted,
 	}, nil
 }
-func (g *postGRPCServer) UpdatePost(ctx context.Context, request *gen.UpdatePostRequest) (*gen.UpdatePostResponse, error) {
+func (p *postGRPCServer) UpdatePost(ctx context.Context, request *gen.UpdatePostRequest) (*gen.UpdatePostResponse, error) {
 	slog.Info("PUT: UpdatePost")
 	id, err := uuid.Parse(request.Post.Id)
 	if err != nil {
@@ -189,7 +195,7 @@ func (g *postGRPCServer) UpdatePost(ctx context.Context, request *gen.UpdatePost
 		Content: request.Post.Content,
 		Status:  request.Post.Status,
 	}
-	post, err := g.uc.UpdatePost(ctx, &model)
+	post, err := p.uc.UpdatePost(ctx, &model)
 	if err != nil {
 		return nil, errors.Wrap(err, "uc.CreatePost failed")
 	}
@@ -209,23 +215,23 @@ func (g *postGRPCServer) UpdatePost(ctx context.Context, request *gen.UpdatePost
 }
 
 // private function
-func manyPostResponse(posts []*domain.Post, g *postGRPCServer, ctx context.Context) []*gen.GetPostResponse {
+func manyPostResponse(posts []*domain.Post, p *postGRPCServer, ctx context.Context) []*gen.GetPostResponse {
 	results := make([]*gen.GetPostResponse, 0)
 	// channel := make(chan *gen.GetPostResponse, len(posts))
 	// var wg sync.WaitGroup
 	for _, post := range posts {
 		// wg.Add(1)
-		likes, err := g.likeDomainService.GetLikesByPostID(ctx, post.ID)
+		likes, err := p.likeDomainService.GetLikesByPostID(ctx, post.ID)
 		if err != nil {
 			slog.Warn("likeDomainService.GetLikesByPostID failed", err)
 			likes = make([]*domainLike.Like, 0)
 		}
-		comments, err := g.commentDomainService.GetCommentsByPostID(ctx, post.ID)
+		comments, err := p.commentDomainService.GetCommentsByPostID(ctx, post.ID)
 		if err != nil {
 			slog.Warn("commentDomainService.GetCommentsByPostID failed", err)
 			comments = make([]*sharedkernel.CommentHasChildren, 0)
 		}
-		attachments, err := g.uploadDomainService.GetAttachmentsByType(ctx, "Attachment/Post", post.ID)
+		attachments, err := p.uploadDomainService.GetAttachmentsByType(ctx, "Attachment/Post", post.ID)
 		if err != nil {
 			slog.Warn("uploadDomainService.GetAttachmentsByType failed", err)
 			attachments = make([]*domainUpload.Attachment, 0)

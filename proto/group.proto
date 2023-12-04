@@ -49,7 +49,7 @@ service GroupService {
     }
     rpc GetAllGroupByUserId(GetAllGroupByUserIdRequest) returns (GetAllGroupByUserIdResponse){
         option (google.api.http) = {
-            get: "/api/v1/groups/{user_id}"
+            get: "/api/v1/users/{user_id}/groups"
         };
         option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
             summary: "Get all group member"
@@ -58,7 +58,7 @@ service GroupService {
     }
     rpc GetAllGroupIdByUserId(GetAllGroupIdByUserIdRequest) returns (GetAllGroupIdByUserIdResponse){
         option (google.api.http) = {
-            get: "/api/v1/group-ids/{user_id}"
+            get: "/api/v1/users/{user_id}/group-ids"
         };
         option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
             summary: "Get all group id by user id",

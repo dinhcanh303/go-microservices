@@ -31,7 +31,7 @@ service PostService {
             description: ""
         };
     }
-    rpc GetPostsByFeed(GetPostsByFeedRequest) returns (GetPostsByFeedResponse){
+    rpc NewFeed(NewFeedRequest) returns (NewFeedResponse){
         option (google.api.http) = {
             get: "/api/v1/feed"
         };
@@ -87,11 +87,11 @@ message CreatePostResponse {
 message GetPostRequest {
     string id = 1;
 }
-message GetPostsByFeedRequest {
+message NewFeedRequest {
     int32 limit = 3;
     int32 offset = 4;
 }
-message GetPostsByFeedResponse {
+message NewFeedResponse {
     repeated GetPostResponse posts = 1;
 }
 message GetPostsByGroupIdRequest {

@@ -392,12 +392,12 @@
     "/api/v1/feed": {
       "get": {
         "summary": "Get Feed",
-        "operationId": "PostService_GetPostsByFeed",
+        "operationId": "PostService_NewFeed",
         "responses": {
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/postGetPostsByFeedResponse"
+              "$ref": "#/definitions/postNewFeedResponse"
             }
           },
           "default": {
@@ -425,37 +425,6 @@
         ],
         "tags": [
           "PostService"
-        ]
-      }
-    },
-    "/api/v1/group-ids/{userId}": {
-      "get": {
-        "summary": "Get all group id by user id",
-        "operationId": "GroupService_GetAllGroupIdByUserId",
-        "responses": {
-          "200": {
-            "description": "A successful response.",
-            "schema": {
-              "$ref": "#/definitions/groupGetAllGroupIdByUserIdResponse"
-            }
-          },
-          "default": {
-            "description": "An unexpected error response.",
-            "schema": {
-              "$ref": "#/definitions/rpcStatus"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "userId",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          }
-        ],
-        "tags": [
-          "GroupService"
         ]
       }
     },
@@ -813,37 +782,6 @@
         "parameters": [
           {
             "name": "id",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          }
-        ],
-        "tags": [
-          "GroupService"
-        ]
-      }
-    },
-    "/api/v1/groups/{userId}": {
-      "get": {
-        "summary": "Get all group member",
-        "operationId": "GroupService_GetAllGroupByUserId",
-        "responses": {
-          "200": {
-            "description": "A successful response.",
-            "schema": {
-              "$ref": "#/definitions/groupGetAllGroupByUserIdResponse"
-            }
-          },
-          "default": {
-            "description": "An unexpected error response.",
-            "schema": {
-              "$ref": "#/definitions/rpcStatus"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "userId",
             "in": "path",
             "required": true,
             "type": "string"
@@ -1248,6 +1186,68 @@
         ]
       }
     },
+    "/api/v1/users/{userId}/group-ids": {
+      "get": {
+        "summary": "Get all group id by user id",
+        "operationId": "GroupService_GetAllGroupIdByUserId",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/groupGetAllGroupIdByUserIdResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "GroupService"
+        ]
+      }
+    },
+    "/api/v1/users/{userId}/groups": {
+      "get": {
+        "summary": "Get all group member",
+        "operationId": "GroupService_GetAllGroupByUserId",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/groupGetAllGroupByUserIdResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "GroupService"
+        ]
+      }
+    },
     "/api/v1/users/{userId}/posts": {
       "get": {
         "summary": "Get Posts By User ID",
@@ -1292,9 +1292,51 @@
           "PostService"
         ]
       }
+    },
+    "/api/v1/users/{userId}/user-ids": {
+      "get": {
+        "summary": "Get All User Id By User Id",
+        "operationId": "AuthService_GetAllUserIdByUserId",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/authGetAllUserIdByUserIdResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "AuthService"
+        ]
+      }
     }
   },
   "definitions": {
+    "authGetAllUserIdByUserIdResponse": {
+      "type": "object",
+      "properties": {
+        "userIds": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
     "authHandleRefreshTokenRequest": {
       "type": "object"
     },
@@ -1971,18 +2013,6 @@
         }
       }
     },
-    "postGetPostsByFeedResponse": {
-      "type": "object",
-      "properties": {
-        "posts": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "$ref": "#/definitions/postGetPostResponse"
-          }
-        }
-      }
-    },
     "postGetPostsByGroupIdResponse": {
       "type": "object",
       "properties": {
@@ -1996,6 +2026,18 @@
       }
     },
     "postGetPostsByUserIdResponse": {
+      "type": "object",
+      "properties": {
+        "posts": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/postGetPostResponse"
+          }
+        }
+      }
+    },
+    "postNewFeedResponse": {
       "type": "object",
       "properties": {
         "posts": {

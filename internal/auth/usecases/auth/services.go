@@ -10,9 +10,11 @@ import (
 	"github.com/dinhcanh303/go-microservices/internal/auth/domain"
 	"github.com/dinhcanh303/go-microservices/internal/auth/usecases/keys"
 	sharedkernel "github.com/dinhcanh303/go-microservices/internal/pkg/shared_kernel"
+	"github.com/dinhcanh303/go-microservices/pkg/constant"
 	"github.com/dinhcanh303/go-microservices/pkg/ldap"
 	"github.com/dinhcanh303/go-microservices/pkg/token"
 	"github.com/dinhcanh303/go-microservices/pkg/utils"
+	"github.com/google/uuid"
 	"github.com/google/wire"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -23,6 +25,23 @@ type service struct {
 	ucKeys     keys.UseCase
 	ldapClient ldap.LdapClient
 	jwt        token.JWT
+}
+
+// GetAllUserIdByUserId implements UseCase.
+func (s *service) GetAllUserIdByUserId(ctx context.Context, userId uuid.UUID) ([]uuid.UUID, error) {
+	user, err := s.repo.GetUser(ctx, userId)
+	if err != nil {
+		return nil, err
+	}
+	suffixEmailCompany := constant.SuffixEmailCompany
+	if strings.Contains(user.Email, suffixEmailCompany) {
+		userIds, err := s.repo.GetAllUserIdOfCompany(ctx, suffixEmailCompany)
+		if err != nil {
+			return nil, err
+		}
+		return userIds, nil
+	}
+	return nil, nil
 }
 
 // Logout implements UseCase.
@@ -68,7 +87,7 @@ func (s *service) SignUp(ctx context.Context, email, password, fistName, lastNam
 	slog.Info("Service Auth:: SignUp")
 	isEmailCompany := checkEmailCompany(email)
 	if isEmailCompany {
-		return nil, status.Error(codes.AlreadyExists, fmt.Sprintf("Email has suffix is %s does't created. Please use the login function for this type of email!", suffixEmailCompany))
+		return nil, status.Error(codes.AlreadyExists, fmt.Sprintf("Email has suffix is %s does't created. Please use the login function for this type of email!", constant.SuffixEmailCompany))
 	}
 	foundUser, _ := s.repo.GetUserByEmail(ctx, email)
 	if foundUser != nil {
@@ -105,7 +124,7 @@ func NewUseCase(
 var UseCaseSet = wire.NewSet(NewUseCase)
 
 func checkEmailCompany(email string) bool {
-	return strings.Contains(email, suffixEmailCompany)
+	return strings.Contains(email, constant.SuffixEmailCompany)
 }
 func findUserByEmail(repo UserRepo, ctx context.Context, email string) (*domain.User, error) {
 	foundUser, err := repo.GetUserByEmail(ctx, email)
@@ -125,10 +144,6 @@ func createKeyPair() (string, string, error) {
 	}
 	return publicKey, privateKey, nil
 }
-
-const (
-	suffixEmailCompany = "@tlcmodular.com"
-)
 
 func createTokenPair(jwt token.JWT, user *domain.User, publicKey, privateKey string) (string, string, error) {
 	payload := token.NewPayload(user.ID,

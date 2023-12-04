@@ -40,7 +40,17 @@ func InitApp(cfg *config.Config, dbConnStr postgres.DBConnString, grpcServer *gr
 		cleanup()
 		return nil, nil, err
 	}
-	postServiceServer := router.NewGRPCPostServer(grpcServer, cfg, useCase, uploadDomainService, commentDomainService, likeDomainService)
+	groupDomainService, err := grpc2.NewGRPCGroupClient(cfg)
+	if err != nil {
+		cleanup()
+		return nil, nil, err
+	}
+	authDomainService, err := grpc2.NewGRPCAuthClient(cfg)
+	if err != nil {
+		cleanup()
+		return nil, nil, err
+	}
+	postServiceServer := router.NewGRPCPostServer(grpcServer, cfg, useCase, uploadDomainService, commentDomainService, likeDomainService, groupDomainService, authDomainService)
 	app := New(cfg, dbEngine, useCase, postServiceServer, commentDomainService, likeDomainService, uploadDomainService)
 	return app, func() {
 		cleanup()

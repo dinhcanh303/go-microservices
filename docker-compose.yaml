@@ -62,9 +62,11 @@ services:
       IN_DOCKER: "true"
       PG_URL: postgres://postgres:P@ssw0rd@postgres:5432/postgres
       PG_DSN_URL: host=postgres user=postgres password=P@ssw0rd dbname=postgres sslmode=disable
+      GROUP_CLIENT_URL: group:5001
       LIKE_CLIENT_URL: like:5004
       COMMENT_CLIENT_URL: comment:5003
       UPLOAD_CLIENT_URL: upload:5006
+      AUTH_CLIENT_URL: auth:5007
     ports:
       - 5002:5002
     depends_on:

@@ -21,7 +21,7 @@ const _ = grpc.SupportPackageIsVersion7
 const (
 	PostService_CreatePost_FullMethodName        = "/post.PostService/CreatePost"
 	PostService_GetPost_FullMethodName           = "/post.PostService/GetPost"
-	PostService_GetPostsByFeed_FullMethodName    = "/post.PostService/GetPostsByFeed"
+	PostService_NewFeed_FullMethodName           = "/post.PostService/NewFeed"
 	PostService_GetPostsByGroupId_FullMethodName = "/post.PostService/GetPostsByGroupId"
 	PostService_GetPostsByUserId_FullMethodName  = "/post.PostService/GetPostsByUserId"
 	PostService_UpdatePost_FullMethodName        = "/post.PostService/UpdatePost"
@@ -34,7 +34,7 @@ const (
 type PostServiceClient interface {
 	CreatePost(ctx context.Context, in *CreatePostRequest, opts ...grpc.CallOption) (*CreatePostResponse, error)
 	GetPost(ctx context.Context, in *GetPostRequest, opts ...grpc.CallOption) (*GetPostResponse, error)
-	GetPostsByFeed(ctx context.Context, in *GetPostsByFeedRequest, opts ...grpc.CallOption) (*GetPostsByFeedResponse, error)
+	NewFeed(ctx context.Context, in *NewFeedRequest, opts ...grpc.CallOption) (*NewFeedResponse, error)
 	GetPostsByGroupId(ctx context.Context, in *GetPostsByGroupIdRequest, opts ...grpc.CallOption) (*GetPostsByGroupIdResponse, error)
 	GetPostsByUserId(ctx context.Context, in *GetPostsByUserIdRequest, opts ...grpc.CallOption) (*GetPostsByUserIdResponse, error)
 	UpdatePost(ctx context.Context, in *UpdatePostRequest, opts ...grpc.CallOption) (*UpdatePostResponse, error)
@@ -67,9 +67,9 @@ func (c *postServiceClient) GetPost(ctx context.Context, in *GetPostRequest, opt
 	return out, nil
 }
 
-func (c *postServiceClient) GetPostsByFeed(ctx context.Context, in *GetPostsByFeedRequest, opts ...grpc.CallOption) (*GetPostsByFeedResponse, error) {
-	out := new(GetPostsByFeedResponse)
-	err := c.cc.Invoke(ctx, PostService_GetPostsByFeed_FullMethodName, in, out, opts...)
+func (c *postServiceClient) NewFeed(ctx context.Context, in *NewFeedRequest, opts ...grpc.CallOption) (*NewFeedResponse, error) {
+	out := new(NewFeedResponse)
+	err := c.cc.Invoke(ctx, PostService_NewFeed_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -118,7 +118,7 @@ func (c *postServiceClient) DeletePost(ctx context.Context, in *DeletePostReques
 type PostServiceServer interface {
 	CreatePost(context.Context, *CreatePostRequest) (*CreatePostResponse, error)
 	GetPost(context.Context, *GetPostRequest) (*GetPostResponse, error)
-	GetPostsByFeed(context.Context, *GetPostsByFeedRequest) (*GetPostsByFeedResponse, error)
+	NewFeed(context.Context, *NewFeedRequest) (*NewFeedResponse, error)
 	GetPostsByGroupId(context.Context, *GetPostsByGroupIdRequest) (*GetPostsByGroupIdResponse, error)
 	GetPostsByUserId(context.Context, *GetPostsByUserIdRequest) (*GetPostsByUserIdResponse, error)
 	UpdatePost(context.Context, *UpdatePostRequest) (*UpdatePostResponse, error)
@@ -136,8 +136,8 @@ func (UnimplementedPostServiceServer) CreatePost(context.Context, *CreatePostReq
 func (UnimplementedPostServiceServer) GetPost(context.Context, *GetPostRequest) (*GetPostResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetPost not implemented")
 }
-func (UnimplementedPostServiceServer) GetPostsByFeed(context.Context, *GetPostsByFeedRequest) (*GetPostsByFeedResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetPostsByFeed not implemented")
+func (UnimplementedPostServiceServer) NewFeed(context.Context, *NewFeedRequest) (*NewFeedResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method NewFeed not implemented")
 }
 func (UnimplementedPostServiceServer) GetPostsByGroupId(context.Context, *GetPostsByGroupIdRequest) (*GetPostsByGroupIdResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetPostsByGroupId not implemented")
@@ -200,20 +200,20 @@ func _PostService_GetPost_Handler(srv interface{}, ctx context.Context, dec func
 	return interceptor(ctx, in, info, handler)
 }
 
-func _PostService_GetPostsByFeed_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetPostsByFeedRequest)
+func _PostService_NewFeed_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(NewFeedRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(PostServiceServer).GetPostsByFeed(ctx, in)
+		return srv.(PostServiceServer).NewFeed(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: PostService_GetPostsByFeed_FullMethodName,
+		FullMethod: PostService_NewFeed_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(PostServiceServer).GetPostsByFeed(ctx, req.(*GetPostsByFeedRequest))
+		return srv.(PostServiceServer).NewFeed(ctx, req.(*NewFeedRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -306,8 +306,8 @@ var PostService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _PostService_GetPost_Handler,
 		},
 		{
-			MethodName: "GetPostsByFeed",
-			Handler:    _PostService_GetPostsByFeed_Handler,
+			MethodName: "NewFeed",
+			Handler:    _PostService_NewFeed_Handler,
 		},
 		{
 			MethodName: "GetPostsByGroupId",

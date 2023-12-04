@@ -56,6 +56,21 @@ service AuthService {
             description: ""
         };
     }
+    rpc GetAllUserIdByUserId(GetAllUserIdByUserIdRequest) returns (GetAllUserIdByUserIdResponse){
+        option (google.api.http) = {
+            get: "/api/v1/users/{user_id}/user-ids",
+        };
+        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+            summary: "Get All User Id By User Id"
+            description: ""
+        };
+    }
+}
+message GetAllUserIdByUserIdRequest{
+    string user_id = 1;
+}
+message GetAllUserIdByUserIdResponse{
+    repeated string user_ids = 1;
 }
 message LogoutRequest{}
 

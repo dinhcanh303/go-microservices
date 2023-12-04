@@ -10,9 +10,10 @@ const (
 	//UUID
 	NullUUID = "00000000-0000-0000-0000-000000000000"
 	//Context
-	User         = "x-auth-user"
-	KeyStore     = "x-auth-keystore"
-	KeyStoreUsed = "x-auth-keystore-used"
+	User               = "x-auth-user"
+	KeyStore           = "x-auth-keystore"
+	KeyStoreUsed       = "x-auth-keystore-used"
+	SuffixEmailCompany = "@tlcmodular.com"
 )
 
 var HeaderMap = []string{
