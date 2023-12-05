@@ -4,17 +4,12 @@ services:
   traefik:
     image: traefik:v2.10.5
     container_name: traefik-mcs-proxy
-    # command:
-    #   - "--log.level=DEBUG"
-    #   - "--api.insecure=true"
-    #   - "--metrics.prometheus=true"
-    #   - "--metrics.prometheus.buckets=0.1,0.3,1.2,5.0"
-    #   - "--providers.docker=true"
-    #   - "--providers.docker.swarmmode=true"
-    #   - "--providers.docker.watch"
+    env_file:
+      - .env
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - ./configs/:/etc/traefik/
+      - ./certs/:/path/to/
     ports:
       - 80:80
       - 443:443

@@ -142,17 +142,6 @@ services:
       - 5007:5007
     networks:
       - microservices-network
-  # forward-auth:
-  #   image: thomseddon/traefik-forward-auth:latest
-  #   environment:
-  #     FORWARD_AUTH_URL: http://auth:5007/api/v1/signin
-  #     # FORWARD_AUTH_AUTH_LOGOUT: true
-  #   labels:
-  #     - "traefik.enable=true"
-  #     - "traefik.http.routers.forward-auth.rule=Host(`forward-auth.domain.com`) && Path(`/auth`)"
-  #     - "traefik.http.routers.forward-auth.entrypoints=web"
-  #   networks:
-  #     - microservices-network
   # fontend:
   #   build:
   #     context: .

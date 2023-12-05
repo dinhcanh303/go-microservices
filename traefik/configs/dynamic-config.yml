@@ -1,18 +1,24 @@
 http:
   routers:
     auth:
-      rule: 'PathPrefix(`/api/v1/auth`)'
+      rule: "Host(`{{env "APP_DOMAIN"}}`) && PathPrefix(`/api/v1/auth`)"
       service: auth
+      tls:
+        certResolver: certificates
     proxy:
-      rule: 'PathPrefix(`/api/v1`)'
+      rule: "Host(`{{env "APP_DOMAIN"}}`) && PathPrefix(`/api/v1`)"
       middlewares:
         - auth
       service: proxy
+      tls:
+        certResolver: certificates
     upload:
-      rule: 'PathPrefix(`/api/v1/attachments`)'
+      rule: "Host(`{{env "APP_DOMAIN"}}`) && PathPrefix(`/api/v1/attachments`) || PathPrefix(`/api/v1/attachment`) || PathPrefix(`/api/v1/upload`)"
       middlewares:
         - auth
       service: upload
+      tls:
+        certResolver: certificates
   services:
     auth:
       loadBalancer:
@@ -35,3 +41,7 @@ http:
           - "Grpc-Metadata-X-Auth-Keystore"
           - "Grpc-Metadata-X-Auth-Keystore-Used"
         trustForwardHeader: true
+tls:
+  certificates:
+    - certFile: /path/to/public.cert
+      keyFile: /path/to/private.key
