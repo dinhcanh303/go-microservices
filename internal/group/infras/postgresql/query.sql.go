@@ -186,7 +186,7 @@ func (q *Queries) GetAllGroupByUserId(ctx context.Context, userID uuid.UUID) ([]
 }
 
 const getAllGroupIdByUserId = `-- name: GetAllGroupIdByUserId :many
-SELECT gm.id
+SELECT gm.group_id
 FROM "group".group_members as gm
 WHERE user_id = $1
 `
@@ -199,11 +199,11 @@ func (q *Queries) GetAllGroupIdByUserId(ctx context.Context, userID uuid.UUID) (
 	defer rows.Close()
 	var items []uuid.UUID
 	for rows.Next() {
-		var id uuid.UUID
-		if err := rows.Scan(&id); err != nil {
+		var group_id uuid.UUID
+		if err := rows.Scan(&group_id); err != nil {
 			return nil, err
 		}
-		items = append(items, id)
+		items = append(items, group_id)
 	}
 	if err := rows.Close(); err != nil {
 		return nil, err

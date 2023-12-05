@@ -62,7 +62,7 @@ INNER JOIN "group".group_members AS gm ON g.id = gm.group_id
 WHERE gm.user_id = $1;
 
 -- name: GetAllGroupIdByUserId :many
-SELECT gm.id
+SELECT gm.group_id
 FROM "group".group_members as gm
 WHERE user_id = $1;
 
