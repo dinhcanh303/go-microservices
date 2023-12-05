@@ -92,6 +92,7 @@ SELECT id, user_id, group_id, title, content, status, created_at, updated_at
 FROM post.posts
 WHERE user_id = ANY($1::uuid[])
    OR group_id = ANY($2::uuid[])
+ORDER BY created_at DESC
 LIMIT $3 OFFSET $4
 `
 
@@ -140,7 +141,7 @@ func (q *Queries) GetByFeed(ctx context.Context, arg GetByFeedParams) ([]PostPos
 }
 
 const getByGroupId = `-- name: GetByGroupId :many
-SELECT id, user_id, group_id, title, content, status, created_at, updated_at FROM post.posts WHERE group_id = $1 LIMIT $2 OFFSET $3
+SELECT id, user_id, group_id, title, content, status, created_at, updated_at FROM post.posts WHERE group_id = $1 ORDER BY created_at DESC LIMIT $2 OFFSET $3
 `
 
 type GetByGroupIdParams struct {
@@ -183,7 +184,7 @@ func (q *Queries) GetByGroupId(ctx context.Context, arg GetByGroupIdParams) ([]P
 
 const getByUserId = `-- name: GetByUserId :many
 SELECT id, user_id, group_id, title, content, status, created_at, updated_at FROM post.posts 
-WHERE user_id = $1 AND group_id IS NULL LIMIT $2 OFFSET $3
+WHERE user_id = $1 AND group_id IS NULL ORDER BY created_at DESC LIMIT $2 OFFSET $3
 `
 
 type GetByUserIdParams struct {

@@ -5,6 +5,7 @@ import (
 
 	"github.com/dinhcanh303/go-microservices/internal/upload/domain"
 	"github.com/dinhcanh303/go-microservices/pkg/minio"
+	"github.com/dinhcanh303/go-microservices/pkg/utils"
 	"github.com/google/uuid"
 	"github.com/google/wire"
 	"github.com/labstack/echo/v4"
@@ -118,13 +119,11 @@ func (s *uploadService) UploadFile(echoCtx echo.Context) ([]*domain.Attachment, 
 	if err != nil {
 		return nil, errors.Wrap(err, "Get Upload Form Error")
 	}
-	slog.Info("FORM DATA::", form)
-	files := form.File["files"]
-	id := form.Value["user_id"][0]
-	userId, err := uuid.Parse(id)
+	user, err := utils.ExtractHeaderUser(echoCtx)
 	if err != nil {
-		return nil, errors.Wrap(err, "Parse User Id Error")
+		return nil, errors.Wrap(err, "Extract Header User failed")
 	}
+	files := form.File["files"]
 	results := make([]*domain.Attachment, 0)
 	for _, file := range files {
 		buffer, err := file.Open()
@@ -137,7 +136,7 @@ func (s *uploadService) UploadFile(echoCtx echo.Context) ([]*domain.Attachment, 
 		if err != nil {
 			return nil, errors.Wrap(err, "Upload file failed:")
 		}
-		model := domain.NewAttachment(userId, fileInfo.FileName, fileInfo.Extension,
+		model := domain.NewAttachment(user.ID, fileInfo.FileName, fileInfo.Extension,
 			fileInfo.MimeType, fileInfo.Folder, fileInfo.Url, fileInfo.UrlThumbnail)
 		attachment, err := s.repo.Create(ctx, model)
 		if err != nil {

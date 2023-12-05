@@ -141,8 +141,7 @@ message PostRequest {
     string title = 1;
     string content = 2;
     int32 status = 3;
-    string user_id = 4;
-    string group_id = 5;
+    string group_id = 4;
 }
 message PostResponse {
     string id = 1;

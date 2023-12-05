@@ -6,6 +6,7 @@ import (
 	"github.com/dinhcanh303/go-microservices/cmd/like/config"
 	"github.com/dinhcanh303/go-microservices/internal/like/domain"
 	"github.com/dinhcanh303/go-microservices/internal/like/usecases/likes"
+	"github.com/dinhcanh303/go-microservices/pkg/utils"
 	"github.com/dinhcanh303/go-microservices/proto/gen"
 	"github.com/google/uuid"
 	"github.com/google/wire"
@@ -97,9 +98,9 @@ func (l *likeGRPCServer) GetLikesByCommentID(ctx context.Context, request *gen.G
 func (l *likeGRPCServer) CreateLike(ctx context.Context, request *gen.CreateLikeRequest) (*gen.CreateLikeResponse, error) {
 	slog.Info("POST: CreateLike")
 	typeLike := []string{"Like/Comment", "Like/Post"}
-	userId, err := uuid.Parse(request.Like.UserId)
+	user, err := utils.ExtractMetadataUser(ctx)
 	if err != nil {
-		return nil, errors.Wrap(err, "failed to parse")
+		return nil, errors.Wrap(err, "Extract Metadata User failed")
 	}
 	likeableId, err := uuid.Parse(request.Like.LikeableId)
 	if err != nil {
@@ -115,7 +116,7 @@ func (l *likeGRPCServer) CreateLike(ctx context.Context, request *gen.CreateLike
 		Emoji:        request.Like.Emoji,
 		LikeableType: request.Like.LikeableType,
 		LikeableID:   likeableId,
-		UserID:       userId,
+		UserID:       user.ID,
 	}
 	like, err := l.uc.CreateLike(ctx, &model)
 	if err != nil {

@@ -8,6 +8,7 @@ import (
 	"github.com/dinhcanh303/go-microservices/internal/comment/usecases/comments"
 	domainLike "github.com/dinhcanh303/go-microservices/internal/like/domain"
 	domainUpload "github.com/dinhcanh303/go-microservices/internal/upload/domain"
+	"github.com/dinhcanh303/go-microservices/pkg/utils"
 	"github.com/dinhcanh303/go-microservices/proto/gen"
 	"github.com/google/uuid"
 	"github.com/google/wire"
@@ -51,9 +52,9 @@ func (*commentGRPCServer) CountCommentByCommentID(context.Context, *gen.CountCom
 // CreateComment implements gen.CommentServiceServer.
 func (c *commentGRPCServer) CreateComment(ctx context.Context, request *gen.CreateCommentRequest) (*gen.CreateCommentResponse, error) {
 	slog.Info("POST: CreateComment")
-	userId, err := uuid.Parse(request.Comment.UserId)
+	user, err := utils.ExtractMetadataUser(ctx)
 	if err != nil {
-		return nil, errors.Wrap(err, "failed to parse")
+		return nil, errors.Wrap(err, "Extract Metadata User failed")
 	}
 	postId, err := uuid.Parse(request.Comment.PostId)
 	if err != nil {
@@ -73,7 +74,7 @@ func (c *commentGRPCServer) CreateComment(ctx context.Context, request *gen.Crea
 			UUID:  replyToId,
 			Valid: request.Comment.ReplyToId != "",
 		},
-		UserID: userId,
+		UserID: user.ID,
 	}
 	comment, err := c.uc.CreateComment(ctx, &model)
 	if err != nil {

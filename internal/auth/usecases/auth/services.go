@@ -16,6 +16,7 @@ import (
 	"github.com/dinhcanh303/go-microservices/pkg/utils"
 	"github.com/google/uuid"
 	"github.com/google/wire"
+	"github.com/pkg/errors"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
@@ -60,9 +61,24 @@ func (s *service) SignIn(ctx context.Context, email string, password string) (*s
 			return nil, status.Error(codes.Unauthenticated, err.Error())
 		}
 		if auth {
-			foundUser, err := findUserByEmail(s.repo, ctx, email)
-			if err != nil {
-				return nil, err
+			foundUser, _ := findUserByEmail(s.repo, ctx, email)
+			if foundUser == nil {
+				hashPassword, err := utils.HashPassword(password)
+				if err != nil {
+					return nil, errors.New("create account using ldap failed because hash password failed")
+				}
+				name := strings.Split(email, "@")[0]
+				foundUser, err = s.repo.CreateUser(ctx, &domain.User{
+					ID:        uuid.New(),
+					Email:     email,
+					Password:  hashPassword,
+					FirstName: name,
+					LastName:  name,
+					FullName:  name,
+				})
+				if err != nil {
+					return nil, errors.Wrap(err, "create account using ldap failed")
+				}
 			}
 			return createTokenPairAndResponse(ctx, s, foundUser, false)
 		}

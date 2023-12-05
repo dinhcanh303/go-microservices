@@ -172,7 +172,6 @@ message GroupRequest {
     string name = 1;
     string description = 2;
     int32 status = 3;
-    string user_id = 4;
 }
 message GroupResponse {
     string id = 1;
@@ -185,8 +184,7 @@ message GroupResponse {
 }
 message GroupMemberRequest {
     string group_id = 1;
-    string user_id = 2;
-    int32 role = 3;
+    int32 role = 2;
 }
 message GroupMemberResponse {
     string id = 1;

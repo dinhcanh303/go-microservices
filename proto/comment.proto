@@ -108,10 +108,9 @@ message GetCommentsByPostIDResponse {
 }
 message CommentRequest {
     string post_id = 1;
-    string user_id = 2;
-    string reply_to_id = 3;
-    string content = 4;
-    string parent_comment_id = 5;
+    string reply_to_id = 2;
+    string content = 3;
+    string parent_comment_id = 4;
 }
 message Comment {
     string id = 1;

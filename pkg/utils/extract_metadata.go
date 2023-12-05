@@ -12,6 +12,7 @@ import (
 	"github.com/dinhcanh303/go-microservices/pkg/constant"
 	"github.com/dinhcanh303/go-microservices/pkg/token"
 	"github.com/google/uuid"
+	"github.com/labstack/echo/v4"
 	"google.golang.org/grpc/metadata"
 )
 
@@ -37,6 +38,27 @@ func ExtractMetadataUser(ctx context.Context) (*token.Payload, error) {
 		}
 	} else {
 		return nil, errors.New("context not found header forward")
+	}
+	return payload, nil
+}
+func ExtractHeaderUser(ctx echo.Context) (*token.Payload, error) {
+	headerUser := ctx.Request().Header.Get("Grpc-Metadata-X-Auth-User")
+	payload := &token.Payload{}
+	if headerUser != "" {
+		userValues := strings.Split(headerUser, ",")
+		if len(userValues) == 5 {
+			userId, err := uuid.Parse(userValues[0])
+			if err != nil {
+				return nil, err
+			}
+			payload.ID = userId
+			payload.Email = userValues[1]
+			payload.FullName = userValues[2]
+			payload.Role = userValues[3]
+			payload.AvatarUrl = userValues[4]
+		}
+	} else {
+		return nil, errors.New("header not found header forward")
 	}
 	return payload, nil
 }

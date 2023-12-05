@@ -7,7 +7,7 @@ CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 CREATE TABLE "group".groups (
     id uuid NOT NULL DEFAULT uuid_generate_v4(),
     user_id uuid NOT NULL,
-    name text NOT NULL UNIQUE,
+    name text NOT NULL,
     description text NOT NULL,
     status integer NOT NULL,
     created_at timestamp with time zone NOT NULL DEFAULT current_timestamp,

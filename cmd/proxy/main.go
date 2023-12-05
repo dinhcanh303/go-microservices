@@ -116,7 +116,7 @@ func main() {
 	mux.Handle("/", gw)
 	//server swagger
 	fs := http.FileServer(http.Dir("swagger"))
-	mux.Handle("/swagger/", http.StripPrefix("/swagger/", fs))
+	mux.Handle("api/v1/swagger/", http.StripPrefix("/swagger/", fs))
 	s := &http.Server{
 		Addr:    fmt.Sprintf("%s:%d", cfg.Host, cfg.Port),
 		Handler: allowCORS(withLogger(mux)),

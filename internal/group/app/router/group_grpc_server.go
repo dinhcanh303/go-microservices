@@ -71,9 +71,9 @@ func (g *groupGRPCServer) GetAllGroupMembers(ctx context.Context, request *gen.G
 }
 func (g *groupGRPCServer) CreateGroupMember(ctx context.Context, request *gen.CreateGroupMemberRequest) (*gen.CreateGroupMemberResponse, error) {
 	slog.Info("POST: CreateGroupMember")
-	userId, err := uuid.Parse(request.GroupMember.UserId)
+	user, err := utils.ExtractMetadataUser(ctx)
 	if err != nil {
-		return nil, errors.Wrap(err, "failed to parse")
+		return nil, errors.Wrap(err, "Extract Metadata User failed")
 	}
 	groupId, err := uuid.Parse(request.GroupMember.GroupId)
 	if err != nil {
@@ -82,7 +82,7 @@ func (g *groupGRPCServer) CreateGroupMember(ctx context.Context, request *gen.Cr
 	model := domain.GroupMember{
 		ID:      uuid.New(),
 		GroupID: groupId,
-		UserID:  userId,
+		UserID:  user.ID,
 		Role:    request.GroupMember.Role,
 	}
 	groupMember, err := g.ucGroupMember.CreateGroupMember(ctx, &model)

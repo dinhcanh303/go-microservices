@@ -171,6 +171,10 @@ func (a *authGRPCServer) Logout(ctx context.Context, request *gen.LogoutRequest)
 		return nil, err
 	}
 	slog.Info("KeyStore::", keyStore)
+	err = a.ucKey.DeleteKeyByID(ctx, keyStore.ID)
+	if err != nil {
+		return nil, errors.Wrap(err, "Logout failed :")
+	}
 	return &gen.LogoutResponse{}, nil
 }
 func (a *authGRPCServer) HandleRefreshToken(ctx context.Context, request *gen.HandleRefreshTokenRequest) (*gen.HandleRefreshTokenResponse, error) {

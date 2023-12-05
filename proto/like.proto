@@ -82,7 +82,6 @@ message LikeRequest {
     string emoji =1;
     string likeable_type =2;
     string likeable_id =3;
-    string user_id = 4;
 }
 message LikeUpdateRequest {
     string id = 1;

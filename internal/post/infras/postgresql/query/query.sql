@@ -22,17 +22,18 @@ SET
 WHERE id = sqlc.arg(id) RETURNING *;
 
 -- name: GetByGroupId :many
-SELECT * FROM post.posts WHERE group_id = $1 LIMIT $2 OFFSET $3;
+SELECT * FROM post.posts WHERE group_id = $1 ORDER BY created_at DESC LIMIT $2 OFFSET $3;
 
 -- name: GetByUserId :many
 SELECT * FROM post.posts 
-WHERE user_id = $1 AND group_id IS NULL LIMIT $2 OFFSET $3;
+WHERE user_id = $1 AND group_id IS NULL ORDER BY created_at DESC LIMIT $2 OFFSET $3;
 
 -- name: GetByFeed :many
 SELECT *
 FROM post.posts
 WHERE user_id = ANY($1::uuid[])
    OR group_id = ANY($2::uuid[])
+ORDER BY created_at DESC
 LIMIT $3 OFFSET $4;
 -- name: Delete :exec
 DELETE FROM post.posts WHERE id = $1;
