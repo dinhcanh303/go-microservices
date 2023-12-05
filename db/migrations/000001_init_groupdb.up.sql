@@ -7,7 +7,7 @@ CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 CREATE TABLE "group".groups (
     id uuid NOT NULL DEFAULT uuid_generate_v4(),
     user_id uuid NOT NULL,
-    name text NOT NULL,
+    name text NOT NULL UNIQUE,
     description text NOT NULL,
     status integer NOT NULL,
     created_at timestamp with time zone NOT NULL DEFAULT current_timestamp,
@@ -30,6 +30,7 @@ CREATE TABLE "group".group_members (
 CREATE INDEX ix_group_user_id ON "group".groups (user_id);
 CREATE INDEX ix_group_member_user_id ON "group".group_members (user_id);
 CREATE INDEX ix_group_member_group_id ON "group".group_members (group_id);
+CREATE INDEX ix_group_member ON "group".group_members (group_id,user_id);
 
 COMMIT;
 

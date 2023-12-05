@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"log/slog"
 	"strconv"
-	"strings"
 
 	"github.com/dinhcanh303/go-microservices/cmd/auth/config"
 	"github.com/dinhcanh303/go-microservices/internal/auth/app/validation"
@@ -148,8 +147,8 @@ func verifyToken(refreshToken, secretKey string) (*token.Payload, error) {
 	return payload, nil
 }
 func addHeader(payload *token.Payload, keyStore *domain.Key) metadata.MD {
-	keyStoreUsed, _ := utils.JsonRawMessageToArrayString(keyStore.RefreshTokensUsed)
-	keyStoreUsedString := strings.Join(keyStoreUsed, ",")
+	// keyStoreUsed, _ := utils.JsonRawMessageToArrayString(keyStore.RefreshTokensUsed)
+	// keyStoreUsedString := strings.Join(keyStoreUsed, ",")
 	header := metadata.Pairs(
 		constant.User,
 		fmt.Sprintf("%s,%s,%s,%s,%s",
@@ -162,13 +161,11 @@ func addHeader(payload *token.Payload, keyStore *domain.Key) metadata.MD {
 			keyStore.PublicKey, keyStore.PrivateKey,
 			keyStore.RefreshToken, keyStore.RefreshTokensUsed,
 		),
-		constant.KeyStoreUsed, keyStoreUsedString,
 	)
 	return header
 }
 func (a *authGRPCServer) Logout(ctx context.Context, request *gen.LogoutRequest) (*gen.LogoutResponse, error) {
 	slog.Info("GET:: Logout")
-
 	keyStore, err := utils.ExtractMetadataKeyStore(ctx)
 	if err != nil {
 		return nil, err

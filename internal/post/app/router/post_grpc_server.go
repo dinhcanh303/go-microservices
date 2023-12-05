@@ -63,16 +63,16 @@ func NewGRPCPostServer(
 
 func (p *postGRPCServer) CreatePost(ctx context.Context, request *gen.CreatePostRequest) (*gen.CreatePostResponse, error) {
 	slog.Info("POST: CreatePost")
-	userId, err := uuid.Parse(request.Post.UserId)
+	user, err := utils.ExtractMetadataUser(ctx)
 	if err != nil {
-		return nil, errors.Wrap(err, "Parse User ID failed")
+		return nil, errors.Wrap(err, "Extract Metadata User failed")
 	}
 	groupId, _ := uuid.Parse(request.Post.GroupId)
 	model := domain.Post{
 		Title:   request.Post.Title,
 		Content: request.Post.Content,
 		Status:  request.Post.Status,
-		UserID:  userId,
+		UserID:  user.ID,
 		GroupID: uuid.NullUUID{
 			UUID:  groupId,
 			Valid: request.Post.GroupId != "",

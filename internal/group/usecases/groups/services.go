@@ -5,6 +5,8 @@ import (
 
 	"github.com/dinhcanh303/go-microservices/internal/group/domain"
 	groupmembers "github.com/dinhcanh303/go-microservices/internal/group/usecases/groupmembers"
+	"github.com/dinhcanh303/go-microservices/pkg/constant"
+	"github.com/dinhcanh303/go-microservices/pkg/utils"
 	"golang.org/x/exp/slog"
 
 	"github.com/google/uuid"
@@ -42,9 +44,28 @@ func (s *service) GetAllGroupIdByUserId(ctx context.Context, userId uuid.UUID) (
 // Create implements UseCase.
 func (s *service) CreateGroup(ctx context.Context, group *domain.Group) (*domain.Group, error) {
 	slog.Info("Create Group Service")
-	result, err := s.repo.Create(ctx, group)
+	user, err := utils.ExtractMetadataUser(ctx)
+	if err != nil {
+		return nil, err
+	}
+	result, err := s.repo.Create(ctx, &domain.Group{
+		Name:        group.Name,
+		Description: group.Description,
+		Status:      group.Status,
+		UserID:      user.ID,
+	})
 	if err != nil {
 		return nil, errors.Wrap(err, "service.Create")
+	}
+	//Create the group member
+	_, err = s.repoGroupMember.CreateGroupMember(ctx, &domain.GroupMember{
+		ID:      uuid.New(),
+		GroupID: result.ID,
+		UserID:  user.ID,
+		Role:    constant.OWNER,
+	})
+	if err != nil {
+		return nil, errors.New("create group member owner failed")
 	}
 	return result, nil
 }
