@@ -18,7 +18,7 @@ No. | Service | URL
 3 | post service | [http://localhost:5002](http://localhost:5002)
 4 | comment service | [http://localhost:5003](http://localhost:5003)
 5 | like service | [http://localhost:5004](http://localhost:5004)
-6 | upload service | [http://localhost:5005](http://localhost:5005)[http://localhost:5005](http://localhost:5005)
+6 | upload service | [http://localhost:5005](http://localhost:5005)\n[http://localhost:5006](http://localhost:5006)
 7 | auth service | [http://localhost:5007](http://localhost:5007)
 8 | notification service | worker only
 9 | web | loading...
