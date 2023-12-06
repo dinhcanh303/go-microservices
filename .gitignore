@@ -2,3 +2,4 @@
 .test.env
 /traefik/certs
 /traefik/.env
+*.log

@@ -23,12 +23,12 @@ internal
 ```
 ### Example create service post 
 ```bash
-> cd internal 
-> mkdir post
-> create folder domain
-                infras
-                usecases
-                app
+cd internal 
+mkdir post
+create folder domain
+              infras
+              usecases
+              app
 ```
 ### 1.Enterprise Business Rules
 #### Domain 
@@ -863,7 +863,7 @@ lint:
 ```
 Then using `make proto` let the tool automatically generate the necessary files
 ```bash
-> make proto
+make proto
 ```
 
 

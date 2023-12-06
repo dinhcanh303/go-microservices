@@ -38,38 +38,93 @@ the more abstract (high level), and the further out the more detailed (low level
 ![clean-ddd](docs/clean_ddd.svg)
 
 ## Development
-
-### Generate dependency injection instances with wire
-- [Compile-time Dependency Injection for Go of Google](https://github.com/google/wire)
+### Install tools
+[Docker Desktop for Mac](https://www.docker.com/products/docker-desktop/)
+[TablePlus](https://tableplus.com/) or [pgAdmin4](https://www.pgadmin.org/)
+[Golang](https://go.dev/)
+[Migrate](https://github.com/golang-migrate/migrate/tree/master/cmd/migrate)
+- Mac OS
 ```bash
-> make wire
+brew install golang-migrate
 ```
-### Generate code with sqlc
-- [Generate type-safe code from SQL](https://docs.sqlc.dev/en/stable/index.html)
+- Linux
 ```bash
-> make sqlc
+curl -L https://packagecloud.io/golang-migrate/migrate/gpgkey | apt-key add -
+echo "deb https://packagecloud.io/golang-migrate/migrate/ubuntu/ $(lsb_release -sc) main" > /etc/apt/sources.list.d/migrate.list
+apt-get update
+apt-get install -y migrate
 ```
-### Generate proto using protobuf 
-- [Go support for Google's protocol buffers](https://github.com/golang/protobuf)
+[DB Docs](https://dbdocs.io/docs)
 ```bash
-> make proto
+npm install -g dbdocs
+dbdocs login
 ```
-## Start go-microservices
-### Start docker core include (postgres , redis, rabbitmq, etc)
+[DBML CLI](https://dbml.dbdiagram.io/cli/#installation)
 ```bash
-> make docker-core
+npm install -g @dbml/cli
+dbml2sql --version
+# or if you're using yarn
+yarn global add @dbml/cli
+dbml2sql --version
 ```
-### Start docker multi-service (group,post,like, etc)
+[SQLC](https://docs.sqlc.dev/en/stable/index.html)
+- Mac OS
 ```bash
-> make docker
+brew install sqlc
 ```
-### Start service traefik 
+- Linux
+```bash
+sudo snap install sqlc
+```
+[Go mock](https://github.com/golang/mock)
+```bash
+go install github.com/golang/mock/mockgen@v1.6.0
+```
+### How to generate code
+[Generate dependency injection instances with wire](https://github.com/google/wire)
+```bash
+make wire
+```
+[Generate code with sqlc](https://docs.sqlc.dev/en/stable/index.html)
+```bash
+make sqlc
+```
+[Generate proto using protobuf ](https://github.com/golang/protobuf)
+```bash
+make proto
+```
+### Documentation
+Generate DB documentation
+```bash
+make db_docs
+```
+Access the DB Documentation at db [go-microservice](https://dbdocs.io/dinhcanhng303/go_microservices).Password: 123456789
+### How to run
+#### Run using Docker
+Start docker core include (postgres , redis, rabbitmq, etc)
+```bash
+make docker-core
+```
+Start docker multi-service (group,post,like, etc)
+```bash
+make docker
+```
+Start service traefik 
 - [The Cloud Native Application Proxy](https://github.com/traefik/traefik)
 ```bash
-> cd traefik -> make docker
+cd traefik
+make docker
+```
+#### Run 
+```bash
+make run
+```
+#### Run test
+```bash
+make test
 ```
 ## Step By Step Create Service
-- [Document](docs/step_by_step_service.md)
+- [Documents](docs/step_by_step_service.md)
 
 
 

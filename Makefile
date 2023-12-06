@@ -17,6 +17,24 @@ linter-golangci: ### check by golangci linter
 	golangci-lint run
 .PHONY: linter-golangci
 
+createdb:
+	docker exec -it mcs-postgres createdb --username=postgres --owner=root postgres
+
+dropdb:
+	docker exec -it mcs-postgres dropdb postgres
+
+migrateup:
+	migrate -path db/migrations -database "$(DB_URL)" -verbose up
+
+migratedown:
+	migrate -path db/migrations -database "$(DB_URL)" -verbose down
+
+db_docs:
+	dbdocs build docs/db.dbml
+
+db_schema:
+	dbml2sql --postgres -o docs/schema.sql docs/db.dbml
+
 wire:
 	cd internal/group/app && wire && cd - &&  \
 	cd internal/post/app && wire && cd - && \

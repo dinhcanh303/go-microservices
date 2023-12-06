@@ -1,0 +1,151 @@
+// Use DBML to define your database structure
+// Docs: https://dbml.dbdiagram.io/docs
+Project go_microservices {
+  database_type: 'PostgreSQL'
+  Note: '''
+    # Social Database
+  '''
+}
+Table "group"."groups" {
+  "id" uuid [not null, default: `uuid_generate_v4()`]
+  "user_id" uuid [not null]
+  "name" text [not null]
+  "description" text [not null]
+  "status" integer [not null]
+  "created_at" timestamp [not null, default: `current_timestamp`]
+  "updated_at" timestamp [not null, default: `now()`]
+
+Indexes {
+  id [pk, name: "pk_groups"]
+  user_id [name: "ix_group_user_id"]
+}
+}
+
+Table "group"."group_members" {
+  "id" uuid [not null, default: `uuid_generate_v4()`]
+  "group_id" uuid [not null]
+  "user_id" uuid [not null]
+  "role" integer [not null]
+  "created_at" timestamp [not null, default: `current_timestamp`]
+  "updated_at" timestamp [not null, default: `now()`]
+
+Indexes {
+  id [pk, name: "pk_group_members"]
+  user_id [name: "ix_group_member_user_id"]
+  group_id [name: "ix_group_member_group_id"]
+  (group_id, user_id) [name: "ix_group_member"]
+}
+}
+Ref:"group"."groups"."id" < "group"."group_members"."group_id"
+
+Table "post"."posts" {
+  "id" uuid [not null, default: `uuid_generate_v4()`]
+  "user_id" uuid [not null]
+  "group_id" uuid
+  "title" text [not null]
+  "content" text [not null]
+  "status" integer [not null]
+  "created_at" timestamp [not null, default: `current_timestamp`]
+  "updated_at" timestamp [not null, default: `now()`]
+
+Indexes {
+  id [pk, name: "pk_posts"]
+  user_id [name: "ix_user_id"]
+  group_id [name: "ix_group_id"]
+}
+}
+
+Table "comment"."comments" {
+  "id" uuid [not null, default: `uuid_generate_v4()`]
+  "user_id" uuid [not null]
+  "content" text [not null]
+  "reply_to_id" uuid [default: NULL]
+  "post_id" uuid [not null]
+  "parent_comment_id" uuid [default: NULL]
+  "created_at" timestamp [not null, default: `current_timestamp`]
+  "updated_at" timestamp [not null, default: `now()`]
+
+Indexes {
+  id [pk, name: "pk_comments"]
+  user_id [name: "ix_user_id"]
+  post_id [name: "ix_post_id"]
+  parent_comment_id [name: "ix_parent_comment_id"]
+}
+}
+
+Table "like"."likes" {
+  "id" uuid [not null, default: `uuid_generate_v4()`]
+  "emoji" VARCHAR(255) [not null]
+  "likeable_type" VARCHAR(255) [not null]
+  "likeable_id" uuid [not null]
+  "user_id" uuid [not null]
+  "created_at" timestamp [not null, default: `current_timestamp`]
+  "updated_at" timestamp [not null, default: `now()`]
+
+Indexes {
+  id [pk, name: "pk_likes"]
+  user_id [name: "ix_user_id"]
+}
+}
+
+Table "upload"."attachments" {
+  "id" uuid [not null, default: `uuid_generate_v4()`]
+  "attachable_type" VARCHAR(255) [default: NULL]
+  "attachable_id" uuid [default: NULL]
+  "user_id" uuid [not null]
+  "filename" VARCHAR(255) [not null]
+  "extension" VARCHAR(255) [not null]
+  "mime_type" VARCHAR(255) [default: NULL]
+  "folder" VARCHAR(255) [default: NULL]
+  "url" VARCHAR(255) [not null]
+  "url_thumbnail" VARCHAR(255) [default: NULL]
+  "created_at" timestamp [not null, default: `current_timestamp`]
+  "updated_at" timestamp [not null, default: `now()`]
+
+Indexes {
+  id [pk, name: "pk_attachments"]
+  user_id [name: "ix_user_id"]
+}
+}
+
+Table "auth"."users" {
+  "id" uuid [not null, default: `uuid_generate_v4()`]
+  "email" VARCHAR(255) [unique, not null]
+  "first_name" VARCHAR(255) [not null]
+  "last_name" VARCHAR(255) [not null]
+  "full_name" VARCHAR(255) [default: NULL]
+  "password" VARCHAR(255) [not null]
+  "roles" VARCHAR(20) [default: "user"]
+  "created_at" timestamp [not null, default: `current_timestamp`]
+  "updated_at" timestamp [not null, default: `now()`]
+
+Indexes {
+  id [pk, name: "pk_users"]
+}
+}
+
+Table "auth"."api_keys" {
+  "id" BIGSERIAL [pk, increment]
+  "key" VARCHAR(255) [unique, not null]
+  "status" BOOLEAN [not null]
+  "permissions" JSON [default: "[]"]
+  "created_at" timestamp [not null, default: `current_timestamp`]
+  "updated_at" timestamp [not null, default: `now()`]
+}
+
+Table "auth"."keys" {
+  "id" BIGSERIAL [pk, increment]
+  "user_id" uuid [not null]
+  "public_key" VARCHAR(255) [not null]
+  "private_key" VARCHAR(255) [not null]
+  "refresh_token" TEXT [default: NULL]
+  "refresh_tokens_used" JSON [default: "[]"]
+  "created_at" timestamp [not null, default: `current_timestamp`]
+  "updated_at" timestamp [not null, default: `now()`]
+
+Indexes {
+  user_id [name: "ix_auth_key_token"]
+}
+}
+
+Ref:"auth"."users"."id" < "auth"."keys"."user_id"

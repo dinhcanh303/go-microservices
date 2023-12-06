@@ -19,7 +19,7 @@ EXPOSE 5000
 
 # GOPATH for scratch images is /
 COPY --from=builder /app/cmd/proxy/config.yml /
-COPY --from=builder /app/third_party/swagger/ /swagger
+COPY --from=builder /app/docs/swagger/ /swagger
 COPY --from=builder /app/third_party/openapiv2/go-microservices.swagger.json /swagger
 COPY --from=builder /bin/app /app
 CMD ["/app"]
