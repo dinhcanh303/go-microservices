@@ -12,16 +12,16 @@ An event-driven microservices social application has been written in Golang
 ![go-microservices](docs/go-microservices.svg)
 ## Services
 No. | Service | URL
---- | --- | ---
-1 | grpc-gateway | [http://localhost:5000](http://localhost:5000)
-2 | group service | [http://localhost:5001](http://localhost:5001)
-3 | post service | [http://localhost:5002](http://localhost:5002)
-4 | comment service | [http://localhost:5003](http://localhost:5003)
-5 | like service | [http://localhost:5004](http://localhost:5004)
-6 | upload service | [http://localhost:5005](http://localhost:5005)<br>[http://localhost:5006](http://localhost:5006)
-7 | auth service | [http://localhost:5007](http://localhost:5007)
-8 | notification service | worker only
-9 | web | loading...
+--- | ---- | -----
+1 | gRP Gateway | [http://localhost:5000](http://localhost:5000)
+2 | Group Service | [http://localhost:5001](http://localhost:5001)
+3 | Post Service | [http://localhost:5002](http://localhost:5002)
+4 | Comment Service | [http://localhost:5003](http://localhost:5003)
+5 | Like Service | [http://localhost:5004](http://localhost:5004)
+6 | Upload Service | [http://localhost:5005](http://localhost:5005)<br>[http://localhost:5006](http://localhost:5006)
+7 | Auth Service | [http://localhost:5007](http://localhost:5007)
+8 | Notification Service | worker only
+9 | Web | loading...
 
 ## Clean Domain-driven Design
 ![clean-ddd](docs/clean_ddd.svg)
