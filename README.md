@@ -24,6 +24,16 @@ No. | Service | URL
 9 | Web | loading...
 ## Clean Architecture
 ![clean-architecture](docs/clean_architecture.jpg)
+### Clean Architecture
+- Clean Architecture is a multi-layered architecture.
+- Isolate Business Rules. Similar to Hexagonal and Onion architecture.
+- The concentric circles represent layers, the closer to the center 
+the more abstract (high level), and the further out the more detailed (low level).
+- Dependency Inversion (DI) in SOLID
+    High level will not depend on low level, both depend on abstraction/interface.
+    Abstraction does not depend on details but vice versa.
+#### Note 
+- ---> In Clean Architecture arrows is Dependency Direction , not call direction.
 ## Clean Domain-driven Design
 ![clean-ddd](docs/clean_ddd.svg)
 
