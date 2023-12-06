@@ -16,8 +16,10 @@
 #### Domain 
 - Contains domain models.This is the heart of the system, containing entities, states, and business logic.
 ##### Entity
+- Represents the core business objects.<br>
 ![domain_entity](domain_entity.png)
 ##### Interfaces
+- Defines contracts for interactions within the domain (Domain Service Interface).<br>
 ![domain_interface](domain_interface.png)
 ### 2.Application Business Rules
 #### UseCase
@@ -25,28 +27,50 @@
 ##### Interfaces
 ![use_case_interface](use_case_interface.png)
 ###### Repository Interface
-- Repository Interface 
+- Repository Interface is defines methods for data access in the domain. 
 ###### UseCase Interface
-- UseCase Interface 
+- UseCase Interface is defines methods representing use cases.
 ##### Service (UseCase)
+- Implements the use case interfaces.<br>
 ![use_case_service](use_case_service.png)
 
 ### 3.Interface Adapter
 #### Infrastructure
 ![infras](infras.png)
 ##### gRPC
-- Example Auth client 
+- Implements external interface like gRPC clients.
+- Example Auth client.<br>
 ![grpc_auth_client](grpc_auth_client.png)
 ...
 ##### Postgresql
-- Create file query.sql written query sql using syntax sqlc support
+- Create file query.sql
+- Utilizes SQLC for generating go code from SQL queries.
+- Example: `query.sql` for defining queries.<br>
 ![postgres_query](postgres_query.png)
-- Then using command:
+- SQLC generation using the `make sqlc` command:
 ```bash
 > make sqlc 
 ```
+- Generated files:db.go,models.go and query.sql.go.<br>
 ![sqlc_gen](sqlc_gen.png)
-- sqlc generation multi file (db.go,models.go and query.sql.go)
-##### Repo
+##### Repository
+- Implements repository interface for data access.<br>
 ![repo](repo.png)
+### 4.Framework and Drivers
+#### Application
+##### Router
+- Using gRPC server (router) for handling inbound call UseCase (service) and Domain Service Interface.<br> 
+![app_router](app_router.png)
+##### App
+- Contains the main application logic and wiring.<br>
+![app](app.png)
+##### Wire (Dependency Injection (DI) of Google)
+- Utilizes Google Wire for dependency injection.<br>
+![app_wire](app_wire.png)
+```bash
+> make wire
+```
+### Cmd
+
+
 
