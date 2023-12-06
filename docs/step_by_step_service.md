@@ -2,6 +2,28 @@
 
 
 ## DDD and Clean Architecture
+
+### Folder structure
+Let's focus on directories in [`/internal`](../internal/)
+```
+internal
+├── auth
+│   ├── app
+│   ├── domain
+│   ├── infras
+│   └── usecases
+├── group
+│   ├── app
+│   ├── domain
+│   ├── infras
+│   └── usecases
+└── post
+    ├── app
+    ├── domain
+    ├── infras
+    └── usecases
+...
+```
 ### Example create service post 
 ```bash
 > cd internal 
@@ -11,7 +33,6 @@
                 usecases
                 app
 ```
-![folder_post](folder_post.png)
 ### 1.Enterprise Business Rules
 #### Domain 
 - Contains domain models.This is the heart of the system, containing entities, states, and business logic.
