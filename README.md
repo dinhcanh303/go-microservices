@@ -39,10 +39,10 @@ the more abstract (high level), and the further out the more detailed (low level
 
 ## Development
 ### Install tools
-[Docker Desktop for Mac](https://www.docker.com/products/docker-desktop/)
-[TablePlus](https://tableplus.com/) or [pgAdmin4](https://www.pgadmin.org/)
-[Golang](https://go.dev/)
-[Migrate](https://github.com/golang-migrate/migrate/tree/master/cmd/migrate)
+[Docker Desktop for Mac](https://www.docker.com/products/docker-desktop/) <br>
+[TablePlus](https://tableplus.com/) or [pgAdmin4](https://www.pgadmin.org/) <br>
+[Golang](https://go.dev/) <br>
+[Migrate](https://github.com/golang-migrate/migrate/tree/master/cmd/migrate) <br>
 - Mac OS
 ```bash
 brew install golang-migrate
@@ -109,8 +109,7 @@ Start docker multi-service (group,post,like, etc)
 ```bash
 make docker
 ```
-Start service traefik 
-- [The Cloud Native Application Proxy](https://github.com/traefik/traefik)
+[Start service traefik](https://github.com/traefik/traefik)
 ```bash
 cd traefik
 make docker
