@@ -13,6 +13,16 @@ type usecase struct {
 	postRepo PostRepo
 }
 
+var _ UseCase = (*usecase)(nil)
+var UseCaseSet = wire.NewSet(NewUseCase)
+
+func NewUseCase(postRepo PostRepo,
+) UseCase {
+	return &usecase{
+		postRepo: postRepo,
+	}
+}
+
 // GetPostsByFeed implements UseCase.
 func (uc *usecase) GetPostsByFeed(ctx context.Context, userIds []uuid.UUID, groupIds []uuid.UUID, limit int32, offset int32) ([]*domain.Post, error) {
 	posts, err := uc.postRepo.GetByFeed(ctx, userIds, groupIds, limit, offset)
@@ -38,16 +48,6 @@ func (uc *usecase) GetPostsByUserId(ctx context.Context, userId uuid.UUID, limit
 		return nil, errors.Wrap(err, "uc.GetPostsByUserId failed")
 	}
 	return posts, nil
-}
-
-var _ UseCase = (*usecase)(nil)
-var UseCaseSet = wire.NewSet(NewUseCase)
-
-func NewUseCase(postRepo PostRepo,
-) UseCase {
-	return &usecase{
-		postRepo: postRepo,
-	}
 }
 
 // CreatePost implements UseCase.

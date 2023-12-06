@@ -17,6 +17,20 @@ type authGRPCClient struct {
 	conn *grpc.ClientConn
 }
 
+var _ domain.AuthDomainService = (*authGRPCClient)(nil)
+
+var AuthGRPCClientSet = wire.NewSet(NewGRPCAuthClient)
+
+func NewGRPCAuthClient(cfg *config.Config) (domain.AuthDomainService, error) {
+	conn, err := grpc.Dial(cfg.AuthClient.URL, grpc.WithTransportCredentials(insecure.NewCredentials()))
+	if err != nil {
+		return nil, err
+	}
+	return &authGRPCClient{
+		conn: conn,
+	}, nil
+}
+
 // GetAllUserIdByUserId implements domain.AuthDomainService.
 func (a *authGRPCClient) GetAllUserIdByUserId(ctx context.Context, userId uuid.UUID) ([]uuid.UUID, error) {
 	client := gen.NewAuthServiceClient(a.conn)
@@ -36,18 +50,4 @@ func (a *authGRPCClient) GetAllUserIdByUserId(ctx context.Context, userId uuid.U
 		}
 	}
 	return results, nil
-}
-
-var _ domain.AuthDomainService = (*authGRPCClient)(nil)
-
-var AuthGRPCClientSet = wire.NewSet(NewGRPCAuthClient)
-
-func NewGRPCAuthClient(cfg *config.Config) (domain.AuthDomainService, error) {
-	conn, err := grpc.Dial(cfg.AuthClient.URL, grpc.WithTransportCredentials(insecure.NewCredentials()))
-	if err != nil {
-		return nil, err
-	}
-	return &authGRPCClient{
-		conn: conn,
-	}, nil
 }

@@ -1,6 +1,8 @@
 # Step By Step create service:
 
-## Create Application Business Rules And Enterprise Business Rules
+
+## DDD and Clean Architecture
+### Example create service post 
 ```bash
 > cd internal 
 > mkdir post
@@ -10,3 +12,41 @@
                 app
 ```
 ![folder_post](folder_post.png)
+### 1.Enterprise Business Rules
+#### Domain 
+- Contains domain models.This is the heart of the system, containing entities, states, and business logic.
+##### Entity
+![domain_entity](domain_entity.png)
+##### Interfaces
+![domain_interface](domain_interface.png)
+### 2.Application Business Rules
+#### UseCase
+![use_case](use_case.png)
+##### Interfaces
+![use_case_interface](use_case_interface.png)
+###### Repository Interface
+- Repository Interface 
+###### UseCase Interface
+- UseCase Interface 
+##### Service (UseCase)
+![use_case_service](use_case_service.png)
+
+### 3.Interface Adapter
+#### Infrastructure
+![infras](infras.png)
+##### gRPC
+- Example Auth client 
+![grpc_auth_client](grpc_auth_client.png)
+...
+##### Postgresql
+- Create file query.sql written query sql using syntax sqlc support
+![postgres_query](postgres_query.png)
+- Then
+```bash
+> make sqlc 
+```
+- sqlc generation multi file 
+![sqlc_gen](sqlc_gen.png)
+##### Repo
+![repo](repo.png)
+
