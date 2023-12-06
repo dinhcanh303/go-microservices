@@ -22,7 +22,8 @@ No. | Service | URL
 7 | Auth Service | [http://localhost:5007](http://localhost:5007)
 8 | Notification Service | worker only
 9 | Web | loading...
-
+## Clean Architecture
+![clean-architecture](docs/clean_architecture.jpg)
 ## Clean Domain-driven Design
 ![clean-ddd](docs/clean_ddd.svg)
 
