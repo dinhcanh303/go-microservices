@@ -13,7 +13,7 @@ An event-driven microservices social application has been written in Golang
 ## Services
 No. | Service | URL
 --- | ---- | -----
-1 | gRP Gateway | [http://localhost:5000](http://localhost:5000)
+1 | gRPC Gateway | [http://localhost:5000](http://localhost:5000)
 2 | Group Service | [http://localhost:5001](http://localhost:5001)
 3 | Post Service | [http://localhost:5002](http://localhost:5002)
 4 | Comment Service | [http://localhost:5003](http://localhost:5003)
@@ -33,8 +33,26 @@ No. | Service | URL
 > make wire
 ```
 ### Generate code with sqlc
-
 ```bash
 > make sqlc
 ```
+### Generate proto using protobuf 
+```bash
+> make proto-gen
+```
+## Start go-microservices
+### Start docker core include (postgres , redis, rabbitmq, etc)
+```bash
+> make docker-compose-core
+```
+### Start docker multi-service (group,post,like, etc)
+```bash
+> make docker-compose
+```
+### Start service traefik 
+```bash
+> cd traefik -> make docker-compose
+```
+
+
 
