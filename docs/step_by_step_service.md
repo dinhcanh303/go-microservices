@@ -41,12 +41,12 @@
 ##### Postgresql
 - Create file query.sql written query sql using syntax sqlc support
 ![postgres_query](postgres_query.png)
-- Then
+- Then using command:
 ```bash
 > make sqlc 
 ```
-- sqlc generation multi file 
 ![sqlc_gen](sqlc_gen.png)
+- sqlc generation multi file (db.go,models.go and query.sql.go)
 ##### Repo
 ![repo](repo.png)
 
