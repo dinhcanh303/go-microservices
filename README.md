@@ -29,14 +29,18 @@ No. | Service | URL
 ## Development
 
 ### Generate dependency injection instances with wire
+- Compile-time Dependency Injection for Go of Google
+- [wire](https://github.com/google/wire)
 ```bash
 > make wire
 ```
 ### Generate code with sqlc
+- [sqlc](https://docs.sqlc.dev/en/stable/index.html)
 ```bash
 > make sqlc
 ```
 ### Generate proto using protobuf 
+- [protobuf](https://github.com/golang/protobuf)
 ```bash
 > make proto-gen
 ```
@@ -50,6 +54,7 @@ No. | Service | URL
 > make docker-compose
 ```
 ### Start service traefik 
+- [traefik](https://github.com/traefik/traefik)
 ```bash
 > cd traefik -> make docker-compose
 ```
