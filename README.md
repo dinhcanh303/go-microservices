@@ -24,7 +24,7 @@ No. | Service | URL
 9 | Web | loading...
 ## Clean Architecture
 ![clean-architecture](docs/clean_architecture.jpg)
-### Clean Architecture
+### Explain Clean Architecture
 - Clean Architecture is a multi-layered architecture.
 - Isolate Business Rules. Similar to Hexagonal and Onion architecture.
 - The concentric circles represent layers, the closer to the center 
