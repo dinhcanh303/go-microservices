@@ -26,10 +26,10 @@ wire:
 	cd internal/auth/app && wire && cd -
 .PHONY: wire
 
-proto-gen:
+proto:
 	buf generate
 	
-proto:
+proto-gen:
 	rm -f proto/gen/*.go
 	rm -f third_party/swagger/*.swagger.json
 	protoc --proto_path=proto --go_out=proto/gen --go_opt=paths=source_relative \
@@ -40,32 +40,32 @@ proto:
 	statik -src=./third_party/swagger -dest=./third_party
 .PHONY: proto
 
-docker-compose: docker-compose-stop docker-compose-start
-.PHONY: docker-compose
+docker: docker-stop docker-start
+.PHONY: docker
 
-docker-compose-start:
+docker-start:
 	docker-compose up --build
-.PHONY: docker-compose-start
+.PHONY: docker-start
 
-docker-compose-stop:
+docker-stop:
 	docker-compose down
-.PHONY: docker-compose-stop
+.PHONY: docker-stop
 
-docker-compose-core: docker-compose-core-stop docker-compose-core-start
+docker-core: docker-core-stop docker-core-start
 
-docker-compose-core-start:
+docker-core-start:
 	docker-compose -f docker-compose-core.yaml up --build -d
-.PHONY: docker-compose-core-start
+.PHONY: docker-core-start
 
-docker-compose-core-stop:
+docker-core-stop:
 	docker-compose -f docker-compose-core.yaml down
 # --remove-orphans -v
-.PHONY: docker-compose-core-stop
+.PHONY: docker-core-stop
 
-docker-compose-build:
+docker-build:
 	docker-compose down --remove-orphans -v
 	docker-compose build
-.PHONY: docker-compose-build
+.PHONY: docker-build
 
 run: run-group run-post run-comment run-like run-upload run-auth run-proxy
 

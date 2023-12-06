@@ -1,12 +1,12 @@
 
 
-docker-compose: docker-compose-stop docker-compose-start
+docker: docker-stop docker-start
 .PHONY: docker-compose
 
-docker-compose-start:
+docker-start:
 	docker-compose up --build -d
-.PHONY: docker-compose-start
+.PHONY: docker-start
 
-docker-compose-stop:
+docker-stop:
 	docker-compose down
-.PHONY: docker-compose-stop
+.PHONY: docker-stop

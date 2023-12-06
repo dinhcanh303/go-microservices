@@ -52,21 +52,21 @@ the more abstract (high level), and the further out the more detailed (low level
 ### Generate proto using protobuf 
 - [Go support for Google's protocol buffers](https://github.com/golang/protobuf)
 ```bash
-> make proto-gen
+> make proto
 ```
 ## Start go-microservices
 ### Start docker core include (postgres , redis, rabbitmq, etc)
 ```bash
-> make docker-compose-core
+> make docker-core
 ```
 ### Start docker multi-service (group,post,like, etc)
 ```bash
-> make docker-compose
+> make docker
 ```
 ### Start service traefik 
 - [The Cloud Native Application Proxy](https://github.com/traefik/traefik)
 ```bash
-> cd traefik -> make docker-compose
+> cd traefik -> make docker
 ```
 ## Step By Step Create Service
 - [Document](docs/step_by_step_service.md)

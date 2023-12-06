@@ -1,8 +1,5 @@
-# Step By Step create service:
-
-
+# Example Step By Step Create Service:
 ## DDD and Clean Architecture
-
 ### Folder structure
 Let's focus on directories in [`/internal`](../internal/)
 ```
@@ -547,7 +544,327 @@ Then using wire generation file `wire_gen.go` (file code gen dependency injectio
 ```bash
 > make wire
 ```
-### Cmd
+#### Cmd
+##### Folder structure
+Let's focus on directories in [`/cmd`](../cmd/)
+```
+internal
+├── auth
+│   ├── config
+│   ├── config.yml
+│   ├── main.go
+├── group
+│   ├── config
+│   ├── config.yml
+│   ├── main.go
+└── post
+    ├── config
+    ├── config.yml
+    ├── main.go
+...
+```
+##### Example Post
+###### Config
+- `config.go` using mapping config.yml and environment from docker or kubectl configuration
+```go
+package config
+
+import (
+	"fmt"
+	"log"
+	"os"
+
+	configs "github.com/dinhcanh303/go-microservices/pkg/config"
+
+	"github.com/ilyakaznacheev/cleanenv"
+)
+
+type (
+	Config struct {
+		configs.App   `yaml:"app"`
+		configs.HTTP  `yaml:"http"`
+		configs.Log   `yaml:"logger"`
+		PG            `yaml:"postgres"`
+		CommentClient `yaml:"comment_client"`
+		LikeClient    `yaml:"like_client"`
+		UploadClient  `yaml:"upload_client"`
+		GroupClient   `yaml:"group_client"`
+		AuthClient    `yaml:"auth_client"`
+	}
+
+	PG struct {
+		PoolMax int    `env-required:"true" yaml:"pool_max" env:"PG_POOL_MAX"`
+		DsnURL  string `env-required:"true" yaml:"dsn_url" env:"PG_DSN_URL"`
+	}
+
+	CommentClient struct {
+		URL string `env-required:"true" yaml:"comment_url" env:"COMMENT_CLIENT_URL"`
+	}
+	LikeClient struct {
+		URL string `env-required:"true" yaml:"like_url" env:"LIKE_CLIENT_URL"`
+	}
+	UploadClient struct {
+		URL string `env-required:"true" yaml:"upload_url" env:"UPLOAD_CLIENT_URL"`
+	}
+	GroupClient struct {
+		URL string `env-required:"true" yaml:"upload_url" env:"GROUP_CLIENT_URL"`
+	}
+	AuthClient struct {
+		URL string `env-required:"true" yaml:"upload_url" env:"AUTH_CLIENT_URL"`
+	}
+)
+
+func NewConfig() (*Config, error) {
+	cfg := &Config{}
+
+	dir, err := os.Getwd()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// debug
+	fmt.Println("config path: " + dir)
+
+	err = cleanenv.ReadConfig(dir+"/config.yml", cfg)
+	if err != nil {
+		return nil, fmt.Errorf("config error: %w", err)
+	}
+
+	err = cleanenv.ReadEnv(cfg)
+	if err != nil {
+		return nil, err
+	}
+
+	return cfg, nil
+}
+
+```
+- `config.yml`
+Config information app , http , database ,logger and call service though gRPC ,REST ,Message Queues,...
+```yml
+app:
+  name: 'post-service'
+  version: '1.0.0'
+
+http:
+  host: '0.0.0.0'
+  port: 5002
+
+postgres:
+  pool_max: 2
+  dsn_url: host=127.0.0.1 user=postgres password=P@ssw0rd dbname=postgres sslmode=disable
+
+group_client:
+  group_url: 0.0.0.0:5001
+comment_client:
+  comment_url: 0.0.0.0:5003
+like_client:
+  like_url: 0.0.0.0:5004
+upload_client:
+  upload_url: 0.0.0.0:5006
+auth_client:
+  auth_url: 0.0.0.0:5007
+
+logger:
+  log_level: 'debug'
+  rollbar_env: 'post-service'
+```
+##### main.go (server)
+File run server gRPC ,Echo, Gin,... config call inbound application
+```go
+package main
+
+import (
+	"context"
+	"fmt"
+	"net"
+	"os"
+	"os/signal"
+	"syscall"
+
+	"github.com/dinhcanh303/go-microservices/cmd/post/config"
+	"github.com/dinhcanh303/go-microservices/internal/post/app"
+	"github.com/dinhcanh303/go-microservices/pkg/logger"
+	"github.com/dinhcanh303/go-microservices/pkg/postgres"
+	"github.com/sirupsen/logrus"
+	"go.uber.org/automaxprocs/maxprocs"
+	"golang.org/x/exp/slog"
+	"google.golang.org/grpc"
+)
+
+func main() {
+	_, err := maxprocs.Set()
+	if err != nil {
+		slog.Error("Failed set max process", err)
+	}
+	ctx, cancel := context.WithCancel(context.Background())
+	cfg, err := config.NewConfig()
+	if err != nil {
+		slog.Error("Failed get config", err)
+	}
+	slog.Info("⚡ Init App", "name", cfg.Name, "version", cfg.Version)
+
+	//set up logrus
+	logrus.SetFormatter(&logrus.JSONFormatter{})
+	logrus.SetOutput(os.Stdout)
+	logrus.SetLevel(logger.ConvertLogLevel(cfg.Log.Level))
+
+	//integrate Logrus with the slog logger
+	logrusHandle := logger.NewLogrusHandler(logrus.StandardLogger())
+	slog.New(logrusHandle)
+
+	server := grpc.NewServer()
+
+	go func() {
+		defer server.GracefulStop()
+		<-ctx.Done()
+	}()
+	cleanup := prepareApp(ctx, cancel, cfg, server)
+
+	//gRPC Server
+	address := fmt.Sprintf("%s:%d", cfg.HTTP.Host, cfg.HTTP.Port)
+	network := "tcp"
+	l, err := net.Listen(network, address)
+	if err != nil {
+		slog.Error("Failed to listen to address", err, "Network", network, "Address", address)
+		cancel()
+		<-ctx.Done()
+	}
+	slog.Info("🌏 start server...", "address", address)
+	defer func() {
+		if err1 := l.Close(); err != nil {
+			slog.Error("failed to close", err1, "network", network, "address", address)
+			<-ctx.Done()
+		}
+	}()
+	err = server.Serve(l)
+	if err != nil {
+		slog.Error("failed start gRPC server", err, "network", network, "address", address)
+		cancel()
+		<-ctx.Done()
+	}
+	quit := make(chan os.Signal, 1)
+	signal.Notify(quit, os.Interrupt, syscall.SIGTERM)
+	select {
+	case v := <-quit:
+		cleanup()
+		slog.Info("signal.Notify", v)
+	case done := <-ctx.Done():
+		cleanup()
+		slog.Info("ctx.Done", "app done", done)
+	}
+
+}
+
+func prepareApp(ctx context.Context, cancel context.CancelFunc, cfg *config.Config, server *grpc.Server) func() {
+	_, cleanup, err := app.InitApp(cfg, postgres.DBConnString(cfg.PG.DsnURL), server)
+	if err != nil {
+		slog.Error("Failed init app", err)
+		cancel()
+		<-ctx.Done()
+	}
+	return cleanup
+}
+
+```
+### Generation protocol
+#### Folder structure
+Let's focus on directories in [`/proto`](../proto/)
+```
+internal
+├── gen
+├── google
+└── pb
+└── protoc-gen-openapiv2
+└── validate
+└── auth.proto
+└── buf.yaml
+└── commom.proto
+...
+```
+[Doc:grpc-ecosystem/grpc-gateway/v2](https://github.com/grpc-ecosystem/grpc-gateway)
+The gRPC-Gateway is a plugin of the Google protocol buffers compiler protoc. It reads protobuf service definitions and generates a reverse-proxy server which translates a RESTful HTTP API into gRPC. This server is generated according to the google.api.http annotations in your service definitions.
+
+This helps you provide your APIs in both gRPC and RESTful style at the same time.
+![gRPC-Gateway](architecture_introduction_diagram.svg)
+##### 1.Create file `post.proto` using syntax proto 3
+```proto
+syntax="proto3";
+
+package post;
+
+import "google/api/annotations.proto";
+import "protoc-gen-openapiv2/options/annotations.proto";
+import "google/protobuf/timestamp.proto";
+import "upload.proto";
+import "like.proto";
+import "comment.proto";
+
+option go_package = "github.com/dinhcanh303/go-microsevices/proto/gen";
+
+service PostService {
+    rpc CreatePost(CreatePostRequest) returns (CreatePostResponse){
+        option (google.api.http) = {
+            post: "/api/v1/posts"
+            body: "*"
+        };
+        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+            summary: "Create Post"
+            description: ""
+        };
+    }
+}
+message CreatePostRequest {
+    PostRequest post = 1;
+}
+message CreatePostResponse {
+    PostResponse post = 1;
+}
+message PostRequest {
+    string title = 1;
+    string content = 2;
+    int32 status = 3;
+    string group_id = 4;
+}
+message PostResponse {
+    string id = 1;
+    string title = 2;
+    string content = 3;
+    int32 status = 4;
+    string user_id = 5;
+    string group_id = 6;
+    google.protobuf.Timestamp created_at = 7;
+    google.protobuf.Timestamp updated_at = 8;
+}
+```
+##### 2. buf.yaml config 
+```yaml
+version: v1
+name: buf.build/dinhcanh303/go-microservices
+deps:
+  - buf.build/googleapis/googleapis
+  - buf.build/grpc-ecosystem/grpc-gateway
+lint:
+  use:
+    - DEFAULT
+  ignore_only:
+    PACKAGE_DIRECTORY_MATCH:
+      - common.proto
+      - post.proto <--
+    PACKAGE_VERSION_SUFFIX:
+      - common.proto
+      - post.proto <--
+    RPC_REQUEST_RESPONSE_UNIQUE:
+      - common.proto
+      - post.proto <--
+    RPC_RESPONSE_STANDARD_NAME:
+      - common.proto
+      - post.proto <--
+```
+Then using `make proto` let the tool automatically generate the necessary files
+```bash
+> make proto
+```
 
 
 

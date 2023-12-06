@@ -35,7 +35,7 @@ services:
       - upload
       - auth
     networks:
-      - microservices-network
+      - mcs-network
   group:
     build:
       context: .
@@ -51,7 +51,7 @@ services:
     depends_on:
       - post
     networks:
-      - microservices-network
+      - mcs-network
   post:
     build:
       context: .
@@ -72,7 +72,7 @@ services:
     depends_on:
       - comment
     networks:
-      - microservices-network
+      - mcs-network
   comment:
     build:
       context: .
@@ -90,7 +90,7 @@ services:
     depends_on:
       - like
     networks:
-      - microservices-network
+      - mcs-network
   like:
     build:
       context: .
@@ -106,7 +106,7 @@ services:
     depends_on:
       - upload
     networks:
-      - microservices-network
+      - mcs-network
   upload:
     build:
       context: .
@@ -125,7 +125,7 @@ services:
     depends_on:
       - auth
     networks:
-      - microservices-network
+      - mcs-network
   auth:
     build:
       context: .
@@ -141,7 +141,7 @@ services:
     ports:
       - 5007:5007
     networks:
-      - microservices-network
+      - mcs-network
   # fontend:
   #   build:
   #     context: .
@@ -155,8 +155,8 @@ services:
   #   depends_on:
   #     - proxy
   #   networks:
-  #     - microservices-network
+  #     - mcs-network
 networks:
-  microservices-network:
-    name: microservices-network
+  mcs-network:
+    name: mcs-network
     external: true
