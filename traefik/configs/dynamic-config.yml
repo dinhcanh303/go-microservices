@@ -19,6 +19,13 @@ http:
       service: upload
       tls:
         certResolver: certificates
+    lumen:
+      rule: "Host(`{{env "APP2_DOMAIN"}}`) && PathPrefix(`/api/v1`)"
+      middlewares:
+        - auth
+      service: lumen
+      tls:
+        certResolver: certificates
   services:
     auth:
       loadBalancer:
@@ -32,6 +39,10 @@ http:
       loadBalancer:
         servers:
           - url: http://upload:5005
+    lumen:
+      loadBalancer:
+        servers:
+          - url: http://192.168.108.108:9000
   middlewares:
     auth:
       forwardAuth:

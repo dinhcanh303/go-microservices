@@ -24,7 +24,7 @@ CREATE TABLE "group".group_members (
     created_at timestamp with time zone NOT NULL DEFAULT current_timestamp,
     updated_at timestamp with time zone NOT NULL DEFAULT (now()),
     -- deleted_at timestamp with time zone NULL,
-    CONSTRAINT pk_group_members PRIMARY KEY (id)
+    CONSTRAINT pk_group_members PRIMARY KEY (id),
     FOREIGN KEY (group_id) REFERENCES "group".groups (id)
 );
 

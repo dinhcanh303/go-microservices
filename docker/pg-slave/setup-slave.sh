@@ -40,7 +40,7 @@ archive_mode = on # Allow archiving
 archive_command = '/bin/date' # Use this command to archive the logfile segment, which is unarchived here.
 wal_level = replica #turn hot standby
 max_wal_senders = 32 # This setting can have up to several stream replication connections, almost a few from, set a few
-wal_keep_segments = 64 # Set the maximum number of xlogs reserved for stream replication, one is 16M, pay attention to the machine disk 16M*64 = 1G
+wal_keep_size = 1GB # Set the maximum number of xlogs reserved for stream replication, one is 16M, pay attention to the machine disk 16M*64 = 1G
 wal_sender_timeout = 60s # Set the timeout period for stream replication host to send data
 max_connections = 300 # This setting should be noted that the max_connections from the library must be larger than the main library.
 shared_buffers = 2GB

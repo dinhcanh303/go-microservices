@@ -1,20 +1,41 @@
 version: "3"
 
 services:
-  postgres:
-    image: postgres:14-alpine
-    container_name: mcs-postgres
+  postgres-master:
+    build: ./docker/pg-master
+    container_name: mcs-postgres-master
     environment:
-      - POSTGRES_DB=postgres
       - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=P@ssw0rd
+      - POSTGRES_PASSWORD=123456
+      - POSTGRES_DB=postgres
+      - POSTGRES_MASTER=postgres-slave
+      - PG_REP_USER=rep
+      - PG_REP_PASSWORD=123456
     healthcheck:
-      # test: ["CMD", "pg_isready"]
       test: [ "CMD-SHELL", "pg_isready -d $${POSTGRES_DB} -U $${POSTGRES_USER}"]
     ports:
       - 5432:5432
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - pg-mdata:/var/lib/postgresql/data
+    networks:
+      - mcs-network
+  postgres-slave:
+    build: ./docker/pg-slave
+    container_name: mcs-postgres-slave
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=123456
+      - POSTGRES_DB=postgres
+      - POSTGRES_MASTER=postgres-master
+      - PG_STANDBY=true
+      - PG_REP_USER=rep
+      - PG_REP_PASSWORD=123456
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -d $${POSTGRES_DB} -U $${POSTGRES_USER}"]
+    ports:
+      - 5433:5432
+    volumes:
+      - pg-sdata:/var/lib/postgresql/data
     networks:
       - mcs-network
   rabbitmq:
@@ -66,7 +87,8 @@ services:
   #   networks:
   #     - mcs-network
 volumes:
-  postgres_data: {}
+  pg-mdata: {}
+  pg-sdata: {}
   redis_data: {}
 
 networks:

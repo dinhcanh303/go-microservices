@@ -5,7 +5,11 @@ set -e
 psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" --dbname "$POSTGRES_DB" <<-EOSQL
 CREATE USER $PG_REP_USER REPLICATION LOGIN CONNECTION LIMIT 100 ENCRYPTED PASSWORD '$PG_REP_PASSWORD';
 GRANT EXECUTE ON FUNCTION pg_read_binary_file(text) TO $PG_REP_USER;
-CREATE USER $POSTGRES_USER;
+DO $$ BEGIN
+  IF NOT EXISTS (SELECT FROM pg_user WHERE usename = 'postgres') THEN
+    CREATE USER postgres;
+  END IF;
+END $$;
 EOSQL
 
 mkdir -p $PGDATA/pg_log
@@ -23,7 +27,7 @@ archive_mode = on # Allow archiving
 archive_command = '/bin/date' # Use this command to archive the logfile segment, which is unarchived here.
 wal_level = replica #turn hot standby
 max_wal_senders = 32 # This setting can have up to several stream replication connections, almost a few from, set a few
-wal_keep_segments = 64 # Set the maximum number of xlogs reserved for stream replication, one is 16M, pay attention to the machine disk 16M*64 = 1G
+wal_keep_size = 1GB # Set the maximum number of xlogs reserved for stream replication, one is 16M, pay attention to the machine disk 16M*64 = 1G
 wal_sender_timeout = 60s # Set the timeout period for stream replication host to send data
 max_connections = 300 # This setting should be noted that the max_connections from the library must be larger than the main library.
 shared_buffers = 2GB

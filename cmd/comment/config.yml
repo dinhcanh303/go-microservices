@@ -14,7 +14,7 @@ upload_client:
 
 postgres:
   pool_max: 2
-  dsn_url: host=127.0.0.1 user=postgres password=P@ssw0rd dbname=postgres sslmode=disable
+  dsn_url: host=127.0.0.1 user=postgres password=123456 dbname=postgres sslmode=disable
 
 logger:
   log_level: 'debug'

@@ -8,7 +8,7 @@ import (
 )
 
 const (
-	DnsURL = "host=127.0.0.1 user=postgres password=P@ssw0rd dbname=postgres sslmode=disable"
+	DnsURL = "host=127.0.0.1 user=postgres password=123456 dbname=postgres sslmode=disable"
 )
 
 func TestPostgres(t *testing.T) {
