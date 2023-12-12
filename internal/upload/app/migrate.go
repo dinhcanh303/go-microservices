@@ -34,8 +34,6 @@ func init() {
 		glog.Fatalf("migrate: environment variable not declared: PG_URL")
 	}
 
-	databaseURL += "?sslmode=disable"
-
 	var (
 		attempts = _defaultAttempts
 		err      error

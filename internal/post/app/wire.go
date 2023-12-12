@@ -17,6 +17,7 @@ import (
 func InitApp(
 	cfg *config.Config,
 	dbConnStr postgres.DBConnString,
+	dbReadConnStr postgres.DBConnReadString,
 	grpcServer *grpc.Server,
 ) (*App, func(), error) {
 	panic(wire.Build(
@@ -32,8 +33,8 @@ func InitApp(
 		infrasGRPC.AuthGRPCClientSet,
 	))
 }
-func dbEngineFunc(url postgres.DBConnString) (postgres.DBEngine, func(), error) {
-	db, err := postgres.NewPostgresDB(url)
+func dbEngineFunc(url postgres.DBConnString, urlRead postgres.DBConnReadString) (postgres.DBEngine, func(), error) {
+	db, err := postgres.NewPostgresDB(url, urlRead)
 	if err != nil {
 		return nil, nil, err
 	}

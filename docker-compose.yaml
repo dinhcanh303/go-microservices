@@ -11,8 +11,8 @@ services:
     environment:
       APP_NAME: 'proxy-service in docker'
       IN_DOCKER: "true"
-      PG_URL: postgres://postgres:123456@postgres-master:5432/postgres
-      PG_DSN_URL: host=postgres-master user=postgres password=123456 dbname=postgres sslmode=disable
+      PG_URL: postgres://postgres:123456@127.0.0.1:5432/postgres?sslmode=disable
+      PG_REP_URL: postgres://postgres:123456@127.0.0.1:5433/postgres?sslmode=disable
       GRPC_GROUP_HOST: 'group'
       GRPC_GROUP_PORT: 5001
       GRPC_POST_HOST: 'post'
@@ -44,8 +44,8 @@ services:
     environment:
       APP_NAME: 'group-service in docker'
       IN_DOCKER: "true"
-      PG_URL: postgres://postgres:123456@postgres-master:5432/postgres
-      PG_DSN_URL: host=postgres-master user=postgres password=123456 dbname=postgres sslmode=disable
+      PG_URL: postgres://postgres:123456@127.0.0.1:5432/postgres?sslmode=disable
+      PG_REP_URL: postgres://postgres:123456@127.0.0.1:5433/postgres?sslmode=disable
     ports:
       - 5001:5001
     depends_on:
@@ -60,8 +60,8 @@ services:
     environment:
       APP_NAME: 'post-service in docker'
       IN_DOCKER: "true"
-      PG_URL: postgres://postgres:123456@postgres-master:5432/postgres
-      PG_DSN_URL: host=postgres-master user=postgres password=123456 dbname=postgres sslmode=disable
+      PG_URL: postgres://postgres:123456@127.0.0.1:5432/postgres?sslmode=disable
+      PG_REP_URL: postgres://postgres:123456@127.0.0.1:5433/postgres?sslmode=disable
       GROUP_CLIENT_URL: group:5001
       LIKE_CLIENT_URL: like:5004
       COMMENT_CLIENT_URL: comment:5003
@@ -81,8 +81,8 @@ services:
     environment:
       APP_NAME: 'comment-service in docker'
       IN_DOCKER: "true"
-      PG_URL: postgres://postgres:123456@postgres-master:5432/postgres
-      PG_DSN_URL: host=postgres-master user=postgres password=123456 dbname=postgres sslmode=disable
+      PG_URL: postgres://postgres:123456@127.0.0.1:5432/postgres?sslmode=disable
+      PG_REP_URL: postgres://postgres:123456@127.0.0.1:5433/postgres?sslmode=disable
       LIKE_CLIENT_URL: like:5004
       UPLOAD_CLIENT_URL: upload:5006
     ports:
@@ -99,8 +99,8 @@ services:
     environment:
       APP_NAME: 'like-service in docker'
       IN_DOCKER: "true"
-      PG_URL: postgres://postgres:123456@postgres-master:5432/postgres
-      PG_DSN_URL: host=postgres-master user=postgres password=123456 dbname=postgres sslmode=disable
+      PG_URL: postgres://postgres:123456@127.0.0.1:5432/postgres?sslmode=disable
+      PG_REP_URL: postgres://postgres:123456@127.0.0.1:5433/postgres?sslmode=disable
     ports:
       - 5004:5004
     depends_on:
@@ -117,8 +117,8 @@ services:
     environment:
       APP_NAME: 'upload-service in docker'
       IN_DOCKER: "true"
-      PG_URL: postgres://postgres:123456@postgres-master:5432/postgres
-      PG_DSN_URL: host=postgres-master user=postgres password=123456 dbname=postgres sslmode=disable
+      PG_URL: postgres://postgres:123456@127.0.0.1:5432/postgres?sslmode=disable
+      PG_REP_URL: postgres://postgres:123456@127.0.0.1:5433/postgres?sslmode=disable
     ports:
       - 5005:5005
       - 5006:5006
@@ -136,8 +136,8 @@ services:
     environment:
       APP_NAME: 'auth-service in docker'
       IN_DOCKER: "true"
-      PG_URL: postgres://postgres:123456@postgres-master:5432/postgres
-      PG_DSN_URL: host=postgres-master user=postgres password=123456 dbname=postgres sslmode=disable
+      PG_URL: postgres://postgres:123456@127.0.0.1:5432/postgres?sslmode=disable
+      PG_REP_URL: postgres://postgres:123456@127.0.0.1:5433/postgres?sslmode=disable
     ports:
       - 5007:5007
     networks:

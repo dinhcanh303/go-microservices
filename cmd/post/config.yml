@@ -8,7 +8,8 @@ http:
 
 postgres:
   pool_max: 2
-  dsn_url: host=127.0.0.1 user=postgres password=123456 dbname=postgres sslmode=disable
+  db_url: postgres://postgres:123456@127.0.0.1:5432/postgres?sslmode=disable
+  db_rep_url: postgres://postgres:123456@127.0.0.1:5433/postgres?sslmode=disable
 
 group_client:
   group_url: 0.0.0.0:5001

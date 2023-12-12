@@ -19,7 +19,7 @@ type userRepo struct {
 
 // GetAllUserIdOfCompany implements auth.UserRepo.
 func (rp *userRepo) GetAllUserIdOfCompany(ctx context.Context, company string) ([]uuid.UUID, error) {
-	db := rp.pg.GetDB()
+	db := rp.pg.GetDBRead()
 	querier := postgresql.New(db)
 	userIds, err := querier.GetAllUserIdOfCompany(ctx, sql.NullString{
 		String: company,
@@ -65,7 +65,7 @@ func (rp *userRepo) CreateUser(ctx context.Context, user *domain.User) (*domain.
 
 // GetUser implements auth.AuthRepo.
 func (rp *userRepo) GetUser(ctx context.Context, userID uuid.UUID) (*domain.User, error) {
-	db := rp.pg.GetDB()
+	db := rp.pg.GetDBRead()
 	querier := postgresql.New(db)
 	user, err := querier.GetUser(ctx, userID)
 	if err != nil {
@@ -85,7 +85,7 @@ func (rp *userRepo) GetUser(ctx context.Context, userID uuid.UUID) (*domain.User
 
 // GetUserByEmail implements auth.AuthRepo.
 func (rp *userRepo) GetUserByEmail(ctx context.Context, email string) (*domain.User, error) {
-	db := rp.pg.GetDB()
+	db := rp.pg.GetDBRead()
 	querier := postgresql.New(db)
 	user, err := querier.GetUserByEmail(ctx, email)
 	if err != nil {

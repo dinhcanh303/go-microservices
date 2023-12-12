@@ -21,8 +21,8 @@ import (
 
 // Injectors from wire.go:
 
-func InitApp(cfg *config.Config, cfgLdap *configs.Ldap, dbConnStr postgres.DBConnString, grpcServer *grpc.Server) (*App, func(), error) {
-	dbEngine, cleanup, err := dbEngineFunc(dbConnStr)
+func InitApp(cfg *config.Config, cfgLdap *configs.Ldap, dbConnStr postgres.DBConnString, dbReadConnStr postgres.DBConnReadString, grpcServer *grpc.Server) (*App, func(), error) {
+	dbEngine, cleanup, err := dbEngineFunc(dbConnStr, dbReadConnStr)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -46,8 +46,8 @@ func InitApp(cfg *config.Config, cfgLdap *configs.Ldap, dbConnStr postgres.DBCon
 
 // wire.go:
 
-func dbEngineFunc(url postgres.DBConnString) (postgres.DBEngine, func(), error) {
-	db, err := postgres.NewPostgresDB(url)
+func dbEngineFunc(url postgres.DBConnString, urlRead postgres.DBConnReadString) (postgres.DBEngine, func(), error) {
+	db, err := postgres.NewPostgresDB(url, urlRead)
 	if err != nil {
 		return nil, nil, err
 	}

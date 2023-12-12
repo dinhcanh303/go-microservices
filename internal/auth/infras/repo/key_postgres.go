@@ -53,7 +53,7 @@ func (rp *keyRepo) UpdateKeyByUserID(ctx context.Context, key *domain.Key) (*dom
 	querier := postgresql.New(db)
 	tx, err := db.Begin()
 	if err != nil {
-		return nil, errors.Wrap(err, "keyRepo.UpdateKey db failed")
+		return nil, errors.Wrap(err, "keyRepo.UpdateKeyByUserID db failed")
 	}
 	qtx := querier.WithTx(tx)
 	result, err := qtx.UpdateKeyByUserID(ctx, postgresql.UpdateKeyByUserIDParams{
@@ -76,7 +76,7 @@ func (rp *keyRepo) UpdateKeyByUserID(ctx context.Context, key *domain.Key) (*dom
 		},
 	})
 	if err != nil {
-		return nil, errors.Wrap(err, "keyRepo.UpdateKey failed")
+		return nil, errors.Wrap(err, "keyRepo.UpdateKeyByUserID failed")
 	}
 	return &domain.Key{
 		ID:                result.ID,
@@ -96,12 +96,12 @@ func (rp *keyRepo) DeleteKeyByID(ctx context.Context, id int64) error {
 	querier := postgresql.New(db)
 	tx, err := db.Begin()
 	if err != nil {
-		return errors.Wrap(err, "keyRepo.UpdateKey db failed")
+		return errors.Wrap(err, "keyRepo.DeleteKeyByID db failed")
 	}
 	qtx := querier.WithTx(tx)
 	err = qtx.DeleteKeyByID(ctx, id)
 	if err != nil {
-		return errors.Wrap(err, "keyRepo.UpdateKey failed")
+		return errors.Wrap(err, "keyRepo.DeleteKeyByID failed")
 	}
 	return tx.Commit()
 }
@@ -112,19 +112,19 @@ func (rp *keyRepo) DeleteKeyByUserID(ctx context.Context, userID uuid.UUID) erro
 	querier := postgresql.New(db)
 	tx, err := db.Begin()
 	if err != nil {
-		return errors.Wrap(err, "keyRepo.UpdateKey db failed")
+		return errors.Wrap(err, "keyRepo.DeleteKeyByUserID db failed")
 	}
 	qtx := querier.WithTx(tx)
 	err = qtx.DeleteKeyByUserID(ctx, userID)
 	if err != nil {
-		return errors.Wrap(err, "keyRepo.UpdateKey failed")
+		return errors.Wrap(err, "keyRepo.DeleteKeyByUserID failed")
 	}
 	return tx.Commit()
 }
 
 // FindKeyByRefreshToken implements keys.KeyRepo.
 func (rp *keyRepo) FindKeyByRefreshToken(ctx context.Context, refreshToken string) (*domain.Key, error) {
-	db := rp.pg.GetDB()
+	db := rp.pg.GetDBRead()
 	querier := postgresql.New(db)
 
 	key, err := querier.FindKeyByRefreshToken(ctx, sql.NullString{
@@ -132,7 +132,7 @@ func (rp *keyRepo) FindKeyByRefreshToken(ctx context.Context, refreshToken strin
 		Valid:  refreshToken != "",
 	})
 	if err != nil {
-		return nil, errors.Wrap(err, "keyRepo.UpdateKey failed")
+		return nil, errors.Wrap(err, "keyRepo.FindKeyByRefreshToken failed")
 	}
 	return &domain.Key{
 		ID:                key.ID,
@@ -153,12 +153,12 @@ func (*keyRepo) FindKeyByRefreshTokenUsed(ctx context.Context, refreshToken stri
 
 // FindKeyByUserID implements keys.KeyRepo.
 func (rp *keyRepo) FindKeyByUserID(ctx context.Context, userID uuid.UUID) (*domain.Key, error) {
-	db := rp.pg.GetDB()
+	db := rp.pg.GetDBRead()
 	querier := postgresql.New(db)
 
 	key, err := querier.FindKeyByUserID(ctx, userID)
 	if err != nil {
-		return nil, errors.Wrap(err, "keyRepo.UpdateKey failed")
+		return nil, errors.Wrap(err, "keyRepo.FindKeyByUserID failed")
 	}
 	return &domain.Key{
 		ID:                key.ID,

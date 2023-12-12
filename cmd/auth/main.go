@@ -90,7 +90,7 @@ func main() {
 }
 
 func prepareApp(ctx context.Context, cancel context.CancelFunc, cfg *config.Config, cfgLdap *configs.Ldap, server *grpc.Server) func() {
-	_, cleanup, err := app.InitApp(cfg, cfgLdap, postgres.DBConnString(cfg.PG.DsnURL), server)
+	_, cleanup, err := app.InitApp(cfg, cfgLdap, postgres.DBConnString(cfg.PG.DbURL), postgres.DBConnReadString(cfg.PG.DbRepURL), server)
 	if err != nil {
 		slog.Error("Failed init app", err)
 		cancel()

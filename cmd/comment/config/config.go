@@ -21,8 +21,9 @@ type (
 	}
 
 	PG struct {
-		PoolMax int    `env-required:"true" yaml:"pool_max" env:"PG_POOL_MAX"`
-		DsnURL  string `env-required:"true" yaml:"dsn_url" env:"PG_DSN_URL"`
+		PoolMax  int    `env-required:"true" yaml:"pool_max" env:"PG_POOL_MAX"`
+		DbURL    string `env-required:"true" yaml:"db_url" env:"PG_URL"`
+		DbRepURL string `env-required:"true" yaml:"db_rep_url" env:"PG_REP_URL"`
 	}
 	LikeClient struct {
 		URL string `env-required:"true" yaml:"like_url" env:"LIKE_CLIENT_URL"`

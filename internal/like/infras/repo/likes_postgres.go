@@ -76,7 +76,7 @@ func (rp *likeRepo) Delete(ctx context.Context, id uuid.UUID) (bool, error) {
 
 // GetLikesByCommentID implements likes.LikeRepo.
 func (rp *likeRepo) GetLikesByCommentID(ctx context.Context, commentID uuid.UUID) ([]*domain.Like, error) {
-	db := rp.pg.GetDB()
+	db := rp.pg.GetDBRead()
 	querier := postgresql.New(db)
 	results, err := querier.GetAllByType(ctx, postgresql.GetAllByTypeParams{
 		LikeableType: "Like/Comment",
@@ -101,7 +101,7 @@ func (rp *likeRepo) GetLikesByCommentID(ctx context.Context, commentID uuid.UUID
 
 // GetLikesByPostID implements likes.LikeRepo.
 func (rp *likeRepo) GetLikesByPostID(ctx context.Context, postID uuid.UUID) ([]*domain.Like, error) {
-	db := rp.pg.GetDB()
+	db := rp.pg.GetDBRead()
 	querier := postgresql.New(db)
 	results, err := querier.GetAllByType(ctx, postgresql.GetAllByTypeParams{
 		LikeableType: "Like/Post",

@@ -20,7 +20,7 @@ type groupRepo struct {
 
 // GetAllGroupByUserId implements groups.GroupRepo.
 func (rp *groupRepo) GetAllGroupByUserId(ctx context.Context, userId uuid.UUID) ([]*domain.Group, error) {
-	db := rp.pg.GetDB()
+	db := rp.pg.GetDBRead()
 	querier := postgresql.New(db)
 	results, err := querier.GetAllGroupByUserId(ctx, userId)
 	if err != nil {
@@ -39,7 +39,7 @@ func (rp *groupRepo) GetAllGroupByUserId(ctx context.Context, userId uuid.UUID) 
 	}), nil
 }
 func (rp *groupRepo) GetAllGroupIdByUserId(ctx context.Context, userId uuid.UUID) ([]string, error) {
-	db := rp.pg.GetDB()
+	db := rp.pg.GetDBRead()
 	querier := postgresql.New(db)
 	results, err := querier.GetAllGroupIdByUserId(ctx, userId)
 	if err != nil {
@@ -107,7 +107,7 @@ func (rp *groupRepo) Delete(ctx context.Context, id uuid.UUID) (bool, error) {
 
 // Get implements groups.GroupRepo.
 func (rp *groupRepo) Get(ctx context.Context, id uuid.UUID) (*domain.Group, error) {
-	db := rp.pg.GetDB()
+	db := rp.pg.GetDBRead()
 	querier := postgresql.New(db)
 	result, err := querier.Get(ctx, id)
 	if err != nil {

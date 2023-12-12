@@ -101,7 +101,7 @@ func main() {
 }
 
 func prepareApp(ctx context.Context, cancel context.CancelFunc, cfg *config.Config, cfgMinio *configs.Minio, echo *echo.Echo, server *grpc.Server) func() {
-	app, cleanup, err := app.InitApp(cfg, cfgMinio, postgres.DBConnString(cfg.PG.DsnURL), server)
+	app, cleanup, err := app.InitApp(cfg, cfgMinio, postgres.DBConnString(cfg.PG.DbURL), postgres.DBConnReadString(cfg.PG.DbRepURL), server)
 	if err != nil {
 		slog.Error("Failed init app", err)
 		cancel()

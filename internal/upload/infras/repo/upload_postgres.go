@@ -20,7 +20,7 @@ type attachmentRepo struct {
 
 // GetAttachmentsByType implements uploads.AttachmentRepo.
 func (rp *attachmentRepo) GetAttachmentsByType(ctx context.Context, attachableType string, attachableId uuid.UUID) ([]*domain.Attachment, error) {
-	db := rp.pg.GetDB()
+	db := rp.pg.GetDBRead()
 	querier := postgresql.New(db)
 	results, err := querier.GetAttachmentsByType(ctx, postgresql.GetAttachmentsByTypeParams{
 		AttachableType: sql.NullString{
@@ -112,7 +112,7 @@ func (rp *attachmentRepo) DeleteByIds(ctx context.Context, attachmentIds []uuid.
 
 // GetByIds implements uploads.AttachmentRepo.
 func (rp *attachmentRepo) GetByIds(ctx context.Context, attachmentIds []uuid.UUID) ([]*domain.Attachment, error) {
-	db := rp.pg.GetDB()
+	db := rp.pg.GetDBRead()
 	querier := postgresql.New(db)
 	results, err := querier.GetByIds(ctx, attachmentIds)
 	if err != nil {
@@ -203,7 +203,7 @@ func (rp *attachmentRepo) Delete(ctx context.Context, attachmentId uuid.UUID) (b
 
 // Get implements uploads.AttachmentRepo.
 func (rp *attachmentRepo) Get(ctx context.Context, attachmentId uuid.UUID) (*domain.Attachment, error) {
-	db := rp.pg.GetDB()
+	db := rp.pg.GetDBRead()
 	querier := postgresql.New(db)
 	result, err := querier.Get(ctx, attachmentId)
 	if err != nil {

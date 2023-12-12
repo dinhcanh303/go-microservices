@@ -31,7 +31,7 @@ func NewCommentRepo(pg postgres.DBEngine) comments.CommentRepo {
 
 // CountByCommentID implements comments.CommentRepo.
 func (rp *commentRepo) CountByCommentID(ctx context.Context, commentId uuid.UUID) (int64, error) {
-	db := rp.pg.GetDB()
+	db := rp.pg.GetDBRead()
 	querier := postgresql.New(db)
 	result, err := querier.CountByCommentID(ctx, uuid.NullUUID{
 		UUID:  commentId,
@@ -45,7 +45,7 @@ func (rp *commentRepo) CountByCommentID(ctx context.Context, commentId uuid.UUID
 
 // CountByPostID implements comments.CommentRepo.
 func (rp *commentRepo) CountByPostID(ctx context.Context, postId uuid.UUID) (int64, error) {
-	db := rp.pg.GetDB()
+	db := rp.pg.GetDBRead()
 	querier := postgresql.New(db)
 	result, err := querier.CountByPostID(ctx, postId)
 	if err != nil {
@@ -121,7 +121,7 @@ func (rp *commentRepo) DeleteAllByPostID(ctx context.Context, postId uuid.UUID) 
 
 // Get implements comments.CommentRepo.
 func (rp *commentRepo) Get(ctx context.Context, uuid uuid.UUID) (*domain.Comment, error) {
-	db := rp.pg.GetDB()
+	db := rp.pg.GetDBRead()
 	querier := postgresql.New(db)
 	result, err := querier.Get(ctx, uuid)
 	if err != nil {
@@ -141,7 +141,7 @@ func (rp *commentRepo) Get(ctx context.Context, uuid uuid.UUID) (*domain.Comment
 
 // GetCommentsByPostID implements comments.CommentRepo.
 func (rp *commentRepo) GetCommentsByPostID(ctx context.Context, postId uuid.UUID) ([]*domain.Comment, error) {
-	db := rp.pg.GetDB()
+	db := rp.pg.GetDBRead()
 	querier := postgresql.New(db)
 	results, err := querier.GetCommentsByPostID(ctx, postId)
 	if err != nil {

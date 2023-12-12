@@ -28,7 +28,7 @@ var RepositoryPostSet = wire.NewSet(NewPostRepo)
 
 // GetByFeed implements posts.PostRepo.
 func (rp *postRepo) GetByFeed(ctx context.Context, userIds []uuid.UUID, groupIds []uuid.UUID, limit int32, offset int32) ([]*domain.Post, error) {
-	db := rp.pg.GetDB()
+	db := rp.pg.GetDBRead()
 	querier := postgresql.New(db)
 
 	results, err := querier.GetByFeed(ctx, postgresql.GetByFeedParams{
@@ -56,7 +56,7 @@ func (rp *postRepo) GetByFeed(ctx context.Context, userIds []uuid.UUID, groupIds
 
 // GetByGroupId implements posts.PostRepo.
 func (rp *postRepo) GetByGroupId(ctx context.Context, groupId uuid.UUID, limit, offset int32) ([]*domain.Post, error) {
-	db := rp.pg.GetDB()
+	db := rp.pg.GetDBRead()
 	querier := postgresql.New(db)
 	results, err := querier.GetByGroupId(ctx, postgresql.GetByGroupIdParams{
 		GroupID: uuid.NullUUID{
@@ -85,7 +85,7 @@ func (rp *postRepo) GetByGroupId(ctx context.Context, groupId uuid.UUID, limit, 
 
 // GetByUserId implements posts.PostRepo.
 func (rp *postRepo) GetByUserId(ctx context.Context, userId uuid.UUID, limit, offset int32) ([]*domain.Post, error) {
-	db := rp.pg.GetDB()
+	db := rp.pg.GetDBRead()
 	querier := postgresql.New(db)
 	results, err := querier.GetByUserId(ctx, postgresql.GetByUserIdParams{
 		UserID: userId,
@@ -160,7 +160,7 @@ func (rp *postRepo) Delete(ctx context.Context, id uuid.UUID) (bool, error) {
 
 // Get implements posts.PostRepo.
 func (rp *postRepo) Get(ctx context.Context, id uuid.UUID) (*domain.Post, error) {
-	db := rp.pg.GetDB()
+	db := rp.pg.GetDBRead()
 	querier := postgresql.New(db)
 	result, err := querier.Get(ctx, id)
 	if err != nil {
