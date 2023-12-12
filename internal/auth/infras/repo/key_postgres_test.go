@@ -24,7 +24,7 @@ func TestKeyPostgres(t *testing.T) {
 	cfg, err := config.NewConfig()
 	require.NoError(t, err)
 	require.NotEmpty(t, cfg)
-	db, err := postgres.NewPostgresDB(postgres.DBConnString(cfg.DsnURL))
+	db, err := postgres.NewPostgresDB(postgres.DBConnString(cfg.DbURL), postgres.DBConnReadString(cfg.DbRepURL))
 	require.NoError(t, err)
 	require.NotEmpty(t, db)
 	repo := NewKeyRepo(db)
