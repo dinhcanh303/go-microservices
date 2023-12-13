@@ -31,6 +31,8 @@ type (
 		UploadPort  int    `env-required:"true" yaml:"upload_port" env:"GRPC_UPLOAD_PORT"`
 		AuthHost    string `env-required:"true" yaml:"auth_host" env:"GRPC_AUTH_HOST"`
 		AuthPort    int    `env-required:"true" yaml:"auth_port" env:"GRPC_AUTH_PORT"`
+		SearchHost  string `env-required:"true" yaml:"search_host" env:"GRPC_SEARCH_HOST"`
+		SearchPort  int    `env-required:"true" yaml:"search_port" env:"GRPC_SEARCH_PORT"`
 	}
 )
 

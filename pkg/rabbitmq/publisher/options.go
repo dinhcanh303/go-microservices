@@ -2,7 +2,7 @@ package publisher
 
 type Option func(*publisher)
 
-func ExchangeName(exchangeName string) Option {
+func ExChangeName(exchangeName string) Option {
 	return func(p *publisher) {
 		p.exchangeName = exchangeName
 	}

@@ -72,7 +72,6 @@ func (c *App) Worker(ctx context.Context, messages <-chan amqp091.Delivery) {
 			if err != nil {
 				slog.Error("failed to Unmarshal", err)
 			}
-			payload.Identity()
 			err = c.handlers.HandleGroupDeleted(ctx, payload)
 			checkLogErr(err, delivery)
 		}

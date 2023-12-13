@@ -15,10 +15,3 @@ const (
 	KeyStoreUsed       = "x-auth-keystore-used"
 	SuffixEmailCompany = "@tlcmodular.com"
 )
-
-var HeaderMap = []string{
-	ApiKey,
-	ClientID,
-	Authorization,
-	RefreshToken,
-}

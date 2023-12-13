@@ -9,11 +9,13 @@ import (
 )
 
 type App struct {
-	Cfg             *config.Config
-	PG              postgres.DBEngine
-	UC              groups.UseCase
-	UCGroupMember   groupmembers.UseCase
-	GroupGRPCServer gen.GroupServiceServer
+	Cfg                  *config.Config
+	PG                   postgres.DBEngine
+	UC                   groups.UseCase
+	UCGroupMember        groupmembers.UseCase
+	GroupGRPCServer      gen.GroupServiceServer
+	GroupCreatedEventPub groups.GroupCreatedEventPublisher
+	GroupDeletedEventPub groups.GroupDeletedEventPublisher
 }
 
 func New(
@@ -21,12 +23,16 @@ func New(
 	pg postgres.DBEngine,
 	uc groups.UseCase,
 	ucGroupMember groupmembers.UseCase,
-	groupGRPCServer gen.GroupServiceServer) *App {
+	groupGRPCServer gen.GroupServiceServer,
+	groupCreatedEventPub groups.GroupCreatedEventPublisher,
+	groupDeletedEventPub groups.GroupDeletedEventPublisher) *App {
 	return &App{
-		Cfg:             cfg,
-		UC:              uc,
-		UCGroupMember:   ucGroupMember,
-		PG:              pg,
-		GroupGRPCServer: groupGRPCServer,
+		Cfg:                  cfg,
+		UC:                   uc,
+		UCGroupMember:        ucGroupMember,
+		PG:                   pg,
+		GroupGRPCServer:      groupGRPCServer,
+		GroupCreatedEventPub: groupCreatedEventPub,
+		GroupDeletedEventPub: groupDeletedEventPub,
 	}
 }

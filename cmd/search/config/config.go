@@ -21,9 +21,9 @@ type (
 		URL string `env-required:"true" yaml:"url" env:"RABBITMQ_URL"`
 	}
 	ElasticSearch struct {
-		URL      string `env-required:"true" yaml:"url" env:"ES_URL" env-default:"localhost"`
-		UserName string `env-required:"true" yaml:"username" env:"ES_USERNAME" env-default:"elastic"`
-		Password string `env-required:"true" yaml:"password" env:"ES_PASSWORD" env-default:"elastic"`
+		URL      string `env-required:"true" yaml:"url" env:"ES_URL"`
+		UserName string `env-required:"true" yaml:"username" env:"ES_USERNAME"`
+		Password string `env-required:"true" yaml:"password" env:"ES_PASSWORD"`
 	}
 )
 

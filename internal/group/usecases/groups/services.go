@@ -2,9 +2,11 @@ package groups
 
 import (
 	"context"
+	"encoding/json"
 
 	"github.com/dinhcanh303/go-microservices/internal/group/domain"
 	groupmembers "github.com/dinhcanh303/go-microservices/internal/group/usecases/groupmembers"
+	"github.com/dinhcanh303/go-microservices/internal/pkg/event"
 	"github.com/dinhcanh303/go-microservices/pkg/constant"
 	"github.com/dinhcanh303/go-microservices/pkg/utils"
 	"golang.org/x/exp/slog"
@@ -19,8 +21,10 @@ var _ UseCase = (*service)(nil)
 var UseCaseSet = wire.NewSet(NewService)
 
 type service struct {
-	repo            GroupRepo
-	repoGroupMember groupmembers.GroupMemberRepo
+	repo                 GroupRepo
+	repoGroupMember      groupmembers.GroupMemberRepo
+	groupCreatedEventPub GroupCreatedEventPublisher
+	groupDeletedEventPub GroupDeletedEventPublisher
 }
 
 // GetAllGroupByUserId implements UseCase.
@@ -57,6 +61,18 @@ func (s *service) CreateGroup(ctx context.Context, group *domain.Group) (*domain
 	if err != nil {
 		return nil, errors.Wrap(err, "service.Create")
 	}
+	if result != nil {
+		// Publish event created group
+		eventBytes, err := json.Marshal(event.GroupCreated{
+			GroupID:     result.ID,
+			GroupName:   result.Name,
+			GroupAvatar: result.Description,
+		})
+		if err != nil {
+			slog.Error("json marshal error", err)
+		}
+		s.groupCreatedEventPub.Publish(ctx, eventBytes, "text/plain")
+	}
 	//Create the group member
 	_, err = s.repoGroupMember.CreateGroupMember(ctx, &domain.GroupMember{
 		ID:      uuid.New(),
@@ -74,20 +90,31 @@ func (s *service) CreateGroup(ctx context.Context, group *domain.Group) (*domain
 func (s *service) DeleteGroup(ctx context.Context, id uuid.UUID) (bool, error) {
 	result, err := s.repo.Delete(ctx, id)
 	if err != nil {
-		return false, errors.Wrap(err, "service.Delete")
+		return false, errors.Wrap(err, "service.DeleteGroup")
 	}
-	err = s.repoGroupMember.DeleteAllGroupMembersByGroupId(ctx, id)
-	if err != nil {
-		slog.Error("service.DeleteGroup can't DeleteAllGroupMembers please check", err)
+	// err = s.repoGroupMember.DeleteAllGroupMembersByGroupId(ctx, id)
+	// if err != nil {
+	// 	slog.Error("service.DeleteGroup can't DeleteAllGroupMembers please check", err)
+	// }
+	if result {
+		// Publish event created group
+		eventBytes, err := json.Marshal(event.GroupDeleted{
+			GroupID: id,
+		})
+		if err != nil {
+			slog.Error("json marshal error", err)
+		}
+		s.groupDeletedEventPub.Publish(ctx, eventBytes, "text/plain")
 	}
 	return result, nil
 }
 
 // Get implements UseCase.
 func (s *service) GetGroup(ctx context.Context, id uuid.UUID) (*domain.Group, error) {
+
 	result, err := s.repo.Get(ctx, id)
 	if err != nil {
-		return nil, errors.Wrap(err, "service.Get")
+		return nil, errors.Wrap(err, "service.GetGroup")
 	}
 	return result, nil
 }
@@ -101,9 +128,11 @@ func (s *service) UpdateGroup(ctx context.Context, group *domain.Group) (*domain
 	return result, nil
 }
 
-func NewService(repo GroupRepo, repoGroupMember groupmembers.GroupMemberRepo) UseCase {
+func NewService(repo GroupRepo, repoGroupMember groupmembers.GroupMemberRepo, groupCreatedEventPub GroupCreatedEventPublisher, groupDeletedEventPub GroupDeletedEventPublisher) UseCase {
 	return &service{
-		repo:            repo,
-		repoGroupMember: repoGroupMember,
+		repo:                 repo,
+		repoGroupMember:      repoGroupMember,
+		groupCreatedEventPub: groupCreatedEventPub,
+		groupDeletedEventPub: groupDeletedEventPub,
 	}
 }

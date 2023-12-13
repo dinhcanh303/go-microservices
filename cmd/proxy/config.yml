@@ -17,8 +17,10 @@ grpc:
   like_port: 5004
   upload_host: '0.0.0.0'
   upload_port: 5006
-  # auth_host: '0.0.0.0'
-  # auth_port: 5007
+  auth_host: '0.0.0.0'
+  auth_port: 5007
+  search_host: '0.0.0.0'
+  search_port: 5008
 
 request:
   request_per_second: 50

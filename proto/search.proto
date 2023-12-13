@@ -21,8 +21,8 @@ service SearchService {
 }
 
 message SearchRequest{
-    string key_word=1;
+    string key_word = 1;
 }
 message SearchResponse{
-    string search=1;
+    string search =1;
 }

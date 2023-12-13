@@ -10,7 +10,9 @@ postgres:
   pool_max: 2
   db_url: postgres://postgres:123456@127.0.0.1:5432/postgres?sslmode=disable
   db_rep_url: postgres://postgres:123456@127.0.0.1:5433/postgres?sslmode=disable
-
+rabbitmq:
+  url: amqp://guest:guest@127.0.0.1:5672/
+  
 logger:
   log_level: 'debug'
   rollbar_env: 'group-service'

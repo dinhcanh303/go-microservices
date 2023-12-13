@@ -25,6 +25,8 @@ services:
       GRPC_UPLOAD_PORT: 5006
       GRPC_AUTH_HOST: 'auth'
       GRPC_AUTH_PORT: 5007
+      GRPC_SEARCH_HOST: 'search'
+      GRPC_SEARCH_PORT: 5008
     ports:
       - 5000:5000
     depends_on:
@@ -46,6 +48,7 @@ services:
       IN_DOCKER: "true"
       PG_URL: postgres://postgres:123456@postgres-master:5432/postgres?sslmode=disable
       PG_REP_URL: postgres://postgres:123456@postgres-slave:5432/postgres?sslmode=disable
+      RABBITMQ_URL: amqp://guest:guest@rabbitmq:5672/
     ports:
       - 5001:5001
     depends_on:
@@ -138,8 +141,25 @@ services:
       IN_DOCKER: "true"
       PG_URL: postgres://postgres:123456@postgres-master:5432/postgres?sslmode=disable
       PG_REP_URL: postgres://postgres:123456@postgres-slave:5432/postgres?sslmode=disable
+    depends_on:
+      - search
     ports:
       - 5007:5007
+    networks:
+      - mcs-network
+  search:
+    build:
+      context: .
+      dockerfile: ./docker/Dockerfile-search
+    image: mcs-search
+    env_file:
+      - .env
+    environment:
+      APP_NAME: 'search-service in docker'
+      IN_DOCKER: "true"
+      RABBITMQ_URL: amqp://guest:guest@rabbitmq:5672/
+    ports:
+      - 5008:5008
     networks:
       - mcs-network
   # fontend:

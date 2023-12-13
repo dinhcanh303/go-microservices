@@ -82,7 +82,7 @@ func (p *publisher) Publish(ctx context.Context, body []byte, contentType string
 	}
 	defer ch.Close()
 
-	slog.Info("Publish message", "exchange", p.exchangeName, "routing_key", p.bindingKey)
+	slog.Info("Publish message", "exchange", p.exchangeName, "routing_key", p.bindingKey, "type_name", p.messageTypeName)
 
 	if err := ch.PublishWithContext(
 		ctx,

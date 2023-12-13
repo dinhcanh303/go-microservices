@@ -2,11 +2,13 @@ package router
 
 import (
 	"context"
+	"encoding/json"
 
 	"github.com/dinhcanh303/go-microservices/cmd/group/config"
 	"github.com/dinhcanh303/go-microservices/internal/group/domain"
 	"github.com/dinhcanh303/go-microservices/internal/group/usecases/groupmembers"
 	"github.com/dinhcanh303/go-microservices/internal/group/usecases/groups"
+	"github.com/dinhcanh303/go-microservices/pkg/redis"
 	"github.com/dinhcanh303/go-microservices/pkg/utils"
 	"github.com/dinhcanh303/go-microservices/proto/gen"
 	"github.com/google/uuid"
@@ -24,6 +26,7 @@ type groupGRPCServer struct {
 	cfg           *config.Config
 	ucGroup       groups.UseCase
 	ucGroupMember groupmembers.UseCase
+	redis         redis.RedisEngine
 }
 
 var _ gen.GroupServiceServer = (*groupGRPCServer)(nil)
@@ -35,11 +38,13 @@ func NewGRPCGroupServer(
 	cfg *config.Config,
 	ucGroup groups.UseCase,
 	ucGroupMember groupmembers.UseCase,
+	redis redis.RedisEngine,
 ) gen.GroupServiceServer {
 	svc := groupGRPCServer{
 		cfg:           cfg,
 		ucGroup:       ucGroup,
 		ucGroupMember: ucGroupMember,
+		redis:         redis,
 	}
 	gen.RegisterGroupServiceServer(grpcServer, &svc)
 	reflection.Register(grpcServer)
@@ -215,6 +220,14 @@ func (g *groupGRPCServer) CreateGroup(ctx context.Context, request *gen.CreateGr
 
 func (g *groupGRPCServer) GetGroup(ctx context.Context, request *gen.GetGroupRequest) (*gen.GetGroupResponse, error) {
 	slog.Info("GET: GetGroup")
+	res := &gen.GetGroupResponse{}
+	byteData, check, err := g.redis.Get(request.Id)
+	if !check && err != nil {
+		err = json.Unmarshal(byteData, res)
+		if err != nil {
+			return nil, errors.Wrap(err, "failed to unmarshal")
+		}
+	}
 	id, err := uuid.Parse(request.Id)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to parse id")
@@ -223,7 +236,7 @@ func (g *groupGRPCServer) GetGroup(ctx context.Context, request *gen.GetGroupReq
 	if err != nil {
 		return nil, errors.Wrap(err, "ucGroup.GetGroup failed")
 	}
-	res := &gen.GetGroupResponse{
+	res = &gen.GetGroupResponse{
 		Group: &gen.GroupResponse{
 			Id:          group.ID.String(),
 			Name:        group.Name,
@@ -245,7 +258,7 @@ func (g *groupGRPCServer) DeleteGroup(ctx context.Context, request *gen.DeleteGr
 	}
 	deleted, err := g.ucGroup.DeleteGroup(ctx, id)
 	if err != nil {
-		return nil, errors.Wrap(err, "ucGroup.GetGroup failed")
+		return nil, errors.Wrap(err, "ucGroup.DeleteGroup failed")
 	}
 
 	return &gen.DeleteGroupResponse{

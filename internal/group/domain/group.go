@@ -3,10 +3,12 @@ package domain
 import (
 	"time"
 
+	sharedkernel "github.com/dinhcanh303/go-microservices/internal/pkg/shared_kernel"
 	"github.com/google/uuid"
 )
 
 type Group struct {
+	sharedkernel.AggregateRoot
 	ID          uuid.UUID `json:"id"`
 	Name        string    `json:"name"`
 	Description string    `json:"description"`

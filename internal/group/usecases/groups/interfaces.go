@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/dinhcanh303/go-microservices/internal/group/domain"
+	"github.com/dinhcanh303/go-microservices/pkg/rabbitmq/publisher"
 	"github.com/google/uuid"
 )
 
@@ -23,4 +24,12 @@ type UseCase interface {
 	DeleteGroup(ctx context.Context, id uuid.UUID) (bool, error)
 	GetAllGroupByUserId(ctx context.Context, userId uuid.UUID) ([]*domain.Group, error)
 	GetAllGroupIdByUserId(ctx context.Context, userId uuid.UUID) ([]string, error)
+}
+type GroupCreatedEventPublisher interface {
+	Configure(...publisher.Option)
+	Publish(context.Context, []byte, string) error
+}
+type GroupDeletedEventPublisher interface {
+	Configure(...publisher.Option)
+	Publish(context.Context, []byte, string) error
 }

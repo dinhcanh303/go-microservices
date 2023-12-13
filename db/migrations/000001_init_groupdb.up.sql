@@ -25,7 +25,7 @@ CREATE TABLE "group".group_members (
     updated_at timestamp with time zone NOT NULL DEFAULT (now()),
     -- deleted_at timestamp with time zone NULL,
     CONSTRAINT pk_group_members PRIMARY KEY (id),
-    FOREIGN KEY (group_id) REFERENCES "group".groups (id)
+    FOREIGN KEY (group_id) REFERENCES "group".groups (id) ON DELETE CASCADE
 );
 
 CREATE INDEX ix_group_user_id ON "group".groups (user_id);

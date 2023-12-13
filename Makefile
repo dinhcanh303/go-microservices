@@ -41,7 +41,8 @@ wire:
 	cd internal/comment/app && wire && cd - && \
 	cd internal/like/app && wire && cd - && \
 	cd internal/upload/app && wire && cd - && \
-	cd internal/auth/app && wire && cd -
+	cd internal/auth/app && wire && cd - && \
+	cd internal/search/app && wire && cd -
 .PHONY: wire
 
 proto:

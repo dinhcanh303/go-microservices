@@ -9,27 +9,54 @@ package app
 import (
 	"github.com/dinhcanh303/go-microservices/cmd/group/config"
 	"github.com/dinhcanh303/go-microservices/internal/group/app/router"
+	"github.com/dinhcanh303/go-microservices/internal/group/infras"
 	"github.com/dinhcanh303/go-microservices/internal/group/infras/repo"
 	"github.com/dinhcanh303/go-microservices/internal/group/usecases/groupmembers"
 	"github.com/dinhcanh303/go-microservices/internal/group/usecases/groups"
+	"github.com/dinhcanh303/go-microservices/pkg/config"
 	"github.com/dinhcanh303/go-microservices/pkg/postgres"
+	"github.com/dinhcanh303/go-microservices/pkg/rabbitmq"
+	"github.com/dinhcanh303/go-microservices/pkg/rabbitmq/publisher"
+	"github.com/dinhcanh303/go-microservices/pkg/redis"
+	"github.com/rabbitmq/amqp091-go"
 	"google.golang.org/grpc"
 )
 
 // Injectors from wire.go:
 
-func InitApp(cfg *config.Config, dbConnStr postgres.DBConnString, dbReadConnStr postgres.DBConnReadString, grpcServer *grpc.Server) (*App, func(), error) {
+func InitApp(cfg *config.Config, cfg2 *configs.Redis, dbConnStr postgres.DBConnString, dbReadConnStr postgres.DBConnReadString, rabbitMQConnStr rabbitmq.RabbitMQConnStr, grpcServer *grpc.Server) (*App, func(), error) {
 	dbEngine, cleanup, err := dbEngineFunc(dbConnStr, dbReadConnStr)
 	if err != nil {
 		return nil, nil, err
 	}
 	groupRepo := repo.NewGroupRepo(dbEngine)
 	groupMemberRepo := repo.NewGroupMemberRepo(dbEngine)
-	useCase := groups.NewService(groupRepo, groupMemberRepo)
+	connection, cleanup2, err := rabbitMQFunc(rabbitMQConnStr)
+	if err != nil {
+		cleanup()
+		return nil, nil, err
+	}
+	eventPublisher, err := publisher.NewPublisher(connection)
+	if err != nil {
+		cleanup2()
+		cleanup()
+		return nil, nil, err
+	}
+	groupCreatedEventPublisher := infras.NewGroupCreatedEventPublisher(eventPublisher)
+	groupDeletedEventPublisher := infras.NewGroupDeletedEventPublisher(eventPublisher)
+	useCase := groups.NewService(groupRepo, groupMemberRepo, groupCreatedEventPublisher, groupDeletedEventPublisher)
 	groupmembersUseCase := groupmembers.NewService(groupMemberRepo)
-	groupServiceServer := router.NewGRPCGroupServer(grpcServer, cfg, useCase, groupmembersUseCase)
-	app := New(cfg, dbEngine, useCase, groupmembersUseCase, groupServiceServer)
+	redisEngine, cleanup3, err := redisEngineFunc(cfg2)
+	if err != nil {
+		cleanup2()
+		cleanup()
+		return nil, nil, err
+	}
+	groupServiceServer := router.NewGRPCGroupServer(grpcServer, cfg, useCase, groupmembersUseCase, redisEngine)
+	app := New(cfg, dbEngine, useCase, groupmembersUseCase, groupServiceServer, groupCreatedEventPublisher, groupDeletedEventPublisher)
 	return app, func() {
+		cleanup3()
+		cleanup2()
 		cleanup()
 	}, nil
 }
@@ -42,4 +69,22 @@ func dbEngineFunc(url postgres.DBConnString, urlRead postgres.DBConnReadString) 
 		return nil, nil, err
 	}
 	return db, func() { db.Close() }, nil
+}
+
+func redisEngineFunc(config2 *configs.Redis) (redis.RedisEngine, func(), error) {
+	redis2, err := redis.NewRedisClient(config2)
+	if err != nil {
+		return nil, nil, err
+	}
+	return redis2, func() {
+		redis2.Close()
+	}, nil
+}
+
+func rabbitMQFunc(url rabbitmq.RabbitMQConnStr) (*amqp091.Connection, func(), error) {
+	conn, err := rabbitmq.NewRabbitMQConn(url)
+	if err != nil {
+		return nil, nil, err
+	}
+	return conn, func() { conn.Close() }, nil
 }

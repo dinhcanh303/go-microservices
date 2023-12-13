@@ -78,10 +78,11 @@ services:
     networks:
       - mcs-network
   # elasticsearch:
-  #   image: docker.elastic.co/elasticsearch/elasticsearch:7.11.0
+  #   image: docker.elastic.co/elasticsearch/elasticsearch:8.4.3
   #   container_name: mcs-elasticsearch
   #   environment:
-  #     - discovery.type=single-node
+  #     - xpack.security.enabled=false
+  #     - "discovery.type=single-node"
   #   ports:
   #     - "9200:9200"
   #   networks:

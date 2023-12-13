@@ -34,6 +34,7 @@ func (h *eventhandlers) HandleGroupCreated(ctx context.Context, e event.GroupCre
 		slog.Error("insert-into-elastic-search", err)
 		return err
 	}
+	slog.Info("Insert into elastic-search")
 	return nil
 }
 
