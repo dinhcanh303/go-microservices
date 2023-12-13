@@ -1,0 +1,22 @@
+app:
+  name: 'search-service'
+  version: '1.0.0'
+
+http:
+  host: '0.0.0.0'
+  port: 5008
+
+rabbitmq:
+  url: amqp://guest:guest@127.0.0.1:5672/
+
+elasticsearch:
+  url: http://localhost:9200
+  username: elastic
+  password: elastic
+
+product_client:
+  url: 0.0.0.0:5001
+
+logger:
+  log_level: 'debug'
+  rollbar_env: 'search-service'

@@ -3,9 +3,13 @@ package elastic
 import (
 	"testing"
 
-	configs "github.com/dinhcanh303/go-microservices/pkg/config"
-	"github.com/dinhcanh303/go-microservices/pkg/utils"
 	"github.com/stretchr/testify/require"
+)
+
+const (
+	URL      = "http://192.168.100.86:9200/"
+	UserName = "elastic"
+	Password = "elastic"
 )
 
 func TestElasticsearchConnect(t *testing.T) {
@@ -27,15 +31,12 @@ func TestPingElasticsearch(t *testing.T) {
 }
 
 func ConnectElasticsearch() (ElasticSearch, error) {
-	err := utils.LoadFileEnvOnLocal()
-	if err != nil {
-		return nil, err
+	esConn := &ElasticSearchConn{
+		Url:      URL,
+		UserName: UserName,
+		Password: Password,
 	}
-	config, err := configs.NewConfigElasticSearch()
-	if err != nil {
-		return nil, err
-	}
-	elastic, err := NewElasticSearch(*config)
+	elastic, err := NewElasticSearch(*esConn)
 	if err != nil {
 		return nil, err
 	}

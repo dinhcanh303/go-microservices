@@ -27,6 +27,9 @@
     },
     {
       "name": "PostService"
+    },
+    {
+      "name": "SearchService"
     }
   ],
   "schemes": [
@@ -1186,6 +1189,37 @@
         ]
       }
     },
+    "/api/v1/search/{keyWord}": {
+      "get": {
+        "summary": "Search User and Group by Elasticsearch",
+        "operationId": "SearchService_Search",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/searchSearchResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "keyWord",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "SearchService"
+        ]
+      }
+    },
     "/api/v1/users/{userId}/group-ids": {
       "get": {
         "summary": "Get all group id by user id",
@@ -2122,6 +2156,14 @@
             "type": "object",
             "$ref": "#/definitions/protobufAny"
           }
+        }
+      }
+    },
+    "searchSearchResponse": {
+      "type": "object",
+      "properties": {
+        "search": {
+          "type": "string"
         }
       }
     },

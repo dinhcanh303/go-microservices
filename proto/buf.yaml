@@ -14,6 +14,7 @@ lint:
       - comment.proto
       - like.proto
       - upload.proto
+      - search.proto
     PACKAGE_VERSION_SUFFIX:
       - common.proto
       - group.proto
@@ -21,6 +22,7 @@ lint:
       - comment.proto
       - like.proto
       - upload.proto
+      - search.proto
     RPC_REQUEST_RESPONSE_UNIQUE:
       - common.proto
       - group.proto
@@ -28,6 +30,7 @@ lint:
       - comment.proto
       - like.proto
       - upload.proto
+      - search.proto
     RPC_RESPONSE_STANDARD_NAME:
       - common.proto
       - group.proto
@@ -35,3 +38,4 @@ lint:
       - comment.proto
       - like.proto
       - upload.proto
+      - search.proto

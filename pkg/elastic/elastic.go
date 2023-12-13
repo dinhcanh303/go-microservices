@@ -8,13 +8,69 @@ import (
 	"log/slog"
 	"strings"
 
-	configs "github.com/dinhcanh303/go-microservices/pkg/config"
-	"github.com/elastic/go-elasticsearch/v7"
-	"github.com/elastic/go-elasticsearch/v7/esapi"
+	"github.com/elastic/go-elasticsearch/v8"
+	"github.com/elastic/go-elasticsearch/v8/esapi"
 )
 
+type ElasticSearchConn struct {
+	Url      string
+	UserName string
+	Password string
+}
 type elasticSearch struct {
 	Client *elasticsearch.Client
+}
+
+var _ ElasticSearch = (*elasticSearch)(nil)
+
+func NewElasticSearch(elasticSearchConn ElasticSearchConn) (ElasticSearch, error) {
+	cfgES := elasticsearch.Config{
+		Addresses: []string{elasticSearchConn.Url},
+		Username:  elasticSearchConn.UserName,
+		Password:  elasticSearchConn.Password,
+	}
+	// Create New Elasticsearch Client
+	esClient, err := elasticsearch.NewClient(cfgES)
+	if err != nil {
+		slog.Warn("Create new elasticsearch client failed", err)
+		return nil, err
+	}
+	_, err = esClient.Info()
+	if err != nil {
+		slog.Warn("Create new elasticsearch client INFO failed", err)
+		return nil, err
+	}
+	return &elasticSearch{
+		Client: esClient,
+	}, nil
+}
+
+// Search implements ElasticSearch.
+func (es *elasticSearch) Search(indexName, body string) (map[string]interface{}, error) {
+	req := esapi.SearchRequest{
+		Index: []string{indexName},
+		Body:  strings.NewReader(body),
+	}
+	// Search
+	res, err := req.Do(context.Background(), es.Client)
+
+	if err != nil {
+		return nil, err
+	}
+	defer res.Body.Close()
+
+	if res.IsError() {
+		errTxt := fmt.Sprintf("Elasticsearch search error: %s", res.Status())
+		return nil, errors.New(errTxt)
+	}
+
+	result := make(map[string]interface{})
+
+	if err := json.NewDecoder(res.Body).Decode(&result); err != nil {
+		slog.Error("decode-body failed", err)
+		return nil, err
+	}
+	return result, nil
 }
 
 // Insert implements ElasticSearch.
@@ -98,29 +154,4 @@ func (es *elasticSearch) Remove(documentID string, index string) error {
 	}
 	defer res.Body.Close()
 	return nil
-}
-
-var ES ElasticSearch = (*elasticSearch)(nil)
-
-func NewElasticSearch(cfg configs.ElasticSearch) (ElasticSearch, error) {
-	address := fmt.Sprintf("http://%s:%s", cfg.Host, cfg.Port)
-	cfgES := elasticsearch.Config{
-		Addresses: []string{address},
-		Username:  cfg.UserName,
-		Password:  cfg.Password,
-	}
-	// Create New Elasticsearch Client
-	esClient, err := elasticsearch.NewClient(cfgES)
-	if err != nil {
-		slog.Warn("Create new elasticsearch client failed", err)
-		return nil, err
-	}
-	_, err = esClient.Info()
-	if err != nil {
-		slog.Warn("Create new elasticsearch client INFO failed", err)
-		return nil, err
-	}
-	return &elasticSearch{
-		Client: esClient,
-	}, nil
 }

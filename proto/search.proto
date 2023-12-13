@@ -1,0 +1,28 @@
+syntax="proto3";
+
+package search;
+
+import "google/api/annotations.proto";
+import "protoc-gen-openapiv2/options/annotations.proto";
+import "google/protobuf/timestamp.proto";
+
+option go_package = "github.com/dinhcanh303/go-microsevices/proto/gen";
+
+service SearchService {
+    rpc Search(SearchRequest) returns (SearchResponse) {
+        option (google.api.http) = {
+            get: "/api/v1/search/{key_word}"
+        };
+        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+            summary: "Search User and Group by Elasticsearch"
+            description: ""
+        };
+    }
+}
+
+message SearchRequest{
+    string key_word=1;
+}
+message SearchResponse{
+    string search=1;
+}
