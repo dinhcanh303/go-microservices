@@ -13,6 +13,9 @@ elasticsearch:
   url: http://localhost:9200
   username: elastic
   password: elastic
+meilisearch:
+  host: http://localhost:7700
+  api_key: ms
 
 product_client:
   url: 0.0.0.0:5001

@@ -64,9 +64,9 @@ func (s *service) CreateGroup(ctx context.Context, group *domain.Group) (*domain
 	if result != nil {
 		// Publish event created group
 		eventBytes, err := json.Marshal(event.GroupCreated{
-			GroupID:     result.ID,
-			GroupName:   result.Name,
-			GroupAvatar: result.Description,
+			ID:     result.ID,
+			Name:   result.Name,
+			Avatar: result.Description,
 		})
 		if err != nil {
 			slog.Error("json marshal error", err)
@@ -99,7 +99,7 @@ func (s *service) DeleteGroup(ctx context.Context, id uuid.UUID) (bool, error) {
 	if result {
 		// Publish event created group
 		eventBytes, err := json.Marshal(event.GroupDeleted{
-			GroupID: id,
+			ID: id,
 		})
 		if err != nil {
 			slog.Error("json marshal error", err)

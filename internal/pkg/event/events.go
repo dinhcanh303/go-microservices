@@ -7,10 +7,11 @@ import (
 
 type UserCreated struct {
 	sharedkernel.DomainEvent
-	UserID       uuid.UUID `json:"user_id"`
-	UserEmail    string    `json:"user_email"`
-	UserFullName string    `json:"user_full_name"`
-	UserAvatar   string    `json:"user_avatar"`
+	ID     uuid.UUID `json:"id"`
+	Email  string    `json:"email"`
+	Name   string    `json:"name"`
+	Avatar string    `json:"avatar"`
+	Type   string    `json:"type"`
 }
 
 func (e UserCreated) Identity() string {
@@ -19,7 +20,7 @@ func (e UserCreated) Identity() string {
 
 type UserDeleted struct {
 	sharedkernel.DomainEvent
-	UserID uuid.UUID `json:"user_id" `
+	ID uuid.UUID `json:"id" `
 }
 
 func (e UserDeleted) Identity() string {
@@ -28,9 +29,10 @@ func (e UserDeleted) Identity() string {
 
 type GroupCreated struct {
 	sharedkernel.DomainEvent
-	GroupID     uuid.UUID `json:"group_id"`
-	GroupName   string    `json:"group_name"`
-	GroupAvatar string    `json:"group_avatar"`
+	ID     uuid.UUID `json:"id"`
+	Name   string    `json:"name"`
+	Avatar string    `json:"avatar"`
+	Type   string    `json:"type"`
 }
 
 func (e GroupCreated) Identity() string {
@@ -39,7 +41,7 @@ func (e GroupCreated) Identity() string {
 
 type GroupDeleted struct {
 	sharedkernel.DomainEvent
-	GroupID uuid.UUID `json:"group_id"`
+	ID uuid.UUID `json:"id"`
 }
 
 func (e GroupDeleted) Identity() string {

@@ -16,6 +16,7 @@ type (
 		configs.Log   `yaml:"logger"`
 		RabbitMQ      `yaml:"rabbitmq"`
 		ElasticSearch `yaml:"elasticsearch"`
+		MeiliSearch   `yaml:"meilisearch"`
 	}
 	RabbitMQ struct {
 		URL string `env-required:"true" yaml:"url" env:"RABBITMQ_URL"`
@@ -24,6 +25,10 @@ type (
 		URL      string `env-required:"true" yaml:"url" env:"ES_URL"`
 		UserName string `env-required:"true" yaml:"username" env:"ES_USERNAME"`
 		Password string `env-required:"true" yaml:"password" env:"ES_PASSWORD"`
+	}
+	MeiliSearch struct {
+		Host   string `env-required:"true" yaml:"host" env:"ML_HOST"`
+		ApiKey string `env-required:"true" yaml:"api_key" env:"ML_API_KEY"`
 	}
 )
 

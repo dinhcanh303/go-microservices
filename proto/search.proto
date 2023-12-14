@@ -23,6 +23,13 @@ service SearchService {
 message SearchRequest{
     string key_word = 1;
 }
-message SearchResponse{
-    string search =1;
+message SearchResponse {
+    repeated Search search = 1;
+}
+message Search{
+    string id = 1;
+    string name = 2;
+    string email = 3;
+    string avatar = 4;
+    string type = 5;
 }

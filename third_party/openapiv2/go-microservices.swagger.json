@@ -2159,11 +2159,35 @@
         }
       }
     },
+    "searchSearch": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        },
+        "avatar": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string"
+        }
+      }
+    },
     "searchSearchResponse": {
       "type": "object",
       "properties": {
         "search": {
-          "type": "string"
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/searchSearch"
+          }
         }
       }
     },

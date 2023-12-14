@@ -10,7 +10,7 @@ import (
 	"github.com/dinhcanh303/go-microservices/cmd/search/config"
 	"github.com/dinhcanh303/go-microservices/internal/search/app/router"
 	"github.com/dinhcanh303/go-microservices/internal/search/eventhandlers"
-	"github.com/dinhcanh303/go-microservices/pkg/elastic"
+	"github.com/dinhcanh303/go-microservices/pkg/meili"
 	"github.com/dinhcanh303/go-microservices/pkg/rabbitmq"
 	"github.com/dinhcanh303/go-microservices/pkg/rabbitmq/comsumer"
 	"github.com/rabbitmq/amqp091-go"
@@ -19,7 +19,7 @@ import (
 
 // Injectors from wire.go:
 
-func InitApp(cfg *config.Config, rabbitMQConnStr rabbitmq.RabbitMQConnStr, elasticSearchConn elastic.ElasticSearchConn, grpcServer *grpc.Server) (*App, func(), error) {
+func InitApp(cfg *config.Config, rabbitMQConnStr rabbitmq.RabbitMQConnStr, meiliSearchConn meili.MeiliSearchConn, grpcServer *grpc.Server) (*App, func(), error) {
 	connection, cleanup, err := rabbitMQFunc(rabbitMQConnStr)
 	if err != nil {
 		return nil, nil, err
@@ -29,13 +29,9 @@ func InitApp(cfg *config.Config, rabbitMQConnStr rabbitmq.RabbitMQConnStr, elast
 		cleanup()
 		return nil, nil, err
 	}
-	elasticSearch, err := elasticSearchFunc(elasticSearchConn)
-	if err != nil {
-		cleanup()
-		return nil, nil, err
-	}
-	eventHandlers := eventhandlers.NewEventHandlers(elasticSearch)
-	searchServiceServer := router.NewSearchGRPCServer(grpcServer, elasticSearch)
+	meiliSearch := meiliSearchFunc(meiliSearchConn)
+	eventHandlers := eventhandlers.NewEventHandlers(meiliSearch)
+	searchServiceServer := router.NewSearchGRPCServer(grpcServer, meiliSearch)
 	app := New(cfg, connection, eventConsumer, eventHandlers, searchServiceServer)
 	return app, func() {
 		cleanup()
@@ -52,10 +48,13 @@ func rabbitMQFunc(url rabbitmq.RabbitMQConnStr) (*amqp091.Connection, func(), er
 	return conn, func() { conn.Close() }, nil
 }
 
-func elasticSearchFunc(conn elastic.ElasticSearchConn) (elastic.ElasticSearch, error) {
-	es, err := elastic.NewElasticSearch(conn)
-	if err != nil {
-		return nil, err
-	}
-	return es, err
+//	func elasticSearchFunc(conn elastic.ElasticSearchConn) (elastic.ElasticSearch, error) {
+//		es, err := elastic.NewElasticSearch(conn)
+//		if err != nil {
+//			return nil, err
+//		}
+//		return es, err
+//	}
+func meiliSearchFunc(conn meili.MeiliSearchConn) meili.MeiliSearch {
+	return meili.NewMeiliSearch(conn)
 }

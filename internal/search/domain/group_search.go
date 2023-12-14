@@ -8,16 +8,18 @@ import (
 
 type GroupSearch struct {
 	sharedkernel.AggregateRoot
-	GroupID     uuid.UUID
-	GroupName   string
-	GroupAvatar string
+	ID     uuid.UUID `json:"id"`
+	Name   string    `json:"name"`
+	Avatar string    `json:"avatar"`
+	Type   string    `json:"type"`
 }
 
 func NewGroupSearch(e event.GroupCreated) *GroupSearch {
 	groupSearch := &GroupSearch{
-		GroupID:     e.GroupID,
-		GroupName:   e.GroupName,
-		GroupAvatar: e.GroupAvatar,
+		ID:     e.ID,
+		Name:   e.Name,
+		Avatar: e.Avatar,
+		Type:   "group",
 	}
 	return groupSearch
 }

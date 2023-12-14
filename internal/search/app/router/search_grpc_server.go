@@ -3,22 +3,22 @@ package router
 import (
 	"context"
 	"errors"
-	"log/slog"
-	"strings"
 
-	"github.com/dinhcanh303/go-microservices/internal/search/domain"
 	"github.com/dinhcanh303/go-microservices/pkg/constant"
-	"github.com/dinhcanh303/go-microservices/pkg/elastic"
+	"github.com/dinhcanh303/go-microservices/pkg/meili"
 	"github.com/dinhcanh303/go-microservices/pkg/utils"
 	"github.com/dinhcanh303/go-microservices/proto/gen"
+	"github.com/google/uuid"
 	"github.com/google/wire"
+	"github.com/meilisearch/meilisearch-go"
+	"github.com/samber/lo"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
 )
 
 type searchGRPCServer struct {
 	gen.UnimplementedSearchServiceServer
-	elastic elastic.ElasticSearch
+	meili meili.MeiliSearch
 }
 
 var _ gen.SearchServiceServer = (*searchGRPCServer)(nil)
@@ -27,10 +27,10 @@ var SearchGRPCServerSet = wire.NewSet(NewSearchGRPCServer)
 
 func NewSearchGRPCServer(
 	grpcServer *grpc.Server,
-	elastic elastic.ElasticSearch,
+	meili meili.MeiliSearch,
 ) gen.SearchServiceServer {
 	svc := searchGRPCServer{
-		elastic: elastic,
+		meili: meili,
 	}
 	gen.RegisterSearchServiceServer(grpcServer, &svc)
 	reflection.Register(grpcServer)
@@ -38,50 +38,84 @@ func NewSearchGRPCServer(
 }
 func (c *searchGRPCServer) Search(ctx context.Context, request *gen.SearchRequest) (*gen.SearchResponse, error) {
 	keyWord := request.KeyWord
-	slog.Info("key word", keyWord)
 	if keyWord == "" {
 		return nil, errors.New("key word search empty")
 	}
-	results, err := searchElastic(c.elastic, constant.ELASTIC_SEARCH_INDEX, "group_name", keyWord)
+	hits, err := meiliSearch(c.meili, constant.MEILI_SEARCH_INDEX, keyWord, []string{"name", "email"})
 	if err != nil {
 		return nil, err
 	}
-	slog.Info("value search", results)
+	if hits == nil {
+		return nil, nil
+	}
+	var results []searchRes
+	for _, hit := range hits {
+		var res = searchRes{}
+		utils.Mapping(hit, &res)
+		results = append(results, res)
+	}
 	return &gen.SearchResponse{
-		Search: "Hehe",
+		Search: lo.Map(results, func(item searchRes, _ int) *gen.Search {
+			return &gen.Search{
+				Id:     item.ID.String(),
+				Name:   item.Name,
+				Email:  item.Email,
+				Avatar: item.Email,
+				Type:   item.Type,
+			}
+		}),
 	}, nil
 }
 
-func searchElastic(es elastic.ElasticSearch, indexName, fieldName, keyWord string) ([]domain.GroupSearch, error) {
-	// var users []domain.UserSearch
-	var groups []domain.GroupSearch
+type searchRes struct {
+	ID     uuid.UUID `json:"id"`
+	Name   string    `json:"name"`
+	Email  string    `json:"email"`
+	Avatar string    `json:"avatar"`
+	Type   string    `json:"type"`
+}
 
-	var buf strings.Builder
-	buf.WriteString(`{
-		"query": {
-			"match": {
-				"` + fieldName + `": "` + keyWord + `"
-			}
-		}
-	}`)
-	results, err := es.Search(indexName, buf.String())
+func meiliSearch(ml meili.MeiliSearch, indexName, keyWord string, fieldName []string) ([]interface{}, error) {
+	task, err := ml.Search(indexName, keyWord, &meilisearch.SearchRequest{
+		Limit:                20,
+		AttributesToSearchOn: fieldName,
+	})
 	if err != nil {
 		return nil, err
 	}
-	slog.Info("DATA_ALL::", results)
-	// Loop Response
-	// Map And Append Document
-	if results["hits"] == nil {
-		return nil, nil
-	}
-	slog.Info("DATA::", results["hits"])
-
-	for _, hit := range results["hits"].(map[string]interface{})["hits"].([]interface{}) {
-		var group = domain.GroupSearch{}
-
-		utils.Mapping(hit.(map[string]interface{})["_source"], &group)
-		groups = append(groups, group)
-	}
-	return groups, nil
-
+	return task.Hits, nil
 }
+
+// func searchElastic(es elastic.ElasticSearch, indexName, fieldName, keyWord string) ([]domain.GroupSearch, error) {
+// 	// var users []domain.UserSearch
+// 	var groups []domain.GroupSearch
+
+// 	var buf strings.Builder
+// 	buf.WriteString(`{
+// 		"query": {
+// 			"match": {
+// 				"` + fieldName + `": "` + keyWord + `"
+// 			}
+// 		}
+// 	}`)
+// 	results, err := es.Search(indexName, buf.String())
+// 	if err != nil {
+// 		return nil, err
+// 	}
+// 	slog.Info("DATA_ALL::", results)
+// 	// Loop Response
+// 	// Map And Append Document
+// 	if results["hits"] == nil {
+// 		return nil, nil
+// 	}
+// 	slog.Info("DATA::", results["hits"])
+
+// 	for _, hit := range results["hits"].(map[string]interface{})["hits"].([]interface{}) {
+// 		var group = domain.GroupSearch{}
+
+// 		utils.Mapping(hit.(map[string]interface{})["_source"], &group)
+// 		groups = append(groups, group)
+// 	}
+// 	return groups, nil
+
+// }

@@ -7,21 +7,21 @@ import (
 	"github.com/dinhcanh303/go-microservices/internal/pkg/event"
 	"github.com/dinhcanh303/go-microservices/internal/search/domain"
 	"github.com/dinhcanh303/go-microservices/pkg/constant"
-	"github.com/dinhcanh303/go-microservices/pkg/elastic"
+	"github.com/dinhcanh303/go-microservices/pkg/meili"
 	"github.com/google/wire"
 )
 
 type eventhandlers struct {
-	elastic elastic.ElasticSearch
+	meili meili.MeiliSearch
 }
 
 var _ EventHandlers = (*eventhandlers)(nil)
 
 var EventHandlersSet = wire.NewSet(NewEventHandlers)
 
-func NewEventHandlers(elastic elastic.ElasticSearch) EventHandlers {
+func NewEventHandlers(meili meili.MeiliSearch) EventHandlers {
 	return &eventhandlers{
-		elastic: elastic,
+		meili: meili,
 	}
 
 }
@@ -29,20 +29,20 @@ func NewEventHandlers(elastic elastic.ElasticSearch) EventHandlers {
 // HandleGroupCreated implements EventHandlers.
 func (h *eventhandlers) HandleGroupCreated(ctx context.Context, e event.GroupCreated) error {
 	groupSearch := domain.NewGroupSearch(e)
-	err := h.elastic.Insert(constant.ELASTIC_SEARCH_INDEX, groupSearch, groupSearch.GroupID.String())
+	_, err := h.meili.AddDocuments(constant.MEILI_SEARCH_INDEX, groupSearch)
 	if err != nil {
-		slog.Error("insert-into-elastic-search", err)
+		slog.Error("insert-into-meili-search", err)
 		return err
 	}
-	slog.Info("Insert into elastic-search")
+	slog.Info("Insert into meili-search")
 	return nil
 }
 
 // HandleGroupDeleted implements EventHandlers.
 func (h *eventhandlers) HandleGroupDeleted(ctx context.Context, e event.GroupDeleted) error {
-	err := h.elastic.Remove(e.GroupID.String(), constant.ELASTIC_SEARCH_INDEX)
+	_, err := h.meili.DeleteDocument(constant.MEILI_SEARCH_INDEX, e.ID.String())
 	if err != nil {
-		slog.Error("remove-from-elastic-search", err)
+		slog.Error("remove-from-meili-search", err)
 		return err
 	}
 	return nil
@@ -51,9 +51,9 @@ func (h *eventhandlers) HandleGroupDeleted(ctx context.Context, e event.GroupDel
 // HandleUserCreated implements EventHandlers.
 func (h *eventhandlers) HandleUserCreated(ctx context.Context, e event.UserCreated) error {
 	userSearch := domain.NewUserSearch(e)
-	err := h.elastic.Insert(constant.ELASTIC_SEARCH_INDEX, userSearch, userSearch.UserID.String())
+	_, err := h.meili.AddDocuments(constant.MEILI_SEARCH_INDEX, userSearch)
 	if err != nil {
-		slog.Error("insert-into-elastic-search", err)
+		slog.Error("insert-into-meili-search", err)
 		return err
 	}
 	return nil
@@ -61,9 +61,9 @@ func (h *eventhandlers) HandleUserCreated(ctx context.Context, e event.UserCreat
 
 // HandleUserDeleted implements EventHandlers.
 func (h *eventhandlers) HandleUserDeleted(ctx context.Context, e event.UserDeleted) error {
-	err := h.elastic.Remove(e.UserID.String(), constant.ELASTIC_SEARCH_INDEX)
+	_, err := h.meili.DeleteDocument(constant.MEILI_SEARCH_INDEX, e.ID.String())
 	if err != nil {
-		slog.Error("remove-from-elastic-search", err)
+		slog.Error("remove-from-meili-search", err)
 		return err
 	}
 	return nil

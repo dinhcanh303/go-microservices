@@ -19,6 +19,8 @@
         "logrus",
         "Logrus",
         "maxprocs",
+        "meili",
+        "meilisearch",
         "Minio",
         "openapiv",
         "ossp",

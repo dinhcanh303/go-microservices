@@ -10,8 +10,8 @@ import (
 
 	"github.com/dinhcanh303/go-microservices/cmd/search/config"
 	"github.com/dinhcanh303/go-microservices/internal/search/app"
-	"github.com/dinhcanh303/go-microservices/pkg/elastic"
 	"github.com/dinhcanh303/go-microservices/pkg/logger"
+	"github.com/dinhcanh303/go-microservices/pkg/meili"
 	"github.com/dinhcanh303/go-microservices/pkg/rabbitmq"
 	consumer "github.com/dinhcanh303/go-microservices/pkg/rabbitmq/comsumer"
 	"github.com/sirupsen/logrus"
@@ -96,10 +96,9 @@ func main() {
 }
 
 func prepareApp(ctx context.Context, cancel context.CancelFunc, cfg *config.Config, server *grpc.Server) func() {
-	a, cleanup, err := app.InitApp(cfg, rabbitmq.RabbitMQConnStr(cfg.RabbitMQ.URL), elastic.ElasticSearchConn{
-		Url:      cfg.ElasticSearch.URL,
-		UserName: cfg.ElasticSearch.UserName,
-		Password: cfg.ElasticSearch.Password,
+	a, cleanup, err := app.InitApp(cfg, rabbitmq.RabbitMQConnStr(cfg.RabbitMQ.URL), meili.MeiliSearchConn{
+		Host:   cfg.MeiliSearch.Host,
+		APIKey: cfg.MeiliSearch.ApiKey,
 	}, server)
 	if err != nil {
 		slog.Error("failed init app", err)

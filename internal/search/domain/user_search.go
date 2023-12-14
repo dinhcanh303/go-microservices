@@ -8,18 +8,20 @@ import (
 
 type UserSearch struct {
 	sharedkernel.AggregateRoot
-	UserID       uuid.UUID
-	UserFullName string
-	UserEmail    string
-	UserAvatar   string
+	ID     uuid.UUID `json:"id"`
+	Name   string    `json:"name"`
+	Email  string    `json:"email"`
+	Avatar string    `json:"avatar"`
+	Type   string    `json:"type"`
 }
 
 func NewUserSearch(e event.UserCreated) *UserSearch {
 	userSearch := &UserSearch{
-		UserID:       e.UserID,
-		UserFullName: e.UserFullName,
-		UserEmail:    e.UserEmail,
-		UserAvatar:   e.UserAvatar,
+		ID:     e.ID,
+		Name:   e.Name,
+		Email:  e.Email,
+		Avatar: e.Avatar,
+		Type:   "user",
 	}
 	return userSearch
 }
