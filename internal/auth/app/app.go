@@ -9,11 +9,13 @@ import (
 )
 
 type App struct {
-	Cfg            *config.Config
-	CfgLdap        *configs.Ldap
-	PG             postgres.DBEngine
-	UC             auth.UseCase
-	AuthGRPCServer gen.AuthServiceServer
+	Cfg                 *config.Config
+	CfgLdap             *configs.Ldap
+	PG                  postgres.DBEngine
+	UC                  auth.UseCase
+	AuthGRPCServer      gen.AuthServiceServer
+	UserCreatedEventPub auth.UserCreatedEventPublisher
+	UserDeletedEventPub auth.UserDeletedEventPublisher
 }
 
 func New(
@@ -21,12 +23,16 @@ func New(
 	cfgLdap *configs.Ldap,
 	pg postgres.DBEngine,
 	uc auth.UseCase,
-	authGRPCServer gen.AuthServiceServer) *App {
+	authGRPCServer gen.AuthServiceServer,
+	userCreatedEventPub auth.UserCreatedEventPublisher,
+	userDeletedEventPub auth.UserDeletedEventPublisher) *App {
 	return &App{
-		Cfg:            cfg,
-		CfgLdap:        cfgLdap,
-		UC:             uc,
-		PG:             pg,
-		AuthGRPCServer: authGRPCServer,
+		Cfg:                 cfg,
+		CfgLdap:             cfgLdap,
+		UC:                  uc,
+		PG:                  pg,
+		AuthGRPCServer:      authGRPCServer,
+		UserCreatedEventPub: userCreatedEventPub,
+		UserDeletedEventPub: userDeletedEventPub,
 	}
 }

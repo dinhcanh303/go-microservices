@@ -16,12 +16,16 @@ type (
 		configs.HTTP `yaml:"http"`
 		configs.Log  `yaml:"logger"`
 		PG           `yaml:"postgres"`
+		RabbitMQ     `yaml:"rabbitmq"`
 	}
 
 	PG struct {
 		PoolMax  int    `env-required:"true" yaml:"pool_max" env:"PG_POOL_MAX"`
 		DbURL    string `env-required:"true" yaml:"db_url" env:"PG_URL"`
 		DbRepURL string `env-required:"true" yaml:"db_rep_url" env:"PG_REP_URL"`
+	}
+	RabbitMQ struct {
+		URL string `env-required:"true" yaml:"url" env:"RABBITMQ_URL"`
 	}
 )
 

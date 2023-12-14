@@ -20,6 +20,12 @@ type (
 	}
 )
 
+func NewGroupCreatedEventPublisher(pub publisher.EventPublisher) groups.GroupCreatedEventPublisher {
+	return &groupCreatedEventPublisher{
+		pub: pub,
+	}
+}
+
 // Configure implements groups.GroupEventPublisher.
 func (p *groupCreatedEventPublisher) Configure(opts ...publisher.Option) {
 	p.pub.Configure(opts...)
@@ -30,8 +36,8 @@ func (p *groupCreatedEventPublisher) Publish(ctx context.Context, body []byte, c
 	return p.pub.Publish(ctx, body, contentType)
 }
 
-func NewGroupCreatedEventPublisher(pub publisher.EventPublisher) groups.GroupCreatedEventPublisher {
-	return &groupCreatedEventPublisher{
+func NewGroupDeletedEventPublisher(pub publisher.EventPublisher) groups.GroupDeletedEventPublisher {
+	return &groupDeletedEventPublisher{
 		pub: pub,
 	}
 }
@@ -44,10 +50,4 @@ func (p *groupDeletedEventPublisher) Configure(opts ...publisher.Option) {
 // Publish implements groups.GroupEventPublisher.
 func (p *groupDeletedEventPublisher) Publish(ctx context.Context, body []byte, contentType string) error {
 	return p.pub.Publish(ctx, body, contentType)
-}
-
-func NewGroupDeletedEventPublisher(pub publisher.EventPublisher) groups.GroupDeletedEventPublisher {
-	return &groupDeletedEventPublisher{
-		pub: pub,
-	}
 }

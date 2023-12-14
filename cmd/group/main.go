@@ -99,15 +99,15 @@ func prepareApp(ctx context.Context, cancel context.CancelFunc, cfg *config.Conf
 		cancel()
 		<-ctx.Done()
 	}
+	a.GroupDeletedEventPub.Configure(
+		publisher.ExChangeName("search-exchange"),
+		publisher.BindingKey("search-routing-key"),
+		publisher.MessageTypeName("group-deleted"),
+	)
 	a.GroupCreatedEventPub.Configure(
 		publisher.ExChangeName("search-exchange"),
 		publisher.BindingKey("search-routing-key"),
 		publisher.MessageTypeName("group-created"),
 	)
-	// a.GroupDeletedEventPub.Configure(
-	// 	publisher.ExChangeName("search-exchange"),
-	// 	publisher.BindingKey("search-routing-key"),
-	// 	publisher.MessageTypeName("group-deleted"),
-	// )
 	return cleanup
 }

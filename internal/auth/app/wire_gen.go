@@ -9,19 +9,23 @@ package app
 import (
 	"github.com/dinhcanh303/go-microservices/cmd/auth/config"
 	"github.com/dinhcanh303/go-microservices/internal/auth/app/router"
+	"github.com/dinhcanh303/go-microservices/internal/auth/infras"
 	"github.com/dinhcanh303/go-microservices/internal/auth/infras/repo"
 	"github.com/dinhcanh303/go-microservices/internal/auth/usecases/auth"
 	"github.com/dinhcanh303/go-microservices/internal/auth/usecases/keys"
 	"github.com/dinhcanh303/go-microservices/pkg/config"
 	"github.com/dinhcanh303/go-microservices/pkg/ldap"
 	"github.com/dinhcanh303/go-microservices/pkg/postgres"
+	"github.com/dinhcanh303/go-microservices/pkg/rabbitmq"
+	"github.com/dinhcanh303/go-microservices/pkg/rabbitmq/publisher"
 	"github.com/dinhcanh303/go-microservices/pkg/token"
+	"github.com/rabbitmq/amqp091-go"
 	"google.golang.org/grpc"
 )
 
 // Injectors from wire.go:
 
-func InitApp(cfg *config.Config, cfgLdap *configs.Ldap, dbConnStr postgres.DBConnString, dbReadConnStr postgres.DBConnReadString, grpcServer *grpc.Server) (*App, func(), error) {
+func InitApp(cfg *config.Config, cfgLdap *configs.Ldap, dbConnStr postgres.DBConnString, dbReadConnStr postgres.DBConnReadString, rabbitMQConnStr rabbitmq.RabbitMQConnStr, grpcServer *grpc.Server) (*App, func(), error) {
 	dbEngine, cleanup, err := dbEngineFunc(dbConnStr, dbReadConnStr)
 	if err != nil {
 		return nil, nil, err
@@ -35,10 +39,26 @@ func InitApp(cfg *config.Config, cfgLdap *configs.Ldap, dbConnStr postgres.DBCon
 		return nil, nil, err
 	}
 	jwt := jwtFunc()
-	authUseCase := auth.NewUseCase(userRepo, useCase, ldapClient, jwt)
+	connection, cleanup3, err := rabbitMQFunc(rabbitMQConnStr)
+	if err != nil {
+		cleanup2()
+		cleanup()
+		return nil, nil, err
+	}
+	eventPublisher, err := publisher.NewPublisher(connection)
+	if err != nil {
+		cleanup3()
+		cleanup2()
+		cleanup()
+		return nil, nil, err
+	}
+	userCreatedEventPublisher := infras.NewUserCreatedEventPublisher(eventPublisher)
+	userDeletedEventPublisher := infras.NewUserDeletedEventPublisher(eventPublisher)
+	authUseCase := auth.NewUseCase(userRepo, useCase, ldapClient, jwt, userCreatedEventPublisher, userDeletedEventPublisher)
 	authServiceServer := router.NewAuthGRPCServer(grpcServer, cfg, authUseCase, useCase)
-	app := New(cfg, cfgLdap, dbEngine, authUseCase, authServiceServer)
+	app := New(cfg, cfgLdap, dbEngine, authUseCase, authServiceServer, userCreatedEventPublisher, userDeletedEventPublisher)
 	return app, func() {
+		cleanup3()
 		cleanup2()
 		cleanup()
 	}, nil
@@ -62,4 +82,12 @@ func ldapClientFunc(config2 *configs.Ldap) (ldap.LdapClient, func(), error) {
 func jwtFunc() token.JWT {
 	jwt := token.NewJWTMaker()
 	return jwt
+}
+
+func rabbitMQFunc(url rabbitmq.RabbitMQConnStr) (*amqp091.Connection, func(), error) {
+	conn, err := rabbitmq.NewRabbitMQConn(url)
+	if err != nil {
+		return nil, nil, err
+	}
+	return conn, func() { conn.Close() }, nil
 }

@@ -35,7 +35,7 @@ CREATE TABLE
         refresh_tokens_used JSON DEFAULT '[]',
         created_at timestamp with time zone NOT NULL DEFAULT current_timestamp,
         updated_at timestamp with time zone NOT NULL DEFAULT (now()),
-        FOREIGN KEY (user_id) REFERENCES auth.users (id)
+        FOREIGN KEY (user_id) REFERENCES auth.users (id) ON DELETE CASCADE
 );
 CREATE INDEX ix_auth_key_token ON auth.keys (user_id);
 COMMIT;

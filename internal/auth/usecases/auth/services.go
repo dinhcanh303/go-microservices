@@ -2,6 +2,7 @@ package auth
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"log/slog"
 	"strings"
@@ -9,7 +10,7 @@ import (
 
 	"github.com/dinhcanh303/go-microservices/internal/auth/domain"
 	"github.com/dinhcanh303/go-microservices/internal/auth/usecases/keys"
-	sharedkernel "github.com/dinhcanh303/go-microservices/internal/pkg/shared_kernel"
+	"github.com/dinhcanh303/go-microservices/internal/pkg/event"
 	"github.com/dinhcanh303/go-microservices/pkg/constant"
 	"github.com/dinhcanh303/go-microservices/pkg/ldap"
 	"github.com/dinhcanh303/go-microservices/pkg/token"
@@ -22,10 +23,12 @@ import (
 )
 
 type service struct {
-	repo       UserRepo
-	ucKeys     keys.UseCase
-	ldapClient ldap.LdapClient
-	jwt        token.JWT
+	repo                UserRepo
+	ucKeys              keys.UseCase
+	ldapClient          ldap.LdapClient
+	jwt                 token.JWT
+	userCreatedEventPub UserCreatedEventPublisher
+	userDeletedEventPub UserDeletedEventPublisher
 }
 
 // GetAllUserIdByUserId implements UseCase.
@@ -52,7 +55,7 @@ func (s *service) Logout(ctx context.Context, key *domain.Key) error {
 }
 
 // SignIn implements UseCase.
-func (s *service) SignIn(ctx context.Context, email string, password string) (*sharedkernel.UserAuth, error) {
+func (s *service) SignIn(ctx context.Context, email string, password string) (*domain.UserAuth, error) {
 	slog.Info("Service Auth:: SignIn")
 	isEmailCompany := checkEmailCompany(email)
 	if isEmailCompany {
@@ -99,7 +102,7 @@ func (s *service) SignIn(ctx context.Context, email string, password string) (*s
 }
 
 // SignUp implements UseCase.
-func (s *service) SignUp(ctx context.Context, email, password, fistName, lastName string) (*sharedkernel.UserAuth, error) {
+func (s *service) SignUp(ctx context.Context, email, password, fistName, lastName string) (*domain.UserAuth, error) {
 	slog.Info("Service Auth:: SignUp")
 	isEmailCompany := checkEmailCompany(email)
 	if isEmailCompany {
@@ -118,6 +121,20 @@ func (s *service) SignUp(ctx context.Context, email, password, fistName, lastNam
 	if err != nil {
 		return nil, status.Error(codes.Unknown, err.Error())
 	}
+	if err == nil {
+		// Publish event created group
+		eventBytes, err := json.Marshal(event.UserCreated{
+			ID:     newUser.ID,
+			Name:   newUser.FullName,
+			Avatar: "",
+			Email:  newUser.Email,
+			Type:   "user",
+		})
+		if err != nil {
+			slog.Error("json marshal error", err)
+		}
+		s.userCreatedEventPub.Publish(ctx, eventBytes, "text/plain")
+	}
 	return createTokenPairAndResponse(ctx, s, newUser, true)
 }
 
@@ -128,12 +145,16 @@ func NewUseCase(
 	ucKeys keys.UseCase,
 	ldapClient ldap.LdapClient,
 	jwt token.JWT,
+	userCreatedEventPub UserCreatedEventPublisher,
+	userDeletedEventPub UserDeletedEventPublisher,
 ) UseCase {
 	return &service{
-		repo:       repo,
-		ucKeys:     ucKeys,
-		ldapClient: ldapClient,
-		jwt:        jwt,
+		repo:                repo,
+		ucKeys:              ucKeys,
+		ldapClient:          ldapClient,
+		jwt:                 jwt,
+		userCreatedEventPub: userCreatedEventPub,
+		userDeletedEventPub: userDeletedEventPub,
 	}
 }
 
@@ -184,7 +205,7 @@ func createTokenPair(jwt token.JWT, user *domain.User, publicKey, privateKey str
 	}
 	return accessToken, refreshToken, nil
 }
-func createTokenPairAndResponse(ctx context.Context, service *service, user *domain.User, isSingUp bool) (*sharedkernel.UserAuth, error) {
+func createTokenPairAndResponse(ctx context.Context, service *service, user *domain.User, isSingUp bool) (*domain.UserAuth, error) {
 	publicKey, privateKey, err := createKeyPair()
 	if err != nil {
 		return nil, status.Error(codes.Unknown, "Create Public Private Key failed")
@@ -205,7 +226,7 @@ func createTokenPairAndResponse(ctx context.Context, service *service, user *dom
 	if err != nil {
 		return nil, status.Error(codes.Unknown, "Create Key Store Failed")
 	}
-	return &sharedkernel.UserAuth{
+	return &domain.UserAuth{
 		User:         user,
 		AccessToken:  accessToken,
 		RefreshToken: refreshToken,
