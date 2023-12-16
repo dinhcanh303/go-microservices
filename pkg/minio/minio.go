@@ -52,11 +52,11 @@ func (m *minio) DeleteFile(ctx context.Context, fileName string) (bool, error) {
 }
 
 // UploadFile implements MinioUpload.
-func (m *minio) UploadFile(ctx context.Context, file *multipart.FileHeader, buffer io.Reader) (*minioV7.UploadInfo, *FileInfo, error) {
+func (m *minio) UploadFile(ctx context.Context, file *multipart.FileHeader, buffer io.Reader, location string) (*minioV7.UploadInfo, *FileInfo, error) {
 	slog.Info("MINIO::Upload File")
 	config := m.cf
 	client, _ := minioClient(config)
-	folder := locationFolderSaveFile(config.RootFolder)
+	folder := locationFolderSaveFile(config.RootFolder, location)
 	objectName := folder + file.Filename
 	contentType := file.Header.Get("Content-Type")
 	fileSize := file.Size
@@ -104,9 +104,12 @@ func minioClient(config *configs.Minio) (*minioV7.Client, error) {
 func getUrlFile(endpoint string, bucketName string, objectName string) string {
 	return fmt.Sprintf("https://%s/%s/%s", endpoint, bucketName, objectName)
 }
-func locationFolderSaveFile(rootFolder string) string {
+func locationFolderSaveFile(rootFolder string, location string) string {
 	year, month, _ := time.Now().Date()
-	return fmt.Sprintf("%s/%d/%02d/", rootFolder, year, int(month))
+	if location == "" {
+		return fmt.Sprintf("%s/%d/%02d/", rootFolder, year, int(month))
+	}
+	return fmt.Sprintf("%s/%s/%d/%02d/", rootFolder, location, year, int(month))
 }
 
 var _ MinioService = (*minio)(nil)

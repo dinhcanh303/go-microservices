@@ -9,6 +9,6 @@ import (
 )
 
 type MinioService interface {
-	UploadFile(ctx context.Context, file *multipart.FileHeader, buffer io.Reader) (*minioV7.UploadInfo, *FileInfo, error)
+	UploadFile(ctx context.Context, file *multipart.FileHeader, buffer io.Reader, location string) (*minioV7.UploadInfo, *FileInfo, error)
 	DeleteFile(ctx context.Context, objectName string) (bool, error)
 }

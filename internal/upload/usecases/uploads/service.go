@@ -112,7 +112,7 @@ func (s *uploadService) UpdateAttachment(ctx context.Context, attachment *domain
 }
 
 // UploadFile implements UseCase.
-func (s *uploadService) UploadFile(echoCtx echo.Context) ([]*domain.Attachment, error) {
+func (s *uploadService) UploadFile(echoCtx echo.Context, location string) ([]*domain.Attachment, error) {
 	slog.Info("Service: UploadFile")
 	ctx := context.Background()
 	form, err := echoCtx.MultipartForm()
@@ -132,7 +132,7 @@ func (s *uploadService) UploadFile(echoCtx echo.Context) ([]*domain.Attachment, 
 		}
 		defer buffer.Close()
 		slog.Info("FILE::", &file)
-		_, fileInfo, err := s.minio.UploadFile(ctx, file, buffer)
+		_, fileInfo, err := s.minio.UploadFile(ctx, file, buffer, location)
 		if err != nil {
 			return nil, errors.Wrap(err, "Upload file failed:")
 		}

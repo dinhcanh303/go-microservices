@@ -26,7 +26,7 @@ type (
 		UpdateAttachmentsByIds(ctx context.Context, attachmentIds []uuid.UUID, attachment *domain.Attachment) ([]*domain.Attachment, error)
 		DeleteAttachment(ctx context.Context, attachmentId uuid.UUID) (bool, error)
 		DeleteAttachmentsByIds(ctx context.Context, attachmentIds []uuid.UUID) (bool, error)
-		UploadFile(ctx echo.Context) ([]*domain.Attachment, error)
+		UploadFile(ctx echo.Context, location string) ([]*domain.Attachment, error)
 	}
 	UseCaseGRPC interface {
 		GetAttachmentsByType(ctx context.Context, attachableType string, attachableId uuid.UUID) ([]*domain.Attachment, error)

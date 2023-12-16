@@ -146,7 +146,17 @@ func (s *UploadHandler) UpdateAttachmentsByIds(ctx echo.Context) error {
 // UploadFile implements uploads.UseCase.
 func (s *UploadHandler) UploadFile(ctx echo.Context) error {
 	slog.Info("POST: UploadFile")
-	attachments, err := s.uc.UploadFile(ctx)
+	attachments, err := s.uc.UploadFile(ctx, "")
+	if err != nil {
+		return responses.ErrorResponse(ctx, http.StatusNotFound, responses.ErrorString("Handler Upload file failed", err))
+	}
+	return responses.Response(ctx, http.StatusOK, attachments)
+}
+
+// UploadFile implements uploads.UseCase.
+func (s *UploadHandler) AvatarUploadFile(ctx echo.Context) error {
+	slog.Info("POST: AvatarUploadFile")
+	attachments, err := s.uc.UploadFile(ctx, "avatar")
 	if err != nil {
 		return responses.ErrorResponse(ctx, http.StatusNotFound, responses.ErrorString("Handler Upload file failed", err))
 	}
