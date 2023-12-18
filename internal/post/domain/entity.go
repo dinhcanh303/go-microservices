@@ -9,19 +9,19 @@ import (
 )
 
 type Post struct {
-	ID        uuid.UUID     `json:"id"`
-	Status    int32         `json:"status"`
-	Title     string        `json:"title"`
-	Content   string        `json:"content"`
-	UserID    uuid.UUID     `json:"user_id"`
-	GroupID   uuid.NullUUID `json:"group_id"`
-	CreatedAt time.Time     `json:"created_at"`
-	UpdatedAt time.Time     `json:"updated_at"`
+	ID        uuid.UUID           `json:"id"`
+	Status    sharedkernel.Status `json:"status"`
+	Title     string              `json:"title"`
+	Content   string              `json:"content"`
+	UserID    uuid.UUID           `json:"user_id"`
+	GroupID   uuid.NullUUID       `json:"group_id"`
+	CreatedAt time.Time           `json:"created_at"`
+	UpdatedAt time.Time           `json:"updated_at"`
 }
 
 type PostExtra struct {
 	ID        uuid.UUID                          `json:"id"`
-	Status    int32                              `json:"status"`
+	Status    sharedkernel.Status                `json:"status"`
 	Title     string                             `json:"title"`
 	Content   string                             `json:"content"`
 	UserID    uuid.UUID                          `json:"user_id"`

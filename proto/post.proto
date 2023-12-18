@@ -147,7 +147,7 @@ message PostResponse {
     string id = 1;
     string title = 2;
     string content = 3;
-    int32 status = 4;
+    string status = 4;
     string user_id = 5;
     string group_id = 6;
     google.protobuf.Timestamp created_at = 7;

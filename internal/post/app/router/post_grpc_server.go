@@ -89,7 +89,7 @@ func (p *postGRPCServer) CreatePost(ctx context.Context, request *gen.CreatePost
 			Content:   post.Content,
 			UserId:    post.UserID.String(),
 			GroupId:   post.GroupID.UUID.String(),
-			Status:    post.Status,
+			Status:    post.Status.String2(),
 			CreatedAt: timestamppb.New(post.CreatedAt),
 			UpdatedAt: timestamppb.New(post.UpdatedAt),
 		},
@@ -195,7 +195,7 @@ func (p *postGRPCServer) UpdatePost(ctx context.Context, request *gen.UpdatePost
 		ID:      id,
 		Title:   request.Post.Title,
 		Content: request.Post.Content,
-		Status:  request.Post.Status,
+		Status:  sharedkernel.Status(request.Post.Status),
 	}
 	post, err := p.uc.UpdatePost(ctx, &model)
 	if err != nil {
@@ -208,7 +208,7 @@ func (p *postGRPCServer) UpdatePost(ctx context.Context, request *gen.UpdatePost
 			Content:   post.Content,
 			UserId:    post.UserID.String(),
 			GroupId:   post.GroupID.UUID.String(),
-			Status:    post.Status,
+			Status:    post.Status.String(),
 			CreatedAt: timestamppb.New(post.CreatedAt),
 			UpdatedAt: timestamppb.New(post.UpdatedAt),
 		},
@@ -245,7 +245,7 @@ func manyPostResponse(posts []*domain.Post, p *postGRPCServer, ctx context.Conte
 				Content:   post.Content,
 				UserId:    post.UserID.String(),
 				GroupId:   post.GroupID.UUID.String(),
-				Status:    post.Status,
+				Status:    post.Status.String(),
 				CreatedAt: timestamppb.New(post.CreatedAt),
 				UpdatedAt: timestamppb.New(post.UpdatedAt),
 			},

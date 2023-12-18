@@ -2,6 +2,7 @@ package router
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"log/slog"
 	"strconv"
@@ -120,11 +121,12 @@ func (a *authGRPCServer) Verify(ctx context.Context, request *gen.VerifyRequest)
 	}
 	refreshToken := utils.GetKeyMetadata(md, constant.RefreshToken)
 	if refreshToken != "" {
+		slog.Info("refresh token::", refreshToken)
 		payload, err := verifyToken(refreshToken, keyStore.PrivateKey)
 		if err != nil {
 			return nil, errors.New("Unauthorized")
 		}
-		grpc.SendHeader(ctx, addHeader(payload, keyStore))
+		grpc.SendHeader(ctx, addHeader(payload, keyStore, refreshToken))
 		return &gen.VerifyResponse{}, nil
 	}
 	authorization := utils.GetKeyMetadata(md, constant.Authorization)
@@ -135,7 +137,7 @@ func (a *authGRPCServer) Verify(ctx context.Context, request *gen.VerifyRequest)
 	if err != nil {
 		return nil, errors.New("Unauthorized")
 	}
-	grpc.SendHeader(ctx, addHeader(payload, keyStore))
+	grpc.SendHeader(ctx, addHeader(payload, keyStore, ""))
 	return &gen.VerifyResponse{}, nil
 }
 func verifyToken(refreshToken, secretKey string) (*token.Payload, error) {
@@ -146,9 +148,7 @@ func verifyToken(refreshToken, secretKey string) (*token.Payload, error) {
 	}
 	return payload, nil
 }
-func addHeader(payload *token.Payload, keyStore *domain.Key) metadata.MD {
-	// keyStoreUsed, _ := utils.JsonRawMessageToArrayString(keyStore.RefreshTokensUsed)
-	// keyStoreUsedString := strings.Join(keyStoreUsed, ",")
+func addHeader(payload *token.Payload, keyStore *domain.Key, refreshToken string) metadata.MD {
 	header := metadata.Pairs(
 		constant.User,
 		fmt.Sprintf("%s,%s,%s,%s,%s",
@@ -161,6 +161,8 @@ func addHeader(payload *token.Payload, keyStore *domain.Key) metadata.MD {
 			keyStore.PublicKey, keyStore.PrivateKey,
 			keyStore.RefreshToken, keyStore.RefreshTokensUsed,
 		),
+		constant.RefreshToken,
+		fmt.Sprintf("%s", refreshToken),
 	)
 	return header
 }
@@ -178,7 +180,7 @@ func (a *authGRPCServer) Logout(ctx context.Context, request *gen.LogoutRequest)
 	return &gen.LogoutResponse{}, nil
 }
 func (a *authGRPCServer) HandleRefreshToken(ctx context.Context, request *gen.HandleRefreshTokenRequest) (*gen.HandleRefreshTokenResponse, error) {
-	slog.Info("GET:: Logout")
+	slog.Info("GET:: HandleRefreshToken")
 	user, err := utils.ExtractMetadataUser(ctx)
 	if err != nil {
 		return nil, err
@@ -187,21 +189,57 @@ func (a *authGRPCServer) HandleRefreshToken(ctx context.Context, request *gen.Ha
 	if err != nil {
 		return nil, err
 	}
+	refreshToken, err := utils.ExtractMetadataRefreshToken(ctx)
+	if err != nil {
+		return nil, err
+	}
+	var refreshTokenUsed []string
+	err = json.Unmarshal([]byte(keyStore.RefreshTokensUsed), &refreshTokenUsed)
+	if err != nil {
+		return nil, err
+	}
+	if lo.Contains(refreshTokenUsed, refreshToken) {
+		err := a.ucKey.DeleteKeyByUserID(ctx, user.ID)
+		if err != nil {
+			return nil, err
+		}
+		return nil, errors.New("Something wrong happened !! Please login again")
+	}
+	if keyStore.RefreshToken != refreshToken {
+		return nil, errors.New("User not registered")
+	}
+
 	slog.Info("User::", user)
-	slog.Info("KeyStore::", keyStore)
-	return &gen.HandleRefreshTokenResponse{}, nil
+	slog.Info("KeyStore::", keyStore.RefreshTokensUsed)
+	res, err := a.uc.HandleRefreshToken(ctx, user.Email, refreshToken)
+	if err != nil {
+		return nil, err
+	}
+	return &gen.HandleRefreshTokenResponse{
+		User: &gen.User{
+			Id:        res.User.ID.String(),
+			Email:     res.User.Email,
+			FirstName: res.User.FirstName,
+			LastName:  res.User.LastName,
+			FullName:  res.User.FullName,
+			CreatedAt: timestamppb.New(res.User.CreatedAt),
+			UpdatedAt: timestamppb.New(res.User.UpdatedAt),
+		},
+		AccessToken:  res.AccessToken,
+		RefreshToken: res.RefreshToken,
+	}, nil
 }
-func (a *authGRPCServer) GetAllUserIdByUserId(ctx context.Context, request *gen.GetAllUserIdByUserIdRequest) (*gen.GetAllUserIdByUserIdResponse, error) {
+func (a *authGRPCServer) GetAllUserIdOfCompanyByUserId(ctx context.Context, request *gen.GetAllUserIdOfCompanyByUserIdRequest) (*gen.GetAllUserIdOfCompanyByUserIdResponse, error) {
 	slog.Info("GET:: GetAllUserIdByUserId")
 	userId, err := uuid.Parse(request.UserId)
 	if err != nil {
 		return nil, errors.New("failed to parse uuid")
 	}
-	userIds, err := a.uc.GetAllUserIdByUserId(ctx, userId)
+	userIds, err := a.uc.GetAllUserIdOfCompanyByUserId(ctx, userId)
 	if err != nil {
 		return nil, err
 	}
-	return &gen.GetAllUserIdByUserIdResponse{
+	return &gen.GetAllUserIdOfCompanyByUserIdResponse{
 		UserIds: lo.Map(userIds, func(item uuid.UUID, _ int) string {
 			return item.String()
 		}),

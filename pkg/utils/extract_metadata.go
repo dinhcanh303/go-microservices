@@ -2,7 +2,6 @@ package utils
 
 import (
 	"context"
-	"encoding/json"
 	"errors"
 	"log/slog"
 	"strconv"
@@ -40,6 +39,23 @@ func ExtractMetadataUser(ctx context.Context) (*token.Payload, error) {
 		return nil, errors.New("context not found header forward")
 	}
 	return payload, nil
+}
+func ExtractMetadataRefreshToken(ctx context.Context) (string, error) {
+	md, ok := metadata.FromIncomingContext(ctx)
+	if !ok {
+		return "", errors.New("missing metadata")
+	}
+	slog.Info("CONTEXT::", md)
+	refreshToken := ""
+	if values := md.Get(constant.RefreshToken); len(values) > 0 {
+		refreshTokens := strings.Split(values[0], ",")
+		if len(refreshTokens) == 1 {
+			refreshToken = refreshTokens[0]
+		}
+	} else {
+		return "", errors.New("context not found header forward")
+	}
+	return refreshToken, nil
 }
 func ExtractHeaderUser(ctx echo.Context) (*token.Payload, error) {
 	headerUser := ctx.Request().Header.Get("Grpc-Metadata-X-Auth-User")
@@ -87,8 +103,7 @@ func ExtractMetadataKeyStore(ctx context.Context) (*domain.Key, error) {
 			keyStore.RefreshToken = keyStoreValues[4]
 		}
 		if len(keyStoreUsedValues) != 0 {
-			jsonBytes, _ := json.Marshal(keyStoreUsedValues)
-			keyStore.RefreshTokensUsed = json.RawMessage(jsonBytes)
+			keyStore.RefreshTokensUsed = keyStoreUsedValues[0]
 		}
 	} else {
 		return nil, errors.New("context not found header forward")

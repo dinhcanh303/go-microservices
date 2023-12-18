@@ -71,37 +71,38 @@ func (l *ldapClient) Close() {
 	}
 }
 func (l *ldapClient) Connect() error {
-	if l.conn == nil {
-		var err error
-		address := fmt.Sprintf("%s:%d", l.config.LdapHost, l.config.LdapPort)
-		if !l.config.LdapSSL {
-			l.conn, err = ldap.Dial("tcp", address)
-			if err != nil {
-				return err
-			}
-			if !l.config.LdapTLS {
-				err = l.conn.StartTLS(&tls.Config{
-					InsecureSkipVerify: true,
-				})
-				if err != nil {
-					return err
-				}
-				slog.Info("Connect Ldap InsecureSkipVerify")
-			}
-		} else {
-			config := &tls.Config{
-				InsecureSkipVerify: l.config.LdapTLS,
-				ServerName:         l.config.LdapBindDN,
-			}
-			if l.clientCertificates != nil && len(l.clientCertificates) > 0 {
-				config.Certificates = l.clientCertificates
-			}
-			l.conn, err = ldap.DialTLS("tcp", address, config)
-			if err != nil {
-				return err
-			}
-			slog.Info("Connect Ldap DialTLS")
+
+	var err error
+	address := fmt.Sprintf("%s:%d", l.config.LdapHost, l.config.LdapPort)
+	if !l.config.LdapSSL {
+		l.conn, err = ldap.Dial("tcp", address)
+		if err != nil {
+			return err
 		}
+		if !l.config.LdapTLS {
+			err = l.conn.StartTLS(&tls.Config{
+				InsecureSkipVerify: true,
+			})
+			if err != nil {
+				slog.Error("Error Ldap connection:", err)
+				return err
+			}
+			slog.Info("Connect Ldap InsecureSkipVerify")
+		}
+	} else {
+		config := &tls.Config{
+			InsecureSkipVerify: l.config.LdapTLS,
+			ServerName:         l.config.LdapBindDN,
+		}
+		if l.clientCertificates != nil && len(l.clientCertificates) > 0 {
+			config.Certificates = l.clientCertificates
+		}
+		l.conn, err = ldap.DialTLS("tcp", address, config)
+		if err != nil {
+			slog.Error("Error Ldap DialTLS connection:", err)
+			return err
+		}
+		slog.Info("Connect Ldap DialTLS")
 	}
 	return nil
 }

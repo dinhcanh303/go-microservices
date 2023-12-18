@@ -48,15 +48,14 @@ service AuthService {
     }
     rpc HandleRefreshToken(HandleRefreshTokenRequest) returns (HandleRefreshTokenResponse){
         option (google.api.http) = {
-            post: "/api/v1/refresh-token",
-            body: "*"
+            get: "/api/v1/refresh-token",
         };
         option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
             summary: "Handle Refresh Token"
             description: ""
         };
     }
-    rpc GetAllUserIdByUserId(GetAllUserIdByUserIdRequest) returns (GetAllUserIdByUserIdResponse){
+    rpc GetAllUserIdOfCompanyByUserId(GetAllUserIdOfCompanyByUserIdRequest) returns (GetAllUserIdOfCompanyByUserIdResponse){
         option (google.api.http) = {
             get: "/api/v1/users/{user_id}/user-ids",
         };
@@ -66,10 +65,10 @@ service AuthService {
         };
     }
 }
-message GetAllUserIdByUserIdRequest{
+message GetAllUserIdOfCompanyByUserIdRequest{
     string user_id = 1;
 }
-message GetAllUserIdByUserIdResponse{
+message GetAllUserIdOfCompanyByUserIdResponse{
     repeated string user_ids = 1;
 }
 message LogoutRequest{}

@@ -11,7 +11,6 @@ import (
 	"github.com/google/uuid"
 	"github.com/google/wire"
 	"github.com/pkg/errors"
-	"github.com/sqlc-dev/pqtype"
 )
 
 type keyRepo struct {
@@ -41,7 +40,7 @@ func (rp *keyRepo) CreateKey(ctx context.Context, key *domain.Key) (*domain.Key,
 		PrivateKey:        result.PrivateKey,
 		UserID:            result.UserID,
 		RefreshToken:      result.RefreshToken.String,
-		RefreshTokensUsed: result.RefreshTokensUsed.RawMessage,
+		RefreshTokensUsed: result.RefreshTokensUsed,
 		CreatedAt:         result.CreatedAt,
 		UpdatedAt:         result.UpdatedAt,
 	}, tx.Commit()
@@ -70,10 +69,7 @@ func (rp *keyRepo) UpdateKeyByUserID(ctx context.Context, key *domain.Key) (*dom
 			String: key.RefreshToken,
 			Valid:  key.RefreshToken != "",
 		},
-		RefreshTokensUsed: pqtype.NullRawMessage{
-			RawMessage: key.RefreshTokensUsed,
-			Valid:      key.RefreshTokensUsed != nil,
-		},
+		RefreshTokensUsed: key.RefreshTokensUsed,
 	})
 	if err != nil {
 		return nil, errors.Wrap(err, "keyRepo.UpdateKeyByUserID failed")
@@ -84,7 +80,7 @@ func (rp *keyRepo) UpdateKeyByUserID(ctx context.Context, key *domain.Key) (*dom
 		PrivateKey:        result.PrivateKey,
 		UserID:            result.UserID,
 		RefreshToken:      result.RefreshToken.String,
-		RefreshTokensUsed: result.RefreshTokensUsed.RawMessage,
+		RefreshTokensUsed: result.RefreshTokensUsed,
 		CreatedAt:         result.CreatedAt,
 		UpdatedAt:         result.UpdatedAt,
 	}, tx.Commit()
@@ -140,7 +136,7 @@ func (rp *keyRepo) FindKeyByRefreshToken(ctx context.Context, refreshToken strin
 		PublicKey:         key.PublicKey,
 		PrivateKey:        key.PrivateKey,
 		RefreshToken:      key.RefreshToken.String,
-		RefreshTokensUsed: key.RefreshTokensUsed.RawMessage,
+		RefreshTokensUsed: key.RefreshTokensUsed,
 		CreatedAt:         key.CreatedAt,
 		UpdatedAt:         key.UpdatedAt,
 	}, nil
@@ -166,7 +162,7 @@ func (rp *keyRepo) FindKeyByUserID(ctx context.Context, userID uuid.UUID) (*doma
 		PublicKey:         key.PublicKey,
 		PrivateKey:        key.PrivateKey,
 		RefreshToken:      key.RefreshToken.String,
-		RefreshTokensUsed: key.RefreshTokensUsed.RawMessage,
+		RefreshTokensUsed: key.RefreshTokensUsed,
 		CreatedAt:         key.CreatedAt,
 		UpdatedAt:         key.UpdatedAt,
 	}, nil

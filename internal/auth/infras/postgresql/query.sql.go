@@ -10,7 +10,7 @@ import (
 	"database/sql"
 
 	"github.com/google/uuid"
-	"github.com/sqlc-dev/pqtype"
+	"github.com/lib/pq"
 )
 
 const createKey = `-- name: CreateKey :one
@@ -38,7 +38,7 @@ func (q *Queries) CreateKey(ctx context.Context, arg CreateKeyParams) (AuthKey, 
 		&i.PublicKey,
 		&i.PrivateKey,
 		&i.RefreshToken,
-		&i.RefreshTokensUsed,
+		pq.Array(&i.RefreshTokensUsed),
 		&i.CreatedAt,
 		&i.UpdatedAt,
 	)
@@ -55,7 +55,7 @@ INSERT INTO auth.users
         last_name,
         full_name
     )
-VALUES ($1, $2, $3, $4, $5, $6) RETURNING id, email, first_name, last_name, full_name, password, roles, created_at, updated_at
+VALUES ($1, $2, $3, $4, $5, $6) RETURNING id, email, first_name, last_name, full_name, user_name, password, roles, created_at, updated_at
 `
 
 type CreateUserParams struct {
@@ -83,6 +83,7 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (AuthUse
 		&i.FirstName,
 		&i.LastName,
 		&i.FullName,
+		&i.UserName,
 		&i.Password,
 		&i.Roles,
 		&i.CreatedAt,
@@ -122,7 +123,7 @@ func (q *Queries) FindKeyByRefreshToken(ctx context.Context, refreshToken sql.Nu
 		&i.PublicKey,
 		&i.PrivateKey,
 		&i.RefreshToken,
-		&i.RefreshTokensUsed,
+		pq.Array(&i.RefreshTokensUsed),
 		&i.CreatedAt,
 		&i.UpdatedAt,
 	)
@@ -133,8 +134,8 @@ const findKeyByRefreshTokenUsed = `-- name: FindKeyByRefreshTokenUsed :one
 SELECT id, user_id, public_key, private_key, refresh_token, refresh_tokens_used, created_at, updated_at FROM auth.keys WHERE refresh_tokens_used = $1
 `
 
-func (q *Queries) FindKeyByRefreshTokenUsed(ctx context.Context, refreshTokensUsed pqtype.NullRawMessage) (AuthKey, error) {
-	row := q.db.QueryRowContext(ctx, findKeyByRefreshTokenUsed, refreshTokensUsed)
+func (q *Queries) FindKeyByRefreshTokenUsed(ctx context.Context, refreshTokensUsed []string) (AuthKey, error) {
+	row := q.db.QueryRowContext(ctx, findKeyByRefreshTokenUsed, pq.Array(refreshTokensUsed))
 	var i AuthKey
 	err := row.Scan(
 		&i.ID,
@@ -142,7 +143,7 @@ func (q *Queries) FindKeyByRefreshTokenUsed(ctx context.Context, refreshTokensUs
 		&i.PublicKey,
 		&i.PrivateKey,
 		&i.RefreshToken,
-		&i.RefreshTokensUsed,
+		pq.Array(&i.RefreshTokensUsed),
 		&i.CreatedAt,
 		&i.UpdatedAt,
 	)
@@ -162,7 +163,7 @@ func (q *Queries) FindKeyByUserID(ctx context.Context, userID uuid.UUID) (AuthKe
 		&i.PublicKey,
 		&i.PrivateKey,
 		&i.RefreshToken,
-		&i.RefreshTokensUsed,
+		pq.Array(&i.RefreshTokensUsed),
 		&i.CreatedAt,
 		&i.UpdatedAt,
 	)
@@ -197,7 +198,7 @@ func (q *Queries) GetAllUserIdOfCompany(ctx context.Context, dollar_1 sql.NullSt
 }
 
 const getUser = `-- name: GetUser :one
-SELECT id, email, first_name, last_name, full_name, password, roles, created_at, updated_at FROM auth.users WHERE id = $1
+SELECT id, email, first_name, last_name, full_name, user_name, password, roles, created_at, updated_at FROM auth.users WHERE id = $1
 `
 
 func (q *Queries) GetUser(ctx context.Context, id uuid.UUID) (AuthUser, error) {
@@ -209,6 +210,7 @@ func (q *Queries) GetUser(ctx context.Context, id uuid.UUID) (AuthUser, error) {
 		&i.FirstName,
 		&i.LastName,
 		&i.FullName,
+		&i.UserName,
 		&i.Password,
 		&i.Roles,
 		&i.CreatedAt,
@@ -218,7 +220,7 @@ func (q *Queries) GetUser(ctx context.Context, id uuid.UUID) (AuthUser, error) {
 }
 
 const getUserByEmail = `-- name: GetUserByEmail :one
-SELECT id, email, first_name, last_name, full_name, password, roles, created_at, updated_at FROM auth.users WHERE email = $1
+SELECT id, email, first_name, last_name, full_name, user_name, password, roles, created_at, updated_at FROM auth.users WHERE email = $1
 `
 
 func (q *Queries) GetUserByEmail(ctx context.Context, email string) (AuthUser, error) {
@@ -230,6 +232,7 @@ func (q *Queries) GetUserByEmail(ctx context.Context, email string) (AuthUser, e
 		&i.FirstName,
 		&i.LastName,
 		&i.FullName,
+		&i.UserName,
 		&i.Password,
 		&i.Roles,
 		&i.CreatedAt,
@@ -249,11 +252,11 @@ WHERE user_id = $5 RETURNING id, user_id, public_key, private_key, refresh_token
 `
 
 type UpdateKeyByUserIDParams struct {
-	PublicKey         sql.NullString        `json:"public_key"`
-	PrivateKey        sql.NullString        `json:"private_key"`
-	RefreshToken      sql.NullString        `json:"refresh_token"`
-	RefreshTokensUsed pqtype.NullRawMessage `json:"refresh_tokens_used"`
-	UserID            uuid.UUID             `json:"user_id"`
+	PublicKey         sql.NullString `json:"public_key"`
+	PrivateKey        sql.NullString `json:"private_key"`
+	RefreshToken      sql.NullString `json:"refresh_token"`
+	RefreshTokensUsed []string       `json:"refresh_tokens_used"`
+	UserID            uuid.UUID      `json:"user_id"`
 }
 
 func (q *Queries) UpdateKeyByUserID(ctx context.Context, arg UpdateKeyByUserIDParams) (AuthKey, error) {
@@ -261,7 +264,7 @@ func (q *Queries) UpdateKeyByUserID(ctx context.Context, arg UpdateKeyByUserIDPa
 		arg.PublicKey,
 		arg.PrivateKey,
 		arg.RefreshToken,
-		arg.RefreshTokensUsed,
+		pq.Array(arg.RefreshTokensUsed),
 		arg.UserID,
 	)
 	var i AuthKey
@@ -271,7 +274,7 @@ func (q *Queries) UpdateKeyByUserID(ctx context.Context, arg UpdateKeyByUserIDPa
 		&i.PublicKey,
 		&i.PrivateKey,
 		&i.RefreshToken,
-		&i.RefreshTokensUsed,
+		pq.Array(&i.RefreshTokensUsed),
 		&i.CreatedAt,
 		&i.UpdatedAt,
 	)

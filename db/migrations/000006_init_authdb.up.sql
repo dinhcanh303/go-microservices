@@ -10,6 +10,7 @@ CREATE TABLE
         first_name VARCHAR(255) NOT NULL,
         last_name VARCHAR(255) NOT NULL,
         full_name VARCHAR(255) DEFAULT NULL,
+        user_name VARCHAR(255) DEFAULT NULL,
         password VARCHAR(255) NOT NULL,
         roles VARCHAR(20) DEFAULT 'user', 
         created_at timestamp with time zone NOT NULL DEFAULT current_timestamp,
@@ -21,7 +22,7 @@ CREATE TABLE
         id BIGSERIAL PRIMARY KEY,
         key VARCHAR(255) NOT NULL UNIQUE,
         status BOOLEAN NOT NULL,
-        permissions JSON DEFAULT '[]',
+        permissions TEXT [],
         created_at timestamp with time zone NOT NULL DEFAULT current_timestamp,
         updated_at timestamp with time zone NOT NULL DEFAULT (now())
 );
@@ -32,7 +33,7 @@ CREATE TABLE
         public_key VARCHAR(255) NOT NULL,
         private_key VARCHAR(255) NOT NULL,
         refresh_token TEXT DEFAULT NULL,
-        refresh_tokens_used JSON DEFAULT '[]',
+        refresh_tokens_used TEXT [],
         created_at timestamp with time zone NOT NULL DEFAULT current_timestamp,
         updated_at timestamp with time zone NOT NULL DEFAULT (now()),
         FOREIGN KEY (user_id) REFERENCES auth.users (id) ON DELETE CASCADE

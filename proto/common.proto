@@ -30,5 +30,12 @@ enum Role {
     ADMIN = 1;
 }
 
+enum Status {
+    PUBLIC = 0;
+    PRIVATE = 1;
+    COMPANY = 2;
+    FRIENDS = 3;
+}
+
 
 

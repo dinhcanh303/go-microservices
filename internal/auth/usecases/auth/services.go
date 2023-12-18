@@ -31,8 +31,25 @@ type service struct {
 	userDeletedEventPub UserDeletedEventPublisher
 }
 
+// HandleRefreshToken implements UseCase.
+func (s *service) HandleRefreshToken(ctx context.Context, email, refreshToken string) (*domain.UserAuth, error) {
+	foundUser, err := findUserByEmail(s.repo, ctx, email)
+	if err != nil {
+		return nil, err
+	}
+	results, err := createTokenPairAndResponse(ctx, s, foundUser, false)
+	if err != nil {
+		return nil, err
+	}
+	s.ucKeys.CreateKeyToken(ctx, &domain.Key{
+		UserID:            foundUser.ID,
+		RefreshToken:      results.RefreshToken,
+		RefreshTokensUsed: refreshToken,
+	})
+}
+
 // GetAllUserIdByUserId implements UseCase.
-func (s *service) GetAllUserIdByUserId(ctx context.Context, userId uuid.UUID) ([]uuid.UUID, error) {
+func (s *service) GetAllUserIdOfCompanyByUserId(ctx context.Context, userId uuid.UUID) ([]uuid.UUID, error) {
 	user, err := s.repo.GetUser(ctx, userId)
 	if err != nil {
 		return nil, err

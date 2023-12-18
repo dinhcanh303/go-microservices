@@ -17,8 +17,9 @@ type UserRepo interface {
 type UseCase interface {
 	SignIn(ctx context.Context, email, password string) (*domain.UserAuth, error)
 	SignUp(ctx context.Context, email, password, fistName, lastName string) (*domain.UserAuth, error)
+	HandleRefreshToken(ctx context.Context, email, refreshToken string) (*domain.UserAuth, error)
 	Logout(ctx context.Context, key *domain.Key) error
-	GetAllUserIdByUserId(ctx context.Context, userId uuid.UUID) ([]uuid.UUID, error)
+	GetAllUserIdOfCompanyByUserId(ctx context.Context, userId uuid.UUID) ([]uuid.UUID, error)
 }
 
 type UserCreatedEventPublisher interface {

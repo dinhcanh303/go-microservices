@@ -9,27 +9,26 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	"github.com/sqlc-dev/pqtype"
 )
 
 type AuthApiKey struct {
-	ID          int64                 `json:"id"`
-	Key         string                `json:"key"`
-	Status      bool                  `json:"status"`
-	Permissions pqtype.NullRawMessage `json:"permissions"`
-	CreatedAt   time.Time             `json:"created_at"`
-	UpdatedAt   time.Time             `json:"updated_at"`
+	ID          int64     `json:"id"`
+	Key         string    `json:"key"`
+	Status      bool      `json:"status"`
+	Permissions []string  `json:"permissions"`
+	CreatedAt   time.Time `json:"created_at"`
+	UpdatedAt   time.Time `json:"updated_at"`
 }
 
 type AuthKey struct {
-	ID                int64                 `json:"id"`
-	UserID            uuid.UUID             `json:"user_id"`
-	PublicKey         string                `json:"public_key"`
-	PrivateKey        string                `json:"private_key"`
-	RefreshToken      sql.NullString        `json:"refresh_token"`
-	RefreshTokensUsed pqtype.NullRawMessage `json:"refresh_tokens_used"`
-	CreatedAt         time.Time             `json:"created_at"`
-	UpdatedAt         time.Time             `json:"updated_at"`
+	ID                int64          `json:"id"`
+	UserID            uuid.UUID      `json:"user_id"`
+	PublicKey         string         `json:"public_key"`
+	PrivateKey        string         `json:"private_key"`
+	RefreshToken      sql.NullString `json:"refresh_token"`
+	RefreshTokensUsed []string       `json:"refresh_tokens_used"`
+	CreatedAt         time.Time      `json:"created_at"`
+	UpdatedAt         time.Time      `json:"updated_at"`
 }
 
 type AuthUser struct {
@@ -38,6 +37,7 @@ type AuthUser struct {
 	FirstName string         `json:"first_name"`
 	LastName  string         `json:"last_name"`
 	FullName  sql.NullString `json:"full_name"`
+	UserName  sql.NullString `json:"user_name"`
 	Password  string         `json:"password"`
 	Roles     sql.NullString `json:"roles"`
 	CreatedAt time.Time      `json:"created_at"`
