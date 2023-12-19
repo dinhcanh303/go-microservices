@@ -12,13 +12,13 @@ require (
 	github.com/ilyakaznacheev/cleanenv v1.5.0
 	github.com/kyleconroy/sqlc v1.16.0
 	github.com/labstack/echo/v4 v4.11.1
+	github.com/meilisearch/meilisearch-go v0.26.0
 	github.com/minio/minio-go/v7 v7.0.63
 	github.com/pkg/errors v0.9.1
 	github.com/rabbitmq/amqp091-go v1.9.0
 	github.com/redis/go-redis/v9 v9.3.0
 	github.com/samber/lo v1.38.1
 	github.com/sirupsen/logrus v1.9.3
-	github.com/sqlc-dev/pqtype v0.3.0
 	go.uber.org/automaxprocs v1.5.3
 	golang.org/x/exp v0.0.0-20230905200255-921286631fa9
 	google.golang.org/appengine v1.6.8
@@ -37,7 +37,6 @@ require (
 	github.com/golang-jwt/jwt/v4 v4.5.0 // indirect
 	github.com/josharian/intern v1.0.0 // indirect
 	github.com/mailru/easyjson v0.7.7 // indirect
-	github.com/meilisearch/meilisearch-go v0.26.0 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/robfig/cron/v3 v3.0.1 // indirect
 	github.com/spf13/cast v1.3.1 // indirect

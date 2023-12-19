@@ -30,15 +30,15 @@ http:
     auth:
       loadBalancer:
         servers:
-          - url: http://proxy:5000
+          - url: http://{{env "HOST_PROXY"}}:5000
     proxy:
       loadBalancer:
         servers:
-          - url: http://proxy:5000
+          - url: http://{{env "HOST_PROXY"}}:5000
     upload:
       loadBalancer:
         servers:
-          - url: http://upload:5005
+          - url: http://{{env "HOST_UPLOAD"}}:5005
     lumen:
       loadBalancer:
         servers:
@@ -46,7 +46,7 @@ http:
   middlewares:
     auth:
       forwardAuth:
-        address: "http://proxy:5000/api/v1/auth/verify"
+        address: "http://{{env "HOST_PROXY"}}:5000/api/v1/auth/verify"
         authResponseHeaders:
           - "Grpc-Metadata-X-Auth-User"
           - "Grpc-Metadata-X-Auth-Keystore"

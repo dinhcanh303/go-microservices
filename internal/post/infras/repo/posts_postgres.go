@@ -45,7 +45,7 @@ func (rp *postRepo) GetByFeed(ctx context.Context, userIds []uuid.UUID, groupIds
 			ID:        item.ID,
 			Title:     item.Title,
 			Content:   item.Content,
-			Status:    item.Status.String2(),
+			Status:    item.Status,
 			UserID:    item.UserID,
 			GroupID:   item.GroupID,
 			CreatedAt: item.CreatedAt,

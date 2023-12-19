@@ -42,10 +42,11 @@ func (s *service) HandleRefreshToken(ctx context.Context, email, refreshToken st
 		return nil, err
 	}
 	s.ucKeys.CreateKeyToken(ctx, &domain.Key{
-		UserID:            foundUser.ID,
-		RefreshToken:      results.RefreshToken,
-		RefreshTokensUsed: refreshToken,
+		UserID:       foundUser.ID,
+		RefreshToken: results.RefreshToken,
+		// RefreshTokensUsed: refreshToken,
 	})
+	return nil, nil
 }
 
 // GetAllUserIdByUserId implements UseCase.

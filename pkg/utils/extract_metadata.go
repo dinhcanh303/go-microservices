@@ -83,27 +83,22 @@ func ExtractMetadataKeyStore(ctx context.Context) (*domain.Key, error) {
 	if !ok {
 		return nil, errors.New("missing metadata")
 	}
-	slog.Info("CONTEXT::", md)
 	keyStore := &domain.Key{}
 	values := md.Get(constant.KeyStore)
-	values2 := md.Get(constant.KeyStoreUsed)
-	if len(values) > 0 && len(values2) > 0 {
+	if len(values) > 0 {
 		keyStoreValues := strings.Split(values[0], ",")
-		keyStoreUsedValues := strings.Split(values2[0], ",")
-		if len(keyStoreValues) == 5 {
-			id, _ := strconv.ParseInt(keyStoreValues[0], 10, 64)
-			keyStore.ID = id
-			userId, err := uuid.Parse(keyStoreValues[1])
-			if err != nil {
-				return nil, err
-			}
-			keyStore.UserID = userId
-			keyStore.PublicKey = keyStoreValues[2]
-			keyStore.PrivateKey = keyStoreValues[3]
-			keyStore.RefreshToken = keyStoreValues[4]
+		id, _ := strconv.ParseInt(keyStoreValues[0], 10, 64)
+		keyStore.ID = id
+		userId, err := uuid.Parse(keyStoreValues[1])
+		if err != nil {
+			return nil, err
 		}
-		if len(keyStoreUsedValues) != 0 {
-			keyStore.RefreshTokensUsed = keyStoreUsedValues[0]
+		keyStore.UserID = userId
+		keyStore.PublicKey = keyStoreValues[2]
+		keyStore.PrivateKey = keyStoreValues[3]
+		keyStore.RefreshToken = keyStoreValues[4]
+		for i := 5; i < len(keyStoreValues); i++ {
+			keyStore.RefreshTokensUsed = append(keyStore.RefreshTokensUsed, keyStoreValues[i])
 		}
 	} else {
 		return nil, errors.New("context not found header forward")

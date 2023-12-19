@@ -39,10 +39,10 @@ type (
 		URL string `env-required:"true" yaml:"upload_url" env:"UPLOAD_CLIENT_URL"`
 	}
 	GroupClient struct {
-		URL string `env-required:"true" yaml:"upload_url" env:"GROUP_CLIENT_URL"`
+		URL string `env-required:"true" yaml:"group_url" env:"GROUP_CLIENT_URL"`
 	}
 	AuthClient struct {
-		URL string `env-required:"true" yaml:"upload_url" env:"AUTH_CLIENT_URL"`
+		URL string `env-required:"true" yaml:"auth_url" env:"AUTH_CLIENT_URL"`
 	}
 )
 

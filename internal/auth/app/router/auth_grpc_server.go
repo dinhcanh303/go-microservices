@@ -2,7 +2,6 @@ package router
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"log/slog"
 	"strconv"
@@ -78,7 +77,7 @@ func (a *authGRPCServer) SignUp(ctx context.Context, request *gen.SignUpRequest)
 	}, nil
 }
 func (a *authGRPCServer) SignIn(ctx context.Context, request *gen.SignInRequest) (*gen.SignInResponse, error) {
-	slog.Info("POST:: SignIn")
+	slog.Info("POST:: SignIn 2")
 	violations := validation.ValidateSignIn(request)
 	if violations != nil {
 		return nil, errorPkg.InvalidArgumentError(violations)
@@ -162,7 +161,7 @@ func addHeader(payload *token.Payload, keyStore *domain.Key, refreshToken string
 			keyStore.RefreshToken, keyStore.RefreshTokensUsed,
 		),
 		constant.RefreshToken,
-		fmt.Sprintf("%s", refreshToken),
+		refreshToken,
 	)
 	return header
 }
@@ -193,12 +192,7 @@ func (a *authGRPCServer) HandleRefreshToken(ctx context.Context, request *gen.Ha
 	if err != nil {
 		return nil, err
 	}
-	var refreshTokenUsed []string
-	err = json.Unmarshal([]byte(keyStore.RefreshTokensUsed), &refreshTokenUsed)
-	if err != nil {
-		return nil, err
-	}
-	if lo.Contains(refreshTokenUsed, refreshToken) {
+	if lo.Contains(keyStore.RefreshTokensUsed, refreshToken) {
 		err := a.ucKey.DeleteKeyByUserID(ctx, user.ID)
 		if err != nil {
 			return nil, err

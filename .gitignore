@@ -1,4 +1,6 @@
 .env
+.env.example
+.env.local
 .test.env
 /traefik/certs
 /traefik/.env

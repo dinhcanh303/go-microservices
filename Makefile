@@ -1,4 +1,4 @@
-include .test.env
+include .env.local
 export
 
 all: build test
@@ -12,6 +12,9 @@ test:
 
 clean:
 	go clean
+
+clean-database:
+	docker volume rm $(docker volume ls -q)
 
 linter-golangci: ### check by golangci linter
 	golangci-lint run
@@ -86,7 +89,7 @@ docker-build:
 	docker-compose build
 .PHONY: docker-build
 
-run: run-group run-post run-comment run-like run-upload run-auth run-proxy
+run: run-group run-post run-comment run-like run-upload run-auth run-search run-proxy
 
 run-group:
 	cd cmd/group && go mod tidy && go mod download && \
@@ -123,10 +126,10 @@ run-proxy:
 	CGO_ENABLED=0 go run github.com/dinhcanh303/go-microservices/cmd/proxy &
 .PHONY: run-proxy
 
-run-web:
-	cd cmd/web && go mod tidy && go mod download && \
-	CGO_ENABLED=0 go run github.com/dinhcanh303/go-microservices/cmd/web
-.PHONY: run-web
+run-search:
+	cd cmd/search && go mod tidy && go mod download && \
+	CGO_ENABLE=0 go run github.com/dinhcanh303/go-microservices/cmd/search &
+.PHONY: run-search
 
 
 
