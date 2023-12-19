@@ -20,11 +20,13 @@ type ldapClient struct {
 // Authenticate implements LdapClient.
 func (l *ldapClient) Authenticate(username string, password string) (bool, map[string]string, error) {
 	if err := l.Connect(); err != nil {
+		slog.Info("Error 1", err)
 		return false, nil, err
 	}
 	if l.config.LdapBindDN != "" && l.config.LdapPassword != "" {
 		err := l.conn.Bind(l.config.LdapBindDN, l.config.LdapPassword)
 		if err != nil {
+			slog.Info("Error 2", err)
 			return false, nil, err
 		}
 	}
@@ -43,6 +45,7 @@ func (l *ldapClient) Authenticate(username string, password string) (bool, map[s
 	)
 	sr, err := l.conn.Search(searchRequest)
 	if err != nil {
+		slog.Info("Error 3", err)
 		return false, nil, err
 	}
 	if len(sr.Entries) < 1 {
@@ -54,6 +57,7 @@ func (l *ldapClient) Authenticate(username string, password string) (bool, map[s
 	userDN := sr.Entries[0].DN
 	err = l.conn.Bind(userDN, password)
 	if err != nil {
+		slog.Info("Error 4", err)
 		return false, nil, err
 	}
 	user := map[string]string{}

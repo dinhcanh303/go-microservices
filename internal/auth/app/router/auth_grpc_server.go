@@ -77,7 +77,7 @@ func (a *authGRPCServer) SignUp(ctx context.Context, request *gen.SignUpRequest)
 	}, nil
 }
 func (a *authGRPCServer) SignIn(ctx context.Context, request *gen.SignInRequest) (*gen.SignInResponse, error) {
-	slog.Info("POST:: SignIn 2")
+	slog.Info("POST:: SignIn")
 	violations := validation.ValidateSignIn(request)
 	if violations != nil {
 		return nil, errorPkg.InvalidArgumentError(violations)

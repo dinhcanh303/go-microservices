@@ -93,42 +93,42 @@ run: run-group run-post run-comment run-like run-upload run-auth run-search run-
 
 run-group:
 	cd cmd/group && go mod tidy && go mod download && \
-	CGO_ENABLED=0 go run -tags migrate github.com/dinhcanh303/go-microservices/cmd/group &
+	CGO_ENABLED=0 go run -tags migrate main.go &
 .PHONY: run-group
 
 run-post:
 	cd cmd/post && go mod tidy && go mod download && \
-	CGO_ENABLED=0 go run -tags migrate github.com/dinhcanh303/go-microservices/cmd/post &
+	CGO_ENABLED=0 go run -tags migrate main.go &
 .PHONY: run-post
 
 run-comment:
 	cd cmd/comment && go mod tidy && go mod download && \
-	CGO_ENABLED=0 go run -tags migrate github.com/dinhcanh303/go-microservices/cmd/comment &
+	CGO_ENABLED=0 go run -tags migrate main.go &
 .PHONY: run-comment
 
 run-like:
 	cd cmd/like && go mod tidy && go mod download && \
-	CGO_ENABLED=0 go run -tags migrate github.com/dinhcanh303/go-microservices/cmd/like &
+	CGO_ENABLED=0 go run -tags migrate main.go &
 .PHONY: run-like
 
 run-upload:
 	cd cmd/upload && go mod tidy && go mod download && \
-	CGO_ENABLED=0 go run -tags migrate github.com/dinhcanh303/go-microservices/cmd/upload &
+	CGO_ENABLED=0 go run -tags migrate main.go &
 .PHONY: run-upload
 
 run-auth:
 	cd cmd/auth && go mod tidy && go mod download && \
-	CGO_ENABLED=0 go run -tags migrate github.com/dinhcanh303/go-microservices/cmd/auth &
+	CGO_ENABLED=0 go run -tags migrate main.go &
 .PHONY: run-auth
 
 run-proxy:
 	cd cmd/proxy && go mod tidy && go mod download && \
-	CGO_ENABLED=0 go run github.com/dinhcanh303/go-microservices/cmd/proxy &
+	CGO_ENABLED=0 go run main.go &
 .PHONY: run-proxy
 
 run-search:
 	cd cmd/search && go mod tidy && go mod download && \
-	CGO_ENABLE=0 go run github.com/dinhcanh303/go-microservices/cmd/search &
+	CGO_ENABLE=0 go run main.go &
 .PHONY: run-search
 
 
