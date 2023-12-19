@@ -91,7 +91,7 @@ func (l *ldapClient) Connect() error {
 				slog.Error("Error Ldap connection:", err)
 				return err
 			}
-			slog.Info("Connect Ldap2 InsecureSkipVerify")
+			slog.Info("Connect Ldap InsecureSkipVerify")
 		}
 	} else {
 		config := &tls.Config{

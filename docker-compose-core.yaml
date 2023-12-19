@@ -15,8 +15,10 @@ services:
       test: [ "CMD-SHELL", "pg_isready -d $${POSTGRES_DB} -U $${POSTGRES_USER}"]
     ports:
       - 5445:5432
+    depends_on:
+      - postgres-slave
     volumes:
-      - pg-mdata:/var/lib/postgresql/data
+      - pgm-data:/var/lib/postgresql/data
     networks:
       - mcs-network
   postgres-slave:
@@ -34,8 +36,9 @@ services:
       test: [ "CMD-SHELL", "pg_isready -d $${POSTGRES_DB} -U $${POSTGRES_USER}"]
     ports:
       - 5446:5432
+    
     volumes:
-      - pg-sdata:/var/lib/postgresql/data
+      - pgs-data:/var/lib/postgresql/data
     networks:
       - mcs-network
   rabbitmq:
@@ -100,8 +103,8 @@ services:
       - mcs-network
 
 volumes:
-  pg-mdata: {}
-  pg-sdata: {}
+  pgm-data: {}
+  pgs-data: {}
   redis_data: {}
   mls_data: {}
 

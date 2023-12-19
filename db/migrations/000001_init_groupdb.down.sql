@@ -1,1 +1,2 @@
--- DROP TABLE IF EXISTS "group";
+DROP TABLE IF EXISTS "group".group_members;
+DROP TABLE IF EXISTS "group".groups;

@@ -14,7 +14,7 @@ clean:
 	go clean
 
 clean-database:
-	docker volume rm $(docker volume ls -q)
+	docker volume rm $$(docker volume ls -q)
 
 linter-golangci: ### check by golangci linter
 	golangci-lint run
@@ -26,11 +26,15 @@ createdb:
 dropdb:
 	docker exec -it mcs-postgres dropdb postgres
 
+migrate-refresh: migratedown migrateup
+
 migrateup:
-	migrate -path db/migrations -database "$(DB_URL)" -verbose up
+	migrate -path db/migrations -database "$(PG_URL)" -verbose up
 
 migratedown:
-	migrate -path db/migrations -database "$(DB_URL)" -verbose down
+	migrate -path db/migrations -database "$(PG_URL)" -verbose down
+
+.PHONY: createdb dropdb migrateup migratedown migrate-refresh
 
 db_docs:
 	dbdocs build docs/db.dbml
