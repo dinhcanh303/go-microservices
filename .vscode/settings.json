@@ -3,6 +3,7 @@
         "amqp",
         "apikeys",
         "automaxprocs",
+        "bson",
         "cleanenv",
         "dbname",
         "dinhcanh",

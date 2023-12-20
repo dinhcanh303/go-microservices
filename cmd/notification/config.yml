@@ -1,0 +1,15 @@
+app:
+  name: 'notification-service'
+  version: '1.0.0'
+
+http:
+  host: '0.0.0.0'
+  port: 5009
+
+mongodb:
+  db_url: mongodb://localhost:27017
+  db_name: ''
+
+logger:
+  log_level: 'debug'
+  rollbar_env: 'notification-service'
