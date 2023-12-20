@@ -14,4 +14,7 @@ const (
 	KeyStore           = "x-auth-keystore"
 	KeyStoreUsed       = "x-auth-keystore-used"
 	SuffixEmailCompany = "@tlcmodular.com"
+
+	LikeCommentType = "Like/Comment"
+	LikePostType    = "Like/Post"
 )

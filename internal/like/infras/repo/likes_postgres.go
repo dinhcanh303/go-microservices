@@ -7,6 +7,7 @@ import (
 	"github.com/dinhcanh303/go-microservices/internal/like/domain"
 	"github.com/dinhcanh303/go-microservices/internal/like/infras/postgresql"
 	"github.com/dinhcanh303/go-microservices/internal/like/usecases/likes"
+	"github.com/dinhcanh303/go-microservices/pkg/constant"
 	"github.com/dinhcanh303/go-microservices/pkg/postgres"
 	"github.com/google/uuid"
 	"github.com/google/wire"
@@ -79,7 +80,7 @@ func (rp *likeRepo) GetLikesByCommentID(ctx context.Context, commentID uuid.UUID
 	db := rp.pg.GetDBRead()
 	querier := postgresql.New(db)
 	results, err := querier.GetAllByType(ctx, postgresql.GetAllByTypeParams{
-		LikeableType: "Like/Comment",
+		LikeableType: constant.LikeCommentType,
 		LikeableID:   commentID,
 	})
 	if err != nil {
@@ -104,7 +105,7 @@ func (rp *likeRepo) GetLikesByPostID(ctx context.Context, postID uuid.UUID) ([]*
 	db := rp.pg.GetDBRead()
 	querier := postgresql.New(db)
 	results, err := querier.GetAllByType(ctx, postgresql.GetAllByTypeParams{
-		LikeableType: "Like/Post",
+		LikeableType: constant.LikePostType,
 		LikeableID:   postID,
 	})
 	if err != nil {

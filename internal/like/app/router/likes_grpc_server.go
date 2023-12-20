@@ -6,6 +6,7 @@ import (
 	"github.com/dinhcanh303/go-microservices/cmd/like/config"
 	"github.com/dinhcanh303/go-microservices/internal/like/domain"
 	"github.com/dinhcanh303/go-microservices/internal/like/usecases/likes"
+	"github.com/dinhcanh303/go-microservices/pkg/constant"
 	"github.com/dinhcanh303/go-microservices/pkg/utils"
 	"github.com/dinhcanh303/go-microservices/proto/gen"
 	"github.com/google/uuid"
@@ -97,7 +98,7 @@ func (l *likeGRPCServer) GetLikesByCommentID(ctx context.Context, request *gen.G
 // CreateLike implements gen.LikeServiceServer.
 func (l *likeGRPCServer) CreateLike(ctx context.Context, request *gen.CreateLikeRequest) (*gen.CreateLikeResponse, error) {
 	slog.Info("POST: CreateLike")
-	typeLike := []string{"Like/Comment", "Like/Post"}
+	typeLike := []string{constant.LikeCommentType, constant.LikePostType}
 	user, err := utils.ExtractMetadataUser(ctx)
 	if err != nil {
 		return nil, errors.Wrap(err, "Extract Metadata User failed")
