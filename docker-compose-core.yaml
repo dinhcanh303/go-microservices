@@ -101,12 +101,27 @@ services:
       - "7700:7700" # Change ports if needed
     networks:
       - mcs-network
+  mongodb:
+    image: mongo:latest
+    container_name: mcs-mongodb
+    ports:
+      - 27017:27017
+    environment:
+      - MONGO_INITDB_DATABASE=mongodb
+      - MONGO_INITDB_ROOT_USERNAME=admin
+      - MONGO_INITDB_ROOT_PASSWORD=admin
+    volumes:
+      - mongodb_data:/data/db
+    restart: unless-stopped
+    networks:
+      - mcs-network
 
 volumes:
   pgm-data: {}
   pgs-data: {}
   redis_data: {}
   mls_data: {}
+  mongodb_data: {}
 
 networks:
     mcs-network:
