@@ -44,7 +44,7 @@
   "paths": {
     "/api/v1/attachments": {
       "get": {
-        "summary": "GetAttachmentsByType",
+        "summary": "Get Attachments By Type",
         "operationId": "UploadService_GetAttachmentsByType",
         "responses": {
           "200": {
@@ -1210,6 +1210,37 @@
         ]
       }
     },
+    "/api/v1/users/{id}/avatar": {
+      "get": {
+        "summary": "Get Avatar User",
+        "operationId": "UploadService_GetAvatarUser",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/uploadGetAvatarUserResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "UploadService"
+        ]
+      }
+    },
     "/api/v1/users/{userId}/group-ids": {
       "get": {
         "summary": "Get all group id by user id",
@@ -2230,6 +2261,14 @@
             "type": "object",
             "$ref": "#/definitions/uploadAttachment"
           }
+        }
+      }
+    },
+    "uploadGetAvatarUserResponse": {
+      "type": "object",
+      "properties": {
+        "attachment": {
+          "$ref": "#/definitions/uploadAttachment"
         }
       }
     }

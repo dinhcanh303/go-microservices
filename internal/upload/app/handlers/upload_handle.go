@@ -163,7 +163,7 @@ func (s *UploadHandler) AvatarUploadFile(ctx echo.Context) error {
 	return responses.Response(ctx, http.StatusOK, attachments)
 }
 func checkAttachmentTypeByCondition(attachableType string, condition []string) bool {
-	temp := []string{"Attachment/Post", "Attachment/Comment", "Attachment/Group"}
+	temp := []string{"Attachment/Post", "Attachment/Comment", "Attachment/Group", "Attachment/Avatar"}
 	if condition == nil || len(condition) != 0 {
 		condition = temp
 	}

@@ -18,6 +18,7 @@ type (
 		Delete(ctx context.Context, attachmentId uuid.UUID) (bool, error)
 		DeleteByIds(ctx context.Context, attachmenIds []uuid.UUID) (bool, error)
 		GetAttachmentsByType(ctx context.Context, attachableType string, attachableId uuid.UUID) ([]*domain.Attachment, error)
+		GetLastAttachmentByType(ctx context.Context, attachableType string, attachableId uuid.UUID) (*domain.Attachment, error)
 	}
 	UseCase interface {
 		GetAttachment(ctx context.Context, attachmentId uuid.UUID) (*domain.Attachment, error)
@@ -30,5 +31,6 @@ type (
 	}
 	UseCaseGRPC interface {
 		GetAttachmentsByType(ctx context.Context, attachableType string, attachableId uuid.UUID) ([]*domain.Attachment, error)
+		GetLastAttachmentByType(ctx context.Context, attachableType string, attachableId uuid.UUID) (*domain.Attachment, error)
 	}
 )

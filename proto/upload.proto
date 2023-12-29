@@ -14,7 +14,16 @@ service UploadService {
             get: "/api/v1/attachments"
         };
         option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
-            summary: "GetAttachmentsByType"
+            summary: "Get Attachments By Type"
+            description: ""
+        };
+    }
+    rpc GetAvatarUser(GetAvatarUserRequest) returns (GetAvatarUserResponse) {
+        option (google.api.http) = {
+            get: "/api/v1/users/{id}/avatar"
+        };
+        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+            summary: "Get Avatar User"
             description: ""
         };
     }
@@ -23,8 +32,15 @@ message GetAttachmentsByTypeRequest{
     string attachable_type = 1;
     string attachable_id = 2;
 }
+
 message GetAttachmentsByTypeResponse{
     repeated Attachment attachments = 1;
+}
+message GetAvatarUserRequest{
+    string id = 1;
+}
+message GetAvatarUserResponse{
+    Attachment attachment = 1;
 }
 
 message Attachment {

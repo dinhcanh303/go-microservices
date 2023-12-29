@@ -12,7 +12,7 @@ import (
 
 func InitApp(
 	cfg *config.Config,
-	dbConnStr mongodb.MongoDBEngine,
+	dbConnStr mongodb.MongoDBConnString,
 	grpcServer *grpc.Server,
 ) (*App, func(), error) {
 	panic(wire.Build(

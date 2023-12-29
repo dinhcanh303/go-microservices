@@ -13,6 +13,15 @@ type uploadGRPCService struct {
 	repo AttachmentRepo
 }
 
+// GetLastAttachmentByType implements UseCaseGRPC.
+func (s *uploadGRPCService) GetLastAttachmentByType(ctx context.Context, attachableType string, attachableId uuid.UUID) (*domain.Attachment, error) {
+	attachment, err := s.repo.GetLastAttachmentByType(ctx, attachableType, attachableId)
+	if err != nil {
+		return nil, errors.Wrap(err, "uploadService.GetAttachmentsByType failed")
+	}
+	return attachment, nil
+}
+
 // GetAttachmentsByType implements UseCaseGRPC.
 func (s *uploadGRPCService) GetAttachmentsByType(ctx context.Context, attachableType string, attachableId uuid.UUID) ([]*domain.Attachment, error) {
 	attachments, err := s.repo.GetAttachmentsByType(ctx, attachableType, attachableId)

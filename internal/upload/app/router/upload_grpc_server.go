@@ -73,3 +73,36 @@ func (g *uploadGRPCServer) GetAttachmentsByType(
 		}),
 	}, nil
 }
+
+func (g *uploadGRPCServer) GetAvatarUser(
+	ctx context.Context,
+	request *gen.GetAvatarUserRequest,
+) (*gen.GetAvatarUserResponse, error) {
+	slog.Info("GET: GetAttachmentsByType")
+	slog.Info("ID", request.Id)
+	attachableId, err := uuid.Parse(request.Id)
+	if err != nil {
+		return nil, errors.Wrap(err, "Failed to parse")
+	}
+	attachment, err := g.uc.GetLastAttachmentByType(ctx, "Attachment/Avatar", attachableId)
+	if err != nil {
+		return nil, errors.Wrap(err, "uploadGRPCServer.GetAttachmentsByType failed")
+	}
+
+	return &gen.GetAvatarUserResponse{
+		Attachment: &gen.Attachment{
+			Id:             attachment.ID.String(),
+			AttachableType: attachment.AttachableType,
+			AttachableId:   attachment.AttachableID.String(),
+			UserId:         attachment.UserID.String(),
+			Filename:       attachment.FileName,
+			Extension:      attachment.Extension,
+			MimeType:       attachment.MimeType,
+			Folder:         attachment.Folder,
+			Url:            attachment.URL,
+			UrlThumbnail:   attachment.URLThumbnail,
+			CreatedAt:      timestamppb.New(attachment.CreatedAt),
+			UpdatedAt:      timestamppb.New(attachment.UpdatedAt),
+		},
+	}, nil
+}

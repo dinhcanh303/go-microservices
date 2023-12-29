@@ -16,6 +16,7 @@ type User struct {
 	LastName  string    `json:"last_name"`
 	FullName  string    `json:"full_name"`
 	Role      string    `json:"role"`
+	Avatar    string    `json:"avatar"`
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
 }

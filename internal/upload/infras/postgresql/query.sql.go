@@ -194,6 +194,35 @@ func (q *Queries) GetByIds(ctx context.Context, dollar_1 []uuid.UUID) ([]UploadA
 	return items, nil
 }
 
+const getLastAttachmentByType = `-- name: GetLastAttachmentByType :one
+SELECT id, attachable_type, attachable_id, user_id, filename, extension, mime_type, folder, url, url_thumbnail, created_at, updated_at FROM upload.attachments WHERE attachable_type = $1 AND attachable_id = $2 ORDER BY updated_at DESC LIMIT 1
+`
+
+type GetLastAttachmentByTypeParams struct {
+	AttachableType sql.NullString `json:"attachable_type"`
+	AttachableID   uuid.NullUUID  `json:"attachable_id"`
+}
+
+func (q *Queries) GetLastAttachmentByType(ctx context.Context, arg GetLastAttachmentByTypeParams) (UploadAttachment, error) {
+	row := q.db.QueryRowContext(ctx, getLastAttachmentByType, arg.AttachableType, arg.AttachableID)
+	var i UploadAttachment
+	err := row.Scan(
+		&i.ID,
+		&i.AttachableType,
+		&i.AttachableID,
+		&i.UserID,
+		&i.Filename,
+		&i.Extension,
+		&i.MimeType,
+		&i.Folder,
+		&i.Url,
+		&i.UrlThumbnail,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}
+
 const update = `-- name: Update :one
 UPDATE upload.attachments 
 SET

@@ -7,6 +7,9 @@ SELECT * FROM upload.attachments WHERE id = ANY($1::uuid[]);
 -- name: GetAttachmentsByType :many
 SELECT * FROM upload.attachments WHERE attachable_type = $1 AND attachable_id = $2;
 
+-- name: GetLastAttachmentByType :one
+SELECT * FROM upload.attachments WHERE attachable_type = $1 AND attachable_id = $2 ORDER BY updated_at DESC LIMIT 1;
+
 -- name: Create :one
 INSERT INTO upload.attachments 
     (

@@ -20,6 +20,7 @@ const _ = grpc.SupportPackageIsVersion7
 
 const (
 	UploadService_GetAttachmentsByType_FullMethodName = "/upload.UploadService/GetAttachmentsByType"
+	UploadService_GetAvatarUser_FullMethodName        = "/upload.UploadService/GetAvatarUser"
 )
 
 // UploadServiceClient is the client API for UploadService service.
@@ -27,6 +28,7 @@ const (
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type UploadServiceClient interface {
 	GetAttachmentsByType(ctx context.Context, in *GetAttachmentsByTypeRequest, opts ...grpc.CallOption) (*GetAttachmentsByTypeResponse, error)
+	GetAvatarUser(ctx context.Context, in *GetAvatarUserRequest, opts ...grpc.CallOption) (*GetAvatarUserResponse, error)
 }
 
 type uploadServiceClient struct {
@@ -46,11 +48,21 @@ func (c *uploadServiceClient) GetAttachmentsByType(ctx context.Context, in *GetA
 	return out, nil
 }
 
+func (c *uploadServiceClient) GetAvatarUser(ctx context.Context, in *GetAvatarUserRequest, opts ...grpc.CallOption) (*GetAvatarUserResponse, error) {
+	out := new(GetAvatarUserResponse)
+	err := c.cc.Invoke(ctx, UploadService_GetAvatarUser_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // UploadServiceServer is the server API for UploadService service.
 // All implementations must embed UnimplementedUploadServiceServer
 // for forward compatibility
 type UploadServiceServer interface {
 	GetAttachmentsByType(context.Context, *GetAttachmentsByTypeRequest) (*GetAttachmentsByTypeResponse, error)
+	GetAvatarUser(context.Context, *GetAvatarUserRequest) (*GetAvatarUserResponse, error)
 	mustEmbedUnimplementedUploadServiceServer()
 }
 
@@ -60,6 +72,9 @@ type UnimplementedUploadServiceServer struct {
 
 func (UnimplementedUploadServiceServer) GetAttachmentsByType(context.Context, *GetAttachmentsByTypeRequest) (*GetAttachmentsByTypeResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetAttachmentsByType not implemented")
+}
+func (UnimplementedUploadServiceServer) GetAvatarUser(context.Context, *GetAvatarUserRequest) (*GetAvatarUserResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetAvatarUser not implemented")
 }
 func (UnimplementedUploadServiceServer) mustEmbedUnimplementedUploadServiceServer() {}
 
@@ -92,6 +107,24 @@ func _UploadService_GetAttachmentsByType_Handler(srv interface{}, ctx context.Co
 	return interceptor(ctx, in, info, handler)
 }
 
+func _UploadService_GetAvatarUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetAvatarUserRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UploadServiceServer).GetAvatarUser(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: UploadService_GetAvatarUser_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UploadServiceServer).GetAvatarUser(ctx, req.(*GetAvatarUserRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // UploadService_ServiceDesc is the grpc.ServiceDesc for UploadService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -102,6 +135,10 @@ var UploadService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetAttachmentsByType",
 			Handler:    _UploadService_GetAttachmentsByType_Handler,
+		},
+		{
+			MethodName: "GetAvatarUser",
+			Handler:    _UploadService_GetAvatarUser_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
