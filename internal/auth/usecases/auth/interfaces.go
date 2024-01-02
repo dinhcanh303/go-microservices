@@ -10,7 +10,7 @@ import (
 
 type UserRepo interface {
 	CreateUser(context.Context, *domain.User) (*domain.User, error)
-	GetUser(ctx context.Context, userID uuid.UUID) (*domain.User, error)
+	GetUser(ctx context.Context, userId uuid.UUID) (*domain.User, error)
 	GetUserByEmail(ctx context.Context, email string) (*domain.User, error)
 	GetAllUserIdOfCompany(ctx context.Context, company string) ([]uuid.UUID, error)
 }
@@ -20,6 +20,7 @@ type UseCase interface {
 	HandleRefreshToken(ctx context.Context, email, refreshToken string) (*domain.UserAuth, error)
 	Logout(ctx context.Context, key *domain.Key) error
 	GetAllUserIdOfCompanyByUserId(ctx context.Context, userId uuid.UUID) ([]uuid.UUID, error)
+	GetUser(ctx context.Context, userID uuid.UUID) (*domain.User, error)
 }
 
 type UserCreatedEventPublisher interface {

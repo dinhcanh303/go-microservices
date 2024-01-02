@@ -117,8 +117,10 @@ message User {
     string first_name = 3;
     string last_name = 4;
     string full_name = 5;
-    google.protobuf.Timestamp created_at = 6;
-    google.protobuf.Timestamp updated_at = 7;
+    string avatar_url = 6;
+    string thumbnail_url = 7;
+    google.protobuf.Timestamp created_at = 8;
+    google.protobuf.Timestamp updated_at = 9;
 }
 message VerifyRequest{
 

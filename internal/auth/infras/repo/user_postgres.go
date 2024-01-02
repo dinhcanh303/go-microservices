@@ -64,10 +64,10 @@ func (rp *userRepo) CreateUser(ctx context.Context, user *domain.User) (*domain.
 }
 
 // GetUser implements auth.AuthRepo.
-func (rp *userRepo) GetUser(ctx context.Context, userID uuid.UUID) (*domain.User, error) {
+func (rp *userRepo) GetUser(ctx context.Context, userId uuid.UUID) (*domain.User, error) {
 	db := rp.pg.GetDBRead()
 	querier := postgresql.New(db)
-	user, err := querier.GetUser(ctx, userID)
+	user, err := querier.GetUser(ctx, userId)
 	if err != nil {
 		return nil, errors.Wrap(err, "userRepo.GetUser failed")
 	}

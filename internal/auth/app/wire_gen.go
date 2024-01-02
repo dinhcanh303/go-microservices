@@ -10,6 +10,7 @@ import (
 	"github.com/dinhcanh303/go-microservices/cmd/auth/config"
 	"github.com/dinhcanh303/go-microservices/internal/auth/app/router"
 	"github.com/dinhcanh303/go-microservices/internal/auth/infras"
+	grpc2 "github.com/dinhcanh303/go-microservices/internal/auth/infras/grpc"
 	"github.com/dinhcanh303/go-microservices/internal/auth/infras/repo"
 	"github.com/dinhcanh303/go-microservices/internal/auth/usecases/auth"
 	"github.com/dinhcanh303/go-microservices/internal/auth/usecases/keys"
@@ -55,8 +56,15 @@ func InitApp(cfg *config.Config, cfgLdap *configs.Ldap, dbConnStr postgres.DBCon
 	userCreatedEventPublisher := infras.NewUserCreatedEventPublisher(eventPublisher)
 	userDeletedEventPublisher := infras.NewUserDeletedEventPublisher(eventPublisher)
 	authUseCase := auth.NewUseCase(userRepo, useCase, ldapClient, jwt, userCreatedEventPublisher, userDeletedEventPublisher)
-	authServiceServer := router.NewAuthGRPCServer(grpcServer, cfg, authUseCase, useCase)
-	app := New(cfg, cfgLdap, dbEngine, authUseCase, authServiceServer, userCreatedEventPublisher, userDeletedEventPublisher)
+	uploadDomainService, err := grpc2.NewGRPCUploadClient(cfg)
+	if err != nil {
+		cleanup3()
+		cleanup2()
+		cleanup()
+		return nil, nil, err
+	}
+	authServiceServer := router.NewAuthGRPCServer(grpcServer, cfg, authUseCase, useCase, uploadDomainService)
+	app := New(cfg, cfgLdap, dbEngine, authUseCase, authServiceServer, userCreatedEventPublisher, userDeletedEventPublisher, uploadDomainService)
 	return app, func() {
 		cleanup3()
 		cleanup2()

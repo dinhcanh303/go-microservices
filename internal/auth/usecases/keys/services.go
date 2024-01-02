@@ -18,8 +18,8 @@ type service struct {
 func (s *service) CreateKeyToken(ctx context.Context, key *domain.Key) (*domain.Key, error) {
 	userID := key.UserID
 	foundKeyToken, err := s.repo.FindKeyByUserID(ctx, userID)
-	slog.Warn("Service::", err)
 	if err != nil {
+		slog.Warn("CreateKeyToken::", err)
 		keyToken, err := s.repo.CreateKey(ctx, key)
 		if err != nil {
 			return nil, errors.Wrap(err, "Create Key Token failed")
@@ -33,7 +33,6 @@ func (s *service) CreateKeyToken(ctx context.Context, key *domain.Key) (*domain.
 		RefreshToken:      key.RefreshToken,
 		RefreshTokensUsed: key.RefreshTokensUsed,
 	})
-	slog.Warn("Service::", err)
 	if err != nil {
 		return nil, errors.Wrap(err, "Update Key Token failed")
 	}

@@ -31,6 +31,7 @@ require (
 	github.com/Azure/go-ntlmssp v0.0.0-20221128193559-754e69321358 // indirect
 	github.com/andybalholm/brotli v1.0.4 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
+	github.com/disintegration/imaging v1.6.2 // indirect
 	github.com/elastic/elastic-transport-go/v8 v8.3.0 // indirect
 	github.com/go-asn1-ber/asn1-ber v1.5.5 // indirect
 	github.com/go-jose/go-jose/v3 v3.0.0 // indirect
@@ -48,6 +49,7 @@ require (
 	github.com/xdg-go/stringprep v1.0.4 // indirect
 	github.com/youmark/pkcs8 v0.0.0-20181117223130-1be2e3e5546d // indirect
 	go.mongodb.org/mongo-driver v1.13.1 // indirect
+	golang.org/x/image v0.14.0 // indirect
 	golang.org/x/sync v0.4.0 // indirect
 )
 
@@ -84,6 +86,7 @@ require (
 	github.com/minio/sha256-simd v1.0.1 // indirect
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
 	github.com/modern-go/reflect2 v1.0.2 // indirect
+	github.com/nfnt/resize v0.0.0-20180221191011-83c6a9932646
 	github.com/rs/xid v1.5.0 // indirect
 	github.com/stretchr/testify v1.8.4
 	github.com/valyala/bytebufferpool v1.0.0 // indirect

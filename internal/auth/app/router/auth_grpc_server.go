@@ -28,9 +28,10 @@ import (
 
 type authGRPCServer struct {
 	gen.UnimplementedAuthServiceServer
-	cfg   *config.Config
-	uc    auth.UseCase
-	ucKey keys.UseCase
+	cfg                 *config.Config
+	uc                  auth.UseCase
+	ucKey               keys.UseCase
+	uploadDomainService domain.UploadDomainService
 }
 
 var _ gen.AuthServiceServer = (*authGRPCServer)(nil)
@@ -41,11 +42,13 @@ func NewAuthGRPCServer(
 	grpcServer *grpc.Server,
 	cfg *config.Config,
 	uc auth.UseCase,
-	ucKey keys.UseCase) gen.AuthServiceServer {
+	ucKey keys.UseCase,
+	uploadDomainService domain.UploadDomainService) gen.AuthServiceServer {
 	svc := authGRPCServer{
-		cfg:   cfg,
-		uc:    uc,
-		ucKey: ucKey,
+		cfg:                 cfg,
+		uc:                  uc,
+		ucKey:               ucKey,
+		uploadDomainService: uploadDomainService,
 	}
 	gen.RegisterAuthServiceServer(grpcServer, &svc)
 	reflection.Register(grpcServer)
@@ -86,15 +89,22 @@ func (a *authGRPCServer) SignIn(ctx context.Context, request *gen.SignInRequest)
 	if err != nil {
 		return nil, err
 	}
+	avatarRes, err := a.uploadDomainService.GetAvatarUser(ctx, signRes.User.ID)
+	if err != nil {
+		slog.Warn("uploadDomainService.GetAvatarUser failed", err)
+		return nil, err
+	}
 	return &gen.SignInResponse{
 		User: &gen.User{
-			Id:        signRes.User.ID.String(),
-			Email:     signRes.User.Email,
-			FirstName: signRes.User.FirstName,
-			LastName:  signRes.User.LastName,
-			FullName:  signRes.User.FullName,
-			CreatedAt: timestamppb.New(signRes.User.CreatedAt),
-			UpdatedAt: timestamppb.New(signRes.User.UpdatedAt),
+			Id:           signRes.User.ID.String(),
+			Email:        signRes.User.Email,
+			FirstName:    signRes.User.FirstName,
+			LastName:     signRes.User.LastName,
+			FullName:     signRes.User.FullName,
+			AvatarUrl:    avatarRes.URL,
+			ThumbnailUrl: avatarRes.URLThumbnail,
+			CreatedAt:    timestamppb.New(signRes.User.CreatedAt),
+			UpdatedAt:    timestamppb.New(signRes.User.UpdatedAt),
 		},
 		AccessToken:  signRes.AccessToken,
 		RefreshToken: signRes.RefreshToken,
@@ -120,7 +130,6 @@ func (a *authGRPCServer) Verify(ctx context.Context, request *gen.VerifyRequest)
 	}
 	refreshToken := utils.GetKeyMetadata(md, constant.RefreshToken)
 	if refreshToken != "" {
-		slog.Info("refresh token::", refreshToken)
 		payload, err := verifyToken(refreshToken, keyStore.PrivateKey)
 		if err != nil {
 			return nil, errors.New("Unauthorized")

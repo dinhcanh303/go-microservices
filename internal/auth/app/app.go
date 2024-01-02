@@ -2,6 +2,7 @@ package app
 
 import (
 	"github.com/dinhcanh303/go-microservices/cmd/auth/config"
+	"github.com/dinhcanh303/go-microservices/internal/auth/domain"
 	"github.com/dinhcanh303/go-microservices/internal/auth/usecases/auth"
 	configs "github.com/dinhcanh303/go-microservices/pkg/config"
 	"github.com/dinhcanh303/go-microservices/pkg/postgres"
@@ -16,6 +17,7 @@ type App struct {
 	AuthGRPCServer      gen.AuthServiceServer
 	UserCreatedEventPub auth.UserCreatedEventPublisher
 	UserDeletedEventPub auth.UserDeletedEventPublisher
+	UploadDomainSvc     domain.UploadDomainService
 }
 
 func New(
@@ -25,7 +27,8 @@ func New(
 	uc auth.UseCase,
 	authGRPCServer gen.AuthServiceServer,
 	userCreatedEventPub auth.UserCreatedEventPublisher,
-	userDeletedEventPub auth.UserDeletedEventPublisher) *App {
+	userDeletedEventPub auth.UserDeletedEventPublisher,
+	uploadDomainSvc domain.UploadDomainService) *App {
 	return &App{
 		Cfg:                 cfg,
 		CfgLdap:             cfgLdap,
@@ -34,5 +37,6 @@ func New(
 		AuthGRPCServer:      authGRPCServer,
 		UserCreatedEventPub: userCreatedEventPub,
 		UserDeletedEventPub: userDeletedEventPub,
+		UploadDomainSvc:     uploadDomainSvc,
 	}
 }

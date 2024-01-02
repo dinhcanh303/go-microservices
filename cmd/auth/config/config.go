@@ -17,6 +17,7 @@ type (
 		configs.Log  `yaml:"logger"`
 		PG           `yaml:"postgres"`
 		RabbitMQ     `yaml:"rabbitmq"`
+		UploadClient `yaml:"upload_client"`
 	}
 
 	PG struct {
@@ -26,6 +27,9 @@ type (
 	}
 	RabbitMQ struct {
 		URL string `env-required:"true" yaml:"url" env:"RABBITMQ_URL"`
+	}
+	UploadClient struct {
+		URL string `env-required:"true" yaml:"upload_url" env:"UPLOAD_CLIENT_URL"`
 	}
 )
 

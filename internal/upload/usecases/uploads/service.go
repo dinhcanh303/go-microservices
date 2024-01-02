@@ -147,3 +147,13 @@ func (s *uploadService) UploadFile(echoCtx echo.Context, location string) ([]*do
 	}
 	return results, nil
 }
+
+// func resizeImage(imgIn io.Reader, width, height uint) (io.Reader, error) {
+// 	img, _, err := image.Decode(imgIn)
+// 	if err != nil {
+// 		return nil, err
+// 	}
+// 	resizedImg := resize.Resize(width, height, img, resize.Lanczos3)
+// 	var outBuffer bytes.Buffer
+// 	// if err :=
+// }

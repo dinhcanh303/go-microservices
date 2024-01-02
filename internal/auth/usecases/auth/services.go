@@ -31,6 +31,15 @@ type service struct {
 	userDeletedEventPub UserDeletedEventPublisher
 }
 
+// GetUser implements UseCase.
+func (s *service) GetUser(ctx context.Context, userId uuid.UUID) (*domain.User, error) {
+	user, err := s.repo.GetUser(ctx, userId)
+	if err != nil {
+		return nil, err
+	}
+	return user, nil
+}
+
 // HandleRefreshToken implements UseCase.
 func (s *service) HandleRefreshToken(ctx context.Context, email, refreshToken string) (*domain.UserAuth, error) {
 	foundUser, err := findUserByEmail(s.repo, ctx, email)

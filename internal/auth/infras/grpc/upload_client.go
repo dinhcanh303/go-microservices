@@ -18,14 +18,14 @@ type uploadGRPCClient struct {
 	conn *grpc.ClientConn
 }
 
-// GetAttachmentsByType implements domain.UploadDomainService.
+// GetAvatarUser implements domain.UploadDomainService.
 func (u *uploadGRPCClient) GetAvatarUser(ctx context.Context, userId uuid.UUID) (*domainUpload.Attachment, error) {
 	client := gen.NewUploadServiceClient(u.conn)
 	res, err := client.GetAvatarUser(ctx, &gen.GetAvatarUserRequest{
 		Id: userId.String(),
 	})
 	if err != nil {
-		slog.Warn("uploadGRPCClient.GetAttachmentsByType failed", err)
+		slog.Warn("uploadGRPCClient.GetAvatarUser failed", err)
 		return nil, nil
 	}
 	return &domainUpload.Attachment{

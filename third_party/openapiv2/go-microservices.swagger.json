@@ -1483,6 +1483,12 @@
         "fullName": {
           "type": "string"
         },
+        "avatarUrl": {
+          "type": "string"
+        },
+        "thumbnailUrl": {
+          "type": "string"
+        },
         "createdAt": {
           "type": "string",
           "format": "date-time"

@@ -7,6 +7,7 @@ import (
 	"github.com/dinhcanh303/go-microservices/cmd/auth/config"
 	"github.com/dinhcanh303/go-microservices/internal/auth/app/router"
 	"github.com/dinhcanh303/go-microservices/internal/auth/infras"
+	infrasGRPC "github.com/dinhcanh303/go-microservices/internal/auth/infras/grpc"
 	"github.com/dinhcanh303/go-microservices/internal/auth/infras/repo"
 	"github.com/dinhcanh303/go-microservices/internal/auth/usecases/auth"
 	"github.com/dinhcanh303/go-microservices/internal/auth/usecases/keys"
@@ -42,6 +43,7 @@ func InitApp(
 		repo.UserRepoSet,
 		infras.UserCreatedEventPublisherSet,
 		infras.UserDeletedEventPublisherSet,
+		infrasGRPC.UploadGRPCClientSet,
 		publisher.EventPublisherSet,
 	))
 }
