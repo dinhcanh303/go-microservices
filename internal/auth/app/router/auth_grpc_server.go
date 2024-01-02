@@ -89,11 +89,7 @@ func (a *authGRPCServer) SignIn(ctx context.Context, request *gen.SignInRequest)
 	if err != nil {
 		return nil, err
 	}
-	avatarRes, err := a.uploadDomainService.GetAvatarUser(ctx, signRes.User.ID)
-	if err != nil {
-		slog.Warn("uploadDomainService.GetAvatarUser failed", err)
-		return nil, err
-	}
+	avatarUrl, thumbnailUrl := getAvatarAndThumbnailAvatar(a, ctx, signRes.User.ID)
 	return &gen.SignInResponse{
 		User: &gen.User{
 			Id:           signRes.User.ID.String(),
@@ -101,8 +97,8 @@ func (a *authGRPCServer) SignIn(ctx context.Context, request *gen.SignInRequest)
 			FirstName:    signRes.User.FirstName,
 			LastName:     signRes.User.LastName,
 			FullName:     signRes.User.FullName,
-			AvatarUrl:    avatarRes.URL,
-			ThumbnailUrl: avatarRes.URLThumbnail,
+			AvatarUrl:    avatarUrl,
+			ThumbnailUrl: thumbnailUrl,
 			CreatedAt:    timestamppb.New(signRes.User.CreatedAt),
 			UpdatedAt:    timestamppb.New(signRes.User.UpdatedAt),
 		},
@@ -110,8 +106,8 @@ func (a *authGRPCServer) SignIn(ctx context.Context, request *gen.SignInRequest)
 		RefreshToken: signRes.RefreshToken,
 	}, nil
 }
-func (a *authGRPCServer) Verify(ctx context.Context, request *gen.VerifyRequest) (*gen.VerifyResponse, error) {
-	slog.Info("GET:: Verify")
+func (a *authGRPCServer) Profile(ctx context.Context, request *gen.GetProfileRequest) (*gen.GetProfileResponse, error) {
+	slog.Info("GET:: Profile")
 	md, ok := metadata.FromIncomingContext(ctx)
 	if !ok {
 		return nil, errors.New("no headers found in the incoming context.")
@@ -120,6 +116,41 @@ func (a *authGRPCServer) Verify(ctx context.Context, request *gen.VerifyRequest)
 	if clientId == "" {
 		return nil, errors.New("Invalid Request")
 	}
+	userId, err := uuid.Parse(clientId)
+	if err != nil {
+		return nil, err
+	}
+	user, err := a.uc.GetUser(ctx, userId)
+	if err != nil {
+		return nil, err
+	}
+	avatarUrl, thumbnailUrl := getAvatarAndThumbnailAvatar(a, ctx, userId)
+	return &gen.GetProfileResponse{
+		User: &gen.User{
+			Id:           user.ID.String(),
+			Email:        user.Email,
+			FirstName:    user.FirstName,
+			LastName:     user.LastName,
+			FullName:     user.FullName,
+			AvatarUrl:    avatarUrl,
+			ThumbnailUrl: thumbnailUrl,
+			CreatedAt:    timestamppb.New(user.CreatedAt),
+			UpdatedAt:    timestamppb.New(user.UpdatedAt),
+		},
+	}, nil
+}
+func (a *authGRPCServer) Verify(ctx context.Context, request *gen.VerifyRequest) (*gen.VerifyResponse, error) {
+	slog.Info("GET:: Verify")
+	md, ok := metadata.FromIncomingContext(ctx)
+	slog.Info("Payload::", md)
+	if !ok {
+		return nil, errors.New("no headers found in the incoming context.")
+	}
+	clientId := utils.GetKeyMetadata(md, constant.ClientID)
+	if clientId == "" {
+		return nil, errors.New("Invalid Request")
+	}
+	slog.Info("Payload::", clientId)
 	userId, err := uuid.Parse(clientId)
 	if err != nil {
 		return nil, err
@@ -138,6 +169,7 @@ func (a *authGRPCServer) Verify(ctx context.Context, request *gen.VerifyRequest)
 		return &gen.VerifyResponse{}, nil
 	}
 	authorization := utils.GetKeyMetadata(md, constant.Authorization)
+	slog.Info("Payload::", authorization)
 	if authorization == "" {
 		return nil, errors.New("Unauthorized")
 	}
@@ -145,6 +177,7 @@ func (a *authGRPCServer) Verify(ctx context.Context, request *gen.VerifyRequest)
 	if err != nil {
 		return nil, errors.New("Unauthorized")
 	}
+	slog.Info("Payload::", payload)
 	grpc.SendHeader(ctx, addHeader(payload, keyStore, ""))
 	return &gen.VerifyResponse{}, nil
 }
@@ -247,4 +280,12 @@ func (a *authGRPCServer) GetAllUserIdOfCompanyByUserId(ctx context.Context, requ
 			return item.String()
 		}),
 	}, nil
+}
+func getAvatarAndThumbnailAvatar(a *authGRPCServer, ctx context.Context, userId uuid.UUID) (string, string) {
+	avatarRes, err := a.uploadDomainService.GetAvatarUser(ctx, userId)
+	if err != nil {
+		slog.Warn("uploadDomainService.GetAvatarUser failed", err)
+		return "", ""
+	}
+	return avatarRes.URL, avatarRes.URLThumbnail
 }

@@ -1156,6 +1156,29 @@
         ]
       }
     },
+    "/api/v1/profile": {
+      "get": {
+        "summary": "Get Profile of User",
+        "operationId": "AuthService_Profile",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/authGetProfileResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          }
+        },
+        "tags": [
+          "AuthService"
+        ]
+      }
+    },
     "/api/v1/refresh-token": {
       "get": {
         "summary": "Handle Refresh Token",
@@ -1389,6 +1412,14 @@
           "items": {
             "type": "string"
           }
+        }
+      }
+    },
+    "authGetProfileResponse": {
+      "type": "object",
+      "properties": {
+        "user": {
+          "$ref": "#/definitions/authUser"
         }
       }
     },

@@ -69,6 +69,8 @@ func allowCORS(h http.Handler) http.Handler {
 		func(w http.ResponseWriter, r *http.Request) {
 			if origin := r.Header.Get("Origin"); origin != "" {
 				w.Header().Set("Access-Control-Allow-Origin", origin)
+				slog.Info("Method", r.Method)
+				slog.Info("Access-Control-Request-Method", r.Header.Get("Access-Control-Request-Method"))
 				if r.Method == "OPTIONS" && r.Header.Get("Access-Control-Request-Method") != "" {
 					preflightHandler(w, r)
 					return

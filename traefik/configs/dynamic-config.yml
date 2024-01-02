@@ -39,10 +39,6 @@ http:
       loadBalancer:
         servers:
           - url: http://{{env "HOST_UPLOAD"}}:5005
-    lumen:
-      loadBalancer:
-        servers:
-          - url: http://192.168.108.108:9000
   middlewares:
     auth:
       forwardAuth:

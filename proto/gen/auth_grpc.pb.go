@@ -25,6 +25,7 @@ const (
 	AuthService_Logout_FullMethodName                        = "/auth.AuthService/Logout"
 	AuthService_HandleRefreshToken_FullMethodName            = "/auth.AuthService/HandleRefreshToken"
 	AuthService_GetAllUserIdOfCompanyByUserId_FullMethodName = "/auth.AuthService/GetAllUserIdOfCompanyByUserId"
+	AuthService_Profile_FullMethodName                       = "/auth.AuthService/Profile"
 )
 
 // AuthServiceClient is the client API for AuthService service.
@@ -37,6 +38,7 @@ type AuthServiceClient interface {
 	Logout(ctx context.Context, in *LogoutRequest, opts ...grpc.CallOption) (*LogoutResponse, error)
 	HandleRefreshToken(ctx context.Context, in *HandleRefreshTokenRequest, opts ...grpc.CallOption) (*HandleRefreshTokenResponse, error)
 	GetAllUserIdOfCompanyByUserId(ctx context.Context, in *GetAllUserIdOfCompanyByUserIdRequest, opts ...grpc.CallOption) (*GetAllUserIdOfCompanyByUserIdResponse, error)
+	Profile(ctx context.Context, in *GetProfileRequest, opts ...grpc.CallOption) (*GetProfileResponse, error)
 }
 
 type authServiceClient struct {
@@ -101,6 +103,15 @@ func (c *authServiceClient) GetAllUserIdOfCompanyByUserId(ctx context.Context, i
 	return out, nil
 }
 
+func (c *authServiceClient) Profile(ctx context.Context, in *GetProfileRequest, opts ...grpc.CallOption) (*GetProfileResponse, error) {
+	out := new(GetProfileResponse)
+	err := c.cc.Invoke(ctx, AuthService_Profile_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // AuthServiceServer is the server API for AuthService service.
 // All implementations must embed UnimplementedAuthServiceServer
 // for forward compatibility
@@ -111,6 +122,7 @@ type AuthServiceServer interface {
 	Logout(context.Context, *LogoutRequest) (*LogoutResponse, error)
 	HandleRefreshToken(context.Context, *HandleRefreshTokenRequest) (*HandleRefreshTokenResponse, error)
 	GetAllUserIdOfCompanyByUserId(context.Context, *GetAllUserIdOfCompanyByUserIdRequest) (*GetAllUserIdOfCompanyByUserIdResponse, error)
+	Profile(context.Context, *GetProfileRequest) (*GetProfileResponse, error)
 	mustEmbedUnimplementedAuthServiceServer()
 }
 
@@ -135,6 +147,9 @@ func (UnimplementedAuthServiceServer) HandleRefreshToken(context.Context, *Handl
 }
 func (UnimplementedAuthServiceServer) GetAllUserIdOfCompanyByUserId(context.Context, *GetAllUserIdOfCompanyByUserIdRequest) (*GetAllUserIdOfCompanyByUserIdResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetAllUserIdOfCompanyByUserId not implemented")
+}
+func (UnimplementedAuthServiceServer) Profile(context.Context, *GetProfileRequest) (*GetProfileResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Profile not implemented")
 }
 func (UnimplementedAuthServiceServer) mustEmbedUnimplementedAuthServiceServer() {}
 
@@ -257,6 +272,24 @@ func _AuthService_GetAllUserIdOfCompanyByUserId_Handler(srv interface{}, ctx con
 	return interceptor(ctx, in, info, handler)
 }
 
+func _AuthService_Profile_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetProfileRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AuthServiceServer).Profile(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AuthService_Profile_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AuthServiceServer).Profile(ctx, req.(*GetProfileRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // AuthService_ServiceDesc is the grpc.ServiceDesc for AuthService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -287,6 +320,10 @@ var AuthService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetAllUserIdOfCompanyByUserId",
 			Handler:    _AuthService_GetAllUserIdOfCompanyByUserId_Handler,
+		},
+		{
+			MethodName: "Profile",
+			Handler:    _AuthService_Profile_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

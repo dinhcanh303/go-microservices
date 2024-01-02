@@ -64,6 +64,19 @@ service AuthService {
             description: ""
         };
     }
+    rpc Profile(GetProfileRequest) returns (GetProfileResponse){
+        option (google.api.http) = {
+            get: "/api/v1/profile",
+        };
+        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+            summary: "Get Profile of User"
+            description: ""
+        };
+    }
+}
+message GetProfileRequest{}
+message GetProfileResponse{
+    User user=1;
 }
 message GetAllUserIdOfCompanyByUserIdRequest{
     string user_id = 1;
@@ -122,9 +135,5 @@ message User {
     google.protobuf.Timestamp created_at = 8;
     google.protobuf.Timestamp updated_at = 9;
 }
-message VerifyRequest{
-
-}
-message VerifyResponse{
-    
-}
+message VerifyRequest{}
+message VerifyResponse{}
