@@ -150,7 +150,7 @@ func (a *authGRPCServer) Verify(ctx context.Context, request *gen.VerifyRequest)
 	if clientId == "" {
 		return nil, errors.New("Invalid Request")
 	}
-	slog.Info("Payload::", clientId)
+	slog.Info("clientId::", clientId)
 	userId, err := uuid.Parse(clientId)
 	if err != nil {
 		return nil, err
@@ -169,7 +169,7 @@ func (a *authGRPCServer) Verify(ctx context.Context, request *gen.VerifyRequest)
 		return &gen.VerifyResponse{}, nil
 	}
 	authorization := utils.GetKeyMetadata(md, constant.Authorization)
-	slog.Info("Payload::", authorization)
+	slog.Info("authorization::", authorization)
 	if authorization == "" {
 		return nil, errors.New("Unauthorized")
 	}

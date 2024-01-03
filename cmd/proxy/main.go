@@ -13,6 +13,7 @@ import (
 	"github.com/dinhcanh303/go-microservices/proto/gen"
 	"github.com/golang/glog"
 	gatewayRuntime "github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
+	"github.com/rs/cors"
 	"github.com/sirupsen/logrus"
 	"golang.org/x/exp/slog"
 	"google.golang.org/grpc"
@@ -69,7 +70,6 @@ func allowCORS(h http.Handler) http.Handler {
 		func(w http.ResponseWriter, r *http.Request) {
 			if origin := r.Header.Get("Origin"); origin != "" {
 				w.Header().Set("Access-Control-Allow-Origin", origin)
-				slog.Info("Method", r.Method)
 				slog.Info("Access-Control-Request-Method", r.Header.Get("Access-Control-Request-Method"))
 				if r.Method == "OPTIONS" && r.Header.Get("Access-Control-Request-Method") != "" {
 					preflightHandler(w, r)
@@ -94,6 +94,13 @@ func withLogger(h http.Handler) http.Handler {
 		slog.Info("Run Request", "http_method", r.Method, "http_url", r.URL)
 		h.ServeHTTP(w, r)
 	})
+}
+func withHeader(h http.Handler) http.Handler {
+	return http.HandlerFunc(
+		func(w http.ResponseWriter, r *http.Request) {
+			slog.Info("Headers", r.Header)
+			h.ServeHTTP(w, r)
+		})
 }
 
 func main() {
@@ -124,9 +131,10 @@ func main() {
 	//server swagger
 	fs := http.FileServer(http.Dir("swagger"))
 	mux.Handle("api/v1/swagger/", http.StripPrefix("/swagger/", fs))
+	handler := cors.Default().Handler(mux)
 	s := &http.Server{
 		Addr:    fmt.Sprintf("%s:%d", cfg.Host, cfg.Port),
-		Handler: allowCORS(withLogger(mux)),
+		Handler: withHeader(handler),
 	}
 
 	//goroutine

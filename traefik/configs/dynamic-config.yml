@@ -8,6 +8,7 @@ http:
     proxy:
       rule: "Host(`{{env "APP_DOMAIN"}}`) && PathPrefix(`/api/v1`)"
       middlewares:
+        - corsHeader
         - auth
       service: proxy
       tls:
@@ -15,15 +16,9 @@ http:
     upload:
       rule: "Host(`{{env "APP_DOMAIN"}}`) && PathPrefix(`/api/v1/attachments`) || PathPrefix(`/api/v1/attachment`) || PathPrefix(`/api/v1/upload`)"
       middlewares:
+        - corsHeader
         - auth
       service: upload
-      tls:
-        certResolver: certificates
-    lumen:
-      rule: "Host(`{{env "APP2_DOMAIN"}}`) && PathPrefix(`/api/v1`)"
-      middlewares:
-        - auth
-      service: lumen
       tls:
         certResolver: certificates
   services:
@@ -48,6 +43,20 @@ http:
           - "Grpc-Metadata-X-Auth-Keystore"
           - "Grpc-Metadata-X-Auth-Keystore-Used"
         trustForwardHeader: true
+    corsHeader:
+      headers:
+        accessControlAllowMethods:
+          - GET
+          - OPTIONS
+          - PUT
+          - PATCH
+          - POST
+          - DELETE
+        accessControlAllowHeaders: "*"
+        accessControlAllowOriginList:
+          - "*"
+        accessControlMaxAge: 100
+        addVaryHeader: true
 tls:
   certificates:
     - certFile: /path/to/public.cert
