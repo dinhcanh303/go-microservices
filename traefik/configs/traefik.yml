@@ -27,3 +27,8 @@ providers:
 metrics:
   prometheus:
     addRoutersLabels: true
+accessLog:
+  filePath: "/path/to/access.log"
+tracing:
+  jaeger:
+    localAgentHostPort: jaeger:6831

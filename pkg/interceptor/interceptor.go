@@ -5,13 +5,11 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/dinhcanh303/go-microservices/cmd/auth/config"
+	"github.com/dinhcanh303/go-microservices/pkg/grpc_errors"
+	"github.com/dtm-labs/logger"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
-
-	"github.com/AleksK1NG/auth-microservice/config"
-	"github.com/AleksK1NG/auth-microservice/pkg/grpc_errors"
-	"github.com/AleksK1NG/auth-microservice/pkg/logger"
-	"github.com/AleksK1NG/auth-microservice/pkg/metric"
 )
 
 // InterceptorManager
