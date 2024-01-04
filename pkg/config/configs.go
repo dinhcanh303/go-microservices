@@ -25,4 +25,9 @@ type (
 		RequestMax       int `env-required:"true" yaml:"request_max" env:"REQUEST_MAX"`
 		DurationsSecond  int `env-required:"true" yaml:"durations_second" env:"DURATIONS_SECOND"`
 	}
+	Jeager struct {
+		HostJeager        string `env-required:"true" yaml:"host_jaeger" env:"HOST_JAEGER"`
+		ServiceNameJeager string `env-required:"true" yaml:"service_name_jaeger" env:"SERVICE_NAME_JAEGER"`
+		LogSpans          bool   `env-required:"true" yaml:"log_spans" env:"LOG_SPANS"`
+	}
 )

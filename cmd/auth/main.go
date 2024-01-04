@@ -15,6 +15,11 @@ import (
 	"github.com/dinhcanh303/go-microservices/pkg/postgres"
 	"github.com/dinhcanh303/go-microservices/pkg/rabbitmq"
 	"github.com/dinhcanh303/go-microservices/pkg/rabbitmq/publisher"
+	grpc_middleware "github.com/grpc-ecosystem/go-grpc-middleware"
+	grpc_zap "github.com/grpc-ecosystem/go-grpc-middleware/logging/zap"
+	grpc_recovery "github.com/grpc-ecosystem/go-grpc-middleware/recovery"
+	grpc_validator "github.com/grpc-ecosystem/go-grpc-middleware/validator"
+	grpc_prometheus "github.com/grpc-ecosystem/go-grpc-prometheus"
 	"github.com/sirupsen/logrus"
 	"go.uber.org/automaxprocs/maxprocs"
 	"golang.org/x/exp/slog"
@@ -47,7 +52,13 @@ func main() {
 	logrusHandle := logger.NewLogrusHandler(logrus.StandardLogger())
 	slog.New(logrusHandle)
 
-	server := grpc.NewServer()
+	server := grpc.NewServer(
+		grpc.UnaryInterceptor(grpc_middleware.ChainUnaryServer(
+			grpc_recovery.UnaryServerInterceptor(),
+			grpc_prometheus.UnaryServerInterceptor,
+			grpc_validator.UnaryServerInterceptor(),
+			grpc_zap.UnaryServerInterceptor(logger.GetZapLogger()),
+		)))
 
 	go func() {
 		defer server.GracefulStop()

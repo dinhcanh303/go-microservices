@@ -30,6 +30,8 @@ services:
       - '--web.console.templates=/usr/share/prometheus/consoles'
     networks:
       - inbound
+    ports:
+      - "9090:9090"
     deploy:
       labels:
         - "traefik.http.routers.prometheus.rule=Host(`prometheus.localhost`)"
@@ -53,6 +55,8 @@ services:
       - ./plugins/grafana/config.monitoring
     networks:
       - inbound
+    ports:
+      - "3000:3000"
     user: "104"
     deploy:
       labels:
@@ -65,6 +69,23 @@ services:
           - node.role == manager
       restart_policy:
         condition: on-failure
+  jaeger:
+    container_name: jaeger_container
+    restart: always
+    image: jaegertracing/all-in-one:1.21
+    environment:
+      - COLLECTOR_ZIPKIN_HTTP_PORT=9411
+    ports:
+      - 5775:5775/udp
+      - 6831:6831/udp
+      - 6832:6832/udp
+      - 5778:5778
+      - 16686:16686
+      - 14268:14268
+      - 14250:14250
+      - 9411:9411
+    networks:
+      - inbound
 volumes:
   prometheus_data: {}
   grafana_data: {}
