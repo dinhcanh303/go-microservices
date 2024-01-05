@@ -12,4 +12,8 @@ mongodb:
 
 logger:
   log_level: 'debug'
+  log_dev: true
+  log_disable_caller: true
+  log_disable_stacktrace: true
+  log_encoding: 'console'
   rollbar_env: 'notification-service'

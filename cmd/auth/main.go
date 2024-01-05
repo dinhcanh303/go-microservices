@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"net"
+	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
@@ -20,6 +21,7 @@ import (
 	grpc_recovery "github.com/grpc-ecosystem/go-grpc-middleware/recovery"
 	grpc_validator "github.com/grpc-ecosystem/go-grpc-middleware/validator"
 	grpc_prometheus "github.com/grpc-ecosystem/go-grpc-prometheus"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/sirupsen/logrus"
 	"go.uber.org/automaxprocs/maxprocs"
 	"golang.org/x/exp/slog"
@@ -27,6 +29,7 @@ import (
 )
 
 func main() {
+	log := logger.New()
 	slog.Info("Build main group started")
 	_, err := maxprocs.Set()
 	if err != nil {
@@ -51,15 +54,14 @@ func main() {
 	//integrate Logrus with the slog logger
 	logrusHandle := logger.NewLogrusHandler(logrus.StandardLogger())
 	slog.New(logrusHandle)
-
+	//
 	server := grpc.NewServer(
 		grpc.UnaryInterceptor(grpc_middleware.ChainUnaryServer(
 			grpc_recovery.UnaryServerInterceptor(),
 			grpc_prometheus.UnaryServerInterceptor,
 			grpc_validator.UnaryServerInterceptor(),
-			grpc_zap.UnaryServerInterceptor(logger.GetZapLogger()),
+			grpc_zap.UnaryServerInterceptor(log.GetZapLogger()),
 		)))
-
 	go func() {
 		defer server.GracefulStop()
 		<-ctx.Done()
@@ -88,7 +90,22 @@ func main() {
 		cancel()
 		<-ctx.Done()
 	}
-
+	// Start Metrics server
+	metricsMux := http.NewServeMux()
+	metricsMux.Handle("/metrics", promhttp.Handler())
+	metricsServer := &http.Server{
+		Addr:    fmt.Sprintf("%s:%d", cfg.Metrics.HostMetric, cfg.Metrics.PortMetric),
+		Handler: metricsMux,
+	}
+	go func() {
+		if err = metricsServer.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+			log.Fatal(err)
+		}
+	}()
+	if err = metricsServer.Shutdown(ctx); err != nil {
+		log.Fatal(err)
+	}
+	//
 	quit := make(chan os.Signal, 1)
 	signal.Notify(quit, os.Interrupt, syscall.SIGTERM)
 	select {

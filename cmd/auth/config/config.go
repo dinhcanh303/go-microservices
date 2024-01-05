@@ -12,12 +12,13 @@ import (
 
 type (
 	Config struct {
-		configs.App  `yaml:"app"`
-		configs.HTTP `yaml:"http"`
-		configs.Log  `yaml:"logger"`
-		PG           `yaml:"postgres"`
-		RabbitMQ     `yaml:"rabbitmq"`
-		UploadClient `yaml:"upload_client"`
+		configs.App     `yaml:"app"`
+		configs.HTTP    `yaml:"http"`
+		configs.Log     `yaml:"logger"`
+		configs.Metrics `yaml:"metrics"`
+		PG              `yaml:"postgres"`
+		RabbitMQ        `yaml:"rabbitmq"`
+		UploadClient    `yaml:"upload_client"`
 	}
 
 	PG struct {

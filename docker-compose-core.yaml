@@ -4,6 +4,7 @@ services:
   postgres-master:
     build: ./docker/pg-master
     container_name: mcs-postgres-master
+    restart: unless-stopped
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=123456
@@ -24,6 +25,7 @@ services:
   postgres-slave:
     build: ./docker/pg-slave
     container_name: mcs-postgres-slave
+    restart: unless-stopped
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=123456
@@ -93,6 +95,7 @@ services:
   meilisearch:
     image: getmeili/meilisearch:latest
     container_name: mcs_meilisearch
+    restart: unless-stopped
     environment:
       - MEILI_MASTER_KEY=${MEILI_MASTER_KEY:-ms}
     volumes:
@@ -104,6 +107,7 @@ services:
   mongodb:
     image: mongo:latest
     container_name: mcs-mongodb
+    restart: unless-stopped
     ports:
       - 27017:27017
     environment:
@@ -112,7 +116,7 @@ services:
       - MONGO_INITDB_ROOT_PASSWORD=admin
     volumes:
       - mongodb_data:/data/db
-    restart: unless-stopped
+    
     networks:
       - mcs-network
 

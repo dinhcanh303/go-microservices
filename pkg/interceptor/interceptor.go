@@ -7,21 +7,22 @@ import (
 
 	"github.com/dinhcanh303/go-microservices/cmd/auth/config"
 	"github.com/dinhcanh303/go-microservices/pkg/grpc_errors"
-	"github.com/dtm-labs/logger"
+	"github.com/dinhcanh303/go-microservices/pkg/logger"
+	"github.com/dinhcanh303/go-microservices/pkg/metric"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
 )
 
 // InterceptorManager
 type InterceptorManager struct {
-	logger logger.Logger
-	cfg    *config.Config
-	metr   metric.Metrics
+	logger  logger.Logger
+	cfg     *config.Config
+	metrics metric.Metrics
 }
 
 // InterceptorManager constructor
-func NewInterceptorManager(logger logger.Logger, cfg *config.Config, metr metric.Metrics) *InterceptorManager {
-	return &InterceptorManager{logger: logger, cfg: cfg, metr: metr}
+func NewInterceptorManager(logger logger.Logger, cfg *config.Config, metrics metric.Metrics) *InterceptorManager {
+	return &InterceptorManager{logger: logger, cfg: cfg, metrics: metrics}
 }
 
 // Logger Interceptor
@@ -41,8 +42,7 @@ func (im *InterceptorManager) Metrics(ctx context.Context, req interface{}, info
 	if err != nil {
 		status = grpc_errors.MapGRPCErrCodeToHttpStatus(grpc_errors.ParseGRPCErrStatusCode(err))
 	}
-	im.metr.ObserveResponseTime(status, info.FullMethod, info.FullMethod, time.Since(start).Seconds())
-	im.metr.IncHits(status, info.FullMethod, info.FullMethod)
-
+	im.metrics.ObserveResponseTime(status, info.FullMethod, info.FullMethod, time.Since(start).Seconds())
+	im.metrics.IncHits(status, info.FullMethod, info.FullMethod)
 	return resp, err
 }
