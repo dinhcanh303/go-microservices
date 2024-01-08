@@ -63,7 +63,7 @@ func (m *minio) UploadFile(ctx context.Context, file *multipart.FileHeader, buff
 	info, err := client.PutObject(ctx, config.BucketName, objectName, buffer, fileSize, minioV7.PutObjectOptions{
 		ContentType: contentType,
 	})
-	urlFile := getUrlFile(config.EndPoint, config.BucketName, objectName)
+	urlFile := getUrlFile(config.BucketName, objectName)
 	fileInfo := &FileInfo{
 		FileName:     file.Filename,
 		Folder:       folder,
@@ -101,8 +101,8 @@ func minioClient(config *configs.Minio) (*minioV7.Client, error) {
 	}
 	return minioClient, nil
 }
-func getUrlFile(endpoint string, bucketName string, objectName string) string {
-	return fmt.Sprintf("https://%s/%s/%s", endpoint, bucketName, objectName)
+func getUrlFile(bucketName string, objectName string) string {
+	return fmt.Sprintf("/%s/%s", bucketName, objectName)
 }
 func locationFolderSaveFile(rootFolder string, location string) string {
 	year, month, _ := time.Now().Date()

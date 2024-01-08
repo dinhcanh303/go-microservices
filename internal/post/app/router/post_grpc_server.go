@@ -222,7 +222,6 @@ func manyPostResponse(posts []*domain.Post, p *postGRPCServer, ctx context.Conte
 	// channel := make(chan *gen.GetPostResponse, len(posts))
 	// var wg sync.WaitGroup
 	for _, post := range posts {
-		// wg.Add(1)
 		likes, err := p.likeDomainService.GetLikesByPostID(ctx, post.ID)
 		if err != nil {
 			slog.Warn("likeDomainService.GetLikesByPostID failed", err)
