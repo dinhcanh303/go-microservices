@@ -6,7 +6,6 @@ import (
 	"github.com/dinhcanh303/go-microservices/cmd/comment/config"
 	"github.com/dinhcanh303/go-microservices/internal/comment/domain"
 	"github.com/dinhcanh303/go-microservices/internal/comment/usecases/comments"
-	domainLike "github.com/dinhcanh303/go-microservices/internal/like/domain"
 	domainUpload "github.com/dinhcanh303/go-microservices/internal/upload/domain"
 	"github.com/dinhcanh303/go-microservices/pkg/utils"
 	"github.com/dinhcanh303/go-microservices/proto/gen"
@@ -45,8 +44,35 @@ func NewGRPCCommentServer(
 }
 
 // CountCommentByCommentID implements gen.CommentServiceServer.
-func (*commentGRPCServer) CountCommentByCommentID(context.Context, *gen.CountCommentByCommentIDRequest) (*gen.CountCommentByCommentIDResponse, error) {
-	panic("unimplemented")
+func (c *commentGRPCServer) CountCommentByCommentID(ctx context.Context, request *gen.CountCommentByCommentIDRequest) (*gen.CountCommentByCommentIDResponse, error) {
+	slog.Info("POST: CountCommentByCommentID")
+	commentId, err := uuid.Parse(request.CommentId)
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to parse")
+	}
+	count, err := c.uc.CountCommentByCommentID(ctx, commentId)
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to count")
+	}
+	return &gen.CountCommentByCommentIDResponse{
+		Count: count,
+	}, nil
+}
+
+// CountCommentByPostID implements gen.CommentServiceServer.
+func (c *commentGRPCServer) CountCommentByPostID(ctx context.Context, request *gen.CountCommentByPostIDRequest) (*gen.CountCommentByPostIDResponse, error) {
+	slog.Info("POST: CountCommentByPostID")
+	postId, err := uuid.Parse(request.PostId)
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to parse")
+	}
+	count, err := c.uc.CountCommentByPostID(ctx, postId)
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to count")
+	}
+	return &gen.CountCommentByPostIDResponse{
+		Count: count,
+	}, nil
 }
 
 // CreateComment implements gen.CommentServiceServer.
@@ -142,8 +168,15 @@ func (c *commentGRPCServer) GetCommentsByPostID(ctx context.Context, request *ge
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to parse")
 	}
+	user, err := utils.ExtractMetadataUser(ctx)
+	if err != nil {
+		return nil, err
+	}
 	res := gen.GetCommentsByPostIDResponse{}
-	comments, err := c.uc.GetCommentsByPostID(ctx, postId)
+	if request.Limit == 0 {
+		request.Limit = 10
+	}
+	comments, err := c.uc.GetCommentsByPostID(ctx, postId, user.ID, request.Limit, request.Offset)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to get comments by post ID")
 	}
@@ -157,17 +190,12 @@ func (c *commentGRPCServer) GetCommentsByPostID(ctx context.Context, request *ge
 			ParentCommentId: comment.ParentCommentID.UUID.String(),
 			CreatedAt:       timestamppb.New(comment.CreatedAt),
 			UpdatedAt:       timestamppb.New(comment.UpdatedAt),
-			Likes: lo.Map(comment.Likes, func(item *domainLike.Like, _ int) *gen.Like {
-				return &gen.Like{
-					Id:           item.ID.String(),
-					UserId:       item.UserID.String(),
-					Emoji:        item.Emoji,
-					LikeableType: item.LikeableType,
-					LikeableId:   item.LikeableID.String(),
-					CreatedAt:    timestamppb.New(item.CreatedAt),
-					UpdatedAt:    timestamppb.New(item.UpdatedAt),
-				}
-			}),
+			Likes: &gen.LikeInfo{
+				YourLikedEmoji:    comment.Likes.YourLikedEmoji,
+				YourLike:          comment.Likes.YourLike,
+				OthersLikedEmojis: comment.Likes.OthersLikedEmojis,
+				OthersLikes:       comment.Likes.OthersLikes,
+			},
 			Attachments: lo.Map(comment.Attachments, func(item *domainUpload.Attachment, _ int) *gen.Attachment {
 				return &gen.Attachment{
 					Id:             item.ID.String(),
@@ -191,17 +219,12 @@ func (c *commentGRPCServer) GetCommentsByPostID(ctx context.Context, request *ge
 					UserId:    item.UserID.String(),
 					ReplyToId: item.ReplyToID.UUID.String(),
 					Content:   item.Content,
-					Likes: lo.Map(item.Likes, func(item *domainLike.Like, _ int) *gen.Like {
-						return &gen.Like{
-							Id:           item.ID.String(),
-							UserId:       item.UserID.String(),
-							Emoji:        item.Emoji,
-							LikeableType: item.LikeableType,
-							LikeableId:   item.LikeableID.String(),
-							CreatedAt:    timestamppb.New(item.CreatedAt),
-							UpdatedAt:    timestamppb.New(item.UpdatedAt),
-						}
-					}),
+					Likes: &gen.LikeInfo{
+						YourLikedEmoji:    comment.Likes.YourLikedEmoji,
+						YourLike:          comment.Likes.YourLike,
+						OthersLikedEmojis: comment.Likes.OthersLikedEmojis,
+						OthersLikes:       comment.Likes.OthersLikes,
+					},
 					Attachments: lo.Map(comment.Attachments, func(item *domainUpload.Attachment, _ int) *gen.Attachment {
 						return &gen.Attachment{
 							Id:             item.ID.String(),

@@ -71,8 +71,8 @@ func (s *service) GetComment(ctx context.Context, id uuid.UUID) (*domain.Comment
 }
 
 // GetCommentsByPostID implements UseCase.
-func (s *service) GetCommentsByPostID(ctx context.Context, postId uuid.UUID) ([]*sharedkernel.CommentHasChildren, error) {
-	comments, err := s.commentRepo.GetCommentsByPostID(ctx, postId)
+func (s *service) GetCommentsByPostID(ctx context.Context, postId, userId uuid.UUID, limit, offset int32) ([]*sharedkernel.CommentHasChildren, error) {
+	comments, err := s.commentRepo.GetCommentsByPostID(ctx, postId, limit, offset)
 	if err != nil {
 		return nil, errors.Wrap(err, "service.GetCommentsByPostID")
 	}
@@ -80,13 +80,12 @@ func (s *service) GetCommentsByPostID(ctx context.Context, postId uuid.UUID) ([]
 	var commentsHasChildren []*sharedkernel.CommentHasChildren
 	slog.Info("COMMENT::", comments)
 	for i, comment := range comments {
-		likes, err := s.likeDomainSvc.GetLikesByCommentID(ctx, comment.ID)
-		slog.Info("LIKE::", likes)
+		likeInfo, err := s.likeDomainSvc.GetLikesInfoByCommentID(ctx, comment.ID, userId)
+		slog.Info("LIKE INFO::", likeInfo)
 		if err != nil {
-			likes = make([]*domainLike.Like, 0)
+			likeInfo = &domainLike.LikesInfo{}
 		}
 		attachments, err := s.uploadDomainSvc.GetAttachmentsByType(ctx, "Attachment/Comment", comment.ID)
-		slog.Info("LIKE::", likes)
 		if err != nil {
 			attachments = make([]*domainUpload.Attachment, 0)
 		}
@@ -97,7 +96,7 @@ func (s *service) GetCommentsByPostID(ctx context.Context, postId uuid.UUID) ([]
 			Content:         comments[i].Content,
 			PostID:          comments[i].PostID,
 			ParentCommentID: comments[i].ParentCommentID,
-			Likes:           likes,
+			Likes:           likeInfo,
 			Attachments:     attachments,
 			CreatedAt:       comments[i].CreatedAt,
 			UpdatedAt:       comments[i].UpdatedAt,
@@ -109,7 +108,7 @@ func (s *service) GetCommentsByPostID(ctx context.Context, postId uuid.UUID) ([]
 			Content:         comments[i].Content,
 			PostID:          comments[i].PostID,
 			ParentCommentID: comments[i].ParentCommentID,
-			Likes:           likes,
+			Likes:           likeInfo,
 			Attachments:     attachments,
 			CreatedAt:       comments[i].CreatedAt,
 			UpdatedAt:       comments[i].UpdatedAt,

@@ -140,10 +140,14 @@ func (rp *commentRepo) Get(ctx context.Context, uuid uuid.UUID) (*domain.Comment
 }
 
 // GetCommentsByPostID implements comments.CommentRepo.
-func (rp *commentRepo) GetCommentsByPostID(ctx context.Context, postId uuid.UUID) ([]*domain.Comment, error) {
+func (rp *commentRepo) GetCommentsByPostID(ctx context.Context, postId uuid.UUID, limit, offset int32) ([]*domain.Comment, error) {
 	db := rp.pg.GetDBRead()
 	querier := postgresql.New(db)
-	results, err := querier.GetCommentsByPostID(ctx, postId)
+	results, err := querier.GetCommentsByPostID(ctx, postgresql.GetCommentsByPostIDParams{
+		PostID: postId,
+		Limit:  limit,
+		Offset: offset,
+	})
 	if err != nil {
 		return nil, errors.Wrap(err, "commentRepo.GetCommentsByPostID failed")
 	}

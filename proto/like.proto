@@ -38,21 +38,21 @@ service LikeService {
             description: ""
         };
     }
-    rpc GetLikesByPostID(GetLikesByPostIDRequest) returns (GetLikesByPostIDResponse){
+    rpc GetLikesInfoByPostID(GetLikesInfoByPostIDRequest) returns (GetLikesInfoByPostIDResponse){
         option (google.api.http) = {
             get: "/api/v1/posts/{post_id}/likes"
         };
         option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
-            summary: "Get Like by Post ID"
+            summary: "Get Info Likes by Post ID"
             description: ""
         };
     }
-    rpc GetLikesByCommentID(GetLikesByCommentIDRequest) returns (GetLikesByCommentIDResponse){
+    rpc GetLikesInfoByCommentID(GetLikesInfoByCommentIDRequest) returns (GetLikesInfoByCommentIDResponse){
         option (google.api.http) = {
             get: "/api/v1/comments/{comment_id}/likes"
         };
         option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
-            summary: "Get Like by Comment ID"
+            summary: "Get Info Likes by Comment ID"
             description: ""
         };
     }
@@ -88,17 +88,23 @@ message LikeUpdateRequest {
     string emoji = 2;
 }
 
-message GetLikesByPostIDRequest {
+message GetLikesInfoByPostIDRequest {
     string post_id = 1;
 }
-message GetLikesByCommentIDRequest {
+message GetLikesInfoByCommentIDRequest {
     string comment_id = 1;
 }
-message GetLikesByPostIDResponse {
-    repeated Like likes = 1;
+message GetLikesInfoByPostIDResponse {
+    LikeInfo likes = 1;
 }
-message GetLikesByCommentIDResponse {
-    repeated Like likes = 1;
+message GetLikesInfoByCommentIDResponse {
+    LikeInfo likes = 1;
+}
+message LikeInfo {
+    string your_liked_emoji = 1;
+    int64 your_like = 2;
+    repeated string others_liked_emojis = 3;
+    int64 others_likes = 4;
 }
 message Like {
     string id =1;

@@ -10,7 +10,7 @@ import (
 
 type (
 	LikeDomainService interface {
-		GetLikesByCommentID(ctx context.Context, commentId uuid.UUID) ([]*domain.Like, error)
+		GetLikesInfoByCommentID(ctx context.Context, commentId uuid.UUID, userId uuid.UUID) (*domain.LikesInfo, error)
 	}
 	UploadDomainService interface {
 		GetAttachmentsByType(ctx context.Context, attachableType string, attachableId uuid.UUID) ([]*domainUpload.Attachment, error)

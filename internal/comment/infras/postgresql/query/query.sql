@@ -27,7 +27,11 @@ DELETE FROM comment.comments WHERE id = $1 OR parent_comment_id = $1;
 DELETE FROM comment.comments WHERE post_id = $1;
 
 -- name: GetCommentsByPostID :many
-SELECT * FROM comment.comments WHERE post_id = $1;
+SELECT * 
+FROM comment.comments 
+WHERE post_id = $1 
+ORDER BY created_at DESC
+LIMIT $2 OFFSET $3;
 
 -- name: CountByPostID :one
 SELECT count(*) FROM comment.comments WHERE post_id = $1;

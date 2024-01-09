@@ -58,9 +58,18 @@ service CommentService {
             description: ""
         };
     }
+    rpc CountCommentByPostID(CountCommentByPostIDRequest) returns (CountCommentByPostIDResponse){
+        option (google.api.http) = {
+            get: "/api/v1/posts/{post_id}/comments/count"
+        };
+        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+            summary: "Count Comment By Post ID"
+            description: ""
+        };
+    }
     rpc CountCommentByCommentID(CountCommentByCommentIDRequest) returns (CountCommentByCommentIDResponse){
         option (google.api.http) = {
-            get: "/api/v1/comments/{id}/count"
+            get: "/api/v1/comments/{comment_id}/count"
         };
         option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
             summary: "Count Comment By Comment ID"
@@ -96,9 +105,17 @@ message DeleteCommentResponse {
 }
 message GetCommentsByPostIDRequest {
     string post_id =1;
+    int32 limit = 2;
+    int32 offset = 3;
+}
+message CountCommentByPostIDRequest {
+    string post_id = 1;
+}
+message CountCommentByPostIDResponse {
+    int64 count = 1;
 }
 message CountCommentByCommentIDRequest {
-    string id = 1;
+    string comment_id = 1;
 }
 message CountCommentByCommentIDResponse {
     int64 count = 1;
@@ -129,7 +146,7 @@ message CommentHasLike {
     string reply_to_id = 4;
     string content = 5;
     string parent_comment_id = 6;
-    repeated like.Like likes = 7;
+    like.LikeInfo likes = 7;
     repeated upload.Attachment attachments = 8;
     google.protobuf.Timestamp created_at = 9;
     google.protobuf.Timestamp updated_at = 10;
@@ -142,7 +159,7 @@ message CommentHasCommentAndLike {
     string content = 5;
     string parent_comment_id = 6;
     repeated CommentHasLike children = 7;
-    repeated like.Like likes = 8;
+    like.LikeInfo likes = 8;
     repeated upload.Attachment attachments = 9;
     google.protobuf.Timestamp created_at = 10;
     google.protobuf.Timestamp updated_at = 11;

@@ -25,7 +25,7 @@ type CommentHasLike struct {
 	Content         string                     `json:"content"`
 	PostID          uuid.UUID                  `json:"post_id"`
 	ParentCommentID uuid.NullUUID              `json:"parent_comment_id"`
-	Likes           []*domain.Like             `json:"likes"`
+	Likes           *domain.LikesInfo          `json:"likes"`
 	Attachments     []*domainUpload.Attachment `json:"attachments"`
 	CreatedAt       time.Time                  `json:"created_at"`
 	UpdatedAt       time.Time                  `json:"updated_at"`
