@@ -19,6 +19,9 @@ SELECT * FROM auth.users WHERE email = $1;
 -- name: GetAllUserIdOfCompany :many
 SELECT u.id FROM auth.users AS u WHERE email LIKE '%' || $1 || '%'; 
 
+-- name: GetAllUser :many
+SELECT * FROM auth.users; 
+
 -- name: FindKeyByUserID :one
 SELECT * FROM auth.keys WHERE user_id = $1;
 

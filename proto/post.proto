@@ -120,8 +120,9 @@ message DeletePostResponse {
 message GetPostResponse {
     PostResponse post = 1;
     repeated upload.Attachment attachments = 2;
-    repeated like.Like likes = 3;
+    like.LikeInfo likes = 3;
     repeated comment.CommentHasCommentAndLike comments = 4;
+    int64 count_comments = 5;
 }
 message UpdatePostRequest {
     PostResponse post = 1;
