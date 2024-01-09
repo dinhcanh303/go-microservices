@@ -222,10 +222,15 @@ func manyPostResponse(posts []*domain.Post, p *postGRPCServer, ctx context.Conte
 	// channel := make(chan *gen.GetPostResponse, len(posts))
 	// var wg sync.WaitGroup
 	for _, post := range posts {
-		likes, err := p.likeDomainService.GetLikesByPostID(ctx, post.ID)
+		likeInfo, err := p.likeDomainService.GetLikesByPostID(ctx, post.ID)
 		if err != nil {
 			slog.Warn("likeDomainService.GetLikesByPostID failed", err)
-			likes = make([]*domainLike.Like, 0)
+			likeInfo = &domainLike.LikesInfo{}
+		}
+		countComments, err := p.commentDomainService.CountCommentByPostID(ctx, post.ID)
+		if err != nil {
+			slog.Warn("commentDomainService.CountCommentByPostID failed", err)
+			countComments = 0
 		}
 		comments, err := p.commentDomainService.GetCommentsByPostID(ctx, post.ID)
 		if err != nil {
@@ -248,6 +253,7 @@ func manyPostResponse(posts []*domain.Post, p *postGRPCServer, ctx context.Conte
 				CreatedAt: timestamppb.New(post.CreatedAt),
 				UpdatedAt: timestamppb.New(post.UpdatedAt),
 			},
+			CountComments: countComments,
 			Attachments: lo.Map(attachments, func(item *domainUpload.Attachment, _ int) *gen.Attachment {
 				return &gen.Attachment{
 					Id:             item.ID.String(),
@@ -264,17 +270,12 @@ func manyPostResponse(posts []*domain.Post, p *postGRPCServer, ctx context.Conte
 					UpdatedAt:      timestamppb.New(item.UpdatedAt),
 				}
 			}),
-			Likes: lo.Map(likes, func(item *domainLike.Like, _ int) *gen.Like {
-				return &gen.Like{
-					Id:           item.ID.String(),
-					Emoji:        item.Emoji,
-					LikeableType: item.LikeableType,
-					LikeableId:   item.LikeableID.String(),
-					UserId:       item.UserID.String(),
-					CreatedAt:    timestamppb.New(item.CreatedAt),
-					UpdatedAt:    timestamppb.New(item.UpdatedAt),
-				}
-			}),
+			Likes: &gen.LikeInfo{
+				YourLikedEmoji:    likeInfo.YourLikedEmoji,
+				YourLike:          likeInfo.YourLike,
+				OthersLikedEmojis: likeInfo.OthersLikedEmojis,
+				OthersLikes:       likeInfo.OthersLikes,
+			},
 			Comments: lo.Map(comments, func(item *sharedkernel.CommentHasChildren, _ int) *gen.CommentHasCommentAndLike {
 				return &gen.CommentHasCommentAndLike{
 					Id:              item.ID.String(),
@@ -282,17 +283,12 @@ func manyPostResponse(posts []*domain.Post, p *postGRPCServer, ctx context.Conte
 					ReplyToId:       item.ReplyToID.UUID.String(),
 					Content:         item.Content,
 					ParentCommentId: item.ParentCommentID.UUID.String(),
-					Likes: lo.Map(item.Likes, func(item *domainLike.Like, _ int) *gen.Like {
-						return &gen.Like{
-							Id:           item.ID.String(),
-							Emoji:        item.Emoji,
-							LikeableType: item.LikeableType,
-							LikeableId:   item.LikeableID.String(),
-							UserId:       item.UserID.String(),
-							CreatedAt:    timestamppb.New(item.CreatedAt),
-							UpdatedAt:    timestamppb.New(item.UpdatedAt),
-						}
-					}),
+					Likes: &gen.LikeInfo{
+						YourLikedEmoji:    item.Likes.YourLikedEmoji,
+						YourLike:          item.Likes.YourLike,
+						OthersLikedEmojis: item.Likes.OthersLikedEmojis,
+						OthersLikes:       item.Likes.OthersLikes,
+					},
 					Children: lo.Map(item.Children, func(item *domainComment.CommentHasLike, _ int) *gen.CommentHasLike {
 						return &gen.CommentHasLike{
 							Id:              item.ID.String(),
@@ -301,17 +297,12 @@ func manyPostResponse(posts []*domain.Post, p *postGRPCServer, ctx context.Conte
 							ReplyToId:       item.ID.String(),
 							Content:         item.Content,
 							ParentCommentId: item.ParentCommentID.UUID.String(),
-							Likes: lo.Map(item.Likes, func(like *domainLike.Like, _ int) *gen.Like {
-								return &gen.Like{
-									Id:           like.ID.String(),
-									Emoji:        like.Emoji,
-									LikeableType: like.LikeableType,
-									LikeableId:   like.LikeableID.String(),
-									UserId:       like.UserID.String(),
-									CreatedAt:    timestamppb.New(like.CreatedAt),
-									UpdatedAt:    timestamppb.New(like.UpdatedAt),
-								}
-							}),
+							Likes: &gen.LikeInfo{
+								YourLikedEmoji:    item.Likes.YourLikedEmoji,
+								YourLike:          item.Likes.YourLike,
+								OthersLikedEmojis: item.Likes.OthersLikedEmojis,
+								OthersLikes:       item.Likes.OthersLikes,
+							},
 							CreatedAt: timestamppb.New(item.CreatedAt),
 							UpdatedAt: timestamppb.New(item.UpdatedAt),
 						}

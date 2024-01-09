@@ -3,7 +3,6 @@ package utils
 import (
 	"context"
 	"errors"
-	"log/slog"
 	"strconv"
 	"strings"
 
@@ -20,7 +19,7 @@ func ExtractMetadataUser(ctx context.Context) (*token.Payload, error) {
 	if !ok {
 		return nil, errors.New("missing metadata")
 	}
-	slog.Info("CONTEXT::", md)
+	// slog.Info("CONTEXT::", md)
 	payload := &token.Payload{}
 	if values := md.Get(constant.User); len(values) > 0 {
 		userValues := strings.Split(values[0], ",")
@@ -45,7 +44,7 @@ func ExtractMetadataRefreshToken(ctx context.Context) (string, error) {
 	if !ok {
 		return "", errors.New("missing metadata")
 	}
-	slog.Info("CONTEXT::", md)
+	// slog.Info("CONTEXT::", md)
 	refreshToken := ""
 	if values := md.Get(constant.RefreshToken); len(values) > 0 {
 		refreshTokens := strings.Split(values[0], ",")

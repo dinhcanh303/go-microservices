@@ -270,15 +270,46 @@
         ]
       }
     },
-    "/api/v1/comments/{commentId}/likes": {
+    "/api/v1/comments/{commentId}/count": {
       "get": {
-        "summary": "Get Like by Comment ID",
-        "operationId": "LikeService_GetLikesByCommentID",
+        "summary": "Count Comment By Comment ID",
+        "operationId": "CommentService_CountCommentByCommentID",
         "responses": {
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/likeGetLikesByCommentIDResponse"
+              "$ref": "#/definitions/commentCountCommentByCommentIDResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "commentId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "CommentService"
+        ]
+      }
+    },
+    "/api/v1/comments/{commentId}/likes": {
+      "get": {
+        "summary": "Get Info Likes by Comment ID",
+        "operationId": "LikeService_GetLikesInfoByCommentID",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/likeGetLikesInfoByCommentIDResponse"
             }
           },
           "default": {
@@ -339,37 +370,6 @@
             "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/commentDeleteCommentResponse"
-            }
-          },
-          "default": {
-            "description": "An unexpected error response.",
-            "schema": {
-              "$ref": "#/definitions/googlerpcStatus"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          }
-        ],
-        "tags": [
-          "CommentService"
-        ]
-      }
-    },
-    "/api/v1/comments/{id}/count": {
-      "get": {
-        "summary": "Count Comment By Comment ID",
-        "operationId": "CommentService_CountCommentByCommentID",
-        "responses": {
-          "200": {
-            "description": "A successful response.",
-            "schema": {
-              "$ref": "#/definitions/commentCountCommentByCommentIDResponse"
             }
           },
           "default": {
@@ -1118,6 +1118,51 @@
             "in": "path",
             "required": true,
             "type": "string"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          }
+        ],
+        "tags": [
+          "CommentService"
+        ]
+      }
+    },
+    "/api/v1/posts/{postId}/comments/count": {
+      "get": {
+        "summary": "Count Comment By Post ID",
+        "operationId": "CommentService_CountCommentByPostID",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/commentCountCommentByPostIDResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "postId",
+            "in": "path",
+            "required": true,
+            "type": "string"
           }
         ],
         "tags": [
@@ -1127,13 +1172,13 @@
     },
     "/api/v1/posts/{postId}/likes": {
       "get": {
-        "summary": "Get Like by Post ID",
-        "operationId": "LikeService_GetLikesByPostID",
+        "summary": "Get Info Likes by Post ID",
+        "operationId": "LikeService_GetLikesInfoByPostID",
         "responses": {
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/likeGetLikesByPostIDResponse"
+              "$ref": "#/definitions/likeGetLikesInfoByPostIDResponse"
             }
           },
           "default": {
@@ -1593,11 +1638,7 @@
           }
         },
         "likes": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "$ref": "#/definitions/likeLike"
-          }
+          "$ref": "#/definitions/likeLikeInfo"
         },
         "attachments": {
           "type": "array",
@@ -1638,11 +1679,7 @@
           "type": "string"
         },
         "likes": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "$ref": "#/definitions/likeLike"
-          }
+          "$ref": "#/definitions/likeLikeInfo"
         },
         "attachments": {
           "type": "array",
@@ -1679,6 +1716,15 @@
       }
     },
     "commentCountCommentByCommentIDResponse": {
+      "type": "object",
+      "properties": {
+        "count": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "commentCountCommentByPostIDResponse": {
       "type": "object",
       "properties": {
         "count": {
@@ -1971,27 +2017,19 @@
         }
       }
     },
-    "likeGetLikesByCommentIDResponse": {
+    "likeGetLikesInfoByCommentIDResponse": {
       "type": "object",
       "properties": {
         "likes": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "$ref": "#/definitions/likeLike"
-          }
+          "$ref": "#/definitions/likeLikeInfo"
         }
       }
     },
-    "likeGetLikesByPostIDResponse": {
+    "likeGetLikesInfoByPostIDResponse": {
       "type": "object",
       "properties": {
         "likes": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "$ref": "#/definitions/likeLike"
-          }
+          "$ref": "#/definitions/likeLikeInfo"
         }
       }
     },
@@ -2020,6 +2058,28 @@
         "updatedAt": {
           "type": "string",
           "format": "date-time"
+        }
+      }
+    },
+    "likeLikeInfo": {
+      "type": "object",
+      "properties": {
+        "yourLikedEmoji": {
+          "type": "string"
+        },
+        "yourLike": {
+          "type": "string",
+          "format": "int64"
+        },
+        "othersLikedEmojis": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "othersLikes": {
+          "type": "string",
+          "format": "int64"
         }
       }
     },
@@ -2094,11 +2154,7 @@
           }
         },
         "likes": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "$ref": "#/definitions/likeLike"
-          }
+          "$ref": "#/definitions/likeLikeInfo"
         },
         "comments": {
           "type": "array",
@@ -2106,6 +2162,10 @@
             "type": "object",
             "$ref": "#/definitions/commentCommentHasCommentAndLike"
           }
+        },
+        "countComments": {
+          "type": "string",
+          "format": "int64"
         }
       }
     },

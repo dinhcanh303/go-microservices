@@ -16,7 +16,7 @@ type CommentHasChildren struct {
 	Content         string                          `json:"content"`
 	PostID          uuid.UUID                       `json:"post_id"`
 	ParentCommentID uuid.NullUUID                   `json:"parent_comment_id"`
-	Likes           []*domainLike.Like              `json:"likes"`
+	Likes           *domainLike.LikesInfo           `json:"likes"`
 	Attachments     []*domainUpload.Attachment      `json:"attachments"`
 	Children        []*domainComment.CommentHasLike `json:"children"`
 	CreatedAt       time.Time                       `json:"created_at"`

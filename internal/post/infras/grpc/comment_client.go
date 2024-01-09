@@ -22,6 +22,23 @@ type commentGRPCClient struct {
 	conn *grpc.ClientConn
 }
 
+// CountCommentByPostID implements domain.CommentDomainService.
+func (c *commentGRPCClient) CountCommentByPostID(ctx context.Context, postId uuid.UUID) (int64, error) {
+	client := gen.NewCommentServiceClient(c.conn)
+	ctxBackground, err := utils.OutgoingContext(ctx)
+	if err != nil {
+		return 0, err
+	}
+	res, err := client.CountCommentByPostID(ctxBackground, &gen.CountCommentByPostIDRequest{
+		PostId: postId.String(),
+	})
+	if err != nil {
+		slog.Warn("commentGRPCClient.GetCommentsByPostID failed", err)
+		return 0, nil
+	}
+	return res.Count, nil
+}
+
 var CommentGRPCClientSet = wire.NewSet(NewGRPCCommentClient)
 
 var _ domain.CommentDomainService = (*commentGRPCClient)(nil)
@@ -39,8 +56,11 @@ func NewGRPCCommentClient(cfg *config.Config) (domain.CommentDomainService, erro
 // GetCommentsByPostID implements domain.CommentDomainService.
 func (c *commentGRPCClient) GetCommentsByPostID(ctx context.Context, postId uuid.UUID) ([]*sharedkernel.CommentHasChildren, error) {
 	client := gen.NewCommentServiceClient(c.conn)
-
-	res, err := client.GetCommentsByPostID(ctx, &gen.GetCommentsByPostIDRequest{
+	ctxBackground, err := utils.OutgoingContext(ctx)
+	if err != nil {
+		return nil, err
+	}
+	res, err := client.GetCommentsByPostID(ctxBackground, &gen.GetCommentsByPostIDRequest{
 		PostId: postId.String(),
 	})
 	results := make([]*sharedkernel.CommentHasChildren, 0)
@@ -61,17 +81,12 @@ func (c *commentGRPCClient) GetCommentsByPostID(ctx context.Context, postId uuid
 					ID:      uuid.MustParse(value.Id),
 					UserID:  uuid.MustParse(value.UserId),
 					Content: value.Content,
-					Likes: lo.Map(item.Likes, func(value *gen.Like, _ int) *domainLike.Like {
-						return &domainLike.Like{
-							ID:           uuid.MustParse(value.Id),
-							UserID:       uuid.MustParse(value.UserId),
-							Emoji:        value.Emoji,
-							LikeableType: value.LikeableType,
-							LikeableID:   uuid.MustParse(value.LikeableId),
-							CreatedAt:    value.CreatedAt.AsTime(),
-							UpdatedAt:    value.UpdatedAt.AsTime(),
-						}
-					}),
+					Likes: &domainLike.LikesInfo{
+						YourLikedEmoji:    item.Likes.YourLikedEmoji,
+						YourLike:          item.Likes.YourLike,
+						OthersLikedEmojis: item.Likes.OthersLikedEmojis,
+						OthersLikes:       item.Likes.OthersLikes,
+					},
 					PostID:          uuid.MustParse(value.PostId),
 					ReplyToID:       utils.StringToNullUUIDNormal(value.ReplyToId),
 					ParentCommentID: utils.StringToNullUUIDNormal(value.ParentCommentId),
@@ -79,17 +94,12 @@ func (c *commentGRPCClient) GetCommentsByPostID(ctx context.Context, postId uuid
 					UpdatedAt:       value.UpdatedAt.AsTime(),
 				}
 			}),
-			Likes: lo.Map(item.Likes, func(value *gen.Like, _ int) *domainLike.Like {
-				return &domainLike.Like{
-					ID:           uuid.MustParse(value.Id),
-					UserID:       uuid.MustParse(value.UserId),
-					Emoji:        value.Emoji,
-					LikeableType: value.LikeableType,
-					LikeableID:   uuid.MustParse(value.LikeableId),
-					CreatedAt:    value.CreatedAt.AsTime(),
-					UpdatedAt:    value.UpdatedAt.AsTime(),
-				}
-			}),
+			Likes: &domainLike.LikesInfo{
+				YourLikedEmoji:    item.Likes.YourLikedEmoji,
+				YourLike:          item.Likes.YourLike,
+				OthersLikedEmojis: item.Likes.OthersLikedEmojis,
+				OthersLikes:       item.Likes.OthersLikes,
+			},
 			CreatedAt: item.CreatedAt.AsTime(),
 			UpdatedAt: item.UpdatedAt.AsTime(),
 		})
