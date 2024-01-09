@@ -9,6 +9,7 @@ import (
 	"github.com/dinhcanh303/go-microservices/internal/like/usecases/likes"
 	"github.com/dinhcanh303/go-microservices/pkg/constant"
 	"github.com/dinhcanh303/go-microservices/pkg/postgres"
+	"github.com/dinhcanh303/go-microservices/pkg/utils"
 	"github.com/google/uuid"
 	"github.com/google/wire"
 	"github.com/pkg/errors"
@@ -17,6 +18,46 @@ import (
 
 type likeRepo struct {
 	pg postgres.DBEngine
+}
+
+// GetLikesInfoByCommentID implements likes.LikeRepo.
+func (rp *likeRepo) GetLikesInfoByCommentID(ctx context.Context, commentID uuid.UUID, userID uuid.UUID) (*domain.LikesInfo, error) {
+	db := rp.pg.GetDBRead()
+	querier := postgresql.New(db)
+	results, err := querier.GetLikesInfoByType(ctx, postgresql.GetLikesInfoByTypeParams{
+		UserID:       userID,
+		LikeableType: constant.LikeCommentType,
+		LikeableID:   commentID,
+	})
+	if err != nil {
+		return nil, errors.Wrap(err, "likeRepo.GetLikesInfoByCommentID failed")
+	}
+	return &domain.LikesInfo{
+		YourLikedEmoji:    utils.HandleNullString(results.YourLikedEmoji),
+		YourLike:          results.YourLike,
+		OthersLikedEmojis: []string{"abc"}, //utils.HandleNullStringSlice(results.OthersLikedEmojis),
+		OthersLikes:       results.OthersLikes,
+	}, nil
+}
+
+// GetLikesInfoByPostID implements likes.LikeRepo.
+func (rp *likeRepo) GetLikesInfoByPostID(ctx context.Context, postID uuid.UUID, userID uuid.UUID) (*domain.LikesInfo, error) {
+	db := rp.pg.GetDBRead()
+	querier := postgresql.New(db)
+	results, err := querier.GetLikesInfoByType(ctx, postgresql.GetLikesInfoByTypeParams{
+		UserID:       userID,
+		LikeableType: constant.LikePostType,
+		LikeableID:   postID,
+	})
+	if err != nil {
+		return nil, errors.Wrap(err, "likeRepo.GetLikesInfoByPostID failed")
+	}
+	return &domain.LikesInfo{
+		YourLikedEmoji:    utils.HandleNullString(results.YourLikedEmoji),
+		YourLike:          results.YourLike,
+		OthersLikedEmojis: utils.HandleNullStringSlice(results.OthersLikedEmojis),
+		OthersLikes:       results.OthersLikes,
+	}, nil
 }
 
 var _ likes.LikeRepo = (*likeRepo)(nil)

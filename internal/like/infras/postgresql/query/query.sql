@@ -22,3 +22,13 @@ DELETE FROM "like".likes WHERE id = $1;
 SELECT * FROM "like".likes WHERE likeable_type = $1
 AND likeable_id = $2;
 
+-- name: GetLikesInfoByType :one
+SELECT
+    COUNT(*) FILTER (WHERE user_id = $1) AS your_like,
+    COUNT(*) FILTER (WHERE user_id != $1) AS others_likes,
+	COALESCE(MIN(CASE WHEN user_id = $1 THEN emoji END),'') AS your_liked_emoji,
+	COALESCE(ARRAY_AGG(DISTINCT CASE WHEN user_id != $1 THEN emoji END), '{}') AS others_liked_emojis
+FROM "like".likes
+WHERE likeable_type = $2 AND likeable_id = $3
+LIMIT 1;
+

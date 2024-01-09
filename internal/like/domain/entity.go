@@ -15,3 +15,9 @@ type Like struct {
 	CreatedAt    time.Time `json:"created_at"`
 	UpdatedAt    time.Time `json:"updated_at"`
 }
+type LikesInfo struct {
+	YourLikedEmoji    string   `json:"your_liked_emoji"`
+	YourLike          int64    `json:"your_like"`
+	OthersLikedEmojis []string `json:"others_liked_emojis"`
+	OthersLikes       int64    `json:"others_likes"`
+}

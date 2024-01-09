@@ -13,6 +13,8 @@ type LikeRepo interface {
 	Delete(ctx context.Context, id uuid.UUID) (bool, error)
 	GetLikesByPostID(ctx context.Context, postID uuid.UUID) ([]*domain.Like, error)
 	GetLikesByCommentID(ctx context.Context, commentID uuid.UUID) ([]*domain.Like, error)
+	GetLikesInfoByPostID(ctx context.Context, postID, userID uuid.UUID) (*domain.LikesInfo, error)
+	GetLikesInfoByCommentID(ctx context.Context, commentID, userID uuid.UUID) (*domain.LikesInfo, error)
 }
 type UseCase interface {
 	CreateLike(ctx context.Context, like *domain.Like) (*domain.Like, error)
@@ -20,4 +22,6 @@ type UseCase interface {
 	DeleteLike(ctx context.Context, id uuid.UUID) (bool, error)
 	GetLikesByPostID(ctx context.Context, postID uuid.UUID) ([]*domain.Like, error)
 	GetLikesByCommentID(ctx context.Context, commentID uuid.UUID) ([]*domain.Like, error)
+	GetLikesInfoByPostID(ctx context.Context, postID, userID uuid.UUID) (*domain.LikesInfo, error)
+	GetLikesInfoByCommentID(ctx context.Context, commentID, userID uuid.UUID) (*domain.LikesInfo, error)
 }

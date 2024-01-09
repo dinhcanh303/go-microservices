@@ -13,6 +13,24 @@ type service struct {
 	likeRepo LikeRepo
 }
 
+// GetLikesInfoByCommentID implements UseCase.
+func (s *service) GetLikesInfoByCommentID(ctx context.Context, commentID uuid.UUID, userID uuid.UUID) (*domain.LikesInfo, error) {
+	likeInfo, err := s.likeRepo.GetLikesInfoByCommentID(ctx, commentID, userID)
+	if err != nil {
+		return nil, errors.Wrap(err, "service.GetLikesInfoByCommentID")
+	}
+	return likeInfo, nil
+}
+
+// GetLikesInfoByPostID implements UseCase.
+func (s *service) GetLikesInfoByPostID(ctx context.Context, postID uuid.UUID, userID uuid.UUID) (*domain.LikesInfo, error) {
+	likeInfo, err := s.likeRepo.GetLikesInfoByPostID(ctx, postID, userID)
+	if err != nil {
+		return nil, errors.Wrap(err, "service.GetLikesInfoByPostID")
+	}
+	return likeInfo, nil
+}
+
 var _ UseCase = (*service)(nil)
 
 var UseCaseSet = wire.NewSet(NewService)

@@ -12,7 +12,6 @@ import (
 	"github.com/google/uuid"
 	"github.com/google/wire"
 	"github.com/pkg/errors"
-	"github.com/samber/lo"
 	"golang.org/x/exp/slices"
 	"golang.org/x/exp/slog"
 	"google.golang.org/grpc"
@@ -43,57 +42,81 @@ func NewGRPCLikeServer(
 	reflection.Register(grpcServer)
 	return &svc
 }
-func (l *likeGRPCServer) GetLikesByPostID(ctx context.Context, request *gen.GetLikesByPostIDRequest) (*gen.GetLikesByPostIDResponse, error) {
-	slog.Info("GET: GetLikesByPostID")
+func (l *likeGRPCServer) GetLikesInfoByPostID(ctx context.Context, request *gen.GetLikesInfoByPostIDRequest) (*gen.GetLikesInfoByPostIDResponse, error) {
+	slog.Info("GET: GetLikesInfoByPostID")
 	postId, err := uuid.Parse(request.PostId)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to parse")
 	}
-	likes, err := l.uc.GetLikesByPostID(ctx, postId)
+	user, err := utils.ExtractMetadataUser(ctx)
 	if err != nil {
-		return nil, errors.Wrap(err, "uc.GetLikesByPostID failed")
+		return nil, err
 	}
-	res := &gen.GetLikesByPostIDResponse{
-		Likes: lo.Map(likes, func(item *domain.Like, _ int) *gen.Like {
-			return &gen.Like{
-				Id:           item.ID.String(),
-				UserId:       item.UserID.String(),
-				Emoji:        item.Emoji,
-				LikeableType: item.LikeableType,
-				LikeableId:   item.LikeableID.String(),
-				CreatedAt:    timestamppb.New(item.CreatedAt),
-				UpdatedAt:    timestamppb.New(item.UpdatedAt),
-			}
-		}),
+	slog.Info("userID::", user.ID)
+	likeInfo, err := l.uc.GetLikesInfoByPostID(ctx, postId, user.ID)
+	slog.Info("likeINFO::", likeInfo)
+	if err != nil {
+		return nil, errors.Wrap(err, "uc.GetLikesInfoByPostID failed")
 	}
-	return res, nil
+	return &gen.GetLikesInfoByPostIDResponse{
+		Likes: &gen.LikeInfo{
+			YourLikedEmoji:    likeInfo.YourLikedEmoji,
+			YourLike:          likeInfo.YourLike,
+			OthersLikedEmojis: likeInfo.OthersLikedEmojis,
+			OthersLikes:       likeInfo.OthersLikes,
+		},
+	}, nil
 }
 
-func (l *likeGRPCServer) GetLikesByCommentID(ctx context.Context, request *gen.GetLikesByCommentIDRequest) (*gen.GetLikesByCommentIDResponse, error) {
-	slog.Info("GET: GetLikesByCommentID")
+func (l *likeGRPCServer) GetLikesInfoByCommentID(ctx context.Context, request *gen.GetLikesInfoByCommentIDRequest) (*gen.GetLikesInfoByCommentIDResponse, error) {
+	slog.Info("GET: GetLikesInfoByCommentID")
 	commentId, err := uuid.Parse(request.CommentId)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to parse")
 	}
-	likes, err := l.uc.GetLikesByCommentID(ctx, commentId)
+	user, err := utils.ExtractMetadataUser(ctx)
 	if err != nil {
-		return nil, errors.Wrap(err, "uc.GetLikesByCommentID failed")
+		return nil, err
 	}
-	res := &gen.GetLikesByCommentIDResponse{
-		Likes: lo.Map(likes, func(item *domain.Like, _ int) *gen.Like {
-			return &gen.Like{
-				Id:           item.ID.String(),
-				UserId:       item.UserID.String(),
-				Emoji:        item.Emoji,
-				LikeableType: item.LikeableType,
-				LikeableId:   item.LikeableID.String(),
-				CreatedAt:    timestamppb.New(item.CreatedAt),
-				UpdatedAt:    timestamppb.New(item.UpdatedAt),
-			}
-		}),
+	likeInfo, err := l.uc.GetLikesInfoByCommentID(ctx, commentId, user.ID)
+	if err != nil {
+		return nil, errors.Wrap(err, "uc.GetLikesInfoByCommentID failed")
 	}
-	return res, nil
+	return &gen.GetLikesInfoByCommentIDResponse{
+		Likes: &gen.LikeInfo{
+			YourLikedEmoji:    likeInfo.YourLikedEmoji,
+			YourLike:          likeInfo.YourLike,
+			OthersLikedEmojis: likeInfo.OthersLikedEmojis,
+			OthersLikes:       likeInfo.OthersLikes,
+		},
+	}, nil
 }
+
+// func (l *likeGRPCServer) GetLikesByCommentID(ctx context.Context, request *gen.GetLikesByCommentIDRequest) (*gen.GetLikesByCommentIDResponse, error) {
+// 	slog.Info("GET: GetLikesByCommentID")
+// 	commentId, err := uuid.Parse(request.CommentId)
+// 	if err != nil {
+// 		return nil, errors.Wrap(err, "failed to parse")
+// 	}
+// 	likes, err := l.uc.GetLikesByCommentID(ctx, commentId)
+// 	if err != nil {
+// 		return nil, errors.Wrap(err, "uc.GetLikesByCommentID failed")
+// 	}
+// 	res := &gen.GetLikesByCommentIDResponse{
+// 		Likes: lo.Map(likes, func(item *domain.Like, _ int) *gen.Like {
+// 			return &gen.Like{
+// 				Id:           item.ID.String(),
+// 				UserId:       item.UserID.String(),
+// 				Emoji:        item.Emoji,
+// 				LikeableType: item.LikeableType,
+// 				LikeableId:   item.LikeableID.String(),
+// 				CreatedAt:    timestamppb.New(item.CreatedAt),
+// 				UpdatedAt:    timestamppb.New(item.UpdatedAt),
+// 			}
+// 		}),
+// 	}
+// 	return res, nil
+// }
 
 // CreateLike implements gen.LikeServiceServer.
 func (l *likeGRPCServer) CreateLike(ctx context.Context, request *gen.CreateLikeRequest) (*gen.CreateLikeResponse, error) {
