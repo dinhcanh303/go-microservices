@@ -117,12 +117,101 @@ func (q *Queries) Get(ctx context.Context, id uuid.UUID) (CommentComment, error)
 	return i, err
 }
 
-const getCommentsByPostID = `-- name: GetCommentsByPostID :many
-SELECT id, user_id, content, reply_to_id, post_id, parent_comment_id, created_at, updated_at 
-FROM comment.comments 
-WHERE post_id = $1 
+const getCommentsByCommentID = `-- name: GetCommentsByCommentID :many
+SELECT id, user_id, content, reply_to_id, post_id, parent_comment_id, created_at, updated_at
+FROM comment.comments
+WHERE parent_comment_id = $1
 ORDER BY created_at DESC
 LIMIT $2 OFFSET $3
+`
+
+type GetCommentsByCommentIDParams struct {
+	ParentCommentID uuid.NullUUID `json:"parent_comment_id"`
+	Limit           int32         `json:"limit"`
+	Offset          int32         `json:"offset"`
+}
+
+func (q *Queries) GetCommentsByCommentID(ctx context.Context, arg GetCommentsByCommentIDParams) ([]CommentComment, error) {
+	rows, err := q.db.QueryContext(ctx, getCommentsByCommentID, arg.ParentCommentID, arg.Limit, arg.Offset)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []CommentComment
+	for rows.Next() {
+		var i CommentComment
+		if err := rows.Scan(
+			&i.ID,
+			&i.UserID,
+			&i.Content,
+			&i.ReplyToID,
+			&i.PostID,
+			&i.ParentCommentID,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getCommentsByPostID = `-- name: GetCommentsByPostID :many
+WITH ranked_comments AS (
+        SELECT
+            c.id, c.user_id, c.content, c.reply_to_id, c.post_id, c.parent_comment_id, c.created_at, c.updated_at,
+            ROW_NUMBER() OVER (PARTITION BY parent_comment_id ORDER BY created_at) AS row_num
+        FROM
+            comment.comments c
+        WHERE
+            c.parent_comment_id IN (
+                SELECT id
+                FROM comment.comments
+                WHERE post_id = $1 AND parent_comment_id IS NULL
+                LIMIT $2 OFFSET $3
+            )
+)
+SELECT tb.id, tb.user_id, tb.content, tb.reply_to_id, tb.post_id, tb.parent_comment_id, tb.created_at, tb.updated_at
+FROM
+(
+    SELECT 
+    tb1.id,
+	tb1.user_id,
+	tb1.content,
+	tb1.reply_to_id,
+	tb1.post_id,
+	tb1.parent_comment_id,
+	tb1.created_at,
+	tb1.updated_at
+	FROM (
+		SELECT tb2.id, tb2.user_id, tb2.content, tb2.reply_to_id, tb2.post_id, tb2.parent_comment_id, tb2.created_at, tb2.updated_at FROM comment.comments AS tb2
+		WHERE tb2.post_id = $1 AND tb2.parent_comment_id IS NULL
+		LIMIT $2 OFFSET $3
+	)  AS tb1
+UNION
+	SELECT 
+	child.id,
+    child.user_id,
+    child.content,
+    child.reply_to_id,
+    child.post_id,
+    child.parent_comment_id,
+    child.created_at,
+    child.updated_at
+	FROM (
+        
+		SELECT id, user_id, content, reply_to_id, post_id, parent_comment_id, created_at, updated_at, row_num
+		FROM ranked_comments
+		WHERE row_num = 1
+	) AS child
+) AS tb ORDER BY created_at
 `
 
 type GetCommentsByPostIDParams struct {
@@ -133,6 +222,52 @@ type GetCommentsByPostIDParams struct {
 
 func (q *Queries) GetCommentsByPostID(ctx context.Context, arg GetCommentsByPostIDParams) ([]CommentComment, error) {
 	rows, err := q.db.QueryContext(ctx, getCommentsByPostID, arg.PostID, arg.Limit, arg.Offset)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []CommentComment
+	for rows.Next() {
+		var i CommentComment
+		if err := rows.Scan(
+			&i.ID,
+			&i.UserID,
+			&i.Content,
+			&i.ReplyToID,
+			&i.PostID,
+			&i.ParentCommentID,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getCommentsByPostID2 = `-- name: GetCommentsByPostID2 :many
+SELECT id, user_id, content, reply_to_id, post_id, parent_comment_id, created_at, updated_at 
+FROM comment.comments 
+WHERE post_id = $1 AND parent_comment_id is not null
+ORDER BY created_at DESC
+LIMIT $2 OFFSET $3
+`
+
+type GetCommentsByPostID2Params struct {
+	PostID uuid.UUID `json:"post_id"`
+	Limit  int32     `json:"limit"`
+	Offset int32     `json:"offset"`
+}
+
+func (q *Queries) GetCommentsByPostID2(ctx context.Context, arg GetCommentsByPostID2Params) ([]CommentComment, error) {
+	rows, err := q.db.QueryContext(ctx, getCommentsByPostID2, arg.PostID, arg.Limit, arg.Offset)
 	if err != nil {
 		return nil, err
 	}

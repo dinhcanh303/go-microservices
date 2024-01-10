@@ -76,8 +76,8 @@ func (c *commentGRPCClient) GetCommentsByPostID(ctx context.Context, postId uuid
 			PostID:          uuid.MustParse(item.PostId),
 			ReplyToID:       utils.StringToNullUUIDNormal(item.ReplyToId),
 			ParentCommentID: utils.StringToNullUUIDNormal(item.ParentCommentId),
-			Children: lo.Map(item.Children, func(value *gen.CommentHasLike, _ int) *domainComment.CommentHasLike {
-				return &domainComment.CommentHasLike{
+			Children: lo.Map(item.Children, func(value *gen.CommentHasMetadata, _ int) *domainComment.CommentHasMetadata {
+				return &domainComment.CommentHasMetadata{
 					ID:      uuid.MustParse(value.Id),
 					UserID:  uuid.MustParse(value.UserId),
 					Content: value.Content,

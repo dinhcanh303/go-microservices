@@ -1,14 +1,14 @@
 package request
 
 type UpdateAttachmentRequest struct {
-	AttachableType string `json:"attachable_type"`
-	AttachableID   string `json:"attachable_id"`
+	AttachableType string `json:"attachableType"`
+	AttachableID   string `json:"attachableId"`
 }
 type UpdateAttachmentsByIdsRequest struct {
-	AttachmentIds  []string `json:"attachment_ids"`
-	AttachableType string   `json:"attachable_type"`
-	AttachableID   string   `json:"attachable_id"`
+	AttachmentIds  []string `json:"attachmentIds"`
+	AttachableType string   `json:"attachableType"`
+	AttachableID   string   `json:"attachableId"`
 }
 type DeleteAttachmentsByIdsRequest struct {
-	AttachmentIds []string `json:"attachment_ids"`
+	AttachmentIds []string `json:"attachmentIds"`
 }

@@ -16,6 +16,7 @@ type (
 		Delete(ctx context.Context, id uuid.UUID) (bool, error)
 		DeleteAllByPostID(ctx context.Context, postId uuid.UUID) (bool, error)
 		GetCommentsByPostID(ctx context.Context, postId uuid.UUID, limit, offset int32) ([]*domain.Comment, error)
+		GetCommentsByCommentID(ctx context.Context, commentId uuid.UUID, limit, offset int32) ([]*domain.Comment, error)
 		CountByPostID(ctx context.Context, postId uuid.UUID) (int64, error)
 		CountByCommentID(ctx context.Context, commentId uuid.UUID) (int64, error)
 	}
@@ -26,6 +27,7 @@ type (
 		DeleteComment(ctx context.Context, id uuid.UUID) (bool, error)
 		DeleteAllCommentByPostID(ctx context.Context, postId uuid.UUID) (bool, error)
 		GetCommentsByPostID(ctx context.Context, postId, userId uuid.UUID, limit, offset int32) ([]*sharedkernel.CommentHasChildren, error)
+		GetCommentsByCommentID(ctx context.Context, commentId, userId uuid.UUID, limit, offset int32) ([]*domain.CommentHasMetadata, error)
 		CountCommentByPostID(ctx context.Context, postId uuid.UUID) (int64, error)
 		CountCommentByCommentID(ctx context.Context, commentId uuid.UUID) (int64, error)
 	}

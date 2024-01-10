@@ -160,11 +160,9 @@ func (c *commentGRPCServer) GetComment(ctx context.Context, request *gen.GetComm
 		},
 	}, nil
 }
-
-// ListCommentByPostID implements gen.CommentServiceServer.
-func (c *commentGRPCServer) GetCommentsByPostID(ctx context.Context, request *gen.GetCommentsByPostIDRequest) (*gen.GetCommentsByPostIDResponse, error) {
-	slog.Info("GET: GetCommentsByPostID")
-	postId, err := uuid.Parse(request.PostId)
+func (c *commentGRPCServer) GetCommentsByCommentID(ctx context.Context, request *gen.GetCommentsByCommentIDRequest) (*gen.GetCommentsByCommentIDResponse, error) {
+	slog.Info("GET: GetCommentsByCommentID")
+	commentId, err := uuid.Parse(request.CommentId)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to parse")
 	}
@@ -172,16 +170,16 @@ func (c *commentGRPCServer) GetCommentsByPostID(ctx context.Context, request *ge
 	if err != nil {
 		return nil, err
 	}
-	res := gen.GetCommentsByPostIDResponse{}
+	res := gen.GetCommentsByCommentIDResponse{}
 	if request.Limit == 0 {
 		request.Limit = 10
 	}
-	comments, err := c.uc.GetCommentsByPostID(ctx, postId, user.ID, request.Limit, request.Offset)
+	comments, err := c.uc.GetCommentsByCommentID(ctx, commentId, user.ID, request.Limit, request.Offset)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to get comments by post ID")
 	}
 	for _, comment := range comments {
-		res.Comments = append(res.Comments, &gen.CommentHasCommentAndLike{
+		res.Comments = append(res.Comments, &gen.CommentHasMetadata{
 			Id:              comment.ID.String(),
 			PostId:          comment.PostID.String(),
 			UserId:          comment.UserID.String(),
@@ -212,8 +210,64 @@ func (c *commentGRPCServer) GetCommentsByPostID(ctx context.Context, request *ge
 					UpdatedAt:      timestamppb.New(item.UpdatedAt),
 				}
 			}),
-			Children: lo.Map(comment.Children, func(item *domain.CommentHasLike, _ int) *gen.CommentHasLike {
-				return &gen.CommentHasLike{
+		})
+	}
+	return &res, nil
+}
+
+// ListCommentByPostID implements gen.CommentServiceServer.
+func (c *commentGRPCServer) GetCommentsByPostID(ctx context.Context, request *gen.GetCommentsByPostIDRequest) (*gen.GetCommentsByPostIDResponse, error) {
+	slog.Info("GET: GetCommentsByPostID")
+	postId, err := uuid.Parse(request.PostId)
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to parse")
+	}
+	user, err := utils.ExtractMetadataUser(ctx)
+	if err != nil {
+		return nil, err
+	}
+	res := gen.GetCommentsByPostIDResponse{}
+	if request.Limit == 0 {
+		request.Limit = 10
+	}
+	comments, err := c.uc.GetCommentsByPostID(ctx, postId, user.ID, request.Limit, request.Offset)
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to get comments by post ID")
+	}
+	for _, comment := range comments {
+		res.Comments = append(res.Comments, &gen.CommentHasChildren{
+			Id:              comment.ID.String(),
+			PostId:          comment.PostID.String(),
+			UserId:          comment.UserID.String(),
+			ReplyToId:       comment.ReplyToID.UUID.String(),
+			Content:         comment.Content,
+			ParentCommentId: comment.ParentCommentID.UUID.String(),
+			CreatedAt:       timestamppb.New(comment.CreatedAt),
+			UpdatedAt:       timestamppb.New(comment.UpdatedAt),
+			Likes: &gen.LikeInfo{
+				YourLikedEmoji:    comment.Likes.YourLikedEmoji,
+				YourLike:          comment.Likes.YourLike,
+				OthersLikedEmojis: comment.Likes.OthersLikedEmojis,
+				OthersLikes:       comment.Likes.OthersLikes,
+			},
+			Attachments: lo.Map(comment.Attachments, func(item *domainUpload.Attachment, _ int) *gen.Attachment {
+				return &gen.Attachment{
+					Id:             item.ID.String(),
+					UserId:         item.UserID.String(),
+					AttachableType: item.AttachableType,
+					AttachableId:   item.AttachableID.String(),
+					Filename:       item.FileName,
+					Url:            item.URL,
+					UrlThumbnail:   item.URLThumbnail,
+					Extension:      item.Extension,
+					MimeType:       item.MimeType,
+					Folder:         item.Folder,
+					CreatedAt:      timestamppb.New(item.CreatedAt),
+					UpdatedAt:      timestamppb.New(item.UpdatedAt),
+				}
+			}),
+			Children: lo.Map(comment.Children, func(item *domain.CommentHasMetadata, _ int) *gen.CommentHasMetadata {
+				return &gen.CommentHasMetadata{
 					Id:        item.ID.String(),
 					PostId:    item.PostID.String(),
 					UserId:    item.UserID.String(),

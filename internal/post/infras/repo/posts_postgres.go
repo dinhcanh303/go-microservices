@@ -30,7 +30,6 @@ var RepositoryPostSet = wire.NewSet(NewPostRepo)
 func (rp *postRepo) GetByFeed(ctx context.Context, userIds []uuid.UUID, groupIds []uuid.UUID, limit int32, offset int32) ([]*domain.Post, error) {
 	db := rp.pg.GetDBRead()
 	querier := postgresql.New(db)
-
 	results, err := querier.GetByFeed(ctx, postgresql.GetByFeedParams{
 		Column1: userIds,
 		Column2: groupIds,

@@ -4,9 +4,7 @@ import (
 	"context"
 
 	"github.com/dinhcanh303/go-microservices/cmd/post/config"
-	domainComment "github.com/dinhcanh303/go-microservices/internal/comment/domain"
 	domainLike "github.com/dinhcanh303/go-microservices/internal/like/domain"
-	sharedkernel "github.com/dinhcanh303/go-microservices/internal/pkg/shared_kernel"
 	"github.com/dinhcanh303/go-microservices/internal/post/domain"
 	"github.com/dinhcanh303/go-microservices/internal/post/usecases/posts"
 	domainUpload "github.com/dinhcanh303/go-microservices/internal/upload/domain"
@@ -132,6 +130,12 @@ func (p *postGRPCServer) NewFeed(ctx context.Context, request *gen.NewFeedReques
 	if err != nil {
 		return nil, errors.Wrap(err, "uc.GetPostsByFeed failed")
 	}
+	// slog.Info("LENGTH", len(posts))
+	// if len(posts) == 0 {
+	// 	return &gen.NewFeedResponse{
+	// 		Posts: nil,
+	// 	}, nil
+	// }
 	results := manyPostResponse(posts, p, ctx)
 	return &gen.NewFeedResponse{
 		Posts: results,
@@ -232,11 +236,11 @@ func manyPostResponse(posts []*domain.Post, p *postGRPCServer, ctx context.Conte
 			slog.Warn("commentDomainService.CountCommentByPostID failed", err)
 			countComments = 0
 		}
-		comments, err := p.commentDomainService.GetCommentsByPostID(ctx, post.ID)
-		if err != nil {
-			slog.Warn("commentDomainService.GetCommentsByPostID failed", err)
-			comments = make([]*sharedkernel.CommentHasChildren, 0)
-		}
+		// comments, err := p.commentDomainService.GetCommentsByPostID(ctx, post.ID)
+		// if err != nil {
+		// 	slog.Warn("commentDomainService.GetCommentsByPostID failed", err)
+		// 	comments = make([]*sharedkernel.CommentHasChildren, 0)
+		// }
 		attachments, err := p.uploadDomainService.GetAttachmentsByType(ctx, "Attachment/Post", post.ID)
 		if err != nil {
 			slog.Warn("uploadDomainService.GetAttachmentsByType failed", err)
@@ -276,42 +280,42 @@ func manyPostResponse(posts []*domain.Post, p *postGRPCServer, ctx context.Conte
 				OthersLikedEmojis: likeInfo.OthersLikedEmojis,
 				OthersLikes:       likeInfo.OthersLikes,
 			},
-			Comments: lo.Map(comments, func(item *sharedkernel.CommentHasChildren, _ int) *gen.CommentHasCommentAndLike {
-				return &gen.CommentHasCommentAndLike{
-					Id:              item.ID.String(),
-					PostId:          item.PostID.String(),
-					ReplyToId:       item.ReplyToID.UUID.String(),
-					Content:         item.Content,
-					ParentCommentId: item.ParentCommentID.UUID.String(),
-					Likes: &gen.LikeInfo{
-						YourLikedEmoji:    item.Likes.YourLikedEmoji,
-						YourLike:          item.Likes.YourLike,
-						OthersLikedEmojis: item.Likes.OthersLikedEmojis,
-						OthersLikes:       item.Likes.OthersLikes,
-					},
-					Children: lo.Map(item.Children, func(item *domainComment.CommentHasLike, _ int) *gen.CommentHasLike {
-						return &gen.CommentHasLike{
-							Id:              item.ID.String(),
-							PostId:          item.PostID.String(),
-							UserId:          item.UserID.String(),
-							ReplyToId:       item.ID.String(),
-							Content:         item.Content,
-							ParentCommentId: item.ParentCommentID.UUID.String(),
-							Likes: &gen.LikeInfo{
-								YourLikedEmoji:    item.Likes.YourLikedEmoji,
-								YourLike:          item.Likes.YourLike,
-								OthersLikedEmojis: item.Likes.OthersLikedEmojis,
-								OthersLikes:       item.Likes.OthersLikes,
-							},
-							CreatedAt: timestamppb.New(item.CreatedAt),
-							UpdatedAt: timestamppb.New(item.UpdatedAt),
-						}
-					}),
-					UserId:    item.UserID.String(),
-					CreatedAt: timestamppb.New(item.CreatedAt),
-					UpdatedAt: timestamppb.New(item.UpdatedAt),
-				}
-			}),
+			// Comments: lo.Map(comments, func(item *sharedkernel.CommentHasChildren, _ int) *gen.CommentHasChildren {
+			// 	return &gen.CommentHasChildren{
+			// 		Id:              item.ID.String(),
+			// 		PostId:          item.PostID.String(),
+			// 		ReplyToId:       item.ReplyToID.UUID.String(),
+			// 		Content:         item.Content,
+			// 		ParentCommentId: item.ParentCommentID.UUID.String(),
+			// 		Likes: &gen.LikeInfo{
+			// 			YourLikedEmoji:    item.Likes.YourLikedEmoji,
+			// 			YourLike:          item.Likes.YourLike,
+			// 			OthersLikedEmojis: item.Likes.OthersLikedEmojis,
+			// 			OthersLikes:       item.Likes.OthersLikes,
+			// 		},
+			// 		Children: lo.Map(item.Children, func(item *domainComment.CommentHasMetadata, _ int) *gen.CommentHasMetadata {
+			// 			return &gen.CommentHasMetadata{
+			// 				Id:              item.ID.String(),
+			// 				PostId:          item.PostID.String(),
+			// 				UserId:          item.UserID.String(),
+			// 				ReplyToId:       item.ID.String(),
+			// 				Content:         item.Content,
+			// 				ParentCommentId: item.ParentCommentID.UUID.String(),
+			// 				Likes: &gen.LikeInfo{
+			// 					YourLikedEmoji:    item.Likes.YourLikedEmoji,
+			// 					YourLike:          item.Likes.YourLike,
+			// 					OthersLikedEmojis: item.Likes.OthersLikedEmojis,
+			// 					OthersLikes:       item.Likes.OthersLikes,
+			// 				},
+			// 				CreatedAt: timestamppb.New(item.CreatedAt),
+			// 				UpdatedAt: timestamppb.New(item.UpdatedAt),
+			// 			}
+			// 		}),
+			// 		UserId:    item.UserID.String(),
+			// 		CreatedAt: timestamppb.New(item.CreatedAt),
+			// 		UpdatedAt: timestamppb.New(item.UpdatedAt),
+			// 	}
+			// }),
 		})
 	}
 	return results

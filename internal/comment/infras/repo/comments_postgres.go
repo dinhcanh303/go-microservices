@@ -19,6 +19,36 @@ type commentRepo struct {
 	pg postgres.DBEngine
 }
 
+// GetCommentsByCommentID implements comments.CommentRepo.
+func (rp *commentRepo) GetCommentsByCommentID(ctx context.Context, commentId uuid.UUID, limit int32, offset int32) ([]*domain.Comment, error) {
+	db := rp.pg.GetDBRead()
+	querier := postgresql.New(db)
+	results, err := querier.GetCommentsByCommentID(ctx, postgresql.GetCommentsByCommentIDParams{
+		ParentCommentID: uuid.NullUUID{
+			UUID:  commentId,
+			Valid: commentId.String() != "",
+		},
+		Limit:  limit,
+		Offset: offset,
+	})
+	if err != nil {
+		return nil, errors.Wrap(err, "commentRepo.GetCommentsByPostID failed")
+	}
+	slog.Info("Repo::", results)
+	return lo.Map(results, func(item postgresql.CommentComment, _ int) *domain.Comment {
+		return &domain.Comment{
+			ID:              item.ID,
+			UserID:          item.UserID,
+			Content:         item.Content,
+			PostID:          item.PostID,
+			ParentCommentID: item.ParentCommentID,
+			ReplyToID:       item.ReplyToID,
+			CreatedAt:       item.CreatedAt,
+			UpdatedAt:       item.UpdatedAt,
+		}
+	}), nil
+}
+
 var _ comments.CommentRepo = (*commentRepo)(nil)
 
 var RepositorySet = wire.NewSet(NewCommentRepo)

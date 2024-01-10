@@ -35,7 +35,7 @@ func (rp *likeRepo) GetLikesInfoByCommentID(ctx context.Context, commentID uuid.
 	return &domain.LikesInfo{
 		YourLikedEmoji:    utils.HandleNullString(results.YourLikedEmoji),
 		YourLike:          results.YourLike,
-		OthersLikedEmojis: []string{"abc"}, //utils.HandleNullStringSlice(results.OthersLikedEmojis),
+		OthersLikedEmojis: utils.HandleNullStringSlice(results.OthersLikedEmojis),
 		OthersLikes:       results.OthersLikes,
 	}, nil
 }

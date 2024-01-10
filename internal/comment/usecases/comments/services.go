@@ -20,6 +20,38 @@ type service struct {
 	uploadDomainSvc domain.UploadDomainService
 }
 
+// GetCommentsByCommentID implements UseCase.
+func (s *service) GetCommentsByCommentID(ctx context.Context, commentId uuid.UUID, userId uuid.UUID, limit int32, offset int32) ([]*domain.CommentHasMetadata, error) {
+	comments, err := s.commentRepo.GetCommentsByCommentID(ctx, commentId, limit, offset)
+	if err != nil {
+		return nil, errors.Wrap(err, "service.GetCommentsByCommentID")
+	}
+	var commentsHasMetadata []*domain.CommentHasMetadata
+	for i, comment := range comments {
+		likeInfo, err := s.likeDomainSvc.GetLikesInfoByCommentID(ctx, comment.ID, userId)
+		if err != nil {
+			likeInfo = &domainLike.LikesInfo{}
+		}
+		attachments, err := s.uploadDomainSvc.GetAttachmentsByType(ctx, "Attachment/Comment", comment.ID)
+		if err != nil {
+			attachments = make([]*domainUpload.Attachment, 0)
+		}
+		commentsHasMetadata = append(commentsHasMetadata, &domain.CommentHasMetadata{
+			ID:              comments[i].ID,
+			UserID:          comments[i].UserID,
+			ReplyToID:       comments[i].ReplyToID,
+			Content:         comments[i].Content,
+			PostID:          comments[i].PostID,
+			ParentCommentID: comments[i].ParentCommentID,
+			Likes:           likeInfo,
+			Attachments:     attachments,
+			CreatedAt:       comments[i].CreatedAt,
+			UpdatedAt:       comments[i].UpdatedAt,
+		})
+	}
+	return commentsHasMetadata, nil
+}
+
 var _ UseCase = (*service)(nil)
 
 var UseCaseSet = wire.NewSet(NewService)
@@ -101,7 +133,7 @@ func (s *service) GetCommentsByPostID(ctx context.Context, postId, userId uuid.U
 			CreatedAt:       comments[i].CreatedAt,
 			UpdatedAt:       comments[i].UpdatedAt,
 		}
-		results := &domain.CommentHasLike{
+		results := &domain.CommentHasMetadata{
 			ID:              comments[i].ID,
 			UserID:          comments[i].UserID,
 			ReplyToID:       comments[i].ReplyToID,

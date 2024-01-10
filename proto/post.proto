@@ -121,8 +121,8 @@ message GetPostResponse {
     PostResponse post = 1;
     repeated upload.Attachment attachments = 2;
     like.LikeInfo likes = 3;
-    repeated comment.CommentHasCommentAndLike comments = 4;
-    int64 count_comments = 5;
+    int64 count_comments = 4;
+    // repeated comment.CommentHasChildren comments = 5;
 }
 message UpdatePostRequest {
     PostResponse post = 1;

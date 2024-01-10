@@ -18,7 +18,7 @@ type Comment struct {
 	CreatedAt       time.Time     `json:"created_at"`
 	UpdatedAt       time.Time     `json:"updated_at"`
 }
-type CommentHasLike struct {
+type CommentHasMetadata struct {
 	ID              uuid.UUID                  `json:"id"`
 	UserID          uuid.UUID                  `json:"user_id"`
 	ReplyToID       uuid.NullUUID              `json:"reply_to_id"`

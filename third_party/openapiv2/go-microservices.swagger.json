@@ -270,6 +270,51 @@
         ]
       }
     },
+    "/api/v1/comments/{commentId}/comments": {
+      "get": {
+        "summary": "Get Comment By Comment ID",
+        "operationId": "CommentService_GetCommentsByCommentID",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/commentGetCommentsByCommentIDResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "commentId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          }
+        ],
+        "tags": [
+          "CommentService"
+        ]
+      }
+    },
     "/api/v1/comments/{commentId}/count": {
       "get": {
         "summary": "Count Comment By Comment ID",
@@ -1609,7 +1654,7 @@
         }
       }
     },
-    "commentCommentHasCommentAndLike": {
+    "commentCommentHasChildren": {
       "type": "object",
       "properties": {
         "id": {
@@ -1634,7 +1679,7 @@
           "type": "array",
           "items": {
             "type": "object",
-            "$ref": "#/definitions/commentCommentHasLike"
+            "$ref": "#/definitions/commentCommentHasMetadata"
           }
         },
         "likes": {
@@ -1657,7 +1702,7 @@
         }
       }
     },
-    "commentCommentHasLike": {
+    "commentCommentHasMetadata": {
       "type": "object",
       "properties": {
         "id": {
@@ -1765,6 +1810,18 @@
         }
       }
     },
+    "commentGetCommentsByCommentIDResponse": {
+      "type": "object",
+      "properties": {
+        "comments": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/commentCommentHasMetadata"
+          }
+        }
+      }
+    },
     "commentGetCommentsByPostIDResponse": {
       "type": "object",
       "properties": {
@@ -1772,7 +1829,7 @@
           "type": "array",
           "items": {
             "type": "object",
-            "$ref": "#/definitions/commentCommentHasCommentAndLike"
+            "$ref": "#/definitions/commentCommentHasChildren"
           }
         }
       }
@@ -2156,16 +2213,10 @@
         "likes": {
           "$ref": "#/definitions/likeLikeInfo"
         },
-        "comments": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "$ref": "#/definitions/commentCommentHasCommentAndLike"
-          }
-        },
         "countComments": {
           "type": "string",
-          "format": "int64"
+          "format": "int64",
+          "title": "repeated comment.CommentHasChildren comments = 5;"
         }
       }
     },
