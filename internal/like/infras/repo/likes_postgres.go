@@ -20,6 +20,30 @@ type likeRepo struct {
 	pg postgres.DBEngine
 }
 
+// GetLikeByUserId implements likes.LikeRepo.
+func (rp *likeRepo) GetLikeByUserId(ctx context.Context, likeableType string, likeableId uuid.UUID, userId uuid.UUID) (*domain.Like, error) {
+	db := rp.pg.GetDBRead()
+	querier := postgresql.New(db)
+	like, err := querier.GetLikeByUserId(ctx, postgresql.GetLikeByUserIdParams{
+		LikeableType: likeableType,
+		LikeableID:   likeableId,
+		UserID:       userId,
+	})
+	if err != nil {
+		return nil, errors.Wrap(err, "likeRepo.GetLikeByUserId failed")
+	}
+
+	return &domain.Like{
+		ID:           like.ID,
+		Emoji:        like.Emoji,
+		LikeableType: like.LikeableType,
+		LikeableID:   like.LikeableID,
+		UserID:       like.UserID,
+		CreatedAt:    like.CreatedAt,
+		UpdatedAt:    like.UpdatedAt,
+	}, nil
+}
+
 // GetLikesInfoByCommentID implements likes.LikeRepo.
 func (rp *likeRepo) GetLikesInfoByCommentID(ctx context.Context, commentID uuid.UUID, userID uuid.UUID) (*domain.LikesInfo, error) {
 	db := rp.pg.GetDBRead()

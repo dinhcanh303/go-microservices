@@ -42,7 +42,7 @@ service PostService {
     }
     rpc GetPostsByGroupId(GetPostsByGroupIdRequest) returns (GetPostsByGroupIdResponse){
         option (google.api.http) = {
-            get: "/api/v1/groups/{group_id}/posts"
+            get: "/api/v1/groups/{group_id}/feed"
         };
         option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
             summary: "Get Posts By Group ID"
@@ -51,7 +51,7 @@ service PostService {
     }
     rpc GetPostsByUserId(GetPostsByUserIdRequest) returns (GetPostsByUserIdResponse){
         option (google.api.http) = {
-            get: "/api/v1/users/{user_id}/posts"
+            get: "/api/v1/users/{user_id}/feed"
         };
         option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
             summary: "Get Posts By User ID"

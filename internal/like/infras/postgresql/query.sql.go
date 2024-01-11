@@ -103,6 +103,32 @@ func (q *Queries) GetAllByType(ctx context.Context, arg GetAllByTypeParams) ([]L
 	return items, nil
 }
 
+const getLikeByUserId = `-- name: GetLikeByUserId :one
+SELECT id, emoji, likeable_type, likeable_id, user_id, created_at, updated_at FROM "like".likes WHERE likeable_type = $1
+AND likeable_id = $2 AND user_id = $3 LIMIT 1
+`
+
+type GetLikeByUserIdParams struct {
+	LikeableType string    `json:"likeable_type"`
+	LikeableID   uuid.UUID `json:"likeable_id"`
+	UserID       uuid.UUID `json:"user_id"`
+}
+
+func (q *Queries) GetLikeByUserId(ctx context.Context, arg GetLikeByUserIdParams) (LikeLike, error) {
+	row := q.db.QueryRowContext(ctx, getLikeByUserId, arg.LikeableType, arg.LikeableID, arg.UserID)
+	var i LikeLike
+	err := row.Scan(
+		&i.ID,
+		&i.Emoji,
+		&i.LikeableType,
+		&i.LikeableID,
+		&i.UserID,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}
+
 const getLikesInfoByType = `-- name: GetLikesInfoByType :one
 SELECT
     COUNT(*) FILTER (WHERE user_id = $1) AS your_like,

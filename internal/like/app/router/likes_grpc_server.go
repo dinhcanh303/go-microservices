@@ -122,10 +122,12 @@ func (l *likeGRPCServer) GetLikesInfoByCommentID(ctx context.Context, request *g
 func (l *likeGRPCServer) CreateLike(ctx context.Context, request *gen.CreateLikeRequest) (*gen.CreateLikeResponse, error) {
 	slog.Info("POST: CreateLike")
 	typeLike := []string{constant.LikeCommentType, constant.LikePostType}
+	emoji := request.Like.Emoji
 	user, err := utils.ExtractMetadataUser(ctx)
 	if err != nil {
 		return nil, errors.Wrap(err, "Extract Metadata User failed")
 	}
+	userId := user.ID
 	likeableId, err := uuid.Parse(request.Like.LikeableId)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to parse")
@@ -135,14 +137,43 @@ func (l *likeGRPCServer) CreateLike(ctx context.Context, request *gen.CreateLike
 	if !hasTypeLike {
 		return nil, errors.Wrap(err, "Please Enter Input Type Correct")
 	}
+	like, _ := l.uc.GetLikeByUserId(ctx, likeableType, likeableId, userId)
+	if like != nil {
+		if like.Emoji == emoji {
+			_, err := l.uc.DeleteLike(ctx, like.ID)
+			if err != nil {
+				return nil, err
+			}
+			return &gen.CreateLikeResponse{}, nil
+		} else {
+			like, err := l.uc.UpdateLike(ctx, &domain.Like{
+				ID:    like.ID,
+				Emoji: request.Like.Emoji,
+			})
+			if err != nil {
+				return nil, errors.Wrap(err, "uc.UpdateLike failed")
+			}
+			return &gen.CreateLikeResponse{
+				Like: &gen.Like{
+					Id:           like.ID.String(),
+					Emoji:        like.Emoji,
+					LikeableType: like.LikeableType,
+					LikeableId:   like.LikeableID.String(),
+					UserId:       like.UserID.String(),
+					CreatedAt:    timestamppb.New(like.CreatedAt),
+					UpdatedAt:    timestamppb.New(like.UpdatedAt),
+				},
+			}, nil
+		}
+	}
 	model := domain.Like{
 		ID:           uuid.New(),
-		Emoji:        request.Like.Emoji,
-		LikeableType: request.Like.LikeableType,
+		Emoji:        emoji,
+		LikeableType: likeableType,
 		LikeableID:   likeableId,
-		UserID:       user.ID,
+		UserID:       userId,
 	}
-	like, err := l.uc.CreateLike(ctx, &model)
+	like, err = l.uc.CreateLike(ctx, &model)
 	if err != nil {
 		return nil, errors.Wrap(err, "uc.CreateLike failed")
 	}

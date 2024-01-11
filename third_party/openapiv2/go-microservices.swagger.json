@@ -735,7 +735,7 @@
         ]
       }
     },
-    "/api/v1/groups/{groupId}/posts": {
+    "/api/v1/groups/{groupId}/feed": {
       "get": {
         "summary": "Get Posts By Group ID",
         "operationId": "PostService_GetPostsByGroupId",
@@ -1264,6 +1264,14 @@
             }
           }
         },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
         "tags": [
           "AuthService"
         ]
@@ -1354,6 +1362,51 @@
         ]
       }
     },
+    "/api/v1/users/{userId}/feed": {
+      "get": {
+        "summary": "Get Posts By User ID",
+        "operationId": "PostService_GetPostsByUserId",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/postGetPostsByUserIdResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          }
+        ],
+        "tags": [
+          "PostService"
+        ]
+      }
+    },
     "/api/v1/users/{userId}/group-ids": {
       "get": {
         "summary": "Get all group id by user id",
@@ -1413,51 +1466,6 @@
         ],
         "tags": [
           "GroupService"
-        ]
-      }
-    },
-    "/api/v1/users/{userId}/posts": {
-      "get": {
-        "summary": "Get Posts By User ID",
-        "operationId": "PostService_GetPostsByUserId",
-        "responses": {
-          "200": {
-            "description": "A successful response.",
-            "schema": {
-              "$ref": "#/definitions/postGetPostsByUserIdResponse"
-            }
-          },
-          "default": {
-            "description": "An unexpected error response.",
-            "schema": {
-              "$ref": "#/definitions/googlerpcStatus"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "userId",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "name": "limit",
-            "in": "query",
-            "required": false,
-            "type": "integer",
-            "format": "int32"
-          },
-          {
-            "name": "offset",
-            "in": "query",
-            "required": false,
-            "type": "integer",
-            "format": "int32"
-          }
-        ],
-        "tags": [
-          "PostService"
         ]
       }
     },

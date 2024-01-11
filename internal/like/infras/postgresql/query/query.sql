@@ -22,6 +22,10 @@ DELETE FROM "like".likes WHERE id = $1;
 SELECT * FROM "like".likes WHERE likeable_type = $1
 AND likeable_id = $2;
 
+-- name: GetLikeByUserId :one
+SELECT * FROM "like".likes WHERE likeable_type = $1
+AND likeable_id = $2 AND user_id = $3 LIMIT 1;
+
 -- name: GetLikesInfoByType :one
 SELECT
     COUNT(*) FILTER (WHERE user_id = $1) AS your_like,

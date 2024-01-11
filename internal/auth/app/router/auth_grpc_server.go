@@ -108,18 +108,28 @@ func (a *authGRPCServer) SignIn(ctx context.Context, request *gen.SignInRequest)
 }
 func (a *authGRPCServer) Profile(ctx context.Context, request *gen.GetProfileRequest) (*gen.GetProfileResponse, error) {
 	slog.Info("GET:: Profile")
-	md, ok := metadata.FromIncomingContext(ctx)
-	if !ok {
-		return nil, errors.New("no headers found in the incoming context.")
+	var userId uuid.UUID
+	var err error
+	if request.Id != "" {
+		userId, err = uuid.Parse(request.Id)
+		if err != nil {
+			return nil, err
+		}
+	} else {
+		md, ok := metadata.FromIncomingContext(ctx)
+		if !ok {
+			return nil, errors.New("no headers found in the incoming context.")
+		}
+		clientId := utils.GetKeyMetadata(md, constant.ClientID)
+		if clientId == "" {
+			return nil, errors.New("Invalid Request")
+		}
+		userId, err = uuid.Parse(clientId)
+		if err != nil {
+			return nil, err
+		}
 	}
-	clientId := utils.GetKeyMetadata(md, constant.ClientID)
-	if clientId == "" {
-		return nil, errors.New("Invalid Request")
-	}
-	userId, err := uuid.Parse(clientId)
-	if err != nil {
-		return nil, err
-	}
+
 	user, err := a.uc.GetUser(ctx, userId)
 	if err != nil {
 		return nil, err

@@ -502,7 +502,7 @@ func RegisterPostServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/post.PostService/GetPostsByGroupId", runtime.WithHTTPPathPattern("/api/v1/groups/{group_id}/posts"))
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/post.PostService/GetPostsByGroupId", runtime.WithHTTPPathPattern("/api/v1/groups/{group_id}/feed"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -527,7 +527,7 @@ func RegisterPostServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/post.PostService/GetPostsByUserId", runtime.WithHTTPPathPattern("/api/v1/users/{user_id}/posts"))
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/post.PostService/GetPostsByUserId", runtime.WithHTTPPathPattern("/api/v1/users/{user_id}/feed"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -707,7 +707,7 @@ func RegisterPostServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/post.PostService/GetPostsByGroupId", runtime.WithHTTPPathPattern("/api/v1/groups/{group_id}/posts"))
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/post.PostService/GetPostsByGroupId", runtime.WithHTTPPathPattern("/api/v1/groups/{group_id}/feed"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -729,7 +729,7 @@ func RegisterPostServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/post.PostService/GetPostsByUserId", runtime.WithHTTPPathPattern("/api/v1/users/{user_id}/posts"))
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/post.PostService/GetPostsByUserId", runtime.WithHTTPPathPattern("/api/v1/users/{user_id}/feed"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -799,9 +799,9 @@ var (
 
 	pattern_PostService_NewFeed_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"api", "v1", "feed"}, ""))
 
-	pattern_PostService_GetPostsByGroupId_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3, 2, 4}, []string{"api", "v1", "groups", "group_id", "posts"}, ""))
+	pattern_PostService_GetPostsByGroupId_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3, 2, 4}, []string{"api", "v1", "groups", "group_id", "feed"}, ""))
 
-	pattern_PostService_GetPostsByUserId_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3, 2, 4}, []string{"api", "v1", "users", "user_id", "posts"}, ""))
+	pattern_PostService_GetPostsByUserId_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3, 2, 4}, []string{"api", "v1", "users", "user_id", "feed"}, ""))
 
 	pattern_PostService_UpdatePost_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3}, []string{"api", "v1", "posts", "post.id"}, ""))
 
