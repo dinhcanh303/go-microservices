@@ -21,9 +21,9 @@ type (
 		GetAttachmentsByType(ctx context.Context, attachableType string, attachableId uuid.UUID) ([]*domainUpload.Attachment, error)
 	}
 	GroupDomainService interface {
-		GetAllGroupIdByUserId(ctx context.Context, userId uuid.UUID) ([]uuid.UUID, error)
+		GetGroupIdsByUserId(ctx context.Context, userId uuid.UUID) ([]uuid.UUID, error)
 	}
 	AuthDomainService interface {
-		GetAllUserIdByUserId(ctx context.Context, userId uuid.UUID) ([]uuid.UUID, error)
+		GetUserIdsByUserId(ctx context.Context, userId uuid.UUID) ([]uuid.UUID, error)
 	}
 )

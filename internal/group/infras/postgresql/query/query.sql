@@ -37,6 +37,16 @@ INSERT INTO "group".group_members
 )
 VALUES ($1,$2,$3,$4) RETURNING *;
 
+-- name: CreateGroupMembers :many
+INSERT INTO "group".group_members
+(
+    id,
+    group_id,
+    user_id,
+    role
+)
+VALUES ($1,$2,$3,$4) RETURNING *;
+
 -- name: UpdateGroupMember :one
 UPDATE "group".group_members
 SET
@@ -46,22 +56,22 @@ WHERE id = sqlc.arg(id) RETURNING *;
 -- name: DeleteGroupMember :exec
 DELETE FROM "group".group_members WHERE id = $1;
 
--- name: GetAllGroupMembers :many
+-- name: GetGroupMembers :many
 SELECT * FROM "group".group_members WHERE group_id = $1;
 
 -- name: CountGroupMembers :one
 SELECT count(*) FROM "group".group_members WHERE group_id = $1;
 
--- name: DeleteAllGroupMembersByGroupId :exec
+-- name: DeleteGroupMembersByGroupId :exec
 DELETE FROM "group".group_members WHERE group_id = $1;
 
--- name: GetAllGroupByUserId :many
+-- name: GetGroupsByUserId :many
 SELECT g.*
 FROM "group".groups AS g
 INNER JOIN "group".group_members AS gm ON g.id = gm.group_id
-WHERE gm.user_id = $1;
+WHERE gm.user_id = $1 LIMIT $2 OFFSET $3;
 
--- name: GetAllGroupIdByUserId :many
+-- name: GetGroupIdsByUserId :many
 SELECT gm.group_id
 FROM "group".group_members as gm
 WHERE user_id = $1;

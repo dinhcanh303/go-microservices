@@ -19,12 +19,16 @@ type groupRepo struct {
 }
 
 // GetAllGroupByUserId implements groups.GroupRepo.
-func (rp *groupRepo) GetAllGroupByUserId(ctx context.Context, userId uuid.UUID) ([]*domain.Group, error) {
+func (rp *groupRepo) GetGroupsByUserId(ctx context.Context, userId uuid.UUID, limit, offset int32) ([]*domain.Group, error) {
 	db := rp.pg.GetDBRead()
 	querier := postgresql.New(db)
-	results, err := querier.GetAllGroupByUserId(ctx, userId)
+	results, err := querier.GetGroupsByUserId(ctx, postgresql.GetGroupsByUserIdParams{
+		UserID: userId,
+		Limit:  limit,
+		Offset: offset,
+	})
 	if err != nil {
-		return nil, errors.Wrap(err, "qtx.GetAllGroupByUserId(ctx, userId) failed")
+		return nil, errors.Wrap(err, "qtx.GetGroupsByUserId(ctx, userId) failed")
 	}
 	return lo.Map(results, func(item postgresql.GroupGroup, _ int) *domain.Group {
 		return &domain.Group{
@@ -38,12 +42,12 @@ func (rp *groupRepo) GetAllGroupByUserId(ctx context.Context, userId uuid.UUID) 
 		}
 	}), nil
 }
-func (rp *groupRepo) GetAllGroupIdByUserId(ctx context.Context, userId uuid.UUID) ([]string, error) {
+func (rp *groupRepo) GetGroupIdsByUserId(ctx context.Context, userId uuid.UUID) ([]string, error) {
 	db := rp.pg.GetDBRead()
 	querier := postgresql.New(db)
-	results, err := querier.GetAllGroupIdByUserId(ctx, userId)
+	results, err := querier.GetGroupIdsByUserId(ctx, userId)
 	if err != nil {
-		return nil, errors.Wrap(err, "qtx.GetAllGroupByUserId(ctx, userId) failed")
+		return nil, errors.Wrap(err, "qtx.GetGroupIdsByUserId(ctx, userId) failed")
 	}
 	return lo.Map(results, func(item uuid.UUID, _ int) string {
 		return item.String()

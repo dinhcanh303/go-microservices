@@ -19,16 +19,16 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	GroupService_CreateGroup_FullMethodName           = "/group.GroupService/CreateGroup"
-	GroupService_GetGroup_FullMethodName              = "/group.GroupService/GetGroup"
-	GroupService_UpdateGroup_FullMethodName           = "/group.GroupService/UpdateGroup"
-	GroupService_DeleteGroup_FullMethodName           = "/group.GroupService/DeleteGroup"
-	GroupService_GetAllGroupByUserId_FullMethodName   = "/group.GroupService/GetAllGroupByUserId"
-	GroupService_GetAllGroupIdByUserId_FullMethodName = "/group.GroupService/GetAllGroupIdByUserId"
-	GroupService_CreateGroupMember_FullMethodName     = "/group.GroupService/CreateGroupMember"
-	GroupService_UpdateGroupMember_FullMethodName     = "/group.GroupService/UpdateGroupMember"
-	GroupService_DeleteGroupMember_FullMethodName     = "/group.GroupService/DeleteGroupMember"
-	GroupService_GetAllGroupMembers_FullMethodName    = "/group.GroupService/GetAllGroupMembers"
+	GroupService_CreateGroup_FullMethodName         = "/group.GroupService/CreateGroup"
+	GroupService_GetGroup_FullMethodName            = "/group.GroupService/GetGroup"
+	GroupService_UpdateGroup_FullMethodName         = "/group.GroupService/UpdateGroup"
+	GroupService_DeleteGroup_FullMethodName         = "/group.GroupService/DeleteGroup"
+	GroupService_GetGroupsByUserId_FullMethodName   = "/group.GroupService/GetGroupsByUserId"
+	GroupService_GetGroupIdsByUserId_FullMethodName = "/group.GroupService/GetGroupIdsByUserId"
+	GroupService_CreateGroupMember_FullMethodName   = "/group.GroupService/CreateGroupMember"
+	GroupService_UpdateGroupMember_FullMethodName   = "/group.GroupService/UpdateGroupMember"
+	GroupService_DeleteGroupMember_FullMethodName   = "/group.GroupService/DeleteGroupMember"
+	GroupService_GetGroupMembers_FullMethodName     = "/group.GroupService/GetGroupMembers"
 )
 
 // GroupServiceClient is the client API for GroupService service.
@@ -39,13 +39,13 @@ type GroupServiceClient interface {
 	GetGroup(ctx context.Context, in *GetGroupRequest, opts ...grpc.CallOption) (*GetGroupResponse, error)
 	UpdateGroup(ctx context.Context, in *UpdateGroupRequest, opts ...grpc.CallOption) (*UpdateGroupResponse, error)
 	DeleteGroup(ctx context.Context, in *DeleteGroupRequest, opts ...grpc.CallOption) (*DeleteGroupResponse, error)
-	GetAllGroupByUserId(ctx context.Context, in *GetAllGroupByUserIdRequest, opts ...grpc.CallOption) (*GetAllGroupByUserIdResponse, error)
-	GetAllGroupIdByUserId(ctx context.Context, in *GetAllGroupIdByUserIdRequest, opts ...grpc.CallOption) (*GetAllGroupIdByUserIdResponse, error)
+	GetGroupsByUserId(ctx context.Context, in *GetGroupsByUserIdRequest, opts ...grpc.CallOption) (*GetGroupsByUserIdResponse, error)
+	GetGroupIdsByUserId(ctx context.Context, in *GetGroupIdsByUserIdRequest, opts ...grpc.CallOption) (*GetGroupIdsByUserIdResponse, error)
 	// GroupMember
 	CreateGroupMember(ctx context.Context, in *CreateGroupMemberRequest, opts ...grpc.CallOption) (*CreateGroupMemberResponse, error)
 	UpdateGroupMember(ctx context.Context, in *UpdateGroupMemberRequest, opts ...grpc.CallOption) (*UpdateGroupMemberResponse, error)
 	DeleteGroupMember(ctx context.Context, in *DeleteGroupMemberRequest, opts ...grpc.CallOption) (*DeleteGroupMemberResponse, error)
-	GetAllGroupMembers(ctx context.Context, in *GetAllGroupMembersRequest, opts ...grpc.CallOption) (*GetAllGroupMembersResponse, error)
+	GetGroupMembers(ctx context.Context, in *GetGroupMembersRequest, opts ...grpc.CallOption) (*GetGroupMembersResponse, error)
 }
 
 type groupServiceClient struct {
@@ -92,18 +92,18 @@ func (c *groupServiceClient) DeleteGroup(ctx context.Context, in *DeleteGroupReq
 	return out, nil
 }
 
-func (c *groupServiceClient) GetAllGroupByUserId(ctx context.Context, in *GetAllGroupByUserIdRequest, opts ...grpc.CallOption) (*GetAllGroupByUserIdResponse, error) {
-	out := new(GetAllGroupByUserIdResponse)
-	err := c.cc.Invoke(ctx, GroupService_GetAllGroupByUserId_FullMethodName, in, out, opts...)
+func (c *groupServiceClient) GetGroupsByUserId(ctx context.Context, in *GetGroupsByUserIdRequest, opts ...grpc.CallOption) (*GetGroupsByUserIdResponse, error) {
+	out := new(GetGroupsByUserIdResponse)
+	err := c.cc.Invoke(ctx, GroupService_GetGroupsByUserId_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *groupServiceClient) GetAllGroupIdByUserId(ctx context.Context, in *GetAllGroupIdByUserIdRequest, opts ...grpc.CallOption) (*GetAllGroupIdByUserIdResponse, error) {
-	out := new(GetAllGroupIdByUserIdResponse)
-	err := c.cc.Invoke(ctx, GroupService_GetAllGroupIdByUserId_FullMethodName, in, out, opts...)
+func (c *groupServiceClient) GetGroupIdsByUserId(ctx context.Context, in *GetGroupIdsByUserIdRequest, opts ...grpc.CallOption) (*GetGroupIdsByUserIdResponse, error) {
+	out := new(GetGroupIdsByUserIdResponse)
+	err := c.cc.Invoke(ctx, GroupService_GetGroupIdsByUserId_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -137,9 +137,9 @@ func (c *groupServiceClient) DeleteGroupMember(ctx context.Context, in *DeleteGr
 	return out, nil
 }
 
-func (c *groupServiceClient) GetAllGroupMembers(ctx context.Context, in *GetAllGroupMembersRequest, opts ...grpc.CallOption) (*GetAllGroupMembersResponse, error) {
-	out := new(GetAllGroupMembersResponse)
-	err := c.cc.Invoke(ctx, GroupService_GetAllGroupMembers_FullMethodName, in, out, opts...)
+func (c *groupServiceClient) GetGroupMembers(ctx context.Context, in *GetGroupMembersRequest, opts ...grpc.CallOption) (*GetGroupMembersResponse, error) {
+	out := new(GetGroupMembersResponse)
+	err := c.cc.Invoke(ctx, GroupService_GetGroupMembers_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -154,13 +154,13 @@ type GroupServiceServer interface {
 	GetGroup(context.Context, *GetGroupRequest) (*GetGroupResponse, error)
 	UpdateGroup(context.Context, *UpdateGroupRequest) (*UpdateGroupResponse, error)
 	DeleteGroup(context.Context, *DeleteGroupRequest) (*DeleteGroupResponse, error)
-	GetAllGroupByUserId(context.Context, *GetAllGroupByUserIdRequest) (*GetAllGroupByUserIdResponse, error)
-	GetAllGroupIdByUserId(context.Context, *GetAllGroupIdByUserIdRequest) (*GetAllGroupIdByUserIdResponse, error)
+	GetGroupsByUserId(context.Context, *GetGroupsByUserIdRequest) (*GetGroupsByUserIdResponse, error)
+	GetGroupIdsByUserId(context.Context, *GetGroupIdsByUserIdRequest) (*GetGroupIdsByUserIdResponse, error)
 	// GroupMember
 	CreateGroupMember(context.Context, *CreateGroupMemberRequest) (*CreateGroupMemberResponse, error)
 	UpdateGroupMember(context.Context, *UpdateGroupMemberRequest) (*UpdateGroupMemberResponse, error)
 	DeleteGroupMember(context.Context, *DeleteGroupMemberRequest) (*DeleteGroupMemberResponse, error)
-	GetAllGroupMembers(context.Context, *GetAllGroupMembersRequest) (*GetAllGroupMembersResponse, error)
+	GetGroupMembers(context.Context, *GetGroupMembersRequest) (*GetGroupMembersResponse, error)
 	mustEmbedUnimplementedGroupServiceServer()
 }
 
@@ -180,11 +180,11 @@ func (UnimplementedGroupServiceServer) UpdateGroup(context.Context, *UpdateGroup
 func (UnimplementedGroupServiceServer) DeleteGroup(context.Context, *DeleteGroupRequest) (*DeleteGroupResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteGroup not implemented")
 }
-func (UnimplementedGroupServiceServer) GetAllGroupByUserId(context.Context, *GetAllGroupByUserIdRequest) (*GetAllGroupByUserIdResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetAllGroupByUserId not implemented")
+func (UnimplementedGroupServiceServer) GetGroupsByUserId(context.Context, *GetGroupsByUserIdRequest) (*GetGroupsByUserIdResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetGroupsByUserId not implemented")
 }
-func (UnimplementedGroupServiceServer) GetAllGroupIdByUserId(context.Context, *GetAllGroupIdByUserIdRequest) (*GetAllGroupIdByUserIdResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetAllGroupIdByUserId not implemented")
+func (UnimplementedGroupServiceServer) GetGroupIdsByUserId(context.Context, *GetGroupIdsByUserIdRequest) (*GetGroupIdsByUserIdResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetGroupIdsByUserId not implemented")
 }
 func (UnimplementedGroupServiceServer) CreateGroupMember(context.Context, *CreateGroupMemberRequest) (*CreateGroupMemberResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateGroupMember not implemented")
@@ -195,8 +195,8 @@ func (UnimplementedGroupServiceServer) UpdateGroupMember(context.Context, *Updat
 func (UnimplementedGroupServiceServer) DeleteGroupMember(context.Context, *DeleteGroupMemberRequest) (*DeleteGroupMemberResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteGroupMember not implemented")
 }
-func (UnimplementedGroupServiceServer) GetAllGroupMembers(context.Context, *GetAllGroupMembersRequest) (*GetAllGroupMembersResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetAllGroupMembers not implemented")
+func (UnimplementedGroupServiceServer) GetGroupMembers(context.Context, *GetGroupMembersRequest) (*GetGroupMembersResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetGroupMembers not implemented")
 }
 func (UnimplementedGroupServiceServer) mustEmbedUnimplementedGroupServiceServer() {}
 
@@ -283,38 +283,38 @@ func _GroupService_DeleteGroup_Handler(srv interface{}, ctx context.Context, dec
 	return interceptor(ctx, in, info, handler)
 }
 
-func _GroupService_GetAllGroupByUserId_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetAllGroupByUserIdRequest)
+func _GroupService_GetGroupsByUserId_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetGroupsByUserIdRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(GroupServiceServer).GetAllGroupByUserId(ctx, in)
+		return srv.(GroupServiceServer).GetGroupsByUserId(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: GroupService_GetAllGroupByUserId_FullMethodName,
+		FullMethod: GroupService_GetGroupsByUserId_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(GroupServiceServer).GetAllGroupByUserId(ctx, req.(*GetAllGroupByUserIdRequest))
+		return srv.(GroupServiceServer).GetGroupsByUserId(ctx, req.(*GetGroupsByUserIdRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _GroupService_GetAllGroupIdByUserId_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetAllGroupIdByUserIdRequest)
+func _GroupService_GetGroupIdsByUserId_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetGroupIdsByUserIdRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(GroupServiceServer).GetAllGroupIdByUserId(ctx, in)
+		return srv.(GroupServiceServer).GetGroupIdsByUserId(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: GroupService_GetAllGroupIdByUserId_FullMethodName,
+		FullMethod: GroupService_GetGroupIdsByUserId_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(GroupServiceServer).GetAllGroupIdByUserId(ctx, req.(*GetAllGroupIdByUserIdRequest))
+		return srv.(GroupServiceServer).GetGroupIdsByUserId(ctx, req.(*GetGroupIdsByUserIdRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -373,20 +373,20 @@ func _GroupService_DeleteGroupMember_Handler(srv interface{}, ctx context.Contex
 	return interceptor(ctx, in, info, handler)
 }
 
-func _GroupService_GetAllGroupMembers_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetAllGroupMembersRequest)
+func _GroupService_GetGroupMembers_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetGroupMembersRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(GroupServiceServer).GetAllGroupMembers(ctx, in)
+		return srv.(GroupServiceServer).GetGroupMembers(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: GroupService_GetAllGroupMembers_FullMethodName,
+		FullMethod: GroupService_GetGroupMembers_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(GroupServiceServer).GetAllGroupMembers(ctx, req.(*GetAllGroupMembersRequest))
+		return srv.(GroupServiceServer).GetGroupMembers(ctx, req.(*GetGroupMembersRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -415,12 +415,12 @@ var GroupService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _GroupService_DeleteGroup_Handler,
 		},
 		{
-			MethodName: "GetAllGroupByUserId",
-			Handler:    _GroupService_GetAllGroupByUserId_Handler,
+			MethodName: "GetGroupsByUserId",
+			Handler:    _GroupService_GetGroupsByUserId_Handler,
 		},
 		{
-			MethodName: "GetAllGroupIdByUserId",
-			Handler:    _GroupService_GetAllGroupIdByUserId_Handler,
+			MethodName: "GetGroupIdsByUserId",
+			Handler:    _GroupService_GetGroupIdsByUserId_Handler,
 		},
 		{
 			MethodName: "CreateGroupMember",
@@ -435,8 +435,8 @@ var GroupService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _GroupService_DeleteGroupMember_Handler,
 		},
 		{
-			MethodName: "GetAllGroupMembers",
-			Handler:    _GroupService_GetAllGroupMembers_Handler,
+			MethodName: "GetGroupMembers",
+			Handler:    _GroupService_GetGroupMembers_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

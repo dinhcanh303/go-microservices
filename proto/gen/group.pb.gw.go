@@ -237,8 +237,12 @@ func local_request_GroupService_DeleteGroup_0(ctx context.Context, marshaler run
 
 }
 
-func request_GroupService_GetAllGroupByUserId_0(ctx context.Context, marshaler runtime.Marshaler, client GroupServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq GetAllGroupByUserIdRequest
+var (
+	filter_GroupService_GetGroupsByUserId_0 = &utilities.DoubleArray{Encoding: map[string]int{"user_id": 0, "userId": 1}, Base: []int{1, 1, 2, 0, 0}, Check: []int{0, 1, 1, 2, 3}}
+)
+
+func request_GroupService_GetGroupsByUserId_0(ctx context.Context, marshaler runtime.Marshaler, client GroupServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var protoReq GetGroupsByUserIdRequest
 	var metadata runtime.ServerMetadata
 
 	var (
@@ -258,13 +262,20 @@ func request_GroupService_GetAllGroupByUserId_0(ctx context.Context, marshaler r
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "user_id", err)
 	}
 
-	msg, err := client.GetAllGroupByUserId(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
+	if err := req.ParseForm(); err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
+	}
+	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_GroupService_GetGroupsByUserId_0); err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
+	}
+
+	msg, err := client.GetGroupsByUserId(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
 	return msg, metadata, err
 
 }
 
-func local_request_GroupService_GetAllGroupByUserId_0(ctx context.Context, marshaler runtime.Marshaler, server GroupServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq GetAllGroupByUserIdRequest
+func local_request_GroupService_GetGroupsByUserId_0(ctx context.Context, marshaler runtime.Marshaler, server GroupServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var protoReq GetGroupsByUserIdRequest
 	var metadata runtime.ServerMetadata
 
 	var (
@@ -284,13 +295,20 @@ func local_request_GroupService_GetAllGroupByUserId_0(ctx context.Context, marsh
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "user_id", err)
 	}
 
-	msg, err := server.GetAllGroupByUserId(ctx, &protoReq)
+	if err := req.ParseForm(); err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
+	}
+	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_GroupService_GetGroupsByUserId_0); err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
+	}
+
+	msg, err := server.GetGroupsByUserId(ctx, &protoReq)
 	return msg, metadata, err
 
 }
 
-func request_GroupService_GetAllGroupIdByUserId_0(ctx context.Context, marshaler runtime.Marshaler, client GroupServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq GetAllGroupIdByUserIdRequest
+func request_GroupService_GetGroupIdsByUserId_0(ctx context.Context, marshaler runtime.Marshaler, client GroupServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var protoReq GetGroupIdsByUserIdRequest
 	var metadata runtime.ServerMetadata
 
 	var (
@@ -310,13 +328,13 @@ func request_GroupService_GetAllGroupIdByUserId_0(ctx context.Context, marshaler
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "user_id", err)
 	}
 
-	msg, err := client.GetAllGroupIdByUserId(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
+	msg, err := client.GetGroupIdsByUserId(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
 	return msg, metadata, err
 
 }
 
-func local_request_GroupService_GetAllGroupIdByUserId_0(ctx context.Context, marshaler runtime.Marshaler, server GroupServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq GetAllGroupIdByUserIdRequest
+func local_request_GroupService_GetGroupIdsByUserId_0(ctx context.Context, marshaler runtime.Marshaler, server GroupServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var protoReq GetGroupIdsByUserIdRequest
 	var metadata runtime.ServerMetadata
 
 	var (
@@ -336,7 +354,7 @@ func local_request_GroupService_GetAllGroupIdByUserId_0(ctx context.Context, mar
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "user_id", err)
 	}
 
-	msg, err := server.GetAllGroupIdByUserId(ctx, &protoReq)
+	msg, err := server.GetGroupIdsByUserId(ctx, &protoReq)
 	return msg, metadata, err
 
 }
@@ -495,8 +513,8 @@ func local_request_GroupService_DeleteGroupMember_0(ctx context.Context, marshal
 
 }
 
-func request_GroupService_GetAllGroupMembers_0(ctx context.Context, marshaler runtime.Marshaler, client GroupServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq GetAllGroupMembersRequest
+func request_GroupService_GetGroupMembers_0(ctx context.Context, marshaler runtime.Marshaler, client GroupServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var protoReq GetGroupMembersRequest
 	var metadata runtime.ServerMetadata
 
 	var (
@@ -516,13 +534,13 @@ func request_GroupService_GetAllGroupMembers_0(ctx context.Context, marshaler ru
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "groupId", err)
 	}
 
-	msg, err := client.GetAllGroupMembers(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
+	msg, err := client.GetGroupMembers(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
 	return msg, metadata, err
 
 }
 
-func local_request_GroupService_GetAllGroupMembers_0(ctx context.Context, marshaler runtime.Marshaler, server GroupServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq GetAllGroupMembersRequest
+func local_request_GroupService_GetGroupMembers_0(ctx context.Context, marshaler runtime.Marshaler, server GroupServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var protoReq GetGroupMembersRequest
 	var metadata runtime.ServerMetadata
 
 	var (
@@ -542,7 +560,7 @@ func local_request_GroupService_GetAllGroupMembers_0(ctx context.Context, marsha
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "groupId", err)
 	}
 
-	msg, err := server.GetAllGroupMembers(ctx, &protoReq)
+	msg, err := server.GetGroupMembers(ctx, &protoReq)
 	return msg, metadata, err
 
 }
@@ -653,7 +671,7 @@ func RegisterGroupServiceHandlerServer(ctx context.Context, mux *runtime.ServeMu
 
 	})
 
-	mux.Handle("GET", pattern_GroupService_GetAllGroupByUserId_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("GET", pattern_GroupService_GetGroupsByUserId_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		var stream runtime.ServerTransportStream
@@ -661,12 +679,12 @@ func RegisterGroupServiceHandlerServer(ctx context.Context, mux *runtime.ServeMu
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/group.GroupService/GetAllGroupByUserId", runtime.WithHTTPPathPattern("/api/v1/users/{user_id}/groups"))
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/group.GroupService/GetGroupsByUserId", runtime.WithHTTPPathPattern("/api/v1/users/{user_id}/groups"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_GroupService_GetAllGroupByUserId_0(annotatedContext, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_GroupService_GetGroupsByUserId_0(annotatedContext, inboundMarshaler, server, req, pathParams)
 		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
 		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
 		if err != nil {
@@ -674,11 +692,11 @@ func RegisterGroupServiceHandlerServer(ctx context.Context, mux *runtime.ServeMu
 			return
 		}
 
-		forward_GroupService_GetAllGroupByUserId_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_GroupService_GetGroupsByUserId_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
-	mux.Handle("GET", pattern_GroupService_GetAllGroupIdByUserId_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("GET", pattern_GroupService_GetGroupIdsByUserId_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		var stream runtime.ServerTransportStream
@@ -686,12 +704,12 @@ func RegisterGroupServiceHandlerServer(ctx context.Context, mux *runtime.ServeMu
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/group.GroupService/GetAllGroupIdByUserId", runtime.WithHTTPPathPattern("/api/v1/users/{user_id}/group-ids"))
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/group.GroupService/GetGroupIdsByUserId", runtime.WithHTTPPathPattern("/api/v1/users/{user_id}/group-ids"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_GroupService_GetAllGroupIdByUserId_0(annotatedContext, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_GroupService_GetGroupIdsByUserId_0(annotatedContext, inboundMarshaler, server, req, pathParams)
 		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
 		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
 		if err != nil {
@@ -699,7 +717,7 @@ func RegisterGroupServiceHandlerServer(ctx context.Context, mux *runtime.ServeMu
 			return
 		}
 
-		forward_GroupService_GetAllGroupIdByUserId_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_GroupService_GetGroupIdsByUserId_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
@@ -778,7 +796,7 @@ func RegisterGroupServiceHandlerServer(ctx context.Context, mux *runtime.ServeMu
 
 	})
 
-	mux.Handle("GET", pattern_GroupService_GetAllGroupMembers_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("GET", pattern_GroupService_GetGroupMembers_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		var stream runtime.ServerTransportStream
@@ -786,12 +804,12 @@ func RegisterGroupServiceHandlerServer(ctx context.Context, mux *runtime.ServeMu
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/group.GroupService/GetAllGroupMembers", runtime.WithHTTPPathPattern("/api/v1/group-members/{groupId}"))
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/group.GroupService/GetGroupMembers", runtime.WithHTTPPathPattern("/api/v1/group-members/{groupId}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_GroupService_GetAllGroupMembers_0(annotatedContext, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_GroupService_GetGroupMembers_0(annotatedContext, inboundMarshaler, server, req, pathParams)
 		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
 		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
 		if err != nil {
@@ -799,7 +817,7 @@ func RegisterGroupServiceHandlerServer(ctx context.Context, mux *runtime.ServeMu
 			return
 		}
 
-		forward_GroupService_GetAllGroupMembers_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_GroupService_GetGroupMembers_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
@@ -932,47 +950,47 @@ func RegisterGroupServiceHandlerClient(ctx context.Context, mux *runtime.ServeMu
 
 	})
 
-	mux.Handle("GET", pattern_GroupService_GetAllGroupByUserId_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("GET", pattern_GroupService_GetGroupsByUserId_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/group.GroupService/GetAllGroupByUserId", runtime.WithHTTPPathPattern("/api/v1/users/{user_id}/groups"))
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/group.GroupService/GetGroupsByUserId", runtime.WithHTTPPathPattern("/api/v1/users/{user_id}/groups"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_GroupService_GetAllGroupByUserId_0(annotatedContext, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_GroupService_GetGroupsByUserId_0(annotatedContext, inboundMarshaler, client, req, pathParams)
 		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
 		if err != nil {
 			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
 			return
 		}
 
-		forward_GroupService_GetAllGroupByUserId_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_GroupService_GetGroupsByUserId_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
-	mux.Handle("GET", pattern_GroupService_GetAllGroupIdByUserId_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("GET", pattern_GroupService_GetGroupIdsByUserId_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/group.GroupService/GetAllGroupIdByUserId", runtime.WithHTTPPathPattern("/api/v1/users/{user_id}/group-ids"))
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/group.GroupService/GetGroupIdsByUserId", runtime.WithHTTPPathPattern("/api/v1/users/{user_id}/group-ids"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_GroupService_GetAllGroupIdByUserId_0(annotatedContext, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_GroupService_GetGroupIdsByUserId_0(annotatedContext, inboundMarshaler, client, req, pathParams)
 		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
 		if err != nil {
 			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
 			return
 		}
 
-		forward_GroupService_GetAllGroupIdByUserId_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_GroupService_GetGroupIdsByUserId_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
@@ -1042,25 +1060,25 @@ func RegisterGroupServiceHandlerClient(ctx context.Context, mux *runtime.ServeMu
 
 	})
 
-	mux.Handle("GET", pattern_GroupService_GetAllGroupMembers_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("GET", pattern_GroupService_GetGroupMembers_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/group.GroupService/GetAllGroupMembers", runtime.WithHTTPPathPattern("/api/v1/group-members/{groupId}"))
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/group.GroupService/GetGroupMembers", runtime.WithHTTPPathPattern("/api/v1/group-members/{groupId}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_GroupService_GetAllGroupMembers_0(annotatedContext, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_GroupService_GetGroupMembers_0(annotatedContext, inboundMarshaler, client, req, pathParams)
 		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
 		if err != nil {
 			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
 			return
 		}
 
-		forward_GroupService_GetAllGroupMembers_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_GroupService_GetGroupMembers_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
@@ -1076,9 +1094,9 @@ var (
 
 	pattern_GroupService_DeleteGroup_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3}, []string{"api", "v1", "groups", "id"}, ""))
 
-	pattern_GroupService_GetAllGroupByUserId_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3, 2, 4}, []string{"api", "v1", "users", "user_id", "groups"}, ""))
+	pattern_GroupService_GetGroupsByUserId_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3, 2, 4}, []string{"api", "v1", "users", "user_id", "groups"}, ""))
 
-	pattern_GroupService_GetAllGroupIdByUserId_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3, 2, 4}, []string{"api", "v1", "users", "user_id", "group-ids"}, ""))
+	pattern_GroupService_GetGroupIdsByUserId_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3, 2, 4}, []string{"api", "v1", "users", "user_id", "group-ids"}, ""))
 
 	pattern_GroupService_CreateGroupMember_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"api", "v1", "group-members"}, ""))
 
@@ -1086,7 +1104,7 @@ var (
 
 	pattern_GroupService_DeleteGroupMember_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3}, []string{"api", "v1", "group-members", "id"}, ""))
 
-	pattern_GroupService_GetAllGroupMembers_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3}, []string{"api", "v1", "group-members", "groupId"}, ""))
+	pattern_GroupService_GetGroupMembers_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3}, []string{"api", "v1", "group-members", "groupId"}, ""))
 )
 
 var (
@@ -1098,9 +1116,9 @@ var (
 
 	forward_GroupService_DeleteGroup_0 = runtime.ForwardResponseMessage
 
-	forward_GroupService_GetAllGroupByUserId_0 = runtime.ForwardResponseMessage
+	forward_GroupService_GetGroupsByUserId_0 = runtime.ForwardResponseMessage
 
-	forward_GroupService_GetAllGroupIdByUserId_0 = runtime.ForwardResponseMessage
+	forward_GroupService_GetGroupIdsByUserId_0 = runtime.ForwardResponseMessage
 
 	forward_GroupService_CreateGroupMember_0 = runtime.ForwardResponseMessage
 
@@ -1108,5 +1126,5 @@ var (
 
 	forward_GroupService_DeleteGroupMember_0 = runtime.ForwardResponseMessage
 
-	forward_GroupService_GetAllGroupMembers_0 = runtime.ForwardResponseMessage
+	forward_GroupService_GetGroupMembers_0 = runtime.ForwardResponseMessage
 )

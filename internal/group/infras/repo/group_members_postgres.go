@@ -63,18 +63,18 @@ func (rp *groupMemberRepo) CreateGroupMember(ctx context.Context, groupMember *d
 	}, tx.Commit()
 }
 
-// DeleteAllGroupMembersByGroupId implements groupmembers.GroupMemberRepo.
-func (rp *groupMemberRepo) DeleteAllGroupMembersByGroupId(ctx context.Context, groupId uuid.UUID) error {
+// DeleteGroupMembersByGroupId implements groupmembers.GroupMemberRepo.
+func (rp *groupMemberRepo) DeleteGroupMembersByGroupId(ctx context.Context, groupId uuid.UUID) error {
 	db := rp.pg.GetDB()
 	querier := postgresql.New(db)
 	tx, err := db.Begin()
 	if err != nil {
-		return errors.Wrap(err, "Repo DeleteAllGroupMembersByGroupId db failed")
+		return errors.Wrap(err, "Repo DeleteGroupMembersByGroupId db failed")
 	}
 	qtx := querier.WithTx(tx)
-	err = qtx.DeleteAllGroupMembersByGroupId(ctx, groupId)
+	err = qtx.DeleteGroupMembersByGroupId(ctx, groupId)
 	if err != nil {
-		return errors.Wrap(err, "qtx.DeleteAllGroupMembersByGroupId(ctx, groupId) failed")
+		return errors.Wrap(err, "qtx.DeleteGroupMembersByGroupId(ctx, groupId) failed")
 	}
 	return tx.Commit()
 }
@@ -95,13 +95,13 @@ func (rp *groupMemberRepo) DeleteGroupMember(ctx context.Context, id uuid.UUID) 
 	return true, tx.Commit()
 }
 
-// GetAllGroupMember implements groupmembers.GroupMemberRepo.
-func (rp *groupMemberRepo) GetAllGroupMembers(ctx context.Context, groupId uuid.UUID) ([]*domain.GroupMember, error) {
+// GetGroupMembers implements groupmembers.GroupMemberRepo.
+func (rp *groupMemberRepo) GetGroupMembers(ctx context.Context, groupId uuid.UUID) ([]*domain.GroupMember, error) {
 	db := rp.pg.GetDB()
 	querier := postgresql.New(db)
-	results, err := querier.GetAllGroupMembers(ctx, groupId)
+	results, err := querier.GetGroupMembers(ctx, groupId)
 	if err != nil {
-		return nil, errors.Wrap(err, "qtx.UpdateGroupMember(ctx, postgresql.UpdateGroupMemberParams) failed")
+		return nil, errors.Wrap(err, "qtx.GetGroupMembers(ctx, groupId) failed")
 	}
 	return lo.Map(results, func(item postgresql.GroupGroupMember, _ int) *domain.GroupMember {
 		return &domain.GroupMember{

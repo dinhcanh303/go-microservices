@@ -512,12 +512,12 @@
     "/api/v1/group-members/{groupId}": {
       "get": {
         "summary": "Get all group member",
-        "operationId": "GroupService_GetAllGroupMembers",
+        "operationId": "GroupService_GetGroupMembers",
         "responses": {
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/groupGetAllGroupMembersResponse"
+              "$ref": "#/definitions/groupGetGroupMembersResponse"
             }
           },
           "default": {
@@ -1249,7 +1249,7 @@
     "/api/v1/profile": {
       "get": {
         "summary": "Get Profile of User",
-        "operationId": "AuthService_Profile",
+        "operationId": "AuthService_GetProfile",
         "responses": {
           "200": {
             "description": "A successful response.",
@@ -1328,6 +1328,29 @@
         ],
         "tags": [
           "SearchService"
+        ]
+      }
+    },
+    "/api/v1/users": {
+      "get": {
+        "summary": "Get All User",
+        "operationId": "AuthService_GetUsers",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/authGetUsersRespone"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          }
+        },
+        "tags": [
+          "AuthService"
         ]
       }
     },
@@ -1410,12 +1433,12 @@
     "/api/v1/users/{userId}/group-ids": {
       "get": {
         "summary": "Get all group id by user id",
-        "operationId": "GroupService_GetAllGroupIdByUserId",
+        "operationId": "GroupService_GetGroupIdsByUserId",
         "responses": {
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/groupGetAllGroupIdByUserIdResponse"
+              "$ref": "#/definitions/groupGetGroupIdsByUserIdResponse"
             }
           },
           "default": {
@@ -1441,12 +1464,12 @@
     "/api/v1/users/{userId}/groups": {
       "get": {
         "summary": "Get all group member",
-        "operationId": "GroupService_GetAllGroupByUserId",
+        "operationId": "GroupService_GetGroupsByUserId",
         "responses": {
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/groupGetAllGroupByUserIdResponse"
+              "$ref": "#/definitions/groupGetGroupsByUserIdResponse"
             }
           },
           "default": {
@@ -1462,6 +1485,20 @@
             "in": "path",
             "required": true,
             "type": "string"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
           }
         ],
         "tags": [
@@ -1472,12 +1509,12 @@
     "/api/v1/users/{userId}/user-ids": {
       "get": {
         "summary": "Get All User Id By User Id",
-        "operationId": "AuthService_GetAllUserIdOfCompanyByUserId",
+        "operationId": "AuthService_GetUserIdsOfCompanyByUserId",
         "responses": {
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/authGetAllUserIdOfCompanyByUserIdResponse"
+              "$ref": "#/definitions/authGetUserIdsOfCompanyByUserIdResponse"
             }
           },
           "default": {
@@ -1502,7 +1539,15 @@
     }
   },
   "definitions": {
-    "authGetAllUserIdOfCompanyByUserIdResponse": {
+    "authGetProfileResponse": {
+      "type": "object",
+      "properties": {
+        "user": {
+          "$ref": "#/definitions/authUser"
+        }
+      }
+    },
+    "authGetUserIdsOfCompanyByUserIdResponse": {
       "type": "object",
       "properties": {
         "userIds": {
@@ -1513,11 +1558,15 @@
         }
       }
     },
-    "authGetProfileResponse": {
+    "authGetUsersRespone": {
       "type": "object",
       "properties": {
-        "user": {
-          "$ref": "#/definitions/authUser"
+        "users": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/authUser"
+          }
         }
       }
     },
@@ -1917,19 +1966,7 @@
         }
       }
     },
-    "groupGetAllGroupByUserIdResponse": {
-      "type": "object",
-      "properties": {
-        "groups": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "$ref": "#/definitions/groupGroupResponse"
-          }
-        }
-      }
-    },
-    "groupGetAllGroupIdByUserIdResponse": {
+    "groupGetGroupIdsByUserIdResponse": {
       "type": "object",
       "properties": {
         "groupIds": {
@@ -1940,7 +1977,7 @@
         }
       }
     },
-    "groupGetAllGroupMembersResponse": {
+    "groupGetGroupMembersResponse": {
       "type": "object",
       "properties": {
         "groupMembers": {
@@ -1957,6 +1994,18 @@
       "properties": {
         "group": {
           "$ref": "#/definitions/groupGroupResponse"
+        }
+      }
+    },
+    "groupGetGroupsByUserIdResponse": {
+      "type": "object",
+      "properties": {
+        "groups": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/groupGroupResponse"
+          }
         }
       }
     },
@@ -2010,6 +2059,12 @@
         "status": {
           "type": "integer",
           "format": "int32"
+        },
+        "userIds": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         }
       }
     },

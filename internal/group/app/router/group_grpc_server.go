@@ -51,17 +51,17 @@ func NewGRPCGroupServer(
 	return &svc
 }
 
-func (g *groupGRPCServer) GetAllGroupMembers(ctx context.Context, request *gen.GetAllGroupMembersRequest) (*gen.GetAllGroupMembersResponse, error) {
+func (g *groupGRPCServer) GetGroupMembers(ctx context.Context, request *gen.GetGroupMembersRequest) (*gen.GetGroupMembersResponse, error) {
 	slog.Info("GET: GetAllGroupMembers")
 	groupId, err := uuid.Parse(request.GroupId)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to parse")
 	}
-	groupMembers, err := g.ucGroupMember.GetAllGroupMembers(ctx, groupId)
+	groupMembers, err := g.ucGroupMember.GetGroupMembers(ctx, groupId)
 	if err != nil {
 		return nil, errors.Wrap(err, "ucGroupMember.GetAllGroupMembers failed")
 	}
-	return &gen.GetAllGroupMembersResponse{
+	return &gen.GetGroupMembersResponse{
 		GroupMembers: lo.Map(groupMembers, func(groupMember *domain.GroupMember, _ int) *gen.GroupMemberResponse {
 			return &gen.GroupMemberResponse{
 				Id:        groupMember.ID.String(),
@@ -147,17 +147,17 @@ func (g *groupGRPCServer) UpdateGroupMember(ctx context.Context, request *gen.Up
 	return res, nil
 }
 
-func (g *groupGRPCServer) GetAllGroupByUserId(ctx context.Context, request *gen.GetAllGroupByUserIdRequest) (*gen.GetAllGroupByUserIdResponse, error) {
-	slog.Info("GET: GetAllGroupByUserId")
+func (g *groupGRPCServer) GetGroupsByUserId(ctx context.Context, request *gen.GetGroupsByUserIdRequest) (*gen.GetGroupsByUserIdResponse, error) {
+	slog.Info("GET: GetGroupsByUserId")
 	userId, err := uuid.Parse(request.UserId)
 	if err != nil {
 		return nil, errors.Wrap(err, "uuid.Parse(request.UserId) failed")
 	}
-	groups, err := g.ucGroup.GetAllGroupByUserId(ctx, userId)
+	groups, err := g.ucGroup.GetGroupsByUserId(ctx, userId, request.Limit, request.Offset)
 	if err != nil {
-		return nil, errors.Wrap(err, "userId.GetAllGroupByUserId failed")
+		return nil, errors.Wrap(err, "userId.GetGroupsByUserId failed")
 	}
-	return &gen.GetAllGroupByUserIdResponse{
+	return &gen.GetGroupsByUserIdResponse{
 		Groups: lo.Map(groups, func(group *domain.Group, _ int) *gen.GroupResponse {
 			return &gen.GroupResponse{
 				Id:          group.ID.String(),
@@ -172,17 +172,17 @@ func (g *groupGRPCServer) GetAllGroupByUserId(ctx context.Context, request *gen.
 	}, nil
 }
 
-func (g *groupGRPCServer) GetAllGroupIdByUserId(ctx context.Context, request *gen.GetAllGroupIdByUserIdRequest) (*gen.GetAllGroupIdByUserIdResponse, error) {
+func (g *groupGRPCServer) GetGroupIdsByUserId(ctx context.Context, request *gen.GetGroupIdsByUserIdRequest) (*gen.GetGroupIdsByUserIdResponse, error) {
 	slog.Info("GET: GetAllGroupByUserId")
 	userId, err := uuid.Parse(request.UserId)
 	if err != nil {
 		return nil, errors.Wrap(err, "uuid.Parse(request.UserId) failed")
 	}
-	groupIds, err := g.ucGroup.GetAllGroupIdByUserId(ctx, userId)
+	groupIds, err := g.ucGroup.GetGroupIdsByUserId(ctx, userId)
 	if err != nil {
-		return nil, errors.Wrap(err, "userId.GetAllGroupIdByUserId failed")
+		return nil, errors.Wrap(err, "userId.GetGroupIdsByUserId failed")
 	}
-	return &gen.GetAllGroupIdByUserIdResponse{
+	return &gen.GetGroupIdsByUserIdResponse{
 		GroupIds: groupIds,
 	}, nil
 }
@@ -192,6 +192,9 @@ func (g *groupGRPCServer) CreateGroup(ctx context.Context, request *gen.CreateGr
 	payloadUser, err := utils.ExtractMetadataUser(ctx)
 	if err != nil {
 		return nil, err
+	}
+	if request.Group.UserIds != nil {
+		// g.ucGroupMember.CreateGroupMember()
 	}
 	slog.Info("PAYLOAD::", payloadUser)
 	model := domain.Group{

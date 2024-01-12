@@ -27,20 +27,20 @@ type service struct {
 	groupDeletedEventPub GroupDeletedEventPublisher
 }
 
-// GetAllGroupByUserId implements UseCase.
-func (s *service) GetAllGroupByUserId(ctx context.Context, userId uuid.UUID) ([]*domain.Group, error) {
-	result, err := s.repo.GetAllGroupByUserId(ctx, userId)
+// GetGroupsByUserId implements UseCase.
+func (s *service) GetGroupsByUserId(ctx context.Context, userId uuid.UUID, limit, offset int32) ([]*domain.Group, error) {
+	result, err := s.repo.GetGroupsByUserId(ctx, userId, limit, offset)
 	if err != nil {
-		return nil, errors.Wrap(err, "service.GetAllGroupByUserId")
+		return nil, errors.Wrap(err, "service.GetGroupsByUserId")
 	}
 	return result, nil
 }
 
-// GetAllGroupByUserId implements UseCase.
-func (s *service) GetAllGroupIdByUserId(ctx context.Context, userId uuid.UUID) ([]string, error) {
-	result, err := s.repo.GetAllGroupIdByUserId(ctx, userId)
+// GetGroupIdsByUserId implements UseCase.
+func (s *service) GetGroupIdsByUserId(ctx context.Context, userId uuid.UUID) ([]string, error) {
+	result, err := s.repo.GetGroupIdsByUserId(ctx, userId)
 	if err != nil {
-		return nil, errors.Wrap(err, "service.GetAllGroupIdByUserId")
+		return nil, errors.Wrap(err, "service.GetGroupIdsByUserId")
 	}
 	return result, nil
 }

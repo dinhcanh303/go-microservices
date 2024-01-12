@@ -47,7 +47,7 @@ service GroupService {
             description: ""
         };
     }
-    rpc GetAllGroupByUserId(GetAllGroupByUserIdRequest) returns (GetAllGroupByUserIdResponse){
+    rpc GetGroupsByUserId(GetGroupsByUserIdRequest) returns (GetGroupsByUserIdResponse){
         option (google.api.http) = {
             get: "/api/v1/users/{user_id}/groups"
         };
@@ -56,7 +56,7 @@ service GroupService {
             description: ""
         };
     }
-    rpc GetAllGroupIdByUserId(GetAllGroupIdByUserIdRequest) returns (GetAllGroupIdByUserIdResponse){
+    rpc GetGroupIdsByUserId(GetGroupIdsByUserIdRequest) returns (GetGroupIdsByUserIdResponse){
         option (google.api.http) = {
             get: "/api/v1/users/{user_id}/group-ids"
         };
@@ -95,7 +95,7 @@ service GroupService {
             description: ""
         };
     }
-    rpc GetAllGroupMembers(GetAllGroupMembersRequest) returns (GetAllGroupMembersResponse){
+    rpc GetGroupMembers(GetGroupMembersRequest) returns (GetGroupMembersResponse){
         option (google.api.http) = {
             get: "/api/v1/group-members/{groupId}"
         };
@@ -123,10 +123,10 @@ message CreateGroupMemberResponse {
 message GetGroupRequest {
     string id = 1;
 }
-message GetAllGroupMembersRequest {
+message GetGroupMembersRequest {
     string groupId = 1;
 }
-message GetAllGroupMembersResponse {
+message GetGroupMembersResponse {
     repeated GroupMemberResponse group_members = 1;
 }
 message DeleteGroupRequest {
@@ -156,22 +156,25 @@ message UpdateGroupMemberRequest {
 message UpdateGroupMemberResponse {
     GroupMemberResponse group_member = 1;
 }
-message GetAllGroupByUserIdRequest {
+message GetGroupsByUserIdRequest {
     string user_id = 1;
+    int32 limit = 2;
+    int32 offset = 3;
 }
-message GetAllGroupByUserIdResponse {
+message GetGroupsByUserIdResponse {
     repeated GroupResponse groups = 1;
 }
-message GetAllGroupIdByUserIdRequest {
+message GetGroupIdsByUserIdRequest {
     string user_id = 1;
 }
-message GetAllGroupIdByUserIdResponse {
+message GetGroupIdsByUserIdResponse {
     repeated string group_ids = 1;
 }
 message GroupRequest {
     string name = 1;
     string description = 2;
     int32 status = 3;
+    repeated string user_ids = 4;
 }
 message GroupResponse {
     string id = 1;

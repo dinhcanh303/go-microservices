@@ -51,10 +51,10 @@ func (s *service) UpdateGroupMember(ctx context.Context, groupMember *domain.Gro
 }
 
 // DeleteAllGroupMembersByGroupId implements UseCase.
-func (s *service) DeleteAllGroupMembersByGroupId(ctx context.Context, groupId uuid.UUID) error {
-	err := s.repo.DeleteAllGroupMembersByGroupId(ctx, groupId)
+func (s *service) DeleteGroupMembersByGroupId(ctx context.Context, groupId uuid.UUID) error {
+	err := s.repo.DeleteGroupMembersByGroupId(ctx, groupId)
 	if err != nil {
-		return errors.Wrap(err, "service.DeleteAllGroupMembersByGroupId")
+		return errors.Wrap(err, "service.DeleteGroupMembersByGroupId")
 	}
 	return nil
 }
@@ -69,10 +69,10 @@ func (s *service) CountGroupMembers(ctx context.Context, groupId uuid.UUID) (int
 }
 
 // GetAllGroupMember implements UseCase.
-func (s *service) GetAllGroupMembers(ctx context.Context, groupId uuid.UUID) ([]*domain.GroupMember, error) {
-	result, err := s.repo.GetAllGroupMembers(ctx, groupId)
+func (s *service) GetGroupMembers(ctx context.Context, groupId uuid.UUID) ([]*domain.GroupMember, error) {
+	result, err := s.repo.GetGroupMembers(ctx, groupId)
 	if err != nil {
-		return nil, errors.Wrap(err, "service.GetAllGroupMember")
+		return nil, errors.Wrap(err, "service.GetGroupMembers")
 	}
 	return result, nil
 }
