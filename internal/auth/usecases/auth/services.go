@@ -59,14 +59,14 @@ func (s *service) HandleRefreshToken(ctx context.Context, email, refreshToken st
 }
 
 // GetAllUserIdByUserId implements UseCase.
-func (s *service) GetAllUserIdOfCompanyByUserId(ctx context.Context, userId uuid.UUID) ([]uuid.UUID, error) {
+func (s *service) GetUserIdsOfCompanyByUserId(ctx context.Context, userId uuid.UUID) ([]uuid.UUID, error) {
 	user, err := s.repo.GetUser(ctx, userId)
 	if err != nil {
 		return nil, err
 	}
 	suffixEmailCompany := constant.SuffixEmailCompany
 	if strings.Contains(user.Email, suffixEmailCompany) {
-		userIds, err := s.repo.GetAllUserIdOfCompany(ctx, suffixEmailCompany)
+		userIds, err := s.repo.GetUserIdsOfCompany(ctx, suffixEmailCompany)
 		if err != nil {
 			return nil, err
 		}

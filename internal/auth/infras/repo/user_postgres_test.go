@@ -78,7 +78,7 @@ func TestGetUserByEmail(t *testing.T) {
 }
 func TestGetAllUserIdOfCompany(t *testing.T) {
 	repo := newUserRepo()
-	users, err := repo.GetAllUserIdOfCompany(context.Background(), Company)
+	users, err := repo.GetUserIdsOfCompany(context.Background(), Company)
 	require.NoError(t, err)
 	require.NotEmpty(t, users)
 }

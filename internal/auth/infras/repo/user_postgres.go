@@ -17,16 +17,16 @@ type userRepo struct {
 	pg postgres.DBEngine
 }
 
-// GetAllUserIdOfCompany implements auth.UserRepo.
-func (rp *userRepo) GetAllUserIdOfCompany(ctx context.Context, company string) ([]uuid.UUID, error) {
+// GetUserIdsOfCompany implements auth.UserRepo.
+func (rp *userRepo) GetUserIdsOfCompany(ctx context.Context, company string) ([]uuid.UUID, error) {
 	db := rp.pg.GetDBRead()
 	querier := postgresql.New(db)
-	userIds, err := querier.GetAllUserIdOfCompany(ctx, sql.NullString{
+	userIds, err := querier.GetUserIdsOfCompany(ctx, sql.NullString{
 		String: company,
 		Valid:  company != "",
 	})
 	if err != nil {
-		return nil, errors.Wrap(err, "userRepo.GetAllUserIdOfCompany failed")
+		return nil, errors.Wrap(err, "userRepo.GetUserIdsOfCompany failed")
 	}
 	return userIds, nil
 }

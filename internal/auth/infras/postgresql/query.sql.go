@@ -170,71 +170,6 @@ func (q *Queries) FindKeyByUserID(ctx context.Context, userID uuid.UUID) (AuthKe
 	return i, err
 }
 
-const getAllUser = `-- name: GetAllUser :many
-SELECT id, email, first_name, last_name, full_name, user_name, password, roles, created_at, updated_at FROM auth.users
-`
-
-func (q *Queries) GetAllUser(ctx context.Context) ([]AuthUser, error) {
-	rows, err := q.db.QueryContext(ctx, getAllUser)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-	var items []AuthUser
-	for rows.Next() {
-		var i AuthUser
-		if err := rows.Scan(
-			&i.ID,
-			&i.Email,
-			&i.FirstName,
-			&i.LastName,
-			&i.FullName,
-			&i.UserName,
-			&i.Password,
-			&i.Roles,
-			&i.CreatedAt,
-			&i.UpdatedAt,
-		); err != nil {
-			return nil, err
-		}
-		items = append(items, i)
-	}
-	if err := rows.Close(); err != nil {
-		return nil, err
-	}
-	if err := rows.Err(); err != nil {
-		return nil, err
-	}
-	return items, nil
-}
-
-const getAllUserIdOfCompany = `-- name: GetAllUserIdOfCompany :many
-SELECT u.id FROM auth.users AS u WHERE email LIKE '%' || $1 || '%'
-`
-
-func (q *Queries) GetAllUserIdOfCompany(ctx context.Context, dollar_1 sql.NullString) ([]uuid.UUID, error) {
-	rows, err := q.db.QueryContext(ctx, getAllUserIdOfCompany, dollar_1)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-	var items []uuid.UUID
-	for rows.Next() {
-		var id uuid.UUID
-		if err := rows.Scan(&id); err != nil {
-			return nil, err
-		}
-		items = append(items, id)
-	}
-	if err := rows.Close(); err != nil {
-		return nil, err
-	}
-	if err := rows.Err(); err != nil {
-		return nil, err
-	}
-	return items, nil
-}
-
 const getUser = `-- name: GetUser :one
 SELECT id, email, first_name, last_name, full_name, user_name, password, roles, created_at, updated_at FROM auth.users WHERE id = $1
 `
@@ -277,6 +212,71 @@ func (q *Queries) GetUserByEmail(ctx context.Context, email string) (AuthUser, e
 		&i.UpdatedAt,
 	)
 	return i, err
+}
+
+const getUserIdsOfCompany = `-- name: GetUserIdsOfCompany :many
+SELECT u.id FROM auth.users AS u WHERE email LIKE '%' || $1 || '%'
+`
+
+func (q *Queries) GetUserIdsOfCompany(ctx context.Context, dollar_1 sql.NullString) ([]uuid.UUID, error) {
+	rows, err := q.db.QueryContext(ctx, getUserIdsOfCompany, dollar_1)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []uuid.UUID
+	for rows.Next() {
+		var id uuid.UUID
+		if err := rows.Scan(&id); err != nil {
+			return nil, err
+		}
+		items = append(items, id)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getUsers = `-- name: GetUsers :many
+SELECT id, email, first_name, last_name, full_name, user_name, password, roles, created_at, updated_at FROM auth.users
+`
+
+func (q *Queries) GetUsers(ctx context.Context) ([]AuthUser, error) {
+	rows, err := q.db.QueryContext(ctx, getUsers)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []AuthUser
+	for rows.Next() {
+		var i AuthUser
+		if err := rows.Scan(
+			&i.ID,
+			&i.Email,
+			&i.FirstName,
+			&i.LastName,
+			&i.FullName,
+			&i.UserName,
+			&i.Password,
+			&i.Roles,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
 }
 
 const updateKeyByUserID = `-- name: UpdateKeyByUserID :one

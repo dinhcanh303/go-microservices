@@ -32,15 +32,15 @@ func NewGRPCAuthClient(cfg *config.Config) (domain.AuthDomainService, error) {
 }
 
 // GetAllUserIdByUserId implements domain.AuthDomainService.
-func (a *authGRPCClient) GetAllUserIdByUserId(ctx context.Context, userId uuid.UUID) ([]uuid.UUID, error) {
+func (a *authGRPCClient) GetUserIdsByUserId(ctx context.Context, userId uuid.UUID) ([]uuid.UUID, error) {
 	client := gen.NewAuthServiceClient(a.conn)
 
-	res, err := client.GetAllUserIdOfCompanyByUserId(ctx, &gen.GetAllUserIdOfCompanyByUserIdRequest{
+	res, err := client.GetUserIdsOfCompanyByUserId(ctx, &gen.GetUserIdsOfCompanyByUserIdRequest{
 		UserId: userId.String(),
 	})
 	results := make([]uuid.UUID, 0)
 	if err != nil {
-		slog.Warn("authGRPCClient.GetAllUserIdOfCompanyByUserId failed", err)
+		slog.Warn("authGRPCClient.GetUserIdsOfCompanyByUserId failed", err)
 		return results, nil
 	}
 	for _, item := range res.UserIds {

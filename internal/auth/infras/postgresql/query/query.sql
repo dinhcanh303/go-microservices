@@ -16,10 +16,10 @@ SELECT * FROM auth.users WHERE id = $1;
 -- name: GetUserByEmail :one
 SELECT * FROM auth.users WHERE email = $1;
 
--- name: GetAllUserIdOfCompany :many
+-- name: GetUserIdsOfCompany :many
 SELECT u.id FROM auth.users AS u WHERE email LIKE '%' || $1 || '%'; 
 
--- name: GetAllUser :many
+-- name: GetUsers :many
 SELECT * FROM auth.users; 
 
 -- name: FindKeyByUserID :one

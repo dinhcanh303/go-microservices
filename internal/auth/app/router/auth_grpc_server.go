@@ -106,7 +106,7 @@ func (a *authGRPCServer) SignIn(ctx context.Context, request *gen.SignInRequest)
 		RefreshToken: signRes.RefreshToken,
 	}, nil
 }
-func (a *authGRPCServer) Profile(ctx context.Context, request *gen.GetProfileRequest) (*gen.GetProfileResponse, error) {
+func (a *authGRPCServer) GetProfile(ctx context.Context, request *gen.GetProfileRequest) (*gen.GetProfileResponse, error) {
 	slog.Info("GET:: Profile")
 	var userId uuid.UUID
 	var err error
@@ -275,17 +275,17 @@ func (a *authGRPCServer) HandleRefreshToken(ctx context.Context, request *gen.Ha
 		RefreshToken: res.RefreshToken,
 	}, nil
 }
-func (a *authGRPCServer) GetAllUserIdOfCompanyByUserId(ctx context.Context, request *gen.GetAllUserIdOfCompanyByUserIdRequest) (*gen.GetAllUserIdOfCompanyByUserIdResponse, error) {
-	slog.Info("GET:: GetAllUserIdByUserId")
+func (a *authGRPCServer) GetUserIdsOfCompanyByUserId(ctx context.Context, request *gen.GetUserIdsOfCompanyByUserIdRequest) (*gen.GetUserIdsOfCompanyByUserIdResponse, error) {
+	slog.Info("GET:: GetUserIdsOfCompanyByUserId")
 	userId, err := uuid.Parse(request.UserId)
 	if err != nil {
 		return nil, errors.New("failed to parse uuid")
 	}
-	userIds, err := a.uc.GetAllUserIdOfCompanyByUserId(ctx, userId)
+	userIds, err := a.uc.GetUserIdsOfCompanyByUserId(ctx, userId)
 	if err != nil {
 		return nil, err
 	}
-	return &gen.GetAllUserIdOfCompanyByUserIdResponse{
+	return &gen.GetUserIdsOfCompanyByUserIdResponse{
 		UserIds: lo.Map(userIds, func(item uuid.UUID, _ int) string {
 			return item.String()
 		}),
