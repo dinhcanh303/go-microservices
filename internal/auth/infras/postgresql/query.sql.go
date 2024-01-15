@@ -53,9 +53,10 @@ INSERT INTO auth.users
         password,
         first_name,
         last_name,
-        full_name
+        full_name,
+        nick_name
     )
-VALUES ($1, $2, $3, $4, $5, $6) RETURNING id, email, first_name, last_name, full_name, user_name, password, roles, created_at, updated_at
+VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id, email, first_name, last_name, full_name, nick_name, password, role, created_at, updated_at
 `
 
 type CreateUserParams struct {
@@ -65,6 +66,7 @@ type CreateUserParams struct {
 	FirstName string         `json:"first_name"`
 	LastName  string         `json:"last_name"`
 	FullName  sql.NullString `json:"full_name"`
+	NickName  sql.NullString `json:"nick_name"`
 }
 
 func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (AuthUser, error) {
@@ -75,6 +77,7 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (AuthUse
 		arg.FirstName,
 		arg.LastName,
 		arg.FullName,
+		arg.NickName,
 	)
 	var i AuthUser
 	err := row.Scan(
@@ -83,9 +86,9 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (AuthUse
 		&i.FirstName,
 		&i.LastName,
 		&i.FullName,
-		&i.UserName,
+		&i.NickName,
 		&i.Password,
-		&i.Roles,
+		&i.Role,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 	)
@@ -171,7 +174,7 @@ func (q *Queries) FindKeyByUserID(ctx context.Context, userID uuid.UUID) (AuthKe
 }
 
 const getUser = `-- name: GetUser :one
-SELECT id, email, first_name, last_name, full_name, user_name, password, roles, created_at, updated_at FROM auth.users WHERE id = $1
+SELECT id, email, first_name, last_name, full_name, nick_name, password, role, created_at, updated_at FROM auth.users WHERE id = $1
 `
 
 func (q *Queries) GetUser(ctx context.Context, id uuid.UUID) (AuthUser, error) {
@@ -183,9 +186,9 @@ func (q *Queries) GetUser(ctx context.Context, id uuid.UUID) (AuthUser, error) {
 		&i.FirstName,
 		&i.LastName,
 		&i.FullName,
-		&i.UserName,
+		&i.NickName,
 		&i.Password,
-		&i.Roles,
+		&i.Role,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 	)
@@ -193,7 +196,7 @@ func (q *Queries) GetUser(ctx context.Context, id uuid.UUID) (AuthUser, error) {
 }
 
 const getUserByEmail = `-- name: GetUserByEmail :one
-SELECT id, email, first_name, last_name, full_name, user_name, password, roles, created_at, updated_at FROM auth.users WHERE email = $1
+SELECT id, email, first_name, last_name, full_name, nick_name, password, role, created_at, updated_at FROM auth.users WHERE email = $1
 `
 
 func (q *Queries) GetUserByEmail(ctx context.Context, email string) (AuthUser, error) {
@@ -205,9 +208,9 @@ func (q *Queries) GetUserByEmail(ctx context.Context, email string) (AuthUser, e
 		&i.FirstName,
 		&i.LastName,
 		&i.FullName,
-		&i.UserName,
+		&i.NickName,
 		&i.Password,
-		&i.Roles,
+		&i.Role,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 	)
@@ -242,11 +245,21 @@ func (q *Queries) GetUserIdsOfCompany(ctx context.Context, dollar_1 sql.NullStri
 }
 
 const getUsers = `-- name: GetUsers :many
-SELECT id, email, first_name, last_name, full_name, user_name, password, roles, created_at, updated_at FROM auth.users
+SELECT id, email, first_name, last_name, full_name, nick_name, password, role, created_at, updated_at FROM auth.users 
+WHERE 
+    nick_name LIKE COALESCE('%'||$1||'%','%%')
+LIMIT $2
+OFFSET $3
 `
 
-func (q *Queries) GetUsers(ctx context.Context) ([]AuthUser, error) {
-	rows, err := q.db.QueryContext(ctx, getUsers)
+type GetUsersParams struct {
+	Column1 sql.NullString `json:"column_1"`
+	Limit   int32          `json:"limit"`
+	Offset  int32          `json:"offset"`
+}
+
+func (q *Queries) GetUsers(ctx context.Context, arg GetUsersParams) ([]AuthUser, error) {
+	rows, err := q.db.QueryContext(ctx, getUsers, arg.Column1, arg.Limit, arg.Offset)
 	if err != nil {
 		return nil, err
 	}
@@ -260,9 +273,9 @@ func (q *Queries) GetUsers(ctx context.Context) ([]AuthUser, error) {
 			&i.FirstName,
 			&i.LastName,
 			&i.FullName,
-			&i.UserName,
+			&i.NickName,
 			&i.Password,
-			&i.Roles,
+			&i.Role,
 			&i.CreatedAt,
 			&i.UpdatedAt,
 		); err != nil {

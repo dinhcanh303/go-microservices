@@ -26,7 +26,7 @@ func (u *uploadGRPCClient) GetAvatarUser(ctx context.Context, userId uuid.UUID) 
 	})
 	if err != nil {
 		slog.Warn("uploadGRPCClient.GetAvatarUser failed", err)
-		return nil, nil
+		return &domainUpload.Attachment{}, nil
 	}
 	return &domainUpload.Attachment{
 		ID:             uuid.MustParse(res.Attachment.Id),

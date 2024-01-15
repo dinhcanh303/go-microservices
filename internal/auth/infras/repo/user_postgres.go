@@ -11,6 +11,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/google/wire"
 	"github.com/pkg/errors"
+	"github.com/samber/lo"
 )
 
 type userRepo struct {
@@ -50,6 +51,10 @@ func (rp *userRepo) CreateUser(ctx context.Context, user *domain.User) (*domain.
 			String: user.FullName,
 			Valid:  user.FullName != "",
 		},
+		NickName: sql.NullString{
+			String: user.NickName,
+			Valid:  user.NickName != "",
+		},
 	})
 	if err != nil {
 		return nil, errors.Wrap(err, "userRepo.Create failed")
@@ -77,10 +82,41 @@ func (rp *userRepo) GetUser(ctx context.Context, userId uuid.UUID) (*domain.User
 		FirstName: user.FirstName,
 		LastName:  user.LastName,
 		FullName:  user.FullName.String,
+		NickName:  user.FullName.String,
 		Password:  user.Password,
 		CreatedAt: user.CreatedAt,
 		UpdatedAt: user.UpdatedAt,
 	}, nil
+}
+
+// GetUsers implements auth.AuthRepo.
+func (rp *userRepo) GetUsers(ctx context.Context, search string, limit, offset int32) ([]*domain.User, error) {
+	db := rp.pg.GetDBRead()
+	querier := postgresql.New(db)
+	users, err := querier.GetUsers(ctx, postgresql.GetUsersParams{
+		Column1: sql.NullString{
+			String: search,
+			Valid:  search != "",
+		},
+		Limit:  limit,
+		Offset: offset,
+	})
+	if err != nil {
+		return nil, errors.Wrap(err, "userRepo.GetUsers failed")
+	}
+	return lo.Map(users, func(user postgresql.AuthUser, _ int) *domain.User {
+		return &domain.User{
+			ID:        user.ID,
+			Email:     user.Email,
+			FirstName: user.FirstName,
+			LastName:  user.LastName,
+			FullName:  user.FullName.String,
+			NickName:  user.NickName.String,
+			// Password:  user.Password,
+			CreatedAt: user.CreatedAt,
+			UpdatedAt: user.UpdatedAt,
+		}
+	}), nil
 }
 
 // GetUserByEmail implements auth.AuthRepo.
@@ -97,6 +133,7 @@ func (rp *userRepo) GetUserByEmail(ctx context.Context, email string) (*domain.U
 		FirstName: user.FirstName,
 		LastName:  user.LastName,
 		FullName:  user.FullName.String,
+		NickName:  user.NickName.String,
 		Password:  user.Password,
 		CreatedAt: user.CreatedAt,
 		UpdatedAt: user.UpdatedAt,

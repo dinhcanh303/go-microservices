@@ -31,6 +31,18 @@ type service struct {
 	userDeletedEventPub UserDeletedEventPublisher
 }
 
+// GetUsers implements UseCase.
+func (s *service) GetUsers(ctx context.Context, search string, limit int32, offset int32) ([]*domain.User, error) {
+	if limit == 0 {
+		limit = 1000
+	}
+	users, err := s.repo.GetUsers(ctx, search, limit, offset)
+	if err != nil {
+		return nil, err
+	}
+	return users, nil
+}
+
 // GetUser implements UseCase.
 func (s *service) GetUser(ctx context.Context, userId uuid.UUID) (*domain.User, error) {
 	user, err := s.repo.GetUser(ctx, userId)
@@ -105,6 +117,7 @@ func (s *service) SignIn(ctx context.Context, email string, password string) (*d
 					FirstName: name,
 					LastName:  name,
 					FullName:  name,
+					NickName:  name,
 				})
 				if err != nil {
 					return nil, errors.Wrap(err, "create account using ldap failed")

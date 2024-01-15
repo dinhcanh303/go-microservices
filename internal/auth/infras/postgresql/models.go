@@ -37,9 +37,9 @@ type AuthUser struct {
 	FirstName string         `json:"first_name"`
 	LastName  string         `json:"last_name"`
 	FullName  sql.NullString `json:"full_name"`
-	UserName  sql.NullString `json:"user_name"`
+	NickName  sql.NullString `json:"nick_name"`
 	Password  string         `json:"password"`
-	Roles     sql.NullString `json:"roles"`
+	Role      sql.NullString `json:"role"`
 	CreatedAt time.Time      `json:"created_at"`
 	UpdatedAt time.Time      `json:"updated_at"`
 }

@@ -15,6 +15,7 @@ type User struct {
 	FirstName string    `json:"first_name"`
 	LastName  string    `json:"last_name"`
 	FullName  string    `json:"full_name"`
+	NickName  string    `json:"nick_name"`
 	Role      string    `json:"role"`
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
@@ -26,6 +27,7 @@ type UserAuth struct {
 }
 
 func NewUser(email string, password string, firstName string, lastName string) *User {
+
 	return &User{
 		ID:        uuid.New(),
 		Email:     email,

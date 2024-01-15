@@ -73,7 +73,7 @@ service AuthService {
             description: ""
         };
     }
-    rpc GetUsers(GetUsersRequest) returns (GetUsersRespone){
+    rpc GetUsers(GetUsersRequest) returns (GetUsersResponse){
         option (google.api.http) = {
             get: "/api/v1/users",
         };
@@ -84,8 +84,11 @@ service AuthService {
     }
 }
 message GetUsersRequest{
+    string search = 1;
+    int32 limit = 2;
+    int32 offset = 3;
 }
-message GetUsersRespone{
+message GetUsersResponse{
     repeated User users=1;
 }
 message GetProfileRequest{
@@ -146,10 +149,11 @@ message User {
     string first_name = 3;
     string last_name = 4;
     string full_name = 5;
-    string avatar_url = 6;
-    string thumbnail_url = 7;
-    google.protobuf.Timestamp created_at = 8;
-    google.protobuf.Timestamp updated_at = 9;
+    string nick_name = 6;
+    string avatar_url = 7;
+    string thumbnail_url = 8;
+    google.protobuf.Timestamp created_at = 9;
+    google.protobuf.Timestamp updated_at = 10;
 }
 message VerifyRequest{}
 message VerifyResponse{}

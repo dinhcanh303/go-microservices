@@ -11,6 +11,7 @@ import (
 type UserRepo interface {
 	CreateUser(context.Context, *domain.User) (*domain.User, error)
 	GetUser(ctx context.Context, userId uuid.UUID) (*domain.User, error)
+	GetUsers(ctx context.Context, search string, limit, offset int32) ([]*domain.User, error)
 	GetUserByEmail(ctx context.Context, email string) (*domain.User, error)
 	GetUserIdsOfCompany(ctx context.Context, company string) ([]uuid.UUID, error)
 }
@@ -21,6 +22,7 @@ type UseCase interface {
 	Logout(ctx context.Context, key *domain.Key) error
 	GetUserIdsOfCompanyByUserId(ctx context.Context, userId uuid.UUID) ([]uuid.UUID, error)
 	GetUser(ctx context.Context, userID uuid.UUID) (*domain.User, error)
+	GetUsers(ctx context.Context, search string, limit, offset int32) ([]*domain.User, error)
 }
 
 type UserCreatedEventPublisher interface {

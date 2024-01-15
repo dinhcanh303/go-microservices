@@ -40,7 +40,7 @@ type AuthServiceClient interface {
 	HandleRefreshToken(ctx context.Context, in *HandleRefreshTokenRequest, opts ...grpc.CallOption) (*HandleRefreshTokenResponse, error)
 	GetUserIdsOfCompanyByUserId(ctx context.Context, in *GetUserIdsOfCompanyByUserIdRequest, opts ...grpc.CallOption) (*GetUserIdsOfCompanyByUserIdResponse, error)
 	GetProfile(ctx context.Context, in *GetProfileRequest, opts ...grpc.CallOption) (*GetProfileResponse, error)
-	GetUsers(ctx context.Context, in *GetUsersRequest, opts ...grpc.CallOption) (*GetUsersRespone, error)
+	GetUsers(ctx context.Context, in *GetUsersRequest, opts ...grpc.CallOption) (*GetUsersResponse, error)
 }
 
 type authServiceClient struct {
@@ -114,8 +114,8 @@ func (c *authServiceClient) GetProfile(ctx context.Context, in *GetProfileReques
 	return out, nil
 }
 
-func (c *authServiceClient) GetUsers(ctx context.Context, in *GetUsersRequest, opts ...grpc.CallOption) (*GetUsersRespone, error) {
-	out := new(GetUsersRespone)
+func (c *authServiceClient) GetUsers(ctx context.Context, in *GetUsersRequest, opts ...grpc.CallOption) (*GetUsersResponse, error) {
+	out := new(GetUsersResponse)
 	err := c.cc.Invoke(ctx, AuthService_GetUsers_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -134,7 +134,7 @@ type AuthServiceServer interface {
 	HandleRefreshToken(context.Context, *HandleRefreshTokenRequest) (*HandleRefreshTokenResponse, error)
 	GetUserIdsOfCompanyByUserId(context.Context, *GetUserIdsOfCompanyByUserIdRequest) (*GetUserIdsOfCompanyByUserIdResponse, error)
 	GetProfile(context.Context, *GetProfileRequest) (*GetProfileResponse, error)
-	GetUsers(context.Context, *GetUsersRequest) (*GetUsersRespone, error)
+	GetUsers(context.Context, *GetUsersRequest) (*GetUsersResponse, error)
 	mustEmbedUnimplementedAuthServiceServer()
 }
 
@@ -163,7 +163,7 @@ func (UnimplementedAuthServiceServer) GetUserIdsOfCompanyByUserId(context.Contex
 func (UnimplementedAuthServiceServer) GetProfile(context.Context, *GetProfileRequest) (*GetProfileResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetProfile not implemented")
 }
-func (UnimplementedAuthServiceServer) GetUsers(context.Context, *GetUsersRequest) (*GetUsersRespone, error) {
+func (UnimplementedAuthServiceServer) GetUsers(context.Context, *GetUsersRequest) (*GetUsersResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetUsers not implemented")
 }
 func (UnimplementedAuthServiceServer) mustEmbedUnimplementedAuthServiceServer() {}

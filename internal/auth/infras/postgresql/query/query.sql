@@ -6,9 +6,10 @@ INSERT INTO auth.users
         password,
         first_name,
         last_name,
-        full_name
+        full_name,
+        nick_name
     )
-VALUES ($1, $2, $3, $4, $5, $6) RETURNING *;
+VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *;
 
 -- name: GetUser :one
 SELECT * FROM auth.users WHERE id = $1;
@@ -20,7 +21,11 @@ SELECT * FROM auth.users WHERE email = $1;
 SELECT u.id FROM auth.users AS u WHERE email LIKE '%' || $1 || '%'; 
 
 -- name: GetUsers :many
-SELECT * FROM auth.users; 
+SELECT * FROM auth.users 
+WHERE 
+    nick_name LIKE COALESCE('%'||$1||'%','%%')
+LIMIT $2
+OFFSET $3;
 
 -- name: FindKeyByUserID :one
 SELECT * FROM auth.keys WHERE user_id = $1;

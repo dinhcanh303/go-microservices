@@ -72,6 +72,7 @@ func (a *authGRPCServer) SignUp(ctx context.Context, request *gen.SignUpRequest)
 			FirstName: signRes.User.FirstName,
 			LastName:  signRes.User.LastName,
 			FullName:  signRes.User.FullName,
+			NickName:  signRes.User.NickName,
 			CreatedAt: timestamppb.New(signRes.User.CreatedAt),
 			UpdatedAt: timestamppb.New(signRes.User.UpdatedAt),
 		},
@@ -97,6 +98,7 @@ func (a *authGRPCServer) SignIn(ctx context.Context, request *gen.SignInRequest)
 			FirstName:    signRes.User.FirstName,
 			LastName:     signRes.User.LastName,
 			FullName:     signRes.User.FullName,
+			NickName:     signRes.User.NickName,
 			AvatarUrl:    avatarUrl,
 			ThumbnailUrl: thumbnailUrl,
 			CreatedAt:    timestamppb.New(signRes.User.CreatedAt),
@@ -105,6 +107,31 @@ func (a *authGRPCServer) SignIn(ctx context.Context, request *gen.SignInRequest)
 		AccessToken:  signRes.AccessToken,
 		RefreshToken: signRes.RefreshToken,
 	}, nil
+}
+func (a *authGRPCServer) GetUsers(ctx context.Context, request *gen.GetUsersRequest) (*gen.GetUsersResponse, error) {
+	slog.Info("GET:: GetUsers")
+	users, err := a.uc.GetUsers(ctx, request.GetSearch(), request.GetLimit(), request.GetOffset())
+	if err != nil {
+		return nil, err
+	}
+	return &gen.GetUsersResponse{
+		Users: lo.Map(users, func(user *domain.User, _ int) *gen.User {
+			avatarUrl, thumbnailUrl := getAvatarAndThumbnailAvatar(a, ctx, user.ID)
+			return &gen.User{
+				Id:           user.ID.String(),
+				Email:        user.Email,
+				FirstName:    user.FirstName,
+				LastName:     user.LastName,
+				FullName:     user.FullName,
+				NickName:     user.NickName,
+				AvatarUrl:    avatarUrl,
+				ThumbnailUrl: thumbnailUrl,
+				CreatedAt:    timestamppb.New(user.CreatedAt),
+				UpdatedAt:    timestamppb.New(user.UpdatedAt),
+			}
+		}),
+	}, nil
+
 }
 func (a *authGRPCServer) GetProfile(ctx context.Context, request *gen.GetProfileRequest) (*gen.GetProfileResponse, error) {
 	slog.Info("GET:: Profile")
@@ -142,6 +169,7 @@ func (a *authGRPCServer) GetProfile(ctx context.Context, request *gen.GetProfile
 			FirstName:    user.FirstName,
 			LastName:     user.LastName,
 			FullName:     user.FullName,
+			NickName:     user.NickName,
 			AvatarUrl:    avatarUrl,
 			ThumbnailUrl: thumbnailUrl,
 			CreatedAt:    timestamppb.New(user.CreatedAt),
@@ -268,6 +296,7 @@ func (a *authGRPCServer) HandleRefreshToken(ctx context.Context, request *gen.Ha
 			FirstName: res.User.FirstName,
 			LastName:  res.User.LastName,
 			FullName:  res.User.FullName,
+			NickName:  res.User.NickName,
 			CreatedAt: timestamppb.New(res.User.CreatedAt),
 			UpdatedAt: timestamppb.New(res.User.UpdatedAt),
 		},

@@ -10,9 +10,9 @@ CREATE TABLE
         first_name VARCHAR(255) NOT NULL,
         last_name VARCHAR(255) NOT NULL,
         full_name VARCHAR(255) DEFAULT NULL,
-        user_name VARCHAR(255) DEFAULT NULL,
+        nick_name VARCHAR(255) DEFAULT NULL UNIQUE,
         password VARCHAR(255) NOT NULL,
-        roles VARCHAR(20) DEFAULT 'user', 
+        role VARCHAR(20) DEFAULT 'user', 
         created_at timestamp with time zone NOT NULL DEFAULT current_timestamp,
         updated_at timestamp with time zone NOT NULL DEFAULT (now()),
         CONSTRAINT pk_users PRIMARY KEY (id)
