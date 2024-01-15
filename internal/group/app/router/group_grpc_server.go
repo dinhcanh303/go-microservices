@@ -8,6 +8,7 @@ import (
 	"github.com/dinhcanh303/go-microservices/internal/group/domain"
 	"github.com/dinhcanh303/go-microservices/internal/group/usecases/groupmembers"
 	"github.com/dinhcanh303/go-microservices/internal/group/usecases/groups"
+	"github.com/dinhcanh303/go-microservices/pkg/constant"
 	"github.com/dinhcanh303/go-microservices/pkg/redis"
 	"github.com/dinhcanh303/go-microservices/pkg/utils"
 	"github.com/dinhcanh303/go-microservices/proto/gen"
@@ -193,10 +194,6 @@ func (g *groupGRPCServer) CreateGroup(ctx context.Context, request *gen.CreateGr
 	if err != nil {
 		return nil, err
 	}
-	if request.Group.UserIds != nil {
-		// g.ucGroupMember.CreateGroupMember()
-	}
-	slog.Info("PAYLOAD::", payloadUser)
 	model := domain.Group{
 		Name:        request.Group.Name,
 		Description: request.Group.Description,
@@ -206,6 +203,27 @@ func (g *groupGRPCServer) CreateGroup(ctx context.Context, request *gen.CreateGr
 	group, err := g.ucGroup.CreateGroup(ctx, &model)
 	if err != nil {
 		return nil, errors.Wrap(err, "ucGroup.CreateGroup failed")
+	}
+	g.ucGroupMember.CreateGroupMember(ctx, &domain.GroupMember{
+		ID:      uuid.New(),
+		GroupID: group.ID,
+		UserID:  payloadUser.ID,
+		Role:    constant.OWNER,
+	})
+	if request.Group.UserIds != nil {
+		for _, userId := range request.Group.UserIds {
+			userIdParsed, err := uuid.Parse(userId)
+			if err != nil {
+				return nil, errors.Wrap(err, "ucGroup.CreateGroup userIds parse failed")
+			}
+			g.ucGroupMember.CreateGroupMember(ctx, &domain.GroupMember{
+				ID:      uuid.New(),
+				GroupID: group.ID,
+				UserID:  userIdParsed,
+				Role:    constant.MEMBER,
+			})
+		}
+
 	}
 	res := &gen.CreateGroupResponse{
 		Group: &gen.GroupResponse{

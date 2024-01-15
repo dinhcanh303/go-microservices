@@ -142,17 +142,19 @@ message GetCommentsByCommentIDResponse {
 }
 message CommentRequest {
     string post_id = 1;
-    string reply_to_id = 2;
-    string content = 3;
-    string parent_comment_id = 4;
+    string reply_id = 2;
+    repeated string tag_ids = 3;
+    string content = 4;
+    string parent_comment_id = 5;
 }
 message Comment {
     string id = 1;
     string post_id = 2;
     string user_id = 3;
-    string reply_to_id = 4;
-    string content = 5;
-    string parent_comment_id = 6;
+    string reply_id = 4;
+    repeated string tag_ids = 5;
+    string content = 6;
+    string parent_comment_id = 7;
     google.protobuf.Timestamp created_at = 8;
     google.protobuf.Timestamp updated_at = 9;
 }
@@ -160,24 +162,26 @@ message CommentHasMetadata {
     string id = 1;
     string post_id = 2;
     string user_id = 3;
-    string reply_to_id = 4;
-    string content = 5;
-    string parent_comment_id = 6;
-    like.LikeInfo likes = 7;
-    repeated upload.Attachment attachments = 8;
-    google.protobuf.Timestamp created_at = 9;
-    google.protobuf.Timestamp updated_at = 10;
+    string reply_id = 4;
+    repeated string tag_ids = 5;
+    string content = 6;
+    string parent_comment_id = 7;
+    like.LikeInfo likes = 8;
+    repeated upload.Attachment attachments = 9;
+    google.protobuf.Timestamp created_at = 10;
+    google.protobuf.Timestamp updated_at = 11;
 }
 message CommentHasChildren {
     string id = 1;
     string post_id = 2;
     string user_id = 3;
-    string reply_to_id = 4;
-    string content = 5;
-    string parent_comment_id = 6;
-    repeated CommentHasMetadata children = 7;
-    like.LikeInfo likes = 8;
-    repeated upload.Attachment attachments = 9;
-    google.protobuf.Timestamp created_at = 10;
-    google.protobuf.Timestamp updated_at = 11;
+    string reply_id = 4;
+    repeated string tag_ids = 5;
+    string content = 6;
+    string parent_comment_id = 7;
+    repeated CommentHasMetadata children = 8;
+    like.LikeInfo likes = 9;
+    repeated upload.Attachment attachments = 10;
+    google.protobuf.Timestamp created_at = 11;
+    google.protobuf.Timestamp updated_at = 12;
 }

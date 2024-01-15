@@ -42,7 +42,8 @@ func (rp *commentRepo) GetCommentsByCommentID(ctx context.Context, commentId uui
 			Content:         item.Content,
 			PostID:          item.PostID,
 			ParentCommentID: item.ParentCommentID,
-			ReplyToID:       item.ReplyToID,
+			ReplyID:         item.ReplyID,
+			TagIDs:          item.TagIds,
 			CreatedAt:       item.CreatedAt,
 			UpdatedAt:       item.UpdatedAt,
 		}
@@ -99,7 +100,8 @@ func (rp *commentRepo) Create(ctx context.Context, comment *domain.Comment) (*do
 		Content:         comment.Content,
 		PostID:          comment.PostID,
 		ParentCommentID: comment.ParentCommentID,
-		ReplyToID:       comment.ReplyToID,
+		ReplyID:         comment.ReplyID,
+		TagIds:          comment.TagIDs,
 	})
 	if err != nil {
 		return nil, errors.Wrap(err, "commentRepo.Create failed")
@@ -110,7 +112,8 @@ func (rp *commentRepo) Create(ctx context.Context, comment *domain.Comment) (*do
 		Content:         result.Content,
 		PostID:          result.PostID,
 		ParentCommentID: result.ParentCommentID,
-		ReplyToID:       result.ReplyToID,
+		ReplyID:         result.ReplyID,
+		TagIDs:          result.TagIds,
 		CreatedAt:       result.CreatedAt,
 		UpdatedAt:       result.UpdatedAt,
 	}, tx.Commit()
@@ -163,7 +166,8 @@ func (rp *commentRepo) Get(ctx context.Context, uuid uuid.UUID) (*domain.Comment
 		Content:         result.Content,
 		PostID:          result.PostID,
 		ParentCommentID: result.ParentCommentID,
-		ReplyToID:       result.ReplyToID,
+		ReplyID:         result.ReplyID,
+		TagIDs:          result.TagIds,
 		CreatedAt:       result.CreatedAt,
 		UpdatedAt:       result.UpdatedAt,
 	}, nil
@@ -189,7 +193,8 @@ func (rp *commentRepo) GetCommentsByPostID(ctx context.Context, postId uuid.UUID
 			Content:         item.Content,
 			PostID:          item.PostID,
 			ParentCommentID: item.ParentCommentID,
-			ReplyToID:       item.ReplyToID,
+			ReplyID:         item.ReplyID,
+			TagIDs:          item.TagIds,
 			CreatedAt:       item.CreatedAt,
 			UpdatedAt:       item.UpdatedAt,
 		}
@@ -211,7 +216,8 @@ func (rp *commentRepo) Update(ctx context.Context, comment *domain.Comment) (*do
 			String: comment.Content,
 			Valid:  comment.Content != "",
 		},
-		ReplyToID: comment.ReplyToID,
+		ReplyID: comment.ReplyID,
+		TagIds:  comment.TagIDs,
 	})
 	if err != nil {
 		return nil, errors.Wrap(err, "commentRepo.Update failed")
@@ -222,7 +228,8 @@ func (rp *commentRepo) Update(ctx context.Context, comment *domain.Comment) (*do
 		Content:         result.Content,
 		PostID:          result.PostID,
 		ParentCommentID: result.ParentCommentID,
-		ReplyToID:       result.ReplyToID,
+		ReplyID:         result.ReplyID,
+		TagIDs:          result.TagIds,
 		CreatedAt:       result.CreatedAt,
 		UpdatedAt:       result.UpdatedAt,
 	}, tx.Commit()

@@ -14,7 +14,8 @@ type CommentComment struct {
 	ID              uuid.UUID     `json:"id"`
 	UserID          uuid.UUID     `json:"user_id"`
 	Content         string        `json:"content"`
-	ReplyToID       uuid.NullUUID `json:"reply_to_id"`
+	ReplyID         uuid.NullUUID `json:"reply_id"`
+	TagIds          []uuid.UUID   `json:"tag_ids"`
 	PostID          uuid.UUID     `json:"post_id"`
 	ParentCommentID uuid.NullUUID `json:"parent_comment_id"`
 	CreatedAt       time.Time     `json:"created_at"`

@@ -87,7 +87,8 @@ func (c *commentGRPCServer) CreateComment(ctx context.Context, request *gen.Crea
 		return nil, errors.Wrap(err, "failed to parse")
 	}
 	parentCommentId, _ := uuid.Parse(request.Comment.ParentCommentId)
-	replyToId, _ := uuid.Parse(request.Comment.ReplyToId)
+	tagIds, _ := utils.ConvertArStringToArUUID(request.Comment.TagIds)
+	replyId, _ := uuid.Parse(request.Comment.ReplyId)
 	model := domain.Comment{
 		ID:      uuid.New(),
 		PostID:  postId,
@@ -96,10 +97,11 @@ func (c *commentGRPCServer) CreateComment(ctx context.Context, request *gen.Crea
 			UUID:  parentCommentId,
 			Valid: request.Comment.ParentCommentId != "",
 		},
-		ReplyToID: uuid.NullUUID{
-			UUID:  replyToId,
-			Valid: request.Comment.ReplyToId != "",
+		ReplyID: uuid.NullUUID{
+			UUID:  replyId,
+			Valid: request.Comment.ReplyId != "",
 		},
+		TagIDs: tagIds,
 		UserID: user.ID,
 	}
 	comment, err := c.uc.CreateComment(ctx, &model)
@@ -110,7 +112,8 @@ func (c *commentGRPCServer) CreateComment(ctx context.Context, request *gen.Crea
 		Comment: &gen.Comment{
 			Id:              comment.ID.String(),
 			PostId:          comment.PostID.String(),
-			ReplyToId:       comment.ReplyToID.UUID.String(),
+			ReplyId:         comment.ReplyID.UUID.String(),
+			TagIds:          utils.ConvertArUUIDToArString(comment.TagIDs),
 			Content:         comment.Content,
 			ParentCommentId: comment.ParentCommentID.UUID.String(),
 			UserId:          comment.UserID.String(),
@@ -151,7 +154,8 @@ func (c *commentGRPCServer) GetComment(ctx context.Context, request *gen.GetComm
 		Comment: &gen.Comment{
 			Id:              comment.ID.String(),
 			PostId:          comment.PostID.String(),
-			ReplyToId:       comment.ReplyToID.UUID.String(),
+			ReplyId:         comment.ReplyID.UUID.String(),
+			TagIds:          utils.ConvertArUUIDToArString(comment.TagIDs),
 			ParentCommentId: comment.ParentCommentID.UUID.String(),
 			Content:         comment.Content,
 			UserId:          comment.UserID.String(),
@@ -183,7 +187,8 @@ func (c *commentGRPCServer) GetCommentsByCommentID(ctx context.Context, request 
 			Id:              comment.ID.String(),
 			PostId:          comment.PostID.String(),
 			UserId:          comment.UserID.String(),
-			ReplyToId:       comment.ReplyToID.UUID.String(),
+			ReplyId:         comment.ReplyID.UUID.String(),
+			TagIds:          utils.ConvertArUUIDToArString(comment.TagIDs),
 			Content:         comment.Content,
 			ParentCommentId: comment.ParentCommentID.UUID.String(),
 			CreatedAt:       timestamppb.New(comment.CreatedAt),
@@ -239,7 +244,8 @@ func (c *commentGRPCServer) GetCommentsByPostID(ctx context.Context, request *ge
 			Id:              comment.ID.String(),
 			PostId:          comment.PostID.String(),
 			UserId:          comment.UserID.String(),
-			ReplyToId:       comment.ReplyToID.UUID.String(),
+			ReplyId:         comment.ReplyID.UUID.String(),
+			TagIds:          utils.ConvertArUUIDToArString(comment.TagIDs),
 			Content:         comment.Content,
 			ParentCommentId: comment.ParentCommentID.UUID.String(),
 			CreatedAt:       timestamppb.New(comment.CreatedAt),
@@ -268,11 +274,12 @@ func (c *commentGRPCServer) GetCommentsByPostID(ctx context.Context, request *ge
 			}),
 			Children: lo.Map(comment.Children, func(item *domain.CommentHasMetadata, _ int) *gen.CommentHasMetadata {
 				return &gen.CommentHasMetadata{
-					Id:        item.ID.String(),
-					PostId:    item.PostID.String(),
-					UserId:    item.UserID.String(),
-					ReplyToId: item.ReplyToID.UUID.String(),
-					Content:   item.Content,
+					Id:      item.ID.String(),
+					PostId:  item.PostID.String(),
+					UserId:  item.UserID.String(),
+					ReplyId: item.ReplyID.UUID.String(),
+					TagIds:  utils.ConvertArUUIDToArString(item.TagIDs),
+					Content: item.Content,
 					Likes: &gen.LikeInfo{
 						YourLikedEmoji:    comment.Likes.YourLikedEmoji,
 						YourLike:          comment.Likes.YourLike,
@@ -308,13 +315,15 @@ func (c *commentGRPCServer) GetCommentsByPostID(ctx context.Context, request *ge
 // UpdateComment implements gen.CommentServiceServer.
 func (c *commentGRPCServer) UpdateComment(ctx context.Context, request *gen.UpdateCommentRequest) (*gen.UpdateCommentResponse, error) {
 	slog.Info("PUT: UpdateComment")
-	replyToId, _ := uuid.Parse(request.Comment.ReplyToId)
+	replyToId, _ := uuid.Parse(request.Comment.ReplyId)
+	tagIds, _ := utils.ConvertArStringToArUUID(request.Comment.TagIds)
 	model := domain.Comment{
 		Content: request.Comment.Content,
-		ReplyToID: uuid.NullUUID{
+		ReplyID: uuid.NullUUID{
 			UUID:  replyToId,
-			Valid: request.Comment.ReplyToId != "",
+			Valid: request.Comment.ReplyId != "",
 		},
+		TagIDs: tagIds,
 	}
 	comment, err := c.uc.UpdateComment(ctx, &model)
 	if err != nil {
@@ -324,7 +333,8 @@ func (c *commentGRPCServer) UpdateComment(ctx context.Context, request *gen.Upda
 		Comment: &gen.Comment{
 			Id:              comment.ID.String(),
 			PostId:          comment.PostID.String(),
-			ReplyToId:       comment.ReplyToID.UUID.String(),
+			ReplyId:         comment.ReplyID.UUID.String(),
+			TagIds:          utils.ConvertArUUIDToArString(comment.TagIDs),
 			Content:         comment.Content,
 			ParentCommentId: comment.ParentCommentID.UUID.String(),
 			UserId:          comment.UserID.String(),

@@ -10,6 +10,7 @@ import (
 	"database/sql"
 
 	"github.com/google/uuid"
+	"github.com/lib/pq"
 )
 
 const countByCommentID = `-- name: CountByCommentID :one
@@ -42,9 +43,10 @@ INSERT INTO
 		content,
 		post_id,
 		parent_comment_id,
-		reply_to_id
+		reply_id,
+        tag_ids
     )
-VALUES ($1, $2, $3, $4 ,$5 , $6) RETURNING id, user_id, content, reply_to_id, post_id, parent_comment_id, created_at, updated_at
+VALUES ( $1, $2, $3, $4, $5, $6, $7) RETURNING id, user_id, content, reply_id, tag_ids, post_id, parent_comment_id, created_at, updated_at
 `
 
 type CreateParams struct {
@@ -53,7 +55,8 @@ type CreateParams struct {
 	Content         string        `json:"content"`
 	PostID          uuid.UUID     `json:"post_id"`
 	ParentCommentID uuid.NullUUID `json:"parent_comment_id"`
-	ReplyToID       uuid.NullUUID `json:"reply_to_id"`
+	ReplyID         uuid.NullUUID `json:"reply_id"`
+	TagIds          []uuid.UUID   `json:"tag_ids"`
 }
 
 func (q *Queries) Create(ctx context.Context, arg CreateParams) (CommentComment, error) {
@@ -63,14 +66,16 @@ func (q *Queries) Create(ctx context.Context, arg CreateParams) (CommentComment,
 		arg.Content,
 		arg.PostID,
 		arg.ParentCommentID,
-		arg.ReplyToID,
+		arg.ReplyID,
+		pq.Array(arg.TagIds),
 	)
 	var i CommentComment
 	err := row.Scan(
 		&i.ID,
 		&i.UserID,
 		&i.Content,
-		&i.ReplyToID,
+		&i.ReplyID,
+		pq.Array(&i.TagIds),
 		&i.PostID,
 		&i.ParentCommentID,
 		&i.CreatedAt,
@@ -98,7 +103,7 @@ func (q *Queries) DeleteAllByPostID(ctx context.Context, postID uuid.UUID) error
 }
 
 const get = `-- name: Get :one
-SELECT id, user_id, content, reply_to_id, post_id, parent_comment_id, created_at, updated_at FROM comment.comments WHERE id = $1
+SELECT id, user_id, content, reply_id, tag_ids, post_id, parent_comment_id, created_at, updated_at FROM comment.comments WHERE id = $1
 `
 
 func (q *Queries) Get(ctx context.Context, id uuid.UUID) (CommentComment, error) {
@@ -108,7 +113,8 @@ func (q *Queries) Get(ctx context.Context, id uuid.UUID) (CommentComment, error)
 		&i.ID,
 		&i.UserID,
 		&i.Content,
-		&i.ReplyToID,
+		&i.ReplyID,
+		pq.Array(&i.TagIds),
 		&i.PostID,
 		&i.ParentCommentID,
 		&i.CreatedAt,
@@ -118,7 +124,7 @@ func (q *Queries) Get(ctx context.Context, id uuid.UUID) (CommentComment, error)
 }
 
 const getCommentsByCommentID = `-- name: GetCommentsByCommentID :many
-SELECT id, user_id, content, reply_to_id, post_id, parent_comment_id, created_at, updated_at
+SELECT id, user_id, content, reply_id, tag_ids, post_id, parent_comment_id, created_at, updated_at
 FROM comment.comments
 WHERE parent_comment_id = $1
 ORDER BY created_at DESC
@@ -144,7 +150,8 @@ func (q *Queries) GetCommentsByCommentID(ctx context.Context, arg GetCommentsByC
 			&i.ID,
 			&i.UserID,
 			&i.Content,
-			&i.ReplyToID,
+			&i.ReplyID,
+			pq.Array(&i.TagIds),
 			&i.PostID,
 			&i.ParentCommentID,
 			&i.CreatedAt,
@@ -166,7 +173,7 @@ func (q *Queries) GetCommentsByCommentID(ctx context.Context, arg GetCommentsByC
 const getCommentsByPostID = `-- name: GetCommentsByPostID :many
 WITH ranked_comments AS (
         SELECT
-            c.id, c.user_id, c.content, c.reply_to_id, c.post_id, c.parent_comment_id, c.created_at, c.updated_at,
+            c.id, c.user_id, c.content, c.reply_id, c.tag_ids, c.post_id, c.parent_comment_id, c.created_at, c.updated_at,
             ROW_NUMBER() OVER (PARTITION BY parent_comment_id ORDER BY created_at) AS row_num
         FROM
             comment.comments c
@@ -178,20 +185,21 @@ WITH ranked_comments AS (
                 LIMIT $2 OFFSET $3
             )
 )
-SELECT tb.id, tb.user_id, tb.content, tb.reply_to_id, tb.post_id, tb.parent_comment_id, tb.created_at, tb.updated_at
+SELECT tb.id, tb.user_id, tb.content, tb.reply_id, tb.tag_ids, tb.post_id, tb.parent_comment_id, tb.created_at, tb.updated_at
 FROM
 (
     SELECT 
     tb1.id,
 	tb1.user_id,
 	tb1.content,
-	tb1.reply_to_id,
+	tb1.reply_id,
+    tb1.tag_ids,
 	tb1.post_id,
 	tb1.parent_comment_id,
 	tb1.created_at,
 	tb1.updated_at
 	FROM (
-		SELECT tb2.id, tb2.user_id, tb2.content, tb2.reply_to_id, tb2.post_id, tb2.parent_comment_id, tb2.created_at, tb2.updated_at FROM comment.comments AS tb2
+		SELECT tb2.id, tb2.user_id, tb2.content, tb2.reply_id, tb2.tag_ids, tb2.post_id, tb2.parent_comment_id, tb2.created_at, tb2.updated_at FROM comment.comments AS tb2
 		WHERE tb2.post_id = $1 AND tb2.parent_comment_id IS NULL
 		LIMIT $2 OFFSET $3
 	)  AS tb1
@@ -200,14 +208,15 @@ UNION
 	child.id,
     child.user_id,
     child.content,
-    child.reply_to_id,
+    child.reply_id,
+    child.tag_ids,
     child.post_id,
     child.parent_comment_id,
     child.created_at,
     child.updated_at
 	FROM (
         
-		SELECT id, user_id, content, reply_to_id, post_id, parent_comment_id, created_at, updated_at, row_num
+		SELECT id, user_id, content, reply_id, tag_ids, post_id, parent_comment_id, created_at, updated_at, row_num
 		FROM ranked_comments
 		WHERE row_num = 1
 	) AS child
@@ -233,7 +242,8 @@ func (q *Queries) GetCommentsByPostID(ctx context.Context, arg GetCommentsByPost
 			&i.ID,
 			&i.UserID,
 			&i.Content,
-			&i.ReplyToID,
+			&i.ReplyID,
+			pq.Array(&i.TagIds),
 			&i.PostID,
 			&i.ParentCommentID,
 			&i.CreatedAt,
@@ -253,7 +263,7 @@ func (q *Queries) GetCommentsByPostID(ctx context.Context, arg GetCommentsByPost
 }
 
 const getCommentsByPostID2 = `-- name: GetCommentsByPostID2 :many
-SELECT id, user_id, content, reply_to_id, post_id, parent_comment_id, created_at, updated_at 
+SELECT id, user_id, content, reply_id, tag_ids, post_id, parent_comment_id, created_at, updated_at 
 FROM comment.comments 
 WHERE post_id = $1 AND parent_comment_id is not null
 ORDER BY created_at DESC
@@ -279,7 +289,8 @@ func (q *Queries) GetCommentsByPostID2(ctx context.Context, arg GetCommentsByPos
 			&i.ID,
 			&i.UserID,
 			&i.Content,
-			&i.ReplyToID,
+			&i.ReplyID,
+			pq.Array(&i.TagIds),
 			&i.PostID,
 			&i.ParentCommentID,
 			&i.CreatedAt,
@@ -302,24 +313,32 @@ const update = `-- name: Update :one
 UPDATE comment.comments 
 SET
     content = COALESCE($1,content),
-    reply_to_id = COALESCE($2,reply_to_id)
-WHERE id = $3 RETURNING id, user_id, content, reply_to_id, post_id, parent_comment_id, created_at, updated_at
+    reply_id = COALESCE($2,reply_id),
+    tag_ids = COALESCE($3,tag_ids)
+WHERE id = $4 RETURNING id, user_id, content, reply_id, tag_ids, post_id, parent_comment_id, created_at, updated_at
 `
 
 type UpdateParams struct {
-	Content   sql.NullString `json:"content"`
-	ReplyToID uuid.NullUUID  `json:"reply_to_id"`
-	ID        uuid.UUID      `json:"id"`
+	Content sql.NullString `json:"content"`
+	ReplyID uuid.NullUUID  `json:"reply_id"`
+	TagIds  []uuid.UUID    `json:"tag_ids"`
+	ID      uuid.UUID      `json:"id"`
 }
 
 func (q *Queries) Update(ctx context.Context, arg UpdateParams) (CommentComment, error) {
-	row := q.db.QueryRowContext(ctx, update, arg.Content, arg.ReplyToID, arg.ID)
+	row := q.db.QueryRowContext(ctx, update,
+		arg.Content,
+		arg.ReplyID,
+		pq.Array(arg.TagIds),
+		arg.ID,
+	)
 	var i CommentComment
 	err := row.Scan(
 		&i.ID,
 		&i.UserID,
 		&i.Content,
-		&i.ReplyToID,
+		&i.ReplyID,
+		pq.Array(&i.TagIds),
 		&i.PostID,
 		&i.ParentCommentID,
 		&i.CreatedAt,

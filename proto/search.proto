@@ -14,7 +14,7 @@ service SearchService {
             get: "/api/v1/search/{key_word}"
         };
         option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
-            summary: "Search User and Group by Elasticsearch"
+            summary: "Search User and Group by Melisearch"
             description: ""
         };
     }

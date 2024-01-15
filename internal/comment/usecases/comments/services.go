@@ -39,7 +39,7 @@ func (s *service) GetCommentsByCommentID(ctx context.Context, commentId uuid.UUI
 		commentsHasMetadata = append(commentsHasMetadata, &domain.CommentHasMetadata{
 			ID:              comments[i].ID,
 			UserID:          comments[i].UserID,
-			ReplyToID:       comments[i].ReplyToID,
+			ReplyID:         comments[i].ReplyID,
 			Content:         comments[i].Content,
 			PostID:          comments[i].PostID,
 			ParentCommentID: comments[i].ParentCommentID,
@@ -124,7 +124,7 @@ func (s *service) GetCommentsByPostID(ctx context.Context, postId, userId uuid.U
 		commentHasChildren := &sharedkernel.CommentHasChildren{
 			ID:              comments[i].ID,
 			UserID:          comments[i].UserID,
-			ReplyToID:       comments[i].ReplyToID,
+			ReplyID:         comments[i].ReplyID,
 			Content:         comments[i].Content,
 			PostID:          comments[i].PostID,
 			ParentCommentID: comments[i].ParentCommentID,
@@ -136,7 +136,7 @@ func (s *service) GetCommentsByPostID(ctx context.Context, postId, userId uuid.U
 		results := &domain.CommentHasMetadata{
 			ID:              comments[i].ID,
 			UserID:          comments[i].UserID,
-			ReplyToID:       comments[i].ReplyToID,
+			ReplyID:         comments[i].ReplyID,
 			Content:         comments[i].Content,
 			PostID:          comments[i].PostID,
 			ParentCommentID: comments[i].ParentCommentID,

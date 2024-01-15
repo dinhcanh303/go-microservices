@@ -69,14 +69,17 @@ func (c *commentGRPCClient) GetCommentsByPostID(ctx context.Context, postId uuid
 		return results, nil
 	}
 	for _, item := range res.Comments {
+		tagIds, _ := utils.ConvertArStringToArUUID(item.TagIds)
 		results = append(results, &sharedkernel.CommentHasChildren{
 			ID:              uuid.MustParse(item.Id),
 			UserID:          uuid.MustParse(item.UserId),
 			Content:         item.Content,
 			PostID:          uuid.MustParse(item.PostId),
-			ReplyToID:       utils.StringToNullUUIDNormal(item.ReplyToId),
+			ReplyID:         utils.StringToNullUUIDNormal(item.ReplyId),
+			TagIDs:          tagIds,
 			ParentCommentID: utils.StringToNullUUIDNormal(item.ParentCommentId),
 			Children: lo.Map(item.Children, func(value *gen.CommentHasMetadata, _ int) *domainComment.CommentHasMetadata {
+				tagIds, _ := utils.ConvertArStringToArUUID(value.TagIds)
 				return &domainComment.CommentHasMetadata{
 					ID:      uuid.MustParse(value.Id),
 					UserID:  uuid.MustParse(value.UserId),
@@ -88,7 +91,8 @@ func (c *commentGRPCClient) GetCommentsByPostID(ctx context.Context, postId uuid
 						OthersLikes:       item.Likes.OthersLikes,
 					},
 					PostID:          uuid.MustParse(value.PostId),
-					ReplyToID:       utils.StringToNullUUIDNormal(value.ReplyToId),
+					ReplyID:         utils.StringToNullUUIDNormal(value.ReplyId),
+					TagIDs:          tagIds,
 					ParentCommentID: utils.StringToNullUUIDNormal(value.ParentCommentId),
 					CreatedAt:       value.CreatedAt.AsTime(),
 					UpdatedAt:       value.UpdatedAt.AsTime(),

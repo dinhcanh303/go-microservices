@@ -47,6 +47,13 @@ func StringToUUIDNormal(uuidString string) uuid.UUID {
 	}
 	return parsedUUID
 }
+func ConvertArUUIDToArString(uuids []uuid.UUID) []string {
+	results := make([]string, 0)
+	for _, uuid := range uuids {
+		results = append(results, uuid.String())
+	}
+	return results
+}
 
 func ConvertArStringToArUUID(strings []string) ([]uuid.UUID, error) {
 	uuids := make([]uuid.UUID, 0)

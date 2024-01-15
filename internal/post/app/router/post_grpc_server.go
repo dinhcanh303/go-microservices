@@ -8,6 +8,7 @@ import (
 	"github.com/dinhcanh303/go-microservices/internal/post/domain"
 	"github.com/dinhcanh303/go-microservices/internal/post/usecases/posts"
 	domainUpload "github.com/dinhcanh303/go-microservices/internal/upload/domain"
+	"github.com/dinhcanh303/go-microservices/pkg/constant"
 	"github.com/dinhcanh303/go-microservices/pkg/utils"
 	"github.com/dinhcanh303/go-microservices/proto/gen"
 	"github.com/google/uuid"
@@ -241,7 +242,7 @@ func manyPostResponse(posts []*domain.Post, p *postGRPCServer, ctx context.Conte
 		// 	slog.Warn("commentDomainService.GetCommentsByPostID failed", err)
 		// 	comments = make([]*sharedkernel.CommentHasChildren, 0)
 		// }
-		attachments, err := p.uploadDomainService.GetAttachmentsByType(ctx, "Attachment/Post", post.ID)
+		attachments, err := p.uploadDomainService.GetAttachmentsByType(ctx, constant.ATTACHMENT_POST, post.ID)
 		if err != nil {
 			slog.Warn("uploadDomainService.GetAttachmentsByType failed", err)
 			attachments = make([]*domainUpload.Attachment, 0)

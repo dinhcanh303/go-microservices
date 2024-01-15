@@ -102,6 +102,60 @@ func (q *Queries) CreateGroupMember(ctx context.Context, arg CreateGroupMemberPa
 	return i, err
 }
 
+const createGroupMembers = `-- name: CreateGroupMembers :many
+INSERT INTO "group".group_members
+(
+    id,
+    group_id,
+    user_id,
+    role
+)
+VALUES ($1,$2,$3,$4) RETURNING id, group_id, user_id, role, status, created_at, updated_at
+`
+
+type CreateGroupMembersParams struct {
+	ID      uuid.UUID `json:"id"`
+	GroupID uuid.UUID `json:"group_id"`
+	UserID  uuid.UUID `json:"user_id"`
+	Role    int32     `json:"role"`
+}
+
+func (q *Queries) CreateGroupMembers(ctx context.Context, arg CreateGroupMembersParams) ([]GroupGroupMember, error) {
+	rows, err := q.db.QueryContext(ctx, createGroupMembers,
+		arg.ID,
+		arg.GroupID,
+		arg.UserID,
+		arg.Role,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []GroupGroupMember
+	for rows.Next() {
+		var i GroupGroupMember
+		if err := rows.Scan(
+			&i.ID,
+			&i.GroupID,
+			&i.UserID,
+			&i.Role,
+			&i.Status,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const delete = `-- name: Delete :exec
 DELETE FROM "group".groups WHERE id = $1
 `

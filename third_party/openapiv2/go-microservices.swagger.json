@@ -242,8 +242,14 @@
                     "userId": {
                       "type": "string"
                     },
-                    "replyToId": {
+                    "replyId": {
                       "type": "string"
+                    },
+                    "tagIds": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
                     },
                     "content": {
                       "type": "string"
@@ -1302,7 +1308,7 @@
     },
     "/api/v1/search/{keyWord}": {
       "get": {
-        "summary": "Search User and Group by Elasticsearch",
+        "summary": "Search User and Group by Melisearch",
         "operationId": "SearchService_Search",
         "responses": {
           "200": {
@@ -1339,7 +1345,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/authGetUsersRespone"
+              "$ref": "#/definitions/authGetUsersResponse"
             }
           },
           "default": {
@@ -1349,6 +1355,28 @@
             }
           }
         },
+        "parameters": [
+          {
+            "name": "search",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          }
+        ],
         "tags": [
           "AuthService"
         ]
@@ -1558,7 +1586,7 @@
         }
       }
     },
-    "authGetUsersRespone": {
+    "authGetUsersResponse": {
       "type": "object",
       "properties": {
         "users": {
@@ -1661,6 +1689,9 @@
         "fullName": {
           "type": "string"
         },
+        "nickName": {
+          "type": "string"
+        },
         "avatarUrl": {
           "type": "string"
         },
@@ -1692,8 +1723,14 @@
         "userId": {
           "type": "string"
         },
-        "replyToId": {
+        "replyId": {
           "type": "string"
+        },
+        "tagIds": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         },
         "content": {
           "type": "string"
@@ -1723,8 +1760,14 @@
         "userId": {
           "type": "string"
         },
-        "replyToId": {
+        "replyId": {
           "type": "string"
+        },
+        "tagIds": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         },
         "content": {
           "type": "string"
@@ -1771,8 +1814,14 @@
         "userId": {
           "type": "string"
         },
-        "replyToId": {
+        "replyId": {
           "type": "string"
+        },
+        "tagIds": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         },
         "content": {
           "type": "string"
@@ -1806,8 +1855,14 @@
         "postId": {
           "type": "string"
         },
-        "replyToId": {
+        "replyId": {
           "type": "string"
+        },
+        "tagIds": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         },
         "content": {
           "type": "string"
@@ -2430,6 +2485,9 @@
           "type": "string"
         },
         "attachableId": {
+          "type": "string"
+        },
+        "entityUpload": {
           "type": "string"
         },
         "userId": {

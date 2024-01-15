@@ -6,9 +6,10 @@ INSERT INTO
 		content,
 		post_id,
 		parent_comment_id,
-		reply_to_id
+		reply_id,
+        tag_ids
     )
-VALUES ($1, $2, $3, $4 ,$5 , $6) RETURNING *;
+VALUES ( $1, $2, $3, $4, $5, $6, $7) RETURNING *;
 
 -- name: Get :one
 SELECT * FROM comment.comments WHERE id = $1;
@@ -17,7 +18,8 @@ SELECT * FROM comment.comments WHERE id = $1;
 UPDATE comment.comments 
 SET
     content = COALESCE(sqlc.narg(content),content),
-    reply_to_id = COALESCE(sqlc.narg(reply_to_id),reply_to_id)
+    reply_id = COALESCE(sqlc.narg(reply_id),reply_id),
+    tag_ids = COALESCE(sqlc.narg(tag_ids),tag_ids)
 WHERE id = sqlc.arg(id) RETURNING *;
 
 -- name: Delete :exec
@@ -54,7 +56,8 @@ FROM
     tb1.id,
 	tb1.user_id,
 	tb1.content,
-	tb1.reply_to_id,
+	tb1.reply_id,
+    tb1.tag_ids,
 	tb1.post_id,
 	tb1.parent_comment_id,
 	tb1.created_at,
@@ -69,7 +72,8 @@ UNION
 	child.id,
     child.user_id,
     child.content,
-    child.reply_to_id,
+    child.reply_id,
+    child.tag_ids,
     child.post_id,
     child.parent_comment_id,
     child.created_at,
