@@ -24,7 +24,7 @@ INSERT INTO upload.attachments
         folder,
         url,
         url_thumbnail)
-VALUES ($1, $2, $3, $4, $5, $6, $7 ,$8) RETURNING id, attachable_type, attachable_id, user_id, filename, extension, mime_type, folder, url, url_thumbnail, created_at, updated_at
+VALUES ($1, $2, $3, $4, $5, $6, $7 ,$8) RETURNING id, attachable_type, attachable_id, user_id, entity_upload, filename, extension, mime_type, folder, url, url_thumbnail, created_at, updated_at
 `
 
 type CreateParams struct {
@@ -55,6 +55,7 @@ func (q *Queries) Create(ctx context.Context, arg CreateParams) (UploadAttachmen
 		&i.AttachableType,
 		&i.AttachableID,
 		&i.UserID,
+		&i.EntityUpload,
 		&i.Filename,
 		&i.Extension,
 		&i.MimeType,
@@ -86,7 +87,7 @@ func (q *Queries) DeleteByIds(ctx context.Context, dollar_1 []uuid.UUID) error {
 }
 
 const get = `-- name: Get :one
-SELECT id, attachable_type, attachable_id, user_id, filename, extension, mime_type, folder, url, url_thumbnail, created_at, updated_at FROM upload.attachments WHERE id = $1
+SELECT id, attachable_type, attachable_id, user_id, entity_upload, filename, extension, mime_type, folder, url, url_thumbnail, created_at, updated_at FROM upload.attachments WHERE id = $1
 `
 
 func (q *Queries) Get(ctx context.Context, id uuid.UUID) (UploadAttachment, error) {
@@ -97,6 +98,7 @@ func (q *Queries) Get(ctx context.Context, id uuid.UUID) (UploadAttachment, erro
 		&i.AttachableType,
 		&i.AttachableID,
 		&i.UserID,
+		&i.EntityUpload,
 		&i.Filename,
 		&i.Extension,
 		&i.MimeType,
@@ -110,7 +112,7 @@ func (q *Queries) Get(ctx context.Context, id uuid.UUID) (UploadAttachment, erro
 }
 
 const getAttachmentsByType = `-- name: GetAttachmentsByType :many
-SELECT id, attachable_type, attachable_id, user_id, filename, extension, mime_type, folder, url, url_thumbnail, created_at, updated_at FROM upload.attachments WHERE attachable_type = $1 AND attachable_id = $2
+SELECT id, attachable_type, attachable_id, user_id, entity_upload, filename, extension, mime_type, folder, url, url_thumbnail, created_at, updated_at FROM upload.attachments WHERE attachable_type = $1 AND attachable_id = $2
 `
 
 type GetAttachmentsByTypeParams struct {
@@ -132,6 +134,7 @@ func (q *Queries) GetAttachmentsByType(ctx context.Context, arg GetAttachmentsBy
 			&i.AttachableType,
 			&i.AttachableID,
 			&i.UserID,
+			&i.EntityUpload,
 			&i.Filename,
 			&i.Extension,
 			&i.MimeType,
@@ -155,7 +158,7 @@ func (q *Queries) GetAttachmentsByType(ctx context.Context, arg GetAttachmentsBy
 }
 
 const getByIds = `-- name: GetByIds :many
-SELECT id, attachable_type, attachable_id, user_id, filename, extension, mime_type, folder, url, url_thumbnail, created_at, updated_at FROM upload.attachments WHERE id = ANY($1::uuid[])
+SELECT id, attachable_type, attachable_id, user_id, entity_upload, filename, extension, mime_type, folder, url, url_thumbnail, created_at, updated_at FROM upload.attachments WHERE id = ANY($1::uuid[])
 `
 
 func (q *Queries) GetByIds(ctx context.Context, dollar_1 []uuid.UUID) ([]UploadAttachment, error) {
@@ -172,6 +175,7 @@ func (q *Queries) GetByIds(ctx context.Context, dollar_1 []uuid.UUID) ([]UploadA
 			&i.AttachableType,
 			&i.AttachableID,
 			&i.UserID,
+			&i.EntityUpload,
 			&i.Filename,
 			&i.Extension,
 			&i.MimeType,
@@ -195,7 +199,7 @@ func (q *Queries) GetByIds(ctx context.Context, dollar_1 []uuid.UUID) ([]UploadA
 }
 
 const getLastAttachmentByType = `-- name: GetLastAttachmentByType :one
-SELECT id, attachable_type, attachable_id, user_id, filename, extension, mime_type, folder, url, url_thumbnail, created_at, updated_at FROM upload.attachments WHERE attachable_type = $1 AND attachable_id = $2 ORDER BY updated_at DESC LIMIT 1
+SELECT id, attachable_type, attachable_id, user_id, entity_upload, filename, extension, mime_type, folder, url, url_thumbnail, created_at, updated_at FROM upload.attachments WHERE attachable_type = $1 AND attachable_id = $2 ORDER BY updated_at DESC LIMIT 1
 `
 
 type GetLastAttachmentByTypeParams struct {
@@ -211,6 +215,7 @@ func (q *Queries) GetLastAttachmentByType(ctx context.Context, arg GetLastAttach
 		&i.AttachableType,
 		&i.AttachableID,
 		&i.UserID,
+		&i.EntityUpload,
 		&i.Filename,
 		&i.Extension,
 		&i.MimeType,
@@ -227,24 +232,32 @@ const update = `-- name: Update :one
 UPDATE upload.attachments 
 SET
     attachable_type = $2,
-    attachable_id = $3
-WHERE id = $1 RETURNING id, attachable_type, attachable_id, user_id, filename, extension, mime_type, folder, url, url_thumbnail, created_at, updated_at
+    attachable_id = $3,
+    entity_upload = $4
+WHERE id = $1 RETURNING id, attachable_type, attachable_id, user_id, entity_upload, filename, extension, mime_type, folder, url, url_thumbnail, created_at, updated_at
 `
 
 type UpdateParams struct {
 	ID             uuid.UUID      `json:"id"`
 	AttachableType sql.NullString `json:"attachable_type"`
 	AttachableID   uuid.NullUUID  `json:"attachable_id"`
+	EntityUpload   sql.NullString `json:"entity_upload"`
 }
 
 func (q *Queries) Update(ctx context.Context, arg UpdateParams) (UploadAttachment, error) {
-	row := q.db.QueryRowContext(ctx, update, arg.ID, arg.AttachableType, arg.AttachableID)
+	row := q.db.QueryRowContext(ctx, update,
+		arg.ID,
+		arg.AttachableType,
+		arg.AttachableID,
+		arg.EntityUpload,
+	)
 	var i UploadAttachment
 	err := row.Scan(
 		&i.ID,
 		&i.AttachableType,
 		&i.AttachableID,
 		&i.UserID,
+		&i.EntityUpload,
 		&i.Filename,
 		&i.Extension,
 		&i.MimeType,
@@ -261,18 +274,25 @@ const updateByIds = `-- name: UpdateByIds :many
 UPDATE upload.attachments 
 SET
     attachable_type = $2,
-    attachable_id = $3
-WHERE id = ANY($1::uuid[]) RETURNING id, attachable_type, attachable_id, user_id, filename, extension, mime_type, folder, url, url_thumbnail, created_at, updated_at
+    attachable_id = $3,
+    entity_upload = $4
+WHERE id = ANY($1::uuid[]) RETURNING id, attachable_type, attachable_id, user_id, entity_upload, filename, extension, mime_type, folder, url, url_thumbnail, created_at, updated_at
 `
 
 type UpdateByIdsParams struct {
 	Column1        []uuid.UUID    `json:"column_1"`
 	AttachableType sql.NullString `json:"attachable_type"`
 	AttachableID   uuid.NullUUID  `json:"attachable_id"`
+	EntityUpload   sql.NullString `json:"entity_upload"`
 }
 
 func (q *Queries) UpdateByIds(ctx context.Context, arg UpdateByIdsParams) ([]UploadAttachment, error) {
-	rows, err := q.db.QueryContext(ctx, updateByIds, pq.Array(arg.Column1), arg.AttachableType, arg.AttachableID)
+	rows, err := q.db.QueryContext(ctx, updateByIds,
+		pq.Array(arg.Column1),
+		arg.AttachableType,
+		arg.AttachableID,
+		arg.EntityUpload,
+	)
 	if err != nil {
 		return nil, err
 	}
@@ -285,6 +305,7 @@ func (q *Queries) UpdateByIds(ctx context.Context, arg UpdateByIdsParams) ([]Upl
 			&i.AttachableType,
 			&i.AttachableID,
 			&i.UserID,
+			&i.EntityUpload,
 			&i.Filename,
 			&i.Extension,
 			&i.MimeType,

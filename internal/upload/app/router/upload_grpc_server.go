@@ -7,6 +7,7 @@ import (
 	"github.com/dinhcanh303/go-microservices/cmd/upload/config"
 	"github.com/dinhcanh303/go-microservices/internal/upload/domain"
 	"github.com/dinhcanh303/go-microservices/internal/upload/usecases/uploads"
+	"github.com/dinhcanh303/go-microservices/pkg/constant"
 	"github.com/dinhcanh303/go-microservices/proto/gen"
 	"github.com/google/uuid"
 	"github.com/google/wire"
@@ -82,7 +83,7 @@ func (g *uploadGRPCServer) GetAvatarUser(
 	if err != nil {
 		return nil, errors.Wrap(err, "Failed to parse")
 	}
-	attachment, err := g.uc.GetLastAttachmentByType(ctx, "Attachment/Avatar", attachableId)
+	attachment, err := g.uc.GetLastAttachmentByType(ctx, constant.ATTACHMENT_AVATAR, attachableId)
 	if err != nil {
 		return nil, errors.Wrap(err, "uploadGRPCServer.GetAvatarUser failed")
 	}

@@ -47,13 +47,14 @@ message Attachment {
     string id = 1;
     string attachable_type = 2;
     string attachable_id = 3;
-    string user_id = 4;
-    string filename = 5;
-    string extension = 6;
-    string mime_type = 7;
-    string folder = 8;
-    string url = 9;
-    string url_thumbnail = 10;
-    google.protobuf.Timestamp created_at = 11;
-    google.protobuf.Timestamp updated_at = 12;
+    string entity_upload = 4;
+    string user_id = 5;
+    string filename = 6;
+    string extension = 7;
+    string mime_type = 8;
+    string folder = 9;
+    string url = 10;
+    string url_thumbnail = 11;
+    google.protobuf.Timestamp created_at = 12;
+    google.protobuf.Timestamp updated_at = 13;
 }

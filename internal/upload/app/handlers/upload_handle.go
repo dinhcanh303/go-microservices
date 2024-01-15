@@ -10,6 +10,7 @@ import (
 	"github.com/dinhcanh303/go-microservices/internal/upload/app/request"
 	"github.com/dinhcanh303/go-microservices/internal/upload/domain"
 	"github.com/dinhcanh303/go-microservices/internal/upload/usecases/uploads"
+	"github.com/dinhcanh303/go-microservices/pkg/constant"
 	"github.com/dinhcanh303/go-microservices/pkg/echo/responses"
 	"github.com/google/uuid"
 	"github.com/google/wire"
@@ -98,10 +99,12 @@ func (s *UploadHandler) UpdateAttachment(ctx echo.Context) error {
 	if err != nil {
 		return responses.ErrorResponse(ctx, http.StatusNotFound, responses.ErrorString("Parse failed", err))
 	}
+	entityUpload := updateAttachment.EntityUpload
 	attachment, err := s.uc.UpdateAttachment(context.Background(), &domain.Attachment{
 		ID:             attachmentId,
 		AttachableType: attachableType,
 		AttachableID:   attachableId,
+		EntityUpload:   entityUpload,
 	})
 	if err != nil {
 		return responses.ErrorResponse(ctx, http.StatusNotFound, responses.ErrorString("Handler UpdateAttachment failed", err))
@@ -133,9 +136,11 @@ func (s *UploadHandler) UpdateAttachmentsByIds(ctx echo.Context) error {
 	if err != nil {
 		return responses.ErrorResponse(ctx, http.StatusNotFound, responses.ErrorString("Parse failed", err))
 	}
+	entityUpload := updateAttachment.EntityUpload
 	attachment, err := s.uc.UpdateAttachmentsByIds(context.Background(), attachmentIds, &domain.Attachment{
 		AttachableType: attachableType,
 		AttachableID:   attachableId,
+		EntityUpload:   entityUpload,
 	})
 	if err != nil {
 		return responses.ErrorResponse(ctx, http.StatusNotFound, responses.ErrorString("Handler UpdateAttachmentsByIds failed", err))
@@ -163,7 +168,7 @@ func (s *UploadHandler) AvatarUploadFile(ctx echo.Context) error {
 	return responses.Response(ctx, http.StatusOK, attachments)
 }
 func checkAttachmentTypeByCondition(attachableType string, condition []string) bool {
-	temp := []string{"Attachment/Post", "Attachment/Comment", "Attachment/Group", "Attachment/Avatar"}
+	temp := []string{constant.ATTACHMENT_POST, constant.ATTACHMENT_AVATAR, constant.ATTACHMENT_PROFILE}
 	if condition == nil || len(condition) != 0 {
 		condition = temp
 	}

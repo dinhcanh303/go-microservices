@@ -27,14 +27,16 @@ VALUES ($1, $2, $3, $4, $5, $6, $7 ,$8) RETURNING * ;
 UPDATE upload.attachments 
 SET
     attachable_type = $2,
-    attachable_id = $3
+    attachable_id = $3,
+    entity_upload = $4
 WHERE id = $1 RETURNING *;
 
 -- name: UpdateByIds :many
 UPDATE upload.attachments 
 SET
     attachable_type = $2,
-    attachable_id = $3
+    attachable_id = $3,
+    entity_upload = $4
 WHERE id = ANY($1::uuid[]) RETURNING *;
 
 -- name: Delete :exec

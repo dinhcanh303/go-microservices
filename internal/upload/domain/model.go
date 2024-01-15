@@ -10,6 +10,7 @@ type Attachment struct {
 	ID             uuid.UUID `json:"id"`
 	AttachableType string    `json:"attachable_type"`
 	AttachableID   uuid.UUID `json:"attachable_id"`
+	EntityUpload   string    `json:"entity_upload"`
 	UserID         uuid.UUID `json:"user_id"`
 	FileName       string    `json:"filename"`
 	Extension      string    `json:"extension"`

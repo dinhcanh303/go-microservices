@@ -16,6 +16,7 @@ type UploadAttachment struct {
 	AttachableType sql.NullString `json:"attachable_type"`
 	AttachableID   uuid.NullUUID  `json:"attachable_id"`
 	UserID         uuid.UUID      `json:"user_id"`
+	EntityUpload   sql.NullString `json:"entity_upload"`
 	Filename       string         `json:"filename"`
 	Extension      string         `json:"extension"`
 	MimeType       sql.NullString `json:"mime_type"`
