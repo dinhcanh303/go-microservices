@@ -13,6 +13,15 @@ type uploadGRPCService struct {
 	repo AttachmentRepo
 }
 
+// GetAttachmentsByOptional implements UseCaseGRPC.
+func (s *uploadGRPCService) GetAttachmentsByOptional(ctx context.Context, userId uuid.UUID, attachableType string, entity string, mimeType string) ([]*domain.Attachment, error) {
+	attachments, err := s.repo.GetAttachmentsByOptional(ctx, userId, attachableType, entity, mimeType)
+	if err != nil {
+		return nil, errors.Wrap(err, "uploadService.GetAttachmentsByOptional failed")
+	}
+	return attachments, nil
+}
+
 // GetLastAttachmentByType implements UseCaseGRPC.
 func (s *uploadGRPCService) GetLastAttachmentByType(ctx context.Context, attachableType string, attachableId uuid.UUID) (*domain.Attachment, error) {
 	attachment, err := s.repo.GetLastAttachmentByType(ctx, attachableType, attachableId)

@@ -111,6 +111,63 @@ func (q *Queries) Get(ctx context.Context, id uuid.UUID) (UploadAttachment, erro
 	return i, err
 }
 
+const getAttachmentsByOptional = `-- name: GetAttachmentsByOptional :many
+SELECT id, attachable_type, attachable_id, user_id, entity_upload, filename, extension, mime_type, folder, url, url_thumbnail, created_at, updated_at FROM upload.attachments WHERE user_id = $1 
+AND (entity_upload = $2 OR $2 IS NULL)
+AND attachable_type = $3
+AND mime_type LIKE '%' || $4 ||'%'
+ORDER BY created_at DESC
+`
+
+type GetAttachmentsByOptionalParams struct {
+	UserID         uuid.UUID      `json:"user_id"`
+	EntityUpload   sql.NullString `json:"entity_upload"`
+	AttachableType sql.NullString `json:"attachable_type"`
+	Column4        sql.NullString `json:"column_4"`
+}
+
+func (q *Queries) GetAttachmentsByOptional(ctx context.Context, arg GetAttachmentsByOptionalParams) ([]UploadAttachment, error) {
+	rows, err := q.db.QueryContext(ctx, getAttachmentsByOptional,
+		arg.UserID,
+		arg.EntityUpload,
+		arg.AttachableType,
+		arg.Column4,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []UploadAttachment
+	for rows.Next() {
+		var i UploadAttachment
+		if err := rows.Scan(
+			&i.ID,
+			&i.AttachableType,
+			&i.AttachableID,
+			&i.UserID,
+			&i.EntityUpload,
+			&i.Filename,
+			&i.Extension,
+			&i.MimeType,
+			&i.Folder,
+			&i.Url,
+			&i.UrlThumbnail,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const getAttachmentsByType = `-- name: GetAttachmentsByType :many
 SELECT id, attachable_type, attachable_id, user_id, entity_upload, filename, extension, mime_type, folder, url, url_thumbnail, created_at, updated_at FROM upload.attachments WHERE attachable_type = $1 AND attachable_id = $2
 `

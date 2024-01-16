@@ -74,6 +74,40 @@ func (g *uploadGRPCServer) GetAttachmentsByType(
 	}, nil
 }
 
+func (g *uploadGRPCServer) GetAttachmentsByOptional(
+	ctx context.Context,
+	request *gen.GetAttachmentsByOptionalRequest,
+) (*gen.GetAttachmentsByOptionalResponse, error) {
+	slog.Info("GET: GetAttachmentsByOptional")
+	slog.Info("Request::", request)
+	userId, err := uuid.Parse(request.UserId)
+	if err != nil {
+		return nil, errors.Wrap(err, "Failed to parse")
+	}
+	attachments, err := g.uc.GetAttachmentsByOptional(ctx, userId, request.AttachableType, request.EntityUpload, request.MimeType)
+	if err != nil {
+		return nil, errors.Wrap(err, "uploadGRPCServer.GetAttachmentsByOptional failed")
+	}
+	return &gen.GetAttachmentsByOptionalResponse{
+		Attachments: lo.Map(attachments, func(item *domain.Attachment, _ int) *gen.Attachment {
+			return &gen.Attachment{
+				Id:             item.ID.String(),
+				AttachableType: item.AttachableType,
+				AttachableId:   item.AttachableID.String(),
+				UserId:         item.UserID.String(),
+				Filename:       item.FileName,
+				Extension:      item.Extension,
+				MimeType:       item.MimeType,
+				Folder:         item.Folder,
+				Url:            item.URL,
+				UrlThumbnail:   item.URLThumbnail,
+				CreatedAt:      timestamppb.New(item.CreatedAt),
+				UpdatedAt:      timestamppb.New(item.UpdatedAt),
+			}
+		}),
+	}, nil
+}
+
 func (g *uploadGRPCServer) GetAvatarUser(
 	ctx context.Context,
 	request *gen.GetAvatarUserRequest,

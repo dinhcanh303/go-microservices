@@ -10,6 +10,13 @@ SELECT * FROM upload.attachments WHERE attachable_type = $1 AND attachable_id = 
 -- name: GetLastAttachmentByType :one
 SELECT * FROM upload.attachments WHERE attachable_type = $1 AND attachable_id = $2 ORDER BY updated_at DESC LIMIT 1;
 
+-- name: GetAttachmentsByOptional :many
+SELECT * FROM upload.attachments WHERE user_id = $1 
+AND (entity_upload = $2 OR $2 IS NULL)
+AND attachable_type = $3
+AND mime_type LIKE '%' || $4 ||'%'
+ORDER BY created_at DESC;
+
 -- name: Create :one
 INSERT INTO upload.attachments 
     (

@@ -18,6 +18,46 @@ type attachmentRepo struct {
 	pg postgres.DBEngine
 }
 
+// GetAttachmentsByOptional implements uploads.AttachmentRepo.
+func (rp *attachmentRepo) GetAttachmentsByOptional(ctx context.Context, userId uuid.UUID, attachableType string, entity string, mimeType string) ([]*domain.Attachment, error) {
+	db := rp.pg.GetDBRead()
+	querier := postgresql.New(db)
+	results, err := querier.GetAttachmentsByOptional(ctx, postgresql.GetAttachmentsByOptionalParams{
+		AttachableType: sql.NullString{
+			String: attachableType,
+			Valid:  attachableType != "",
+		},
+		UserID: userId,
+		EntityUpload: sql.NullString{
+			String: entity,
+			Valid:  entity != "",
+		},
+		Column4: sql.NullString{
+			String: mimeType,
+			Valid:  mimeType != "",
+		},
+	})
+	if err != nil {
+		return nil, errors.Wrap(err, "qtx.GetAttachments(...) failed")
+	}
+	return lo.Map(results, func(item postgresql.UploadAttachment, _ int) *domain.Attachment {
+		return &domain.Attachment{
+			ID:             item.ID,
+			AttachableType: item.AttachableType.String,
+			AttachableID:   item.AttachableID.UUID,
+			UserID:         item.UserID,
+			FileName:       item.Filename,
+			Extension:      item.Extension,
+			MimeType:       item.MimeType.String,
+			Folder:         item.Folder.String,
+			URL:            item.Url,
+			URLThumbnail:   item.UrlThumbnail.String,
+			CreatedAt:      item.CreatedAt,
+			UpdatedAt:      item.UpdatedAt,
+		}
+	}), nil
+}
+
 // GetLastAttachmentByType implements uploads.AttachmentRepo.
 func (rp *attachmentRepo) GetLastAttachmentByType(ctx context.Context, attachableType string, attachableId uuid.UUID) (*domain.Attachment, error) {
 	db := rp.pg.GetDBRead()
