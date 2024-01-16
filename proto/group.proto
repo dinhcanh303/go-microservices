@@ -1,6 +1,6 @@
 syntax="proto3";
 
-package group;
+package group_1; //Because if using package name is "group" proto gen import notworking 
 
 import "google/api/annotations.proto";
 import "protoc-gen-openapiv2/options/annotations.proto";

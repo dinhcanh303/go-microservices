@@ -143,6 +143,27 @@ func (p *postGRPCServer) NewFeed(ctx context.Context, request *gen.NewFeedReques
 	}, nil
 }
 
+func (p *postGRPCServer) NewFeedGroups(ctx context.Context, request *gen.NewFeedGroupsRequest) (*gen.NewFeedGroupsResponse, error) {
+	slog.Info("GET: NewFeedGroups")
+	user, err := utils.ExtractMetadataUser(ctx)
+	if err != nil {
+		return nil, err
+	}
+	groupIds, err := p.groupDomainService.GetGroupIdsByUserId(ctx, user.ID)
+	if err != nil {
+		return nil, errors.Wrap(err, "failed get user id service group")
+	}
+	slog.Info("G IDS::", groupIds)
+	posts, err := p.uc.GetPostsByFeedGroup(ctx, groupIds, request.Limit, request.Offset)
+	if err != nil {
+		return nil, errors.Wrap(err, "uc.GetPostsByFeed failed")
+	}
+	results := manyPostGroupResponse(posts, p, ctx)
+	return &gen.NewFeedGroupsResponse{
+		Posts: results,
+	}, nil
+}
+
 func (p *postGRPCServer) GetPostsByUserId(ctx context.Context, request *gen.GetPostsByUserIdRequest) (*gen.GetPostsByUserIdResponse, error) {
 	slog.Info("GET: GetPostsByUserId")
 	userId, err := uuid.Parse(request.UserId)
@@ -317,6 +338,70 @@ func manyPostResponse(posts []*domain.Post, p *postGRPCServer, ctx context.Conte
 			// 		UpdatedAt: timestamppb.New(item.UpdatedAt),
 			// 	}
 			// }),
+		})
+	}
+	return results
+}
+func manyPostGroupResponse(posts []*domain.Post, p *postGRPCServer, ctx context.Context) []*gen.GetPostGroupResponse {
+	results := make([]*gen.GetPostGroupResponse, 0)
+	// channel := make(chan *gen.GetPostResponse, len(posts))
+	// var wg sync.WaitGroup
+	for _, post := range posts {
+		likeInfo, err := p.likeDomainService.GetLikesByPostID(ctx, post.ID)
+		if err != nil {
+			slog.Warn("likeDomainService.GetLikesByPostID failed", err)
+			likeInfo = &domainLike.LikesInfo{}
+		}
+		countComments, err := p.commentDomainService.CountCommentByPostID(ctx, post.ID)
+		if err != nil {
+			slog.Warn("commentDomainService.CountCommentByPostID failed", err)
+			countComments = 0
+		}
+		group, err := p.groupDomainService.GetGroup(ctx, post.GroupID)
+		if err != nil {
+			group = &gen.GetGroupResponse{}
+		}
+
+		attachments, err := p.uploadDomainService.GetAttachmentsByType(ctx, constant.ATTACHMENT_POST, post.ID)
+		if err != nil {
+			slog.Warn("uploadDomainService.GetAttachmentsByType failed", err)
+			attachments = make([]*domainUpload.Attachment, 0)
+		}
+		results = append(results, &gen.GetPostGroupResponse{
+			Post: &gen.PostResponse{
+				Id:        post.ID.String(),
+				Title:     post.Title,
+				Content:   post.Content,
+				UserId:    post.UserID.String(),
+				GroupId:   post.GroupID.UUID.String(),
+				Status:    post.Status,
+				CreatedAt: timestamppb.New(post.CreatedAt),
+				UpdatedAt: timestamppb.New(post.UpdatedAt),
+			},
+			Group:         group.Group,
+			CountComments: countComments,
+			Attachments: lo.Map(attachments, func(item *domainUpload.Attachment, _ int) *gen.Attachment {
+				return &gen.Attachment{
+					Id:             item.ID.String(),
+					AttachableType: item.AttachableType,
+					AttachableId:   item.AttachableID.String(),
+					Filename:       item.FileName,
+					Extension:      item.Extension,
+					MimeType:       item.MimeType,
+					Folder:         item.Folder,
+					Url:            item.URL,
+					UrlThumbnail:   item.URLThumbnail,
+					UserId:         item.UserID.String(),
+					CreatedAt:      timestamppb.New(item.CreatedAt),
+					UpdatedAt:      timestamppb.New(item.UpdatedAt),
+				}
+			}),
+			Likes: &gen.LikeInfo{
+				YourLikedEmoji:    likeInfo.YourLikedEmoji,
+				YourLike:          likeInfo.YourLike,
+				OthersLikedEmojis: likeInfo.OthersLikedEmojis,
+				OthersLikes:       likeInfo.OthersLikes,
+			},
 		})
 	}
 	return results

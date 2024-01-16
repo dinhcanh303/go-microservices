@@ -13,6 +13,15 @@ type usecase struct {
 	postRepo PostRepo
 }
 
+// GetPostsByFeedGroup implements UseCase.
+func (uc *usecase) GetPostsByFeedGroup(ctx context.Context, groupIds []uuid.UUID, limit int32, offset int32) ([]*domain.Post, error) {
+	posts, err := uc.postRepo.GetByGroupId(ctx, groupIds, limit, offset)
+	if err != nil {
+		return nil, errors.Wrap(err, "uc.GetPostsByGroupId failed")
+	}
+	return posts, nil
+}
+
 var _ UseCase = (*usecase)(nil)
 var UseCaseSet = wire.NewSet(NewUseCase)
 
@@ -34,7 +43,9 @@ func (uc *usecase) GetPostsByFeed(ctx context.Context, userIds []uuid.UUID, grou
 
 // GetPostsByGroupId implements UseCase.
 func (uc *usecase) GetPostsByGroupId(ctx context.Context, groupId uuid.UUID, limit int32, offset int32) ([]*domain.Post, error) {
-	posts, err := uc.postRepo.GetByGroupId(ctx, groupId, limit, offset)
+	groupIds := make([]uuid.UUID, 0)
+	groupIds = append(groupIds, groupId)
+	posts, err := uc.postRepo.GetByGroupId(ctx, groupIds, limit, offset)
 	if err != nil {
 		return nil, errors.Wrap(err, "uc.GetPostsByGroupId failed")
 	}

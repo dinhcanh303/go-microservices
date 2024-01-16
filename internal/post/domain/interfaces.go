@@ -6,6 +6,7 @@ import (
 	"github.com/dinhcanh303/go-microservices/internal/like/domain"
 	sharedkernel "github.com/dinhcanh303/go-microservices/internal/pkg/shared_kernel"
 	domainUpload "github.com/dinhcanh303/go-microservices/internal/upload/domain"
+	"github.com/dinhcanh303/go-microservices/proto/gen"
 	"github.com/google/uuid"
 )
 
@@ -22,6 +23,7 @@ type (
 	}
 	GroupDomainService interface {
 		GetGroupIdsByUserId(ctx context.Context, userId uuid.UUID) ([]uuid.UUID, error)
+		GetGroup(ctx context.Context, id uuid.NullUUID) (*gen.GetGroupResponse, error)
 	}
 	AuthDomainService interface {
 		GetUserIdsByUserId(ctx context.Context, userId uuid.UUID) ([]uuid.UUID, error)

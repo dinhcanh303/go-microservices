@@ -2,7 +2,6 @@ package router
 
 import (
 	"context"
-	"encoding/json"
 
 	"github.com/dinhcanh303/go-microservices/cmd/group/config"
 	"github.com/dinhcanh303/go-microservices/internal/group/domain"
@@ -204,12 +203,6 @@ func (g *groupGRPCServer) CreateGroup(ctx context.Context, request *gen.CreateGr
 	if err != nil {
 		return nil, errors.Wrap(err, "ucGroup.CreateGroup failed")
 	}
-	g.ucGroupMember.CreateGroupMember(ctx, &domain.GroupMember{
-		ID:      uuid.New(),
-		GroupID: group.ID,
-		UserID:  payloadUser.ID,
-		Role:    constant.OWNER,
-	})
 	if request.Group.UserIds != nil {
 		for _, userId := range request.Group.UserIds {
 			userIdParsed, err := uuid.Parse(userId)
@@ -241,14 +234,14 @@ func (g *groupGRPCServer) CreateGroup(ctx context.Context, request *gen.CreateGr
 
 func (g *groupGRPCServer) GetGroup(ctx context.Context, request *gen.GetGroupRequest) (*gen.GetGroupResponse, error) {
 	slog.Info("GET: GetGroup")
-	res := &gen.GetGroupResponse{}
-	byteData, check, err := g.redis.Get(request.Id)
-	if !check && err != nil {
-		err = json.Unmarshal(byteData, res)
-		if err != nil {
-			return nil, errors.Wrap(err, "failed to unmarshal")
-		}
-	}
+	// res := &gen.GetGroupResponse{}
+	// byteData, check, err := g.redis.Get(request.Id)
+	// if !check && err != nil {
+	// 	err = json.Unmarshal(byteData, res)
+	// 	if err != nil {
+	// 		return nil, errors.Wrap(err, "failed to unmarshal")
+	// 	}
+	// }
 	id, err := uuid.Parse(request.Id)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to parse id")
@@ -257,7 +250,7 @@ func (g *groupGRPCServer) GetGroup(ctx context.Context, request *gen.GetGroupReq
 	if err != nil {
 		return nil, errors.Wrap(err, "ucGroup.GetGroup failed")
 	}
-	res = &gen.GetGroupResponse{
+	return &gen.GetGroupResponse{
 		Group: &gen.GroupResponse{
 			Id:          group.ID.String(),
 			Name:        group.Name,
@@ -267,8 +260,7 @@ func (g *groupGRPCServer) GetGroup(ctx context.Context, request *gen.GetGroupReq
 			CreatedAt:   timestamppb.New(group.CreatedAt),
 			UpdatedAt:   timestamppb.New(group.UpdatedAt),
 		},
-	}
-	return res, nil
+	}, nil
 }
 
 func (g *groupGRPCServer) DeleteGroup(ctx context.Context, request *gen.DeleteGroupRequest) (*gen.DeleteGroupResponse, error) {

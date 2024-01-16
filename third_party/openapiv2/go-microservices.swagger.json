@@ -490,7 +490,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/groupCreateGroupMemberResponse"
+              "$ref": "#/definitions/group_1CreateGroupMemberResponse"
             }
           },
           "default": {
@@ -506,7 +506,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/groupCreateGroupMemberRequest"
+              "$ref": "#/definitions/group_1CreateGroupMemberRequest"
             }
           }
         ],
@@ -523,7 +523,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/groupGetGroupMembersResponse"
+              "$ref": "#/definitions/group_1GetGroupMembersResponse"
             }
           },
           "default": {
@@ -554,7 +554,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/groupUpdateGroupMemberResponse"
+              "$ref": "#/definitions/group_1UpdateGroupMemberResponse"
             }
           },
           "default": {
@@ -618,7 +618,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/groupDeleteGroupMemberResponse"
+              "$ref": "#/definitions/group_1DeleteGroupMemberResponse"
             }
           },
           "default": {
@@ -649,7 +649,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/groupCreateGroupResponse"
+              "$ref": "#/definitions/group_1CreateGroupResponse"
             }
           },
           "default": {
@@ -665,12 +665,51 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/groupCreateGroupRequest"
+              "$ref": "#/definitions/group_1CreateGroupRequest"
             }
           }
         ],
         "tags": [
           "GroupService"
+        ]
+      }
+    },
+    "/api/v1/groups/feed": {
+      "get": {
+        "summary": "Get New Feed of Groups",
+        "operationId": "PostService_NewFeedGroups",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/postNewFeedGroupsResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          }
+        ],
+        "tags": [
+          "PostService"
         ]
       }
     },
@@ -682,7 +721,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/groupUpdateGroupResponse"
+              "$ref": "#/definitions/group_1UpdateGroupResponse"
             }
           },
           "default": {
@@ -794,7 +833,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/groupGetGroupResponse"
+              "$ref": "#/definitions/group_1GetGroupResponse"
             }
           },
           "default": {
@@ -823,7 +862,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/groupDeleteGroupResponse"
+              "$ref": "#/definitions/group_1DeleteGroupResponse"
             }
           },
           "default": {
@@ -979,6 +1018,55 @@
         },
         "tags": [
           "AuthService"
+        ]
+      }
+    },
+    "/api/v1/optional/attachments": {
+      "get": {
+        "summary": "Get Attachments By Optional",
+        "operationId": "UploadService_GetAttachmentsByOptional",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/uploadGetAttachmentsByOptionalResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "attachableType",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "userId",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "mimeType",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "entityUpload",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "UploadService"
         ]
       }
     },
@@ -1466,7 +1554,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/groupGetGroupIdsByUserIdResponse"
+              "$ref": "#/definitions/group_1GetGroupIdsByUserIdResponse"
             }
           },
           "default": {
@@ -1497,7 +1585,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/groupGetGroupsByUserIdResponse"
+              "$ref": "#/definitions/group_1GetGroupsByUserIdResponse"
             }
           },
           "default": {
@@ -1973,39 +2061,39 @@
         }
       }
     },
-    "groupCreateGroupMemberRequest": {
+    "group_1CreateGroupMemberRequest": {
       "type": "object",
       "properties": {
         "groupMember": {
-          "$ref": "#/definitions/groupGroupMemberRequest"
+          "$ref": "#/definitions/group_1GroupMemberRequest"
         }
       }
     },
-    "groupCreateGroupMemberResponse": {
+    "group_1CreateGroupMemberResponse": {
       "type": "object",
       "properties": {
         "groupMember": {
-          "$ref": "#/definitions/groupGroupMemberResponse"
+          "$ref": "#/definitions/group_1GroupMemberResponse"
         }
       }
     },
-    "groupCreateGroupRequest": {
+    "group_1CreateGroupRequest": {
       "type": "object",
       "properties": {
         "group": {
-          "$ref": "#/definitions/groupGroupRequest"
+          "$ref": "#/definitions/group_1GroupRequest"
         }
       }
     },
-    "groupCreateGroupResponse": {
+    "group_1CreateGroupResponse": {
       "type": "object",
       "properties": {
         "group": {
-          "$ref": "#/definitions/groupGroupResponse"
+          "$ref": "#/definitions/group_1GroupResponse"
         }
       }
     },
-    "groupDeleteGroupMemberResponse": {
+    "group_1DeleteGroupMemberResponse": {
       "type": "object",
       "properties": {
         "deleted": {
@@ -2013,7 +2101,7 @@
         }
       }
     },
-    "groupDeleteGroupResponse": {
+    "group_1DeleteGroupResponse": {
       "type": "object",
       "properties": {
         "deleted": {
@@ -2021,7 +2109,7 @@
         }
       }
     },
-    "groupGetGroupIdsByUserIdResponse": {
+    "group_1GetGroupIdsByUserIdResponse": {
       "type": "object",
       "properties": {
         "groupIds": {
@@ -2032,39 +2120,39 @@
         }
       }
     },
-    "groupGetGroupMembersResponse": {
+    "group_1GetGroupMembersResponse": {
       "type": "object",
       "properties": {
         "groupMembers": {
           "type": "array",
           "items": {
             "type": "object",
-            "$ref": "#/definitions/groupGroupMemberResponse"
+            "$ref": "#/definitions/group_1GroupMemberResponse"
           }
         }
       }
     },
-    "groupGetGroupResponse": {
+    "group_1GetGroupResponse": {
       "type": "object",
       "properties": {
         "group": {
-          "$ref": "#/definitions/groupGroupResponse"
+          "$ref": "#/definitions/group_1GroupResponse"
         }
       }
     },
-    "groupGetGroupsByUserIdResponse": {
+    "group_1GetGroupsByUserIdResponse": {
       "type": "object",
       "properties": {
         "groups": {
           "type": "array",
           "items": {
             "type": "object",
-            "$ref": "#/definitions/groupGroupResponse"
+            "$ref": "#/definitions/group_1GroupResponse"
           }
         }
       }
     },
-    "groupGroupMemberRequest": {
+    "group_1GroupMemberRequest": {
       "type": "object",
       "properties": {
         "groupId": {
@@ -2076,7 +2164,7 @@
         }
       }
     },
-    "groupGroupMemberResponse": {
+    "group_1GroupMemberResponse": {
       "type": "object",
       "properties": {
         "id": {
@@ -2102,7 +2190,7 @@
         }
       }
     },
-    "groupGroupRequest": {
+    "group_1GroupRequest": {
       "type": "object",
       "properties": {
         "name": {
@@ -2123,7 +2211,7 @@
         }
       }
     },
-    "groupGroupResponse": {
+    "group_1GroupResponse": {
       "type": "object",
       "properties": {
         "id": {
@@ -2152,19 +2240,19 @@
         }
       }
     },
-    "groupUpdateGroupMemberResponse": {
+    "group_1UpdateGroupMemberResponse": {
       "type": "object",
       "properties": {
         "groupMember": {
-          "$ref": "#/definitions/groupGroupMemberResponse"
+          "$ref": "#/definitions/group_1GroupMemberResponse"
         }
       }
     },
-    "groupUpdateGroupResponse": {
+    "group_1UpdateGroupResponse": {
       "type": "object",
       "properties": {
         "group": {
-          "$ref": "#/definitions/groupGroupResponse"
+          "$ref": "#/definitions/group_1GroupResponse"
         }
       }
     },
@@ -2315,6 +2403,31 @@
         }
       }
     },
+    "postGetPostGroupResponse": {
+      "type": "object",
+      "properties": {
+        "post": {
+          "$ref": "#/definitions/postPostResponse"
+        },
+        "group": {
+          "$ref": "#/definitions/group_1GroupResponse"
+        },
+        "attachments": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/uploadAttachment"
+          }
+        },
+        "likes": {
+          "$ref": "#/definitions/likeLikeInfo"
+        },
+        "countComments": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
     "postGetPostResponse": {
       "type": "object",
       "properties": {
@@ -2358,6 +2471,18 @@
           "items": {
             "type": "object",
             "$ref": "#/definitions/postGetPostResponse"
+          }
+        }
+      }
+    },
+    "postNewFeedGroupsResponse": {
+      "type": "object",
+      "properties": {
+        "posts": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/postGetPostGroupResponse"
           }
         }
       }
@@ -2518,6 +2643,18 @@
         "updatedAt": {
           "type": "string",
           "format": "date-time"
+        }
+      }
+    },
+    "uploadGetAttachmentsByOptionalResponse": {
+      "type": "object",
+      "properties": {
+        "attachments": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/uploadAttachment"
+          }
         }
       }
     },

@@ -141,17 +141,17 @@ func (q *Queries) GetByFeed(ctx context.Context, arg GetByFeedParams) ([]PostPos
 }
 
 const getByGroupId = `-- name: GetByGroupId :many
-SELECT id, user_id, group_id, title, content, status, created_at, updated_at FROM post.posts WHERE group_id = $1 ORDER BY created_at DESC LIMIT $2 OFFSET $3
+SELECT id, user_id, group_id, title, content, status, created_at, updated_at FROM post.posts WHERE group_id = ANY($1::uuid[]) ORDER BY created_at DESC LIMIT $2 OFFSET $3
 `
 
 type GetByGroupIdParams struct {
-	GroupID uuid.NullUUID `json:"group_id"`
-	Limit   int32         `json:"limit"`
-	Offset  int32         `json:"offset"`
+	Column1 []uuid.UUID `json:"column_1"`
+	Limit   int32       `json:"limit"`
+	Offset  int32       `json:"offset"`
 }
 
 func (q *Queries) GetByGroupId(ctx context.Context, arg GetByGroupIdParams) ([]PostPost, error) {
-	rows, err := q.db.QueryContext(ctx, getByGroupId, arg.GroupID, arg.Limit, arg.Offset)
+	rows, err := q.db.QueryContext(ctx, getByGroupId, pq.Array(arg.Column1), arg.Limit, arg.Offset)
 	if err != nil {
 		return nil, err
 	}

@@ -14,7 +14,7 @@ type (
 		Update(ctx context.Context, post *domain.Post) (*domain.Post, error)
 		Delete(ctx context.Context, id uuid.UUID) (bool, error)
 		GetByUserId(ctx context.Context, userId uuid.UUID, limit, offset int32) ([]*domain.Post, error)
-		GetByGroupId(ctx context.Context, groupId uuid.UUID, limit, offset int32) ([]*domain.Post, error)
+		GetByGroupId(ctx context.Context, groupIds []uuid.UUID, limit, offset int32) ([]*domain.Post, error)
 		GetByFeed(ctx context.Context, userIds []uuid.UUID, groupIds []uuid.UUID, limit, offset int32) ([]*domain.Post, error)
 	}
 	UseCase interface {
@@ -25,5 +25,6 @@ type (
 		GetPostsByUserId(ctx context.Context, userId uuid.UUID, limit, offset int32) ([]*domain.Post, error)
 		GetPostsByGroupId(ctx context.Context, groupId uuid.UUID, limit, offset int32) ([]*domain.Post, error)
 		GetPostsByFeed(ctx context.Context, userIds []uuid.UUID, groupIds []uuid.UUID, limit, offset int32) ([]*domain.Post, error)
+		GetPostsByFeedGroup(ctx context.Context, groupIds []uuid.UUID, limit, offset int32) ([]*domain.Post, error)
 	}
 )

@@ -54,16 +54,13 @@ func (rp *postRepo) GetByFeed(ctx context.Context, userIds []uuid.UUID, groupIds
 }
 
 // GetByGroupId implements posts.PostRepo.
-func (rp *postRepo) GetByGroupId(ctx context.Context, groupId uuid.UUID, limit, offset int32) ([]*domain.Post, error) {
+func (rp *postRepo) GetByGroupId(ctx context.Context, groupIds []uuid.UUID, limit, offset int32) ([]*domain.Post, error) {
 	db := rp.pg.GetDBRead()
 	querier := postgresql.New(db)
 	results, err := querier.GetByGroupId(ctx, postgresql.GetByGroupIdParams{
-		GroupID: uuid.NullUUID{
-			UUID:  groupId,
-			Valid: true, // Set this to true if groupId is valid, or false if it's NULL
-		},
-		Limit:  limit,
-		Offset: offset,
+		Column1: groupIds,
+		Limit:   limit,
+		Offset:  offset,
 	})
 	if err != nil {
 		return nil, errors.Wrap(err, "qtx.GetByGroupId(ctx, userId , limit , offset) failed")

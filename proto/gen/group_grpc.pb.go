@@ -19,16 +19,16 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	GroupService_CreateGroup_FullMethodName         = "/group.GroupService/CreateGroup"
-	GroupService_GetGroup_FullMethodName            = "/group.GroupService/GetGroup"
-	GroupService_UpdateGroup_FullMethodName         = "/group.GroupService/UpdateGroup"
-	GroupService_DeleteGroup_FullMethodName         = "/group.GroupService/DeleteGroup"
-	GroupService_GetGroupsByUserId_FullMethodName   = "/group.GroupService/GetGroupsByUserId"
-	GroupService_GetGroupIdsByUserId_FullMethodName = "/group.GroupService/GetGroupIdsByUserId"
-	GroupService_CreateGroupMember_FullMethodName   = "/group.GroupService/CreateGroupMember"
-	GroupService_UpdateGroupMember_FullMethodName   = "/group.GroupService/UpdateGroupMember"
-	GroupService_DeleteGroupMember_FullMethodName   = "/group.GroupService/DeleteGroupMember"
-	GroupService_GetGroupMembers_FullMethodName     = "/group.GroupService/GetGroupMembers"
+	GroupService_CreateGroup_FullMethodName         = "/group_1.GroupService/CreateGroup"
+	GroupService_GetGroup_FullMethodName            = "/group_1.GroupService/GetGroup"
+	GroupService_UpdateGroup_FullMethodName         = "/group_1.GroupService/UpdateGroup"
+	GroupService_DeleteGroup_FullMethodName         = "/group_1.GroupService/DeleteGroup"
+	GroupService_GetGroupsByUserId_FullMethodName   = "/group_1.GroupService/GetGroupsByUserId"
+	GroupService_GetGroupIdsByUserId_FullMethodName = "/group_1.GroupService/GetGroupIdsByUserId"
+	GroupService_CreateGroupMember_FullMethodName   = "/group_1.GroupService/CreateGroupMember"
+	GroupService_UpdateGroupMember_FullMethodName   = "/group_1.GroupService/UpdateGroupMember"
+	GroupService_DeleteGroupMember_FullMethodName   = "/group_1.GroupService/DeleteGroupMember"
+	GroupService_GetGroupMembers_FullMethodName     = "/group_1.GroupService/GetGroupMembers"
 )
 
 // GroupServiceClient is the client API for GroupService service.
@@ -395,7 +395,7 @@ func _GroupService_GetGroupMembers_Handler(srv interface{}, ctx context.Context,
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var GroupService_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "group.GroupService",
+	ServiceName: "group_1.GroupService",
 	HandlerType: (*GroupServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{

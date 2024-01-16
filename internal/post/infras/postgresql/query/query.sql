@@ -22,7 +22,7 @@ SET
 WHERE id = sqlc.arg(id) RETURNING *;
 
 -- name: GetByGroupId :many
-SELECT * FROM post.posts WHERE group_id = $1 ORDER BY created_at DESC LIMIT $2 OFFSET $3;
+SELECT * FROM post.posts WHERE group_id = ANY($1::uuid[]) ORDER BY created_at DESC LIMIT $2 OFFSET $3;
 
 -- name: GetByUserId :many
 SELECT * FROM post.posts 

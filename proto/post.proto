@@ -5,6 +5,7 @@ package post;
 import "google/api/annotations.proto";
 import "protoc-gen-openapiv2/options/annotations.proto";
 import "google/protobuf/timestamp.proto";
+import "group.proto";
 import "upload.proto";
 import "like.proto";
 import "comment.proto";
@@ -37,6 +38,15 @@ service PostService {
         };
         option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
             summary: "Get Feed"
+            description: ""
+        };
+    }
+    rpc NewFeedGroups(NewFeedGroupsRequest) returns (NewFeedGroupsResponse){
+        option (google.api.http) = {
+            get: "/api/v1/groups/feed"
+        };
+        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+            summary: "Get New Feed of Groups"
             description: ""
         };
     }
@@ -94,6 +104,13 @@ message NewFeedRequest {
 message NewFeedResponse {
     repeated GetPostResponse posts = 1;
 }
+message NewFeedGroupsRequest {
+    int32 limit = 3;
+    int32 offset = 4;
+}
+message NewFeedGroupsResponse {
+    repeated GetPostGroupResponse posts = 1;
+}
 message GetPostsByGroupIdRequest {
     string group_id = 1;
     int32 limit = 2;
@@ -123,6 +140,13 @@ message GetPostResponse {
     like.LikeInfo likes = 3;
     int64 count_comments = 4;
     // repeated comment.CommentHasChildren comments = 5;
+}
+message GetPostGroupResponse {
+    PostResponse post = 1;
+    group_1.GroupResponse group = 2;
+    repeated upload.Attachment attachments = 3;
+    like.LikeInfo likes = 4;
+    int64 count_comments = 5;
 }
 message UpdatePostRequest {
     PostResponse post = 1;
