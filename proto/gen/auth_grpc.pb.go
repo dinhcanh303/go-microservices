@@ -19,14 +19,15 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	AuthService_SignIn_FullMethodName                      = "/auth.AuthService/SignIn"
-	AuthService_SignUp_FullMethodName                      = "/auth.AuthService/SignUp"
-	AuthService_Verify_FullMethodName                      = "/auth.AuthService/Verify"
-	AuthService_Logout_FullMethodName                      = "/auth.AuthService/Logout"
-	AuthService_HandleRefreshToken_FullMethodName          = "/auth.AuthService/HandleRefreshToken"
-	AuthService_GetUserIdsOfCompanyByUserId_FullMethodName = "/auth.AuthService/GetUserIdsOfCompanyByUserId"
-	AuthService_GetProfile_FullMethodName                  = "/auth.AuthService/GetProfile"
-	AuthService_GetUsers_FullMethodName                    = "/auth.AuthService/GetUsers"
+	AuthService_SignIn_FullMethodName                      = "/authapi.AuthService/SignIn"
+	AuthService_SignUp_FullMethodName                      = "/authapi.AuthService/SignUp"
+	AuthService_Verify_FullMethodName                      = "/authapi.AuthService/Verify"
+	AuthService_Logout_FullMethodName                      = "/authapi.AuthService/Logout"
+	AuthService_HandleRefreshToken_FullMethodName          = "/authapi.AuthService/HandleRefreshToken"
+	AuthService_GetUserIdsOfCompanyByUserId_FullMethodName = "/authapi.AuthService/GetUserIdsOfCompanyByUserId"
+	AuthService_GetProfile_FullMethodName                  = "/authapi.AuthService/GetProfile"
+	AuthService_GetUsers_FullMethodName                    = "/authapi.AuthService/GetUsers"
+	AuthService_UpdateUser_FullMethodName                  = "/authapi.AuthService/UpdateUser"
 )
 
 // AuthServiceClient is the client API for AuthService service.
@@ -41,6 +42,7 @@ type AuthServiceClient interface {
 	GetUserIdsOfCompanyByUserId(ctx context.Context, in *GetUserIdsOfCompanyByUserIdRequest, opts ...grpc.CallOption) (*GetUserIdsOfCompanyByUserIdResponse, error)
 	GetProfile(ctx context.Context, in *GetProfileRequest, opts ...grpc.CallOption) (*GetProfileResponse, error)
 	GetUsers(ctx context.Context, in *GetUsersRequest, opts ...grpc.CallOption) (*GetUsersResponse, error)
+	UpdateUser(ctx context.Context, in *UpdateUserRequest, opts ...grpc.CallOption) (*UpdateUserResponse, error)
 }
 
 type authServiceClient struct {
@@ -123,6 +125,15 @@ func (c *authServiceClient) GetUsers(ctx context.Context, in *GetUsersRequest, o
 	return out, nil
 }
 
+func (c *authServiceClient) UpdateUser(ctx context.Context, in *UpdateUserRequest, opts ...grpc.CallOption) (*UpdateUserResponse, error) {
+	out := new(UpdateUserResponse)
+	err := c.cc.Invoke(ctx, AuthService_UpdateUser_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // AuthServiceServer is the server API for AuthService service.
 // All implementations must embed UnimplementedAuthServiceServer
 // for forward compatibility
@@ -135,6 +146,7 @@ type AuthServiceServer interface {
 	GetUserIdsOfCompanyByUserId(context.Context, *GetUserIdsOfCompanyByUserIdRequest) (*GetUserIdsOfCompanyByUserIdResponse, error)
 	GetProfile(context.Context, *GetProfileRequest) (*GetProfileResponse, error)
 	GetUsers(context.Context, *GetUsersRequest) (*GetUsersResponse, error)
+	UpdateUser(context.Context, *UpdateUserRequest) (*UpdateUserResponse, error)
 	mustEmbedUnimplementedAuthServiceServer()
 }
 
@@ -165,6 +177,9 @@ func (UnimplementedAuthServiceServer) GetProfile(context.Context, *GetProfileReq
 }
 func (UnimplementedAuthServiceServer) GetUsers(context.Context, *GetUsersRequest) (*GetUsersResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetUsers not implemented")
+}
+func (UnimplementedAuthServiceServer) UpdateUser(context.Context, *UpdateUserRequest) (*UpdateUserResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateUser not implemented")
 }
 func (UnimplementedAuthServiceServer) mustEmbedUnimplementedAuthServiceServer() {}
 
@@ -323,11 +338,29 @@ func _AuthService_GetUsers_Handler(srv interface{}, ctx context.Context, dec fun
 	return interceptor(ctx, in, info, handler)
 }
 
+func _AuthService_UpdateUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateUserRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AuthServiceServer).UpdateUser(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AuthService_UpdateUser_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AuthServiceServer).UpdateUser(ctx, req.(*UpdateUserRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // AuthService_ServiceDesc is the grpc.ServiceDesc for AuthService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var AuthService_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "auth.AuthService",
+	ServiceName: "authapi.AuthService",
 	HandlerType: (*AuthServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
@@ -361,6 +394,10 @@ var AuthService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetUsers",
 			Handler:    _AuthService_GetUsers_Handler,
+		},
+		{
+			MethodName: "UpdateUser",
+			Handler:    _AuthService_UpdateUser_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

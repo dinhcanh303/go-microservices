@@ -495,7 +495,7 @@ func RegisterCommentServiceHandlerServer(ctx context.Context, mux *runtime.Serve
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/comment.CommentService/CreateComment", runtime.WithHTTPPathPattern("/api/v1/comments"))
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/commentapi.CommentService/CreateComment", runtime.WithHTTPPathPattern("/api/v1/comments"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -520,7 +520,7 @@ func RegisterCommentServiceHandlerServer(ctx context.Context, mux *runtime.Serve
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/comment.CommentService/GetComment", runtime.WithHTTPPathPattern("/api/v1/comments/{id}"))
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/commentapi.CommentService/GetComment", runtime.WithHTTPPathPattern("/api/v1/comments/{id}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -545,7 +545,7 @@ func RegisterCommentServiceHandlerServer(ctx context.Context, mux *runtime.Serve
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/comment.CommentService/UpdateComment", runtime.WithHTTPPathPattern("/api/v1/comments/{comment.id}"))
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/commentapi.CommentService/UpdateComment", runtime.WithHTTPPathPattern("/api/v1/comments/{comment.id}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -570,7 +570,7 @@ func RegisterCommentServiceHandlerServer(ctx context.Context, mux *runtime.Serve
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/comment.CommentService/DeleteComment", runtime.WithHTTPPathPattern("/api/v1/comments/{id}"))
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/commentapi.CommentService/DeleteComment", runtime.WithHTTPPathPattern("/api/v1/comments/{id}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -595,7 +595,7 @@ func RegisterCommentServiceHandlerServer(ctx context.Context, mux *runtime.Serve
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/comment.CommentService/GetCommentsByPostID", runtime.WithHTTPPathPattern("/api/v1/posts/{post_id}/comments"))
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/commentapi.CommentService/GetCommentsByPostID", runtime.WithHTTPPathPattern("/api/v1/posts/{post_id}/comments"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -620,7 +620,7 @@ func RegisterCommentServiceHandlerServer(ctx context.Context, mux *runtime.Serve
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/comment.CommentService/GetCommentsByCommentID", runtime.WithHTTPPathPattern("/api/v1/comments/{comment_id}/comments"))
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/commentapi.CommentService/GetCommentsByCommentID", runtime.WithHTTPPathPattern("/api/v1/comments/{comment_id}/comments"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -645,7 +645,7 @@ func RegisterCommentServiceHandlerServer(ctx context.Context, mux *runtime.Serve
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/comment.CommentService/CountCommentByPostID", runtime.WithHTTPPathPattern("/api/v1/posts/{post_id}/comments/count"))
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/commentapi.CommentService/CountCommentByPostID", runtime.WithHTTPPathPattern("/api/v1/posts/{post_id}/comments/count"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -670,7 +670,7 @@ func RegisterCommentServiceHandlerServer(ctx context.Context, mux *runtime.Serve
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/comment.CommentService/CountCommentByCommentID", runtime.WithHTTPPathPattern("/api/v1/comments/{comment_id}/count"))
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/commentapi.CommentService/CountCommentByCommentID", runtime.WithHTTPPathPattern("/api/v1/comments/{comment_id}/count"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -734,7 +734,7 @@ func RegisterCommentServiceHandlerClient(ctx context.Context, mux *runtime.Serve
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/comment.CommentService/CreateComment", runtime.WithHTTPPathPattern("/api/v1/comments"))
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/commentapi.CommentService/CreateComment", runtime.WithHTTPPathPattern("/api/v1/comments"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -756,7 +756,7 @@ func RegisterCommentServiceHandlerClient(ctx context.Context, mux *runtime.Serve
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/comment.CommentService/GetComment", runtime.WithHTTPPathPattern("/api/v1/comments/{id}"))
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/commentapi.CommentService/GetComment", runtime.WithHTTPPathPattern("/api/v1/comments/{id}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -778,7 +778,7 @@ func RegisterCommentServiceHandlerClient(ctx context.Context, mux *runtime.Serve
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/comment.CommentService/UpdateComment", runtime.WithHTTPPathPattern("/api/v1/comments/{comment.id}"))
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/commentapi.CommentService/UpdateComment", runtime.WithHTTPPathPattern("/api/v1/comments/{comment.id}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -800,7 +800,7 @@ func RegisterCommentServiceHandlerClient(ctx context.Context, mux *runtime.Serve
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/comment.CommentService/DeleteComment", runtime.WithHTTPPathPattern("/api/v1/comments/{id}"))
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/commentapi.CommentService/DeleteComment", runtime.WithHTTPPathPattern("/api/v1/comments/{id}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -822,7 +822,7 @@ func RegisterCommentServiceHandlerClient(ctx context.Context, mux *runtime.Serve
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/comment.CommentService/GetCommentsByPostID", runtime.WithHTTPPathPattern("/api/v1/posts/{post_id}/comments"))
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/commentapi.CommentService/GetCommentsByPostID", runtime.WithHTTPPathPattern("/api/v1/posts/{post_id}/comments"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -844,7 +844,7 @@ func RegisterCommentServiceHandlerClient(ctx context.Context, mux *runtime.Serve
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/comment.CommentService/GetCommentsByCommentID", runtime.WithHTTPPathPattern("/api/v1/comments/{comment_id}/comments"))
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/commentapi.CommentService/GetCommentsByCommentID", runtime.WithHTTPPathPattern("/api/v1/comments/{comment_id}/comments"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -866,7 +866,7 @@ func RegisterCommentServiceHandlerClient(ctx context.Context, mux *runtime.Serve
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/comment.CommentService/CountCommentByPostID", runtime.WithHTTPPathPattern("/api/v1/posts/{post_id}/comments/count"))
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/commentapi.CommentService/CountCommentByPostID", runtime.WithHTTPPathPattern("/api/v1/posts/{post_id}/comments/count"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -888,7 +888,7 @@ func RegisterCommentServiceHandlerClient(ctx context.Context, mux *runtime.Serve
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/comment.CommentService/CountCommentByCommentID", runtime.WithHTTPPathPattern("/api/v1/comments/{comment_id}/count"))
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/commentapi.CommentService/CountCommentByCommentID", runtime.WithHTTPPathPattern("/api/v1/comments/{comment_id}/count"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return

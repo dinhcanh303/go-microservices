@@ -1,12 +1,13 @@
 syntax="proto3";
 
-package comment;
+package commentapi;
 
 import "google/api/annotations.proto";
 import "protoc-gen-openapiv2/options/annotations.proto";
 import "google/protobuf/timestamp.proto";
 import "like.proto";
 import "upload.proto";
+import "auth.proto";
 
 option go_package = "github.com/dinhcanh303/go-microsevices/proto/gen";
 
@@ -166,10 +167,11 @@ message CommentHasMetadata {
     repeated string tag_ids = 5;
     string content = 6;
     string parent_comment_id = 7;
-    like.LikeInfo likes = 8;
-    repeated upload.Attachment attachments = 9;
-    google.protobuf.Timestamp created_at = 10;
-    google.protobuf.Timestamp updated_at = 11;
+    authapi.User user = 8;
+    likeapi.LikeInfo likes = 9;
+    repeated uploadapi.Attachment attachments = 10;
+    google.protobuf.Timestamp created_at = 11;
+    google.protobuf.Timestamp updated_at = 12;
 }
 message CommentHasChildren {
     string id = 1;
@@ -179,9 +181,10 @@ message CommentHasChildren {
     repeated string tag_ids = 5;
     string content = 6;
     string parent_comment_id = 7;
-    repeated CommentHasMetadata children = 8;
-    like.LikeInfo likes = 9;
-    repeated upload.Attachment attachments = 10;
-    google.protobuf.Timestamp created_at = 11;
-    google.protobuf.Timestamp updated_at = 12;
+    authapi.User user = 8;
+    repeated CommentHasMetadata children = 9;
+    likeapi.LikeInfo likes = 10;
+    repeated uploadapi.Attachment attachments = 11;
+    google.protobuf.Timestamp created_at = 12;
+    google.protobuf.Timestamp updated_at = 13;
 }

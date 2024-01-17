@@ -303,7 +303,7 @@ func RegisterLikeServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/like.LikeService/CreateLike", runtime.WithHTTPPathPattern("/api/v1/likes"))
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/likeapi.LikeService/CreateLike", runtime.WithHTTPPathPattern("/api/v1/likes"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -328,7 +328,7 @@ func RegisterLikeServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/like.LikeService/UpdateLike", runtime.WithHTTPPathPattern("/api/v1/likes/{like.id}"))
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/likeapi.LikeService/UpdateLike", runtime.WithHTTPPathPattern("/api/v1/likes/{like.id}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -353,7 +353,7 @@ func RegisterLikeServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/like.LikeService/DeleteLike", runtime.WithHTTPPathPattern("/api/v1/likes/{id}"))
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/likeapi.LikeService/DeleteLike", runtime.WithHTTPPathPattern("/api/v1/likes/{id}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -378,7 +378,7 @@ func RegisterLikeServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/like.LikeService/GetLikesInfoByPostID", runtime.WithHTTPPathPattern("/api/v1/posts/{post_id}/likes"))
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/likeapi.LikeService/GetLikesInfoByPostID", runtime.WithHTTPPathPattern("/api/v1/posts/{post_id}/likes"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -403,7 +403,7 @@ func RegisterLikeServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/like.LikeService/GetLikesInfoByCommentID", runtime.WithHTTPPathPattern("/api/v1/comments/{comment_id}/likes"))
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/likeapi.LikeService/GetLikesInfoByCommentID", runtime.WithHTTPPathPattern("/api/v1/comments/{comment_id}/likes"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -467,7 +467,7 @@ func RegisterLikeServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/like.LikeService/CreateLike", runtime.WithHTTPPathPattern("/api/v1/likes"))
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/likeapi.LikeService/CreateLike", runtime.WithHTTPPathPattern("/api/v1/likes"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -489,7 +489,7 @@ func RegisterLikeServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/like.LikeService/UpdateLike", runtime.WithHTTPPathPattern("/api/v1/likes/{like.id}"))
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/likeapi.LikeService/UpdateLike", runtime.WithHTTPPathPattern("/api/v1/likes/{like.id}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -511,7 +511,7 @@ func RegisterLikeServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/like.LikeService/DeleteLike", runtime.WithHTTPPathPattern("/api/v1/likes/{id}"))
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/likeapi.LikeService/DeleteLike", runtime.WithHTTPPathPattern("/api/v1/likes/{id}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -533,7 +533,7 @@ func RegisterLikeServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/like.LikeService/GetLikesInfoByPostID", runtime.WithHTTPPathPattern("/api/v1/posts/{post_id}/likes"))
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/likeapi.LikeService/GetLikesInfoByPostID", runtime.WithHTTPPathPattern("/api/v1/posts/{post_id}/likes"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -555,7 +555,7 @@ func RegisterLikeServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/like.LikeService/GetLikesInfoByCommentID", runtime.WithHTTPPathPattern("/api/v1/comments/{comment_id}/likes"))
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/likeapi.LikeService/GetLikesInfoByCommentID", runtime.WithHTTPPathPattern("/api/v1/comments/{comment_id}/likes"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return

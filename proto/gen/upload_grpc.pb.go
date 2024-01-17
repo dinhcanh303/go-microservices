@@ -19,9 +19,9 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	UploadService_GetAttachmentsByType_FullMethodName     = "/upload.UploadService/GetAttachmentsByType"
-	UploadService_GetAttachmentsByOptional_FullMethodName = "/upload.UploadService/GetAttachmentsByOptional"
-	UploadService_GetAvatarUser_FullMethodName            = "/upload.UploadService/GetAvatarUser"
+	UploadService_GetAttachmentsByType_FullMethodName     = "/uploadapi.UploadService/GetAttachmentsByType"
+	UploadService_GetAttachmentsByOptional_FullMethodName = "/uploadapi.UploadService/GetAttachmentsByOptional"
+	UploadService_GetAvatarUser_FullMethodName            = "/uploadapi.UploadService/GetAvatarUser"
 )
 
 // UploadServiceClient is the client API for UploadService service.
@@ -162,7 +162,7 @@ func _UploadService_GetAvatarUser_Handler(srv interface{}, ctx context.Context, 
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var UploadService_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "upload.UploadService",
+	ServiceName: "uploadapi.UploadService",
 	HandlerType: (*UploadServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{

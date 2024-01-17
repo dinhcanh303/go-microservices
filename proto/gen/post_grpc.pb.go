@@ -19,14 +19,14 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	PostService_CreatePost_FullMethodName        = "/post.PostService/CreatePost"
-	PostService_GetPost_FullMethodName           = "/post.PostService/GetPost"
-	PostService_NewFeed_FullMethodName           = "/post.PostService/NewFeed"
-	PostService_NewFeedGroups_FullMethodName     = "/post.PostService/NewFeedGroups"
-	PostService_GetPostsByGroupId_FullMethodName = "/post.PostService/GetPostsByGroupId"
-	PostService_GetPostsByUserId_FullMethodName  = "/post.PostService/GetPostsByUserId"
-	PostService_UpdatePost_FullMethodName        = "/post.PostService/UpdatePost"
-	PostService_DeletePost_FullMethodName        = "/post.PostService/DeletePost"
+	PostService_CreatePost_FullMethodName        = "/postapi.PostService/CreatePost"
+	PostService_GetPost_FullMethodName           = "/postapi.PostService/GetPost"
+	PostService_NewFeed_FullMethodName           = "/postapi.PostService/NewFeed"
+	PostService_NewFeedGroups_FullMethodName     = "/postapi.PostService/NewFeedGroups"
+	PostService_GetPostsByGroupId_FullMethodName = "/postapi.PostService/GetPostsByGroupId"
+	PostService_GetPostsByUserId_FullMethodName  = "/postapi.PostService/GetPostsByUserId"
+	PostService_UpdatePost_FullMethodName        = "/postapi.PostService/UpdatePost"
+	PostService_DeletePost_FullMethodName        = "/postapi.PostService/DeletePost"
 )
 
 // PostServiceClient is the client API for PostService service.
@@ -327,7 +327,7 @@ func _PostService_DeletePost_Handler(srv interface{}, ctx context.Context, dec f
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var PostService_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "post.PostService",
+	ServiceName: "postapi.PostService",
 	HandlerType: (*PostServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{

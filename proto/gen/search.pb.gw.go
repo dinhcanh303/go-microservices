@@ -97,7 +97,7 @@ func RegisterSearchServiceHandlerServer(ctx context.Context, mux *runtime.ServeM
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/search.SearchService/Search", runtime.WithHTTPPathPattern("/api/v1/search/{key_word}"))
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/searchapi.SearchService/Search", runtime.WithHTTPPathPattern("/api/v1/search/{key_word}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -161,7 +161,7 @@ func RegisterSearchServiceHandlerClient(ctx context.Context, mux *runtime.ServeM
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/search.SearchService/Search", runtime.WithHTTPPathPattern("/api/v1/search/{key_word}"))
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/searchapi.SearchService/Search", runtime.WithHTTPPathPattern("/api/v1/search/{key_word}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return

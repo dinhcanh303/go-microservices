@@ -19,11 +19,11 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	LikeService_CreateLike_FullMethodName              = "/like.LikeService/CreateLike"
-	LikeService_UpdateLike_FullMethodName              = "/like.LikeService/UpdateLike"
-	LikeService_DeleteLike_FullMethodName              = "/like.LikeService/DeleteLike"
-	LikeService_GetLikesInfoByPostID_FullMethodName    = "/like.LikeService/GetLikesInfoByPostID"
-	LikeService_GetLikesInfoByCommentID_FullMethodName = "/like.LikeService/GetLikesInfoByCommentID"
+	LikeService_CreateLike_FullMethodName              = "/likeapi.LikeService/CreateLike"
+	LikeService_UpdateLike_FullMethodName              = "/likeapi.LikeService/UpdateLike"
+	LikeService_DeleteLike_FullMethodName              = "/likeapi.LikeService/DeleteLike"
+	LikeService_GetLikesInfoByPostID_FullMethodName    = "/likeapi.LikeService/GetLikesInfoByPostID"
+	LikeService_GetLikesInfoByCommentID_FullMethodName = "/likeapi.LikeService/GetLikesInfoByCommentID"
 )
 
 // LikeServiceClient is the client API for LikeService service.
@@ -228,7 +228,7 @@ func _LikeService_GetLikesInfoByCommentID_Handler(srv interface{}, ctx context.C
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var LikeService_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "like.LikeService",
+	ServiceName: "likeapi.LikeService",
 	HandlerType: (*LikeServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{

@@ -1,11 +1,12 @@
 syntax="proto3";
-package auth;
+
+package authapi;
+
 import "google/api/annotations.proto";
 import "protoc-gen-openapiv2/options/annotations.proto";
 import "google/protobuf/timestamp.proto";
-import "validate/validate.proto";
 
-option go_package = "github.com/dinhcanh303/go-microservice/proto/gen";
+option go_package = "github.com/dinhcanh303/go-microsevices/proto/gen";
 
 service AuthService {
     rpc SignIn(SignInRequest) returns (SignInResponse){
@@ -82,6 +83,21 @@ service AuthService {
             description: ""
         };
     }
+    rpc UpdateUser(UpdateUserRequest) returns (UpdateUserResponse){
+        option (google.api.http) = {
+            put: "/api/v1/users/{user.id}",
+        };
+        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+            summary: "Set Avatar User"
+            description: ""
+        };
+    }
+}
+message UpdateUserRequest {
+    User user = 1;
+}
+message UpdateUserResponse {
+    User user = 1;
 }
 message GetUsersRequest{
     string search = 1;
@@ -95,7 +111,7 @@ message GetProfileRequest{
     string id = 1;
 }
 message GetProfileResponse{
-    User user=1;
+    User user= 1;
 }
 message GetUserIdsOfCompanyByUserIdRequest{
     string user_id = 1;
@@ -110,7 +126,7 @@ message LogoutResponse{}
 message HandleRefreshTokenRequest {
 }
 message HandleRefreshTokenResponse {
-    User user =1;
+    User user = 1;
     string access_token = 2;
     string refresh_token = 3;
 }
@@ -151,9 +167,10 @@ message User {
     string full_name = 5;
     string nick_name = 6;
     string avatar_url = 7;
-    string thumbnail_url = 8;
-    google.protobuf.Timestamp created_at = 9;
-    google.protobuf.Timestamp updated_at = 10;
+    string profile_url = 8;
+    string role = 9;
+    google.protobuf.Timestamp created_at = 10;
+    google.protobuf.Timestamp updated_at = 11;
 }
 message VerifyRequest{}
 message VerifyResponse{}

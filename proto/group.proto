@@ -1,6 +1,6 @@
 syntax="proto3";
 
-package group_1; //Because if using package name is "group" proto gen import notworking 
+package groupapi; //Because if using package name is "group" proto gen import notworking 
 
 import "google/api/annotations.proto";
 import "protoc-gen-openapiv2/options/annotations.proto";
@@ -112,13 +112,13 @@ message CreateGroupRequest {
     GroupRequest group = 1;
 }
 message CreateGroupResponse {
-    GroupResponse group = 1;
+    Group group = 1;
 }
 message CreateGroupMemberRequest {
     GroupMemberRequest group_member = 1;
 }
 message CreateGroupMemberResponse {
-    GroupMemberResponse group_member = 1;
+    GroupMember group_member = 1;
 }
 message GetGroupRequest {
     string id = 1;
@@ -127,7 +127,7 @@ message GetGroupMembersRequest {
     string groupId = 1;
 }
 message GetGroupMembersResponse {
-    repeated GroupMemberResponse group_members = 1;
+    repeated GroupMember group_members = 1;
 }
 message DeleteGroupRequest {
     string id = 1;
@@ -142,19 +142,19 @@ message DeleteGroupMemberResponse {
     bool deleted = 1;
 }
 message GetGroupResponse {
-    GroupResponse group = 1;
+    Group group = 1;
 }
 message UpdateGroupRequest {
-    GroupResponse group = 1;
+    Group group = 1;
 }
 message UpdateGroupResponse {
-    GroupResponse group = 1;
+    Group group = 1;
 }
 message UpdateGroupMemberRequest {
-    GroupMemberResponse group_member = 1;
+    GroupMember group_member = 1;
 }
 message UpdateGroupMemberResponse {
-    GroupMemberResponse group_member = 1;
+    GroupMember group_member = 1;
 }
 message GetGroupsByUserIdRequest {
     string user_id = 1;
@@ -162,7 +162,7 @@ message GetGroupsByUserIdRequest {
     int32 offset = 3;
 }
 message GetGroupsByUserIdResponse {
-    repeated GroupResponse groups = 1;
+    repeated Group groups = 1;
 }
 message GetGroupIdsByUserIdRequest {
     string user_id = 1;
@@ -176,7 +176,7 @@ message GroupRequest {
     int32 status = 3;
     repeated string user_ids = 4;
 }
-message GroupResponse {
+message Group {
     string id = 1;
     string name = 2;
     string description = 3;
@@ -189,7 +189,7 @@ message GroupMemberRequest {
     string group_id = 1;
     int32 role = 2;
 }
-message GroupMemberResponse {
+message GroupMember {
     string id = 1;
     string group_id = 2;
     string user_id = 3;

@@ -277,6 +277,76 @@ func local_request_AuthService_GetUsers_0(ctx context.Context, marshaler runtime
 
 }
 
+var (
+	filter_AuthService_UpdateUser_0 = &utilities.DoubleArray{Encoding: map[string]int{"user": 0, "id": 1}, Base: []int{1, 2, 3, 2, 0, 0}, Check: []int{0, 1, 1, 2, 4, 3}}
+)
+
+func request_AuthService_UpdateUser_0(ctx context.Context, marshaler runtime.Marshaler, client AuthServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var protoReq UpdateUserRequest
+	var metadata runtime.ServerMetadata
+
+	var (
+		val string
+		ok  bool
+		err error
+		_   = err
+	)
+
+	val, ok = pathParams["user.id"]
+	if !ok {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "user.id")
+	}
+
+	err = runtime.PopulateFieldFromPath(&protoReq, "user.id", val)
+	if err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "user.id", err)
+	}
+
+	if err := req.ParseForm(); err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
+	}
+	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_AuthService_UpdateUser_0); err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
+	}
+
+	msg, err := client.UpdateUser(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
+	return msg, metadata, err
+
+}
+
+func local_request_AuthService_UpdateUser_0(ctx context.Context, marshaler runtime.Marshaler, server AuthServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var protoReq UpdateUserRequest
+	var metadata runtime.ServerMetadata
+
+	var (
+		val string
+		ok  bool
+		err error
+		_   = err
+	)
+
+	val, ok = pathParams["user.id"]
+	if !ok {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "user.id")
+	}
+
+	err = runtime.PopulateFieldFromPath(&protoReq, "user.id", val)
+	if err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "user.id", err)
+	}
+
+	if err := req.ParseForm(); err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
+	}
+	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_AuthService_UpdateUser_0); err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
+	}
+
+	msg, err := server.UpdateUser(ctx, &protoReq)
+	return msg, metadata, err
+
+}
+
 // RegisterAuthServiceHandlerServer registers the http handlers for service AuthService to "mux".
 // UnaryRPC     :call AuthServiceServer directly.
 // StreamingRPC :currently unsupported pending https://github.com/grpc/grpc-go/issues/906.
@@ -291,7 +361,7 @@ func RegisterAuthServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/auth.AuthService/SignIn", runtime.WithHTTPPathPattern("/api/v1/auth/signin"))
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/authapi.AuthService/SignIn", runtime.WithHTTPPathPattern("/api/v1/auth/signin"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -316,7 +386,7 @@ func RegisterAuthServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/auth.AuthService/SignUp", runtime.WithHTTPPathPattern("/api/v1/auth/signup"))
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/authapi.AuthService/SignUp", runtime.WithHTTPPathPattern("/api/v1/auth/signup"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -341,7 +411,7 @@ func RegisterAuthServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/auth.AuthService/Verify", runtime.WithHTTPPathPattern("/api/v1/auth/verify"))
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/authapi.AuthService/Verify", runtime.WithHTTPPathPattern("/api/v1/auth/verify"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -366,7 +436,7 @@ func RegisterAuthServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/auth.AuthService/Logout", runtime.WithHTTPPathPattern("/api/v1/logout"))
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/authapi.AuthService/Logout", runtime.WithHTTPPathPattern("/api/v1/logout"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -391,7 +461,7 @@ func RegisterAuthServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/auth.AuthService/HandleRefreshToken", runtime.WithHTTPPathPattern("/api/v1/refresh-token"))
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/authapi.AuthService/HandleRefreshToken", runtime.WithHTTPPathPattern("/api/v1/refresh-token"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -416,7 +486,7 @@ func RegisterAuthServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/auth.AuthService/GetUserIdsOfCompanyByUserId", runtime.WithHTTPPathPattern("/api/v1/users/{user_id}/user-ids"))
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/authapi.AuthService/GetUserIdsOfCompanyByUserId", runtime.WithHTTPPathPattern("/api/v1/users/{user_id}/user-ids"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -441,7 +511,7 @@ func RegisterAuthServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/auth.AuthService/GetProfile", runtime.WithHTTPPathPattern("/api/v1/profile"))
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/authapi.AuthService/GetProfile", runtime.WithHTTPPathPattern("/api/v1/profile"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -466,7 +536,7 @@ func RegisterAuthServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/auth.AuthService/GetUsers", runtime.WithHTTPPathPattern("/api/v1/users"))
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/authapi.AuthService/GetUsers", runtime.WithHTTPPathPattern("/api/v1/users"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -480,6 +550,31 @@ func RegisterAuthServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux
 		}
 
 		forward_AuthService_GetUsers_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+
+	})
+
+	mux.Handle("PUT", pattern_AuthService_UpdateUser_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+		ctx, cancel := context.WithCancel(req.Context())
+		defer cancel()
+		var stream runtime.ServerTransportStream
+		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
+		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
+		var err error
+		var annotatedContext context.Context
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/authapi.AuthService/UpdateUser", runtime.WithHTTPPathPattern("/api/v1/users/{user.id}"))
+		if err != nil {
+			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		resp, md, err := local_request_AuthService_UpdateUser_0(annotatedContext, inboundMarshaler, server, req, pathParams)
+		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
+		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
+		if err != nil {
+			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
+			return
+		}
+
+		forward_AuthService_UpdateUser_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
@@ -530,7 +625,7 @@ func RegisterAuthServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/auth.AuthService/SignIn", runtime.WithHTTPPathPattern("/api/v1/auth/signin"))
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/authapi.AuthService/SignIn", runtime.WithHTTPPathPattern("/api/v1/auth/signin"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -552,7 +647,7 @@ func RegisterAuthServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/auth.AuthService/SignUp", runtime.WithHTTPPathPattern("/api/v1/auth/signup"))
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/authapi.AuthService/SignUp", runtime.WithHTTPPathPattern("/api/v1/auth/signup"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -574,7 +669,7 @@ func RegisterAuthServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/auth.AuthService/Verify", runtime.WithHTTPPathPattern("/api/v1/auth/verify"))
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/authapi.AuthService/Verify", runtime.WithHTTPPathPattern("/api/v1/auth/verify"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -596,7 +691,7 @@ func RegisterAuthServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/auth.AuthService/Logout", runtime.WithHTTPPathPattern("/api/v1/logout"))
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/authapi.AuthService/Logout", runtime.WithHTTPPathPattern("/api/v1/logout"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -618,7 +713,7 @@ func RegisterAuthServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/auth.AuthService/HandleRefreshToken", runtime.WithHTTPPathPattern("/api/v1/refresh-token"))
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/authapi.AuthService/HandleRefreshToken", runtime.WithHTTPPathPattern("/api/v1/refresh-token"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -640,7 +735,7 @@ func RegisterAuthServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/auth.AuthService/GetUserIdsOfCompanyByUserId", runtime.WithHTTPPathPattern("/api/v1/users/{user_id}/user-ids"))
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/authapi.AuthService/GetUserIdsOfCompanyByUserId", runtime.WithHTTPPathPattern("/api/v1/users/{user_id}/user-ids"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -662,7 +757,7 @@ func RegisterAuthServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/auth.AuthService/GetProfile", runtime.WithHTTPPathPattern("/api/v1/profile"))
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/authapi.AuthService/GetProfile", runtime.WithHTTPPathPattern("/api/v1/profile"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -684,7 +779,7 @@ func RegisterAuthServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/auth.AuthService/GetUsers", runtime.WithHTTPPathPattern("/api/v1/users"))
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/authapi.AuthService/GetUsers", runtime.WithHTTPPathPattern("/api/v1/users"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -697,6 +792,28 @@ func RegisterAuthServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux
 		}
 
 		forward_AuthService_GetUsers_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+
+	})
+
+	mux.Handle("PUT", pattern_AuthService_UpdateUser_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+		ctx, cancel := context.WithCancel(req.Context())
+		defer cancel()
+		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
+		var err error
+		var annotatedContext context.Context
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/authapi.AuthService/UpdateUser", runtime.WithHTTPPathPattern("/api/v1/users/{user.id}"))
+		if err != nil {
+			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		resp, md, err := request_AuthService_UpdateUser_0(annotatedContext, inboundMarshaler, client, req, pathParams)
+		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
+		if err != nil {
+			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
+			return
+		}
+
+		forward_AuthService_UpdateUser_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
@@ -719,6 +836,8 @@ var (
 	pattern_AuthService_GetProfile_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"api", "v1", "profile"}, ""))
 
 	pattern_AuthService_GetUsers_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"api", "v1", "users"}, ""))
+
+	pattern_AuthService_UpdateUser_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3}, []string{"api", "v1", "users", "user.id"}, ""))
 )
 
 var (
@@ -737,4 +856,6 @@ var (
 	forward_AuthService_GetProfile_0 = runtime.ForwardResponseMessage
 
 	forward_AuthService_GetUsers_0 = runtime.ForwardResponseMessage
+
+	forward_AuthService_UpdateUser_0 = runtime.ForwardResponseMessage
 )

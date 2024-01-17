@@ -1,10 +1,11 @@
 syntax="proto3";
 
-package post;
+package postapi;
 
 import "google/api/annotations.proto";
 import "protoc-gen-openapiv2/options/annotations.proto";
 import "google/protobuf/timestamp.proto";
+import "auth.proto";
 import "group.proto";
 import "upload.proto";
 import "like.proto";
@@ -92,7 +93,7 @@ message CreatePostRequest {
     PostRequest post = 1;
 }
 message CreatePostResponse {
-    PostResponse post = 1;
+    Post post = 1;
 }
 message GetPostRequest {
     string id = 1;
@@ -109,7 +110,7 @@ message NewFeedGroupsRequest {
     int32 offset = 4;
 }
 message NewFeedGroupsResponse {
-    repeated GetPostGroupResponse posts = 1;
+    repeated GetPostResponse posts = 1;
 }
 message GetPostsByGroupIdRequest {
     string group_id = 1;
@@ -135,24 +136,19 @@ message DeletePostResponse {
     bool deleted = 1;
 }
 message GetPostResponse {
-    PostResponse post = 1;
-    repeated upload.Attachment attachments = 2;
-    like.LikeInfo likes = 3;
-    int64 count_comments = 4;
+    Post post = 1;
+    authapi.User user = 2;
+    groupapi.Group group = 3;
+    repeated uploadapi.Attachment attachments = 4;
+    likeapi.LikeInfo likes = 5;
+    int64 count_comments = 6;
     // repeated comment.CommentHasChildren comments = 5;
 }
-message GetPostGroupResponse {
-    PostResponse post = 1;
-    group_1.GroupResponse group = 2;
-    repeated upload.Attachment attachments = 3;
-    like.LikeInfo likes = 4;
-    int64 count_comments = 5;
-}
 message UpdatePostRequest {
-    PostResponse post = 1;
+    Post post = 1;
 }
 message UpdatePostResponse {
-    PostResponse post = 1;
+    Post post = 1;
 }
 message ListPostRequest {
     string id = 1;
@@ -160,7 +156,7 @@ message ListPostRequest {
     uint32 limit = 3;
 }
 message ListPostResponse {
-    repeated PostResponse post = 1;
+    repeated Post post = 1;
 }
 message PostRequest {
     string title = 1;
@@ -168,7 +164,7 @@ message PostRequest {
     int32 status = 3;
     string group_id = 4;
 }
-message PostResponse {
+message Post {
     string id = 1;
     string title = 2;
     string content = 3;
