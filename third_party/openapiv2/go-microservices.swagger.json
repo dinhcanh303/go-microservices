@@ -50,7 +50,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/uploadGetAttachmentsByTypeResponse"
+              "$ref": "#/definitions/uploadapiGetAttachmentsByTypeResponse"
             }
           },
           "default": {
@@ -87,7 +87,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/authSignInResponse"
+              "$ref": "#/definitions/authapiSignInResponse"
             }
           },
           "default": {
@@ -103,7 +103,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/authSignInRequest"
+              "$ref": "#/definitions/authapiSignInRequest"
             }
           }
         ],
@@ -120,7 +120,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/authSignUpResponse"
+              "$ref": "#/definitions/authapiSignUpResponse"
             }
           },
           "default": {
@@ -136,7 +136,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/authSignUpRequest"
+              "$ref": "#/definitions/authapiSignUpRequest"
             }
           }
         ],
@@ -153,7 +153,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/authVerifyResponse"
+              "$ref": "#/definitions/authapiVerifyResponse"
             }
           },
           "default": {
@@ -176,7 +176,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/commentCreateCommentResponse"
+              "$ref": "#/definitions/commentapiCreateCommentResponse"
             }
           },
           "default": {
@@ -192,7 +192,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/commentCreateCommentRequest"
+              "$ref": "#/definitions/commentapiCreateCommentRequest"
             }
           }
         ],
@@ -209,7 +209,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/commentUpdateCommentResponse"
+              "$ref": "#/definitions/commentapiUpdateCommentResponse"
             }
           },
           "default": {
@@ -284,7 +284,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/commentGetCommentsByCommentIDResponse"
+              "$ref": "#/definitions/commentapiGetCommentsByCommentIDResponse"
             }
           },
           "default": {
@@ -329,7 +329,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/commentCountCommentByCommentIDResponse"
+              "$ref": "#/definitions/commentapiCountCommentByCommentIDResponse"
             }
           },
           "default": {
@@ -360,7 +360,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/likeGetLikesInfoByCommentIDResponse"
+              "$ref": "#/definitions/likeapiGetLikesInfoByCommentIDResponse"
             }
           },
           "default": {
@@ -391,7 +391,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/commentGetCommentResponse"
+              "$ref": "#/definitions/commentapiGetCommentResponse"
             }
           },
           "default": {
@@ -420,7 +420,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/commentDeleteCommentResponse"
+              "$ref": "#/definitions/commentapiDeleteCommentResponse"
             }
           },
           "default": {
@@ -451,7 +451,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/postNewFeedResponse"
+              "$ref": "#/definitions/postapiNewFeedResponse"
             }
           },
           "default": {
@@ -490,7 +490,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/group_1CreateGroupMemberResponse"
+              "$ref": "#/definitions/groupapiCreateGroupMemberResponse"
             }
           },
           "default": {
@@ -506,7 +506,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/group_1CreateGroupMemberRequest"
+              "$ref": "#/definitions/groupapiCreateGroupMemberRequest"
             }
           }
         ],
@@ -523,7 +523,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/group_1GetGroupMembersResponse"
+              "$ref": "#/definitions/groupapiGetGroupMembersResponse"
             }
           },
           "default": {
@@ -554,7 +554,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/group_1UpdateGroupMemberResponse"
+              "$ref": "#/definitions/groupapiUpdateGroupMemberResponse"
             }
           },
           "default": {
@@ -618,7 +618,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/group_1DeleteGroupMemberResponse"
+              "$ref": "#/definitions/groupapiDeleteGroupMemberResponse"
             }
           },
           "default": {
@@ -649,7 +649,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/group_1CreateGroupResponse"
+              "$ref": "#/definitions/groupapiCreateGroupResponse"
             }
           },
           "default": {
@@ -665,7 +665,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/group_1CreateGroupRequest"
+              "$ref": "#/definitions/groupapiCreateGroupRequest"
             }
           }
         ],
@@ -682,7 +682,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/postNewFeedGroupsResponse"
+              "$ref": "#/definitions/postapiNewFeedGroupsResponse"
             }
           },
           "default": {
@@ -721,7 +721,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/group_1UpdateGroupResponse"
+              "$ref": "#/definitions/groupapiUpdateGroupResponse"
             }
           },
           "default": {
@@ -788,7 +788,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/postGetPostsByGroupIdResponse"
+              "$ref": "#/definitions/postapiGetPostsByGroupIdResponse"
             }
           },
           "default": {
@@ -833,7 +833,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/group_1GetGroupResponse"
+              "$ref": "#/definitions/groupapiGetGroupResponse"
             }
           },
           "default": {
@@ -862,7 +862,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/group_1DeleteGroupResponse"
+              "$ref": "#/definitions/groupapiDeleteGroupResponse"
             }
           },
           "default": {
@@ -893,7 +893,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/likeCreateLikeResponse"
+              "$ref": "#/definitions/likeapiCreateLikeResponse"
             }
           },
           "default": {
@@ -909,7 +909,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/likeCreateLikeRequest"
+              "$ref": "#/definitions/likeapiCreateLikeRequest"
             }
           }
         ],
@@ -926,7 +926,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/likeDeleteLikeResponse"
+              "$ref": "#/definitions/likeapiDeleteLikeResponse"
             }
           },
           "default": {
@@ -957,7 +957,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/likeUpdateLikeResponse"
+              "$ref": "#/definitions/likeapiUpdateLikeResponse"
             }
           },
           "default": {
@@ -1006,7 +1006,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/authLogoutResponse"
+              "$ref": "#/definitions/authapiLogoutResponse"
             }
           },
           "default": {
@@ -1029,7 +1029,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/uploadGetAttachmentsByOptionalResponse"
+              "$ref": "#/definitions/uploadapiGetAttachmentsByOptionalResponse"
             }
           },
           "default": {
@@ -1078,7 +1078,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/postCreatePostResponse"
+              "$ref": "#/definitions/postapiCreatePostResponse"
             }
           },
           "default": {
@@ -1094,7 +1094,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/postCreatePostRequest"
+              "$ref": "#/definitions/postapiCreatePostRequest"
             }
           }
         ],
@@ -1111,7 +1111,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/postGetPostResponse"
+              "$ref": "#/definitions/postapiGetPostResponse"
             }
           },
           "default": {
@@ -1140,7 +1140,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/postDeletePostResponse"
+              "$ref": "#/definitions/postapiDeletePostResponse"
             }
           },
           "default": {
@@ -1171,7 +1171,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/postUpdatePostResponse"
+              "$ref": "#/definitions/postapiUpdatePostResponse"
             }
           },
           "default": {
@@ -1241,7 +1241,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/commentGetCommentsByPostIDResponse"
+              "$ref": "#/definitions/commentapiGetCommentsByPostIDResponse"
             }
           },
           "default": {
@@ -1286,7 +1286,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/commentCountCommentByPostIDResponse"
+              "$ref": "#/definitions/commentapiCountCommentByPostIDResponse"
             }
           },
           "default": {
@@ -1317,7 +1317,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/likeGetLikesInfoByPostIDResponse"
+              "$ref": "#/definitions/likeapiGetLikesInfoByPostIDResponse"
             }
           },
           "default": {
@@ -1348,7 +1348,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/authGetProfileResponse"
+              "$ref": "#/definitions/authapiGetProfileResponse"
             }
           },
           "default": {
@@ -1379,7 +1379,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/authHandleRefreshTokenResponse"
+              "$ref": "#/definitions/authapiHandleRefreshTokenResponse"
             }
           },
           "default": {
@@ -1402,7 +1402,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/searchSearchResponse"
+              "$ref": "#/definitions/searchapiSearchResponse"
             }
           },
           "default": {
@@ -1433,7 +1433,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/authGetUsersResponse"
+              "$ref": "#/definitions/authapiGetUsersResponse"
             }
           },
           "default": {
@@ -1478,7 +1478,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/uploadGetAvatarUserResponse"
+              "$ref": "#/definitions/uploadapiGetAvatarUserResponse"
             }
           },
           "default": {
@@ -1501,6 +1501,99 @@
         ]
       }
     },
+    "/api/v1/users/{user.id}": {
+      "put": {
+        "summary": "Set Avatar User",
+        "operationId": "AuthService_UpdateUser",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/authapiUpdateUserResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "user.id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "user.email",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "user.firstName",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "user.lastName",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "user.fullName",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "user.nickName",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "user.avatarUrl",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "user.profileUrl",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "user.role",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "user.createdAt",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "format": "date-time"
+          },
+          {
+            "name": "user.updatedAt",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "format": "date-time"
+          }
+        ],
+        "tags": [
+          "AuthService"
+        ]
+      }
+    },
     "/api/v1/users/{userId}/feed": {
       "get": {
         "summary": "Get Posts By User ID",
@@ -1509,7 +1602,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/postGetPostsByUserIdResponse"
+              "$ref": "#/definitions/postapiGetPostsByUserIdResponse"
             }
           },
           "default": {
@@ -1554,7 +1647,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/group_1GetGroupIdsByUserIdResponse"
+              "$ref": "#/definitions/groupapiGetGroupIdsByUserIdResponse"
             }
           },
           "default": {
@@ -1585,7 +1678,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/group_1GetGroupsByUserIdResponse"
+              "$ref": "#/definitions/groupapiGetGroupsByUserIdResponse"
             }
           },
           "default": {
@@ -1630,7 +1723,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/authGetUserIdsOfCompanyByUserIdResponse"
+              "$ref": "#/definitions/authapiGetUserIdsOfCompanyByUserIdResponse"
             }
           },
           "default": {
@@ -1655,15 +1748,15 @@
     }
   },
   "definitions": {
-    "authGetProfileResponse": {
+    "authapiGetProfileResponse": {
       "type": "object",
       "properties": {
         "user": {
-          "$ref": "#/definitions/authUser"
+          "$ref": "#/definitions/authapiUser"
         }
       }
     },
-    "authGetUserIdsOfCompanyByUserIdResponse": {
+    "authapiGetUserIdsOfCompanyByUserIdResponse": {
       "type": "object",
       "properties": {
         "userIds": {
@@ -1674,23 +1767,23 @@
         }
       }
     },
-    "authGetUsersResponse": {
+    "authapiGetUsersResponse": {
       "type": "object",
       "properties": {
         "users": {
           "type": "array",
           "items": {
             "type": "object",
-            "$ref": "#/definitions/authUser"
+            "$ref": "#/definitions/authapiUser"
           }
         }
       }
     },
-    "authHandleRefreshTokenResponse": {
+    "authapiHandleRefreshTokenResponse": {
       "type": "object",
       "properties": {
         "user": {
-          "$ref": "#/definitions/authUser"
+          "$ref": "#/definitions/authapiUser"
         },
         "accessToken": {
           "type": "string"
@@ -1700,10 +1793,10 @@
         }
       }
     },
-    "authLogoutResponse": {
+    "authapiLogoutResponse": {
       "type": "object"
     },
-    "authSignInRequest": {
+    "authapiSignInRequest": {
       "type": "object",
       "properties": {
         "email": {
@@ -1714,11 +1807,11 @@
         }
       }
     },
-    "authSignInResponse": {
+    "authapiSignInResponse": {
       "type": "object",
       "properties": {
         "user": {
-          "$ref": "#/definitions/authUser"
+          "$ref": "#/definitions/authapiUser"
         },
         "accessToken": {
           "type": "string"
@@ -1728,7 +1821,7 @@
         }
       }
     },
-    "authSignUpRequest": {
+    "authapiSignUpRequest": {
       "type": "object",
       "properties": {
         "email": {
@@ -1745,11 +1838,11 @@
         }
       }
     },
-    "authSignUpResponse": {
+    "authapiSignUpResponse": {
       "type": "object",
       "properties": {
         "user": {
-          "$ref": "#/definitions/authUser"
+          "$ref": "#/definitions/authapiUser"
         },
         "accessToken": {
           "type": "string"
@@ -1759,7 +1852,15 @@
         }
       }
     },
-    "authUser": {
+    "authapiUpdateUserResponse": {
+      "type": "object",
+      "properties": {
+        "user": {
+          "$ref": "#/definitions/authapiUser"
+        }
+      }
+    },
+    "authapiUser": {
       "type": "object",
       "properties": {
         "id": {
@@ -1783,7 +1884,10 @@
         "avatarUrl": {
           "type": "string"
         },
-        "thumbnailUrl": {
+        "profileUrl": {
+          "type": "string"
+        },
+        "role": {
           "type": "string"
         },
         "createdAt": {
@@ -1796,10 +1900,10 @@
         }
       }
     },
-    "authVerifyResponse": {
+    "authapiVerifyResponse": {
       "type": "object"
     },
-    "commentComment": {
+    "commentapiComment": {
       "type": "object",
       "properties": {
         "id": {
@@ -1836,7 +1940,7 @@
         }
       }
     },
-    "commentCommentHasChildren": {
+    "commentapiCommentHasChildren": {
       "type": "object",
       "properties": {
         "id": {
@@ -1862,22 +1966,25 @@
         },
         "parentCommentId": {
           "type": "string"
+        },
+        "user": {
+          "$ref": "#/definitions/authapiUser"
         },
         "children": {
           "type": "array",
           "items": {
             "type": "object",
-            "$ref": "#/definitions/commentCommentHasMetadata"
+            "$ref": "#/definitions/commentapiCommentHasMetadata"
           }
         },
         "likes": {
-          "$ref": "#/definitions/likeLikeInfo"
+          "$ref": "#/definitions/likeapiLikeInfo"
         },
         "attachments": {
           "type": "array",
           "items": {
             "type": "object",
-            "$ref": "#/definitions/uploadAttachment"
+            "$ref": "#/definitions/uploadapiAttachment"
           }
         },
         "createdAt": {
@@ -1890,7 +1997,7 @@
         }
       }
     },
-    "commentCommentHasMetadata": {
+    "commentapiCommentHasMetadata": {
       "type": "object",
       "properties": {
         "id": {
@@ -1917,14 +2024,17 @@
         "parentCommentId": {
           "type": "string"
         },
+        "user": {
+          "$ref": "#/definitions/authapiUser"
+        },
         "likes": {
-          "$ref": "#/definitions/likeLikeInfo"
+          "$ref": "#/definitions/likeapiLikeInfo"
         },
         "attachments": {
           "type": "array",
           "items": {
             "type": "object",
-            "$ref": "#/definitions/uploadAttachment"
+            "$ref": "#/definitions/uploadapiAttachment"
           }
         },
         "createdAt": {
@@ -1937,7 +2047,7 @@
         }
       }
     },
-    "commentCommentRequest": {
+    "commentapiCommentRequest": {
       "type": "object",
       "properties": {
         "postId": {
@@ -1960,7 +2070,7 @@
         }
       }
     },
-    "commentCountCommentByCommentIDResponse": {
+    "commentapiCountCommentByCommentIDResponse": {
       "type": "object",
       "properties": {
         "count": {
@@ -1969,7 +2079,7 @@
         }
       }
     },
-    "commentCountCommentByPostIDResponse": {
+    "commentapiCountCommentByPostIDResponse": {
       "type": "object",
       "properties": {
         "count": {
@@ -1978,23 +2088,23 @@
         }
       }
     },
-    "commentCreateCommentRequest": {
+    "commentapiCreateCommentRequest": {
       "type": "object",
       "properties": {
         "comment": {
-          "$ref": "#/definitions/commentCommentRequest"
+          "$ref": "#/definitions/commentapiCommentRequest"
         }
       }
     },
-    "commentCreateCommentResponse": {
+    "commentapiCreateCommentResponse": {
       "type": "object",
       "properties": {
         "comment": {
-          "$ref": "#/definitions/commentComment"
+          "$ref": "#/definitions/commentapiComment"
         }
       }
     },
-    "commentDeleteCommentResponse": {
+    "commentapiDeleteCommentResponse": {
       "type": "object",
       "properties": {
         "deleted": {
@@ -2002,43 +2112,43 @@
         }
       }
     },
-    "commentGetCommentResponse": {
+    "commentapiGetCommentResponse": {
       "type": "object",
       "properties": {
         "comment": {
-          "$ref": "#/definitions/commentComment"
+          "$ref": "#/definitions/commentapiComment"
         }
       }
     },
-    "commentGetCommentsByCommentIDResponse": {
+    "commentapiGetCommentsByCommentIDResponse": {
       "type": "object",
       "properties": {
         "comments": {
           "type": "array",
           "items": {
             "type": "object",
-            "$ref": "#/definitions/commentCommentHasMetadata"
+            "$ref": "#/definitions/commentapiCommentHasMetadata"
           }
         }
       }
     },
-    "commentGetCommentsByPostIDResponse": {
+    "commentapiGetCommentsByPostIDResponse": {
       "type": "object",
       "properties": {
         "comments": {
           "type": "array",
           "items": {
             "type": "object",
-            "$ref": "#/definitions/commentCommentHasChildren"
+            "$ref": "#/definitions/commentapiCommentHasChildren"
           }
         }
       }
     },
-    "commentUpdateCommentResponse": {
+    "commentapiUpdateCommentResponse": {
       "type": "object",
       "properties": {
         "comment": {
-          "$ref": "#/definitions/commentComment"
+          "$ref": "#/definitions/commentapiComment"
         }
       }
     },
@@ -2061,39 +2171,39 @@
         }
       }
     },
-    "group_1CreateGroupMemberRequest": {
+    "groupapiCreateGroupMemberRequest": {
       "type": "object",
       "properties": {
         "groupMember": {
-          "$ref": "#/definitions/group_1GroupMemberRequest"
+          "$ref": "#/definitions/groupapiGroupMemberRequest"
         }
       }
     },
-    "group_1CreateGroupMemberResponse": {
+    "groupapiCreateGroupMemberResponse": {
       "type": "object",
       "properties": {
         "groupMember": {
-          "$ref": "#/definitions/group_1GroupMemberResponse"
+          "$ref": "#/definitions/groupapiGroupMember"
         }
       }
     },
-    "group_1CreateGroupRequest": {
+    "groupapiCreateGroupRequest": {
       "type": "object",
       "properties": {
         "group": {
-          "$ref": "#/definitions/group_1GroupRequest"
+          "$ref": "#/definitions/groupapiGroupRequest"
         }
       }
     },
-    "group_1CreateGroupResponse": {
+    "groupapiCreateGroupResponse": {
       "type": "object",
       "properties": {
         "group": {
-          "$ref": "#/definitions/group_1GroupResponse"
+          "$ref": "#/definitions/groupapiGroup"
         }
       }
     },
-    "group_1DeleteGroupMemberResponse": {
+    "groupapiDeleteGroupMemberResponse": {
       "type": "object",
       "properties": {
         "deleted": {
@@ -2101,7 +2211,7 @@
         }
       }
     },
-    "group_1DeleteGroupResponse": {
+    "groupapiDeleteGroupResponse": {
       "type": "object",
       "properties": {
         "deleted": {
@@ -2109,7 +2219,7 @@
         }
       }
     },
-    "group_1GetGroupIdsByUserIdResponse": {
+    "groupapiGetGroupIdsByUserIdResponse": {
       "type": "object",
       "properties": {
         "groupIds": {
@@ -2120,51 +2230,68 @@
         }
       }
     },
-    "group_1GetGroupMembersResponse": {
+    "groupapiGetGroupMembersResponse": {
       "type": "object",
       "properties": {
         "groupMembers": {
           "type": "array",
           "items": {
             "type": "object",
-            "$ref": "#/definitions/group_1GroupMemberResponse"
+            "$ref": "#/definitions/groupapiGroupMember"
           }
         }
       }
     },
-    "group_1GetGroupResponse": {
+    "groupapiGetGroupResponse": {
       "type": "object",
       "properties": {
         "group": {
-          "$ref": "#/definitions/group_1GroupResponse"
+          "$ref": "#/definitions/groupapiGroup"
         }
       }
     },
-    "group_1GetGroupsByUserIdResponse": {
+    "groupapiGetGroupsByUserIdResponse": {
       "type": "object",
       "properties": {
         "groups": {
           "type": "array",
           "items": {
             "type": "object",
-            "$ref": "#/definitions/group_1GroupResponse"
+            "$ref": "#/definitions/groupapiGroup"
           }
         }
       }
     },
-    "group_1GroupMemberRequest": {
+    "groupapiGroup": {
       "type": "object",
       "properties": {
-        "groupId": {
+        "id": {
           "type": "string"
         },
-        "role": {
+        "name": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "status": {
           "type": "integer",
           "format": "int32"
+        },
+        "userId": {
+          "type": "string"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
         }
       }
     },
-    "group_1GroupMemberResponse": {
+    "groupapiGroupMember": {
       "type": "object",
       "properties": {
         "id": {
@@ -2190,7 +2317,19 @@
         }
       }
     },
-    "group_1GroupRequest": {
+    "groupapiGroupMemberRequest": {
+      "type": "object",
+      "properties": {
+        "groupId": {
+          "type": "string"
+        },
+        "role": {
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "groupapiGroupRequest": {
       "type": "object",
       "properties": {
         "name": {
@@ -2211,68 +2350,39 @@
         }
       }
     },
-    "group_1GroupResponse": {
-      "type": "object",
-      "properties": {
-        "id": {
-          "type": "string"
-        },
-        "name": {
-          "type": "string"
-        },
-        "description": {
-          "type": "string"
-        },
-        "status": {
-          "type": "integer",
-          "format": "int32"
-        },
-        "userId": {
-          "type": "string"
-        },
-        "createdAt": {
-          "type": "string",
-          "format": "date-time"
-        },
-        "updatedAt": {
-          "type": "string",
-          "format": "date-time"
-        }
-      }
-    },
-    "group_1UpdateGroupMemberResponse": {
+    "groupapiUpdateGroupMemberResponse": {
       "type": "object",
       "properties": {
         "groupMember": {
-          "$ref": "#/definitions/group_1GroupMemberResponse"
+          "$ref": "#/definitions/groupapiGroupMember"
         }
       }
     },
-    "group_1UpdateGroupResponse": {
+    "groupapiUpdateGroupResponse": {
       "type": "object",
       "properties": {
         "group": {
-          "$ref": "#/definitions/group_1GroupResponse"
+          "$ref": "#/definitions/groupapiGroup"
         }
       }
     },
-    "likeCreateLikeRequest": {
+    "likeapiCreateLikeRequest": {
       "type": "object",
       "properties": {
         "like": {
-          "$ref": "#/definitions/likeLikeRequest"
+          "$ref": "#/definitions/likeapiLikeRequest"
         }
       }
     },
-    "likeCreateLikeResponse": {
+    "likeapiCreateLikeResponse": {
       "type": "object",
       "properties": {
         "like": {
-          "$ref": "#/definitions/likeLike"
+          "$ref": "#/definitions/likeapiLike"
         }
       }
     },
-    "likeDeleteLikeResponse": {
+    "likeapiDeleteLikeResponse": {
       "type": "object",
       "properties": {
         "deleted": {
@@ -2280,23 +2390,23 @@
         }
       }
     },
-    "likeGetLikesInfoByCommentIDResponse": {
+    "likeapiGetLikesInfoByCommentIDResponse": {
       "type": "object",
       "properties": {
         "likes": {
-          "$ref": "#/definitions/likeLikeInfo"
+          "$ref": "#/definitions/likeapiLikeInfo"
         }
       }
     },
-    "likeGetLikesInfoByPostIDResponse": {
+    "likeapiGetLikesInfoByPostIDResponse": {
       "type": "object",
       "properties": {
         "likes": {
-          "$ref": "#/definitions/likeLikeInfo"
+          "$ref": "#/definitions/likeapiLikeInfo"
         }
       }
     },
-    "likeLike": {
+    "likeapiLike": {
       "type": "object",
       "properties": {
         "id": {
@@ -2324,7 +2434,7 @@
         }
       }
     },
-    "likeLikeInfo": {
+    "likeapiLikeInfo": {
       "type": "object",
       "properties": {
         "yourLikedEmoji": {
@@ -2346,7 +2456,7 @@
         }
       }
     },
-    "likeLikeRequest": {
+    "likeapiLikeRequest": {
       "type": "object",
       "properties": {
         "emoji": {
@@ -2360,7 +2470,7 @@
         }
       }
     },
-    "likeLikeUpdateRequest": {
+    "likeapiLikeUpdateRequest": {
       "type": "object",
       "properties": {
         "id": {
@@ -2371,31 +2481,31 @@
         }
       }
     },
-    "likeUpdateLikeResponse": {
+    "likeapiUpdateLikeResponse": {
       "type": "object",
       "properties": {
         "like": {
-          "$ref": "#/definitions/likeLike"
+          "$ref": "#/definitions/likeapiLike"
         }
       }
     },
-    "postCreatePostRequest": {
+    "postapiCreatePostRequest": {
       "type": "object",
       "properties": {
         "post": {
-          "$ref": "#/definitions/postPostRequest"
+          "$ref": "#/definitions/postapiPostRequest"
         }
       }
     },
-    "postCreatePostResponse": {
+    "postapiCreatePostResponse": {
       "type": "object",
       "properties": {
         "post": {
-          "$ref": "#/definitions/postPostResponse"
+          "$ref": "#/definitions/postapiPost"
         }
       }
     },
-    "postDeletePostResponse": {
+    "postapiDeletePostResponse": {
       "type": "object",
       "properties": {
         "deleted": {
@@ -2403,46 +2513,27 @@
         }
       }
     },
-    "postGetPostGroupResponse": {
+    "postapiGetPostResponse": {
       "type": "object",
       "properties": {
         "post": {
-          "$ref": "#/definitions/postPostResponse"
+          "$ref": "#/definitions/postapiPost"
+        },
+        "user": {
+          "$ref": "#/definitions/authapiUser"
         },
         "group": {
-          "$ref": "#/definitions/group_1GroupResponse"
+          "$ref": "#/definitions/groupapiGroup"
         },
         "attachments": {
           "type": "array",
           "items": {
             "type": "object",
-            "$ref": "#/definitions/uploadAttachment"
+            "$ref": "#/definitions/uploadapiAttachment"
           }
         },
         "likes": {
-          "$ref": "#/definitions/likeLikeInfo"
-        },
-        "countComments": {
-          "type": "string",
-          "format": "int64"
-        }
-      }
-    },
-    "postGetPostResponse": {
-      "type": "object",
-      "properties": {
-        "post": {
-          "$ref": "#/definitions/postPostResponse"
-        },
-        "attachments": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "$ref": "#/definitions/uploadAttachment"
-          }
-        },
-        "likes": {
-          "$ref": "#/definitions/likeLikeInfo"
+          "$ref": "#/definitions/likeapiLikeInfo"
         },
         "countComments": {
           "type": "string",
@@ -2451,73 +2542,55 @@
         }
       }
     },
-    "postGetPostsByGroupIdResponse": {
+    "postapiGetPostsByGroupIdResponse": {
       "type": "object",
       "properties": {
         "posts": {
           "type": "array",
           "items": {
             "type": "object",
-            "$ref": "#/definitions/postGetPostResponse"
+            "$ref": "#/definitions/postapiGetPostResponse"
           }
         }
       }
     },
-    "postGetPostsByUserIdResponse": {
+    "postapiGetPostsByUserIdResponse": {
       "type": "object",
       "properties": {
         "posts": {
           "type": "array",
           "items": {
             "type": "object",
-            "$ref": "#/definitions/postGetPostResponse"
+            "$ref": "#/definitions/postapiGetPostResponse"
           }
         }
       }
     },
-    "postNewFeedGroupsResponse": {
+    "postapiNewFeedGroupsResponse": {
       "type": "object",
       "properties": {
         "posts": {
           "type": "array",
           "items": {
             "type": "object",
-            "$ref": "#/definitions/postGetPostGroupResponse"
+            "$ref": "#/definitions/postapiGetPostResponse"
           }
         }
       }
     },
-    "postNewFeedResponse": {
+    "postapiNewFeedResponse": {
       "type": "object",
       "properties": {
         "posts": {
           "type": "array",
           "items": {
             "type": "object",
-            "$ref": "#/definitions/postGetPostResponse"
+            "$ref": "#/definitions/postapiGetPostResponse"
           }
         }
       }
     },
-    "postPostRequest": {
-      "type": "object",
-      "properties": {
-        "title": {
-          "type": "string"
-        },
-        "content": {
-          "type": "string"
-        },
-        "status": {
-          "type": "integer",
-          "format": "int32"
-        },
-        "groupId": {
-          "type": "string"
-        }
-      }
-    },
-    "postPostResponse": {
+    "postapiPost": {
       "type": "object",
       "properties": {
         "id": {
@@ -2549,11 +2622,29 @@
         }
       }
     },
-    "postUpdatePostResponse": {
+    "postapiPostRequest": {
+      "type": "object",
+      "properties": {
+        "title": {
+          "type": "string"
+        },
+        "content": {
+          "type": "string"
+        },
+        "status": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "groupId": {
+          "type": "string"
+        }
+      }
+    },
+    "postapiUpdatePostResponse": {
       "type": "object",
       "properties": {
         "post": {
-          "$ref": "#/definitions/postPostResponse"
+          "$ref": "#/definitions/postapiPost"
         }
       }
     },
@@ -2568,7 +2659,7 @@
       "additionalProperties": {},
       "description": "`Any` contains an arbitrary serialized protocol buffer message along with a\nURL that describes the type of the serialized message.\n\nProtobuf library provides support to pack/unpack Any values in the form\nof utility functions or additional generated methods of the Any type.\n\nExample 1: Pack and unpack a message in C++.\n\n    Foo foo = ...;\n    Any any;\n    any.PackFrom(foo);\n    ...\n    if (any.UnpackTo(\u0026foo)) {\n      ...\n    }\n\nExample 2: Pack and unpack a message in Java.\n\n    Foo foo = ...;\n    Any any = Any.pack(foo);\n    ...\n    if (any.is(Foo.class)) {\n      foo = any.unpack(Foo.class);\n    }\n    // or ...\n    if (any.isSameTypeAs(Foo.getDefaultInstance())) {\n      foo = any.unpack(Foo.getDefaultInstance());\n    }\n\nExample 3: Pack and unpack a message in Python.\n\n    foo = Foo(...)\n    any = Any()\n    any.Pack(foo)\n    ...\n    if any.Is(Foo.DESCRIPTOR):\n      any.Unpack(foo)\n      ...\n\nExample 4: Pack and unpack a message in Go\n\n     foo := \u0026pb.Foo{...}\n     any, err := anypb.New(foo)\n     if err != nil {\n       ...\n     }\n     ...\n     foo := \u0026pb.Foo{}\n     if err := any.UnmarshalTo(foo); err != nil {\n       ...\n     }\n\nThe pack methods provided by protobuf library will by default use\n'type.googleapis.com/full.type.name' as the type URL and the unpack\nmethods only use the fully qualified type name after the last '/'\nin the type URL, for example \"foo.bar.com/x/y.z\" will yield type\nname \"y.z\".\n\nJSON\n\nThe JSON representation of an `Any` value uses the regular\nrepresentation of the deserialized, embedded message, with an\nadditional field `@type` which contains the type URL. Example:\n\n    package google.profile;\n    message Person {\n      string first_name = 1;\n      string last_name = 2;\n    }\n\n    {\n      \"@type\": \"type.googleapis.com/google.profile.Person\",\n      \"firstName\": \u003cstring\u003e,\n      \"lastName\": \u003cstring\u003e\n    }\n\nIf the embedded message type is well-known and has a custom JSON\nrepresentation, that representation will be embedded adding a field\n`value` which holds the custom JSON in addition to the `@type`\nfield. Example (for message [google.protobuf.Duration][]):\n\n    {\n      \"@type\": \"type.googleapis.com/google.protobuf.Duration\",\n      \"value\": \"1.212s\"\n    }"
     },
-    "searchSearch": {
+    "searchapiSearch": {
       "type": "object",
       "properties": {
         "id": {
@@ -2588,19 +2679,19 @@
         }
       }
     },
-    "searchSearchResponse": {
+    "searchapiSearchResponse": {
       "type": "object",
       "properties": {
         "search": {
           "type": "array",
           "items": {
             "type": "object",
-            "$ref": "#/definitions/searchSearch"
+            "$ref": "#/definitions/searchapiSearch"
           }
         }
       }
     },
-    "uploadAttachment": {
+    "uploadapiAttachment": {
       "type": "object",
       "properties": {
         "id": {
@@ -2646,35 +2737,35 @@
         }
       }
     },
-    "uploadGetAttachmentsByOptionalResponse": {
+    "uploadapiGetAttachmentsByOptionalResponse": {
       "type": "object",
       "properties": {
         "attachments": {
           "type": "array",
           "items": {
             "type": "object",
-            "$ref": "#/definitions/uploadAttachment"
+            "$ref": "#/definitions/uploadapiAttachment"
           }
         }
       }
     },
-    "uploadGetAttachmentsByTypeResponse": {
+    "uploadapiGetAttachmentsByTypeResponse": {
       "type": "object",
       "properties": {
         "attachments": {
           "type": "array",
           "items": {
             "type": "object",
-            "$ref": "#/definitions/uploadAttachment"
+            "$ref": "#/definitions/uploadapiAttachment"
           }
         }
       }
     },
-    "uploadGetAvatarUserResponse": {
+    "uploadapiGetAvatarUserResponse": {
       "type": "object",
       "properties": {
         "attachment": {
-          "$ref": "#/definitions/uploadAttachment"
+          "$ref": "#/definitions/uploadapiAttachment"
         }
       }
     }

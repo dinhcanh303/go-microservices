@@ -23,7 +23,8 @@ func New(
 	uc comments.UseCase,
 	commentGRPCServer gen.CommentServiceServer,
 	likeDomainSvc domain.LikeDomainService,
-	uploadDomainSvc domain.UploadDomainService) *App {
+	uploadDomainSvc domain.UploadDomainService,
+) *App {
 	return &App{
 		Cfg:               cfg,
 		UC:                uc,

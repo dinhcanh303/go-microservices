@@ -44,6 +44,7 @@ func (s *service) GetCommentsByCommentID(ctx context.Context, commentId uuid.UUI
 			PostID:          comments[i].PostID,
 			ParentCommentID: comments[i].ParentCommentID,
 			Likes:           likeInfo,
+			TagIDs:          comments[i].TagIDs,
 			Attachments:     attachments,
 			CreatedAt:       comments[i].CreatedAt,
 			UpdatedAt:       comments[i].UpdatedAt,

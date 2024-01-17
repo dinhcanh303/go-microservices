@@ -82,7 +82,7 @@ func (p *postGRPCServer) CreatePost(ctx context.Context, request *gen.CreatePost
 		return nil, errors.Wrap(err, "uc.CreatePost failed")
 	}
 	res := &gen.CreatePostResponse{
-		Post: &gen.PostResponse{
+		Post: &gen.Post{
 			Id:        post.ID.String(),
 			Title:     post.Title,
 			Content:   post.Content,
@@ -158,7 +158,7 @@ func (p *postGRPCServer) NewFeedGroups(ctx context.Context, request *gen.NewFeed
 	if err != nil {
 		return nil, errors.Wrap(err, "uc.GetPostsByFeed failed")
 	}
-	results := manyPostGroupResponse(posts, p, ctx)
+	results := manyPostResponse(posts, p, ctx)
 	return &gen.NewFeedGroupsResponse{
 		Posts: results,
 	}, nil
@@ -228,7 +228,7 @@ func (p *postGRPCServer) UpdatePost(ctx context.Context, request *gen.UpdatePost
 		return nil, errors.Wrap(err, "uc.CreatePost failed")
 	}
 	res := &gen.UpdatePostResponse{
-		Post: &gen.PostResponse{
+		Post: &gen.Post{
 			Id:        post.ID.String(),
 			Title:     post.Title,
 			Content:   post.Content,
@@ -258,6 +258,14 @@ func manyPostResponse(posts []*domain.Post, p *postGRPCServer, ctx context.Conte
 			slog.Warn("commentDomainService.CountCommentByPostID failed", err)
 			countComments = 0
 		}
+		user, err := p.authDomainService.GetProfile(ctx, post.UserID)
+		if err != nil {
+			user = &gen.GetProfileResponse{}
+		}
+		group, err := p.groupDomainService.GetGroup(ctx, post.GroupID)
+		if err != nil {
+			group = &gen.GetGroupResponse{}
+		}
 		// comments, err := p.commentDomainService.GetCommentsByPostID(ctx, post.ID)
 		// if err != nil {
 		// 	slog.Warn("commentDomainService.GetCommentsByPostID failed", err)
@@ -269,7 +277,7 @@ func manyPostResponse(posts []*domain.Post, p *postGRPCServer, ctx context.Conte
 			attachments = make([]*domainUpload.Attachment, 0)
 		}
 		results = append(results, &gen.GetPostResponse{
-			Post: &gen.PostResponse{
+			Post: &gen.Post{
 				Id:        post.ID.String(),
 				Title:     post.Title,
 				Content:   post.Content,
@@ -279,6 +287,8 @@ func manyPostResponse(posts []*domain.Post, p *postGRPCServer, ctx context.Conte
 				CreatedAt: timestamppb.New(post.CreatedAt),
 				UpdatedAt: timestamppb.New(post.UpdatedAt),
 			},
+			Group:         group.Group,
+			User:          user.User,
 			CountComments: countComments,
 			Attachments: lo.Map(attachments, func(item *domainUpload.Attachment, _ int) *gen.Attachment {
 				return &gen.Attachment{
@@ -338,70 +348,6 @@ func manyPostResponse(posts []*domain.Post, p *postGRPCServer, ctx context.Conte
 			// 		UpdatedAt: timestamppb.New(item.UpdatedAt),
 			// 	}
 			// }),
-		})
-	}
-	return results
-}
-func manyPostGroupResponse(posts []*domain.Post, p *postGRPCServer, ctx context.Context) []*gen.GetPostGroupResponse {
-	results := make([]*gen.GetPostGroupResponse, 0)
-	// channel := make(chan *gen.GetPostResponse, len(posts))
-	// var wg sync.WaitGroup
-	for _, post := range posts {
-		likeInfo, err := p.likeDomainService.GetLikesByPostID(ctx, post.ID)
-		if err != nil {
-			slog.Warn("likeDomainService.GetLikesByPostID failed", err)
-			likeInfo = &domainLike.LikesInfo{}
-		}
-		countComments, err := p.commentDomainService.CountCommentByPostID(ctx, post.ID)
-		if err != nil {
-			slog.Warn("commentDomainService.CountCommentByPostID failed", err)
-			countComments = 0
-		}
-		group, err := p.groupDomainService.GetGroup(ctx, post.GroupID)
-		if err != nil {
-			group = &gen.GetGroupResponse{}
-		}
-
-		attachments, err := p.uploadDomainService.GetAttachmentsByType(ctx, constant.ATTACHMENT_POST, post.ID)
-		if err != nil {
-			slog.Warn("uploadDomainService.GetAttachmentsByType failed", err)
-			attachments = make([]*domainUpload.Attachment, 0)
-		}
-		results = append(results, &gen.GetPostGroupResponse{
-			Post: &gen.PostResponse{
-				Id:        post.ID.String(),
-				Title:     post.Title,
-				Content:   post.Content,
-				UserId:    post.UserID.String(),
-				GroupId:   post.GroupID.UUID.String(),
-				Status:    post.Status,
-				CreatedAt: timestamppb.New(post.CreatedAt),
-				UpdatedAt: timestamppb.New(post.UpdatedAt),
-			},
-			Group:         group.Group,
-			CountComments: countComments,
-			Attachments: lo.Map(attachments, func(item *domainUpload.Attachment, _ int) *gen.Attachment {
-				return &gen.Attachment{
-					Id:             item.ID.String(),
-					AttachableType: item.AttachableType,
-					AttachableId:   item.AttachableID.String(),
-					Filename:       item.FileName,
-					Extension:      item.Extension,
-					MimeType:       item.MimeType,
-					Folder:         item.Folder,
-					Url:            item.URL,
-					UrlThumbnail:   item.URLThumbnail,
-					UserId:         item.UserID.String(),
-					CreatedAt:      timestamppb.New(item.CreatedAt),
-					UpdatedAt:      timestamppb.New(item.UpdatedAt),
-				}
-			}),
-			Likes: &gen.LikeInfo{
-				YourLikedEmoji:    likeInfo.YourLikedEmoji,
-				YourLike:          likeInfo.YourLike,
-				OthersLikedEmojis: likeInfo.OthersLikedEmojis,
-				OthersLikes:       likeInfo.OthersLikes,
-			},
 		})
 	}
 	return results

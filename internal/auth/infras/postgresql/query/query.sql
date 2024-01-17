@@ -27,6 +27,13 @@ WHERE
 LIMIT $2
 OFFSET $3;
 
+-- name: UpdateUser :one
+UPDATE auth.users 
+SET
+    avatar_url = COALESCE(sqlc.narg(avatar_url),avatar_url),
+    profile_url = COALESCE(sqlc.narg(profile_url),profile_url)
+WHERE id = sqlc.arg(id) RETURNING *;
+
 -- name: FindKeyByUserID :one
 SELECT * FROM auth.keys WHERE user_id = $1;
 

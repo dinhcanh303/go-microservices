@@ -62,8 +62,8 @@ func (g *groupGRPCServer) GetGroupMembers(ctx context.Context, request *gen.GetG
 		return nil, errors.Wrap(err, "ucGroupMember.GetAllGroupMembers failed")
 	}
 	return &gen.GetGroupMembersResponse{
-		GroupMembers: lo.Map(groupMembers, func(groupMember *domain.GroupMember, _ int) *gen.GroupMemberResponse {
-			return &gen.GroupMemberResponse{
+		GroupMembers: lo.Map(groupMembers, func(groupMember *domain.GroupMember, _ int) *gen.GroupMember {
+			return &gen.GroupMember{
 				Id:        groupMember.ID.String(),
 				GroupId:   groupMember.GroupID.String(),
 				UserId:    groupMember.UserID.String(),
@@ -95,7 +95,7 @@ func (g *groupGRPCServer) CreateGroupMember(ctx context.Context, request *gen.Cr
 		return nil, errors.Wrap(err, "ucGroupMember.CreateGroupMember failed")
 	}
 	return &gen.CreateGroupMemberResponse{
-		GroupMember: &gen.GroupMemberResponse{
+		GroupMember: &gen.GroupMember{
 			Id:        groupMember.ID.String(),
 			GroupId:   groupMember.GroupID.String(),
 			UserId:    groupMember.UserID.String(),
@@ -135,7 +135,7 @@ func (g *groupGRPCServer) UpdateGroupMember(ctx context.Context, request *gen.Up
 		return nil, errors.Wrap(err, "ucGroup.UpdateGroupMember failed")
 	}
 	res := &gen.UpdateGroupMemberResponse{
-		GroupMember: &gen.GroupMemberResponse{
+		GroupMember: &gen.GroupMember{
 			Id:        groupMember.ID.String(),
 			GroupId:   groupMember.GroupID.String(),
 			UserId:    groupMember.UserID.String(),
@@ -158,8 +158,8 @@ func (g *groupGRPCServer) GetGroupsByUserId(ctx context.Context, request *gen.Ge
 		return nil, errors.Wrap(err, "userId.GetGroupsByUserId failed")
 	}
 	return &gen.GetGroupsByUserIdResponse{
-		Groups: lo.Map(groups, func(group *domain.Group, _ int) *gen.GroupResponse {
-			return &gen.GroupResponse{
+		Groups: lo.Map(groups, func(group *domain.Group, _ int) *gen.Group {
+			return &gen.Group{
 				Id:          group.ID.String(),
 				Name:        group.Name,
 				Description: group.Description,
@@ -219,7 +219,7 @@ func (g *groupGRPCServer) CreateGroup(ctx context.Context, request *gen.CreateGr
 
 	}
 	res := &gen.CreateGroupResponse{
-		Group: &gen.GroupResponse{
+		Group: &gen.Group{
 			Id:          group.ID.String(),
 			Name:        group.Name,
 			Description: group.Description,
@@ -251,7 +251,7 @@ func (g *groupGRPCServer) GetGroup(ctx context.Context, request *gen.GetGroupReq
 		return nil, errors.Wrap(err, "ucGroup.GetGroup failed")
 	}
 	return &gen.GetGroupResponse{
-		Group: &gen.GroupResponse{
+		Group: &gen.Group{
 			Id:          group.ID.String(),
 			Name:        group.Name,
 			Description: group.Description,
@@ -297,7 +297,7 @@ func (g *groupGRPCServer) UpdateGroup(ctx context.Context, request *gen.UpdateGr
 		return nil, errors.Wrap(err, "ucGroup.UpdateGroup failed")
 	}
 	res := &gen.UpdateGroupResponse{
-		Group: &gen.GroupResponse{
+		Group: &gen.Group{
 			Id:          group.ID.String(),
 			Name:        group.Name,
 			Description: group.Description,

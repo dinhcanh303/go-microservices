@@ -32,14 +32,16 @@ type AuthKey struct {
 }
 
 type AuthUser struct {
-	ID        uuid.UUID      `json:"id"`
-	Email     string         `json:"email"`
-	FirstName string         `json:"first_name"`
-	LastName  string         `json:"last_name"`
-	FullName  sql.NullString `json:"full_name"`
-	NickName  sql.NullString `json:"nick_name"`
-	Password  string         `json:"password"`
-	Role      sql.NullString `json:"role"`
-	CreatedAt time.Time      `json:"created_at"`
-	UpdatedAt time.Time      `json:"updated_at"`
+	ID         uuid.UUID      `json:"id"`
+	Email      string         `json:"email"`
+	FirstName  string         `json:"first_name"`
+	LastName   string         `json:"last_name"`
+	FullName   sql.NullString `json:"full_name"`
+	NickName   sql.NullString `json:"nick_name"`
+	AvatarUrl  sql.NullString `json:"avatar_url"`
+	ProfileUrl sql.NullString `json:"profile_url"`
+	Password   string         `json:"password"`
+	Role       sql.NullString `json:"role"`
+	CreatedAt  time.Time      `json:"created_at"`
+	UpdatedAt  time.Time      `json:"updated_at"`
 }

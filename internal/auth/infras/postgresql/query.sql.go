@@ -56,7 +56,7 @@ INSERT INTO auth.users
         full_name,
         nick_name
     )
-VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id, email, first_name, last_name, full_name, nick_name, password, role, created_at, updated_at
+VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id, email, first_name, last_name, full_name, nick_name, avatar_url, profile_url, password, role, created_at, updated_at
 `
 
 type CreateUserParams struct {
@@ -87,6 +87,8 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (AuthUse
 		&i.LastName,
 		&i.FullName,
 		&i.NickName,
+		&i.AvatarUrl,
+		&i.ProfileUrl,
 		&i.Password,
 		&i.Role,
 		&i.CreatedAt,
@@ -174,7 +176,7 @@ func (q *Queries) FindKeyByUserID(ctx context.Context, userID uuid.UUID) (AuthKe
 }
 
 const getUser = `-- name: GetUser :one
-SELECT id, email, first_name, last_name, full_name, nick_name, password, role, created_at, updated_at FROM auth.users WHERE id = $1
+SELECT id, email, first_name, last_name, full_name, nick_name, avatar_url, profile_url, password, role, created_at, updated_at FROM auth.users WHERE id = $1
 `
 
 func (q *Queries) GetUser(ctx context.Context, id uuid.UUID) (AuthUser, error) {
@@ -187,6 +189,8 @@ func (q *Queries) GetUser(ctx context.Context, id uuid.UUID) (AuthUser, error) {
 		&i.LastName,
 		&i.FullName,
 		&i.NickName,
+		&i.AvatarUrl,
+		&i.ProfileUrl,
 		&i.Password,
 		&i.Role,
 		&i.CreatedAt,
@@ -196,7 +200,7 @@ func (q *Queries) GetUser(ctx context.Context, id uuid.UUID) (AuthUser, error) {
 }
 
 const getUserByEmail = `-- name: GetUserByEmail :one
-SELECT id, email, first_name, last_name, full_name, nick_name, password, role, created_at, updated_at FROM auth.users WHERE email = $1
+SELECT id, email, first_name, last_name, full_name, nick_name, avatar_url, profile_url, password, role, created_at, updated_at FROM auth.users WHERE email = $1
 `
 
 func (q *Queries) GetUserByEmail(ctx context.Context, email string) (AuthUser, error) {
@@ -209,6 +213,8 @@ func (q *Queries) GetUserByEmail(ctx context.Context, email string) (AuthUser, e
 		&i.LastName,
 		&i.FullName,
 		&i.NickName,
+		&i.AvatarUrl,
+		&i.ProfileUrl,
 		&i.Password,
 		&i.Role,
 		&i.CreatedAt,
@@ -245,7 +251,7 @@ func (q *Queries) GetUserIdsOfCompany(ctx context.Context, dollar_1 sql.NullStri
 }
 
 const getUsers = `-- name: GetUsers :many
-SELECT id, email, first_name, last_name, full_name, nick_name, password, role, created_at, updated_at FROM auth.users 
+SELECT id, email, first_name, last_name, full_name, nick_name, avatar_url, profile_url, password, role, created_at, updated_at FROM auth.users 
 WHERE 
     nick_name LIKE COALESCE('%'||$1||'%','%%')
 LIMIT $2
@@ -274,6 +280,8 @@ func (q *Queries) GetUsers(ctx context.Context, arg GetUsersParams) ([]AuthUser,
 			&i.LastName,
 			&i.FullName,
 			&i.NickName,
+			&i.AvatarUrl,
+			&i.ProfileUrl,
 			&i.Password,
 			&i.Role,
 			&i.CreatedAt,
@@ -326,6 +334,40 @@ func (q *Queries) UpdateKeyByUserID(ctx context.Context, arg UpdateKeyByUserIDPa
 		&i.PrivateKey,
 		&i.RefreshToken,
 		pq.Array(&i.RefreshTokensUsed),
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}
+
+const updateUser = `-- name: UpdateUser :one
+UPDATE auth.users 
+SET
+    avatar_url = COALESCE($1,avatar_url),
+    profile_url = COALESCE($2,profile_url)
+WHERE id = $3 RETURNING id, email, first_name, last_name, full_name, nick_name, avatar_url, profile_url, password, role, created_at, updated_at
+`
+
+type UpdateUserParams struct {
+	AvatarUrl  sql.NullString `json:"avatar_url"`
+	ProfileUrl sql.NullString `json:"profile_url"`
+	ID         uuid.UUID      `json:"id"`
+}
+
+func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) (AuthUser, error) {
+	row := q.db.QueryRowContext(ctx, updateUser, arg.AvatarUrl, arg.ProfileUrl, arg.ID)
+	var i AuthUser
+	err := row.Scan(
+		&i.ID,
+		&i.Email,
+		&i.FirstName,
+		&i.LastName,
+		&i.FullName,
+		&i.NickName,
+		&i.AvatarUrl,
+		&i.ProfileUrl,
+		&i.Password,
+		&i.Role,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 	)

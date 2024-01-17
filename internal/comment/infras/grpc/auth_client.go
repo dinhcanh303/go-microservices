@@ -4,8 +4,8 @@ import (
 	"context"
 	"log/slog"
 
-	"github.com/dinhcanh303/go-microservices/cmd/post/config"
-	"github.com/dinhcanh303/go-microservices/internal/post/domain"
+	"github.com/dinhcanh303/go-microservices/cmd/comment/config"
+	"github.com/dinhcanh303/go-microservices/internal/comment/domain"
 	"github.com/dinhcanh303/go-microservices/proto/gen"
 	"github.com/google/uuid"
 	"github.com/google/wire"
@@ -43,25 +43,4 @@ func NewGRPCAuthClient(cfg *config.Config) (domain.AuthDomainService, error) {
 	return &authGRPCClient{
 		conn: conn,
 	}, nil
-}
-
-// GetAllUserIdByUserId implements domain.AuthDomainService.
-func (a *authGRPCClient) GetUserIdsByUserId(ctx context.Context, userId uuid.UUID) ([]uuid.UUID, error) {
-	client := gen.NewAuthServiceClient(a.conn)
-
-	res, err := client.GetUserIdsOfCompanyByUserId(ctx, &gen.GetUserIdsOfCompanyByUserIdRequest{
-		UserId: userId.String(),
-	})
-	results := make([]uuid.UUID, 0)
-	if err != nil {
-		slog.Warn("authGRPCClient.GetUserIdsOfCompanyByUserId failed", err)
-		return results, nil
-	}
-	for _, item := range res.UserIds {
-		uuid, err := uuid.Parse(item)
-		if err == nil {
-			results = append(results, uuid)
-		}
-	}
-	return results, nil
 }

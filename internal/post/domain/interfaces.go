@@ -27,5 +27,6 @@ type (
 	}
 	AuthDomainService interface {
 		GetUserIdsByUserId(ctx context.Context, userId uuid.UUID) ([]uuid.UUID, error)
+		GetProfile(ctx context.Context, id uuid.UUID) (*gen.GetProfileResponse, error)
 	}
 )

@@ -61,23 +61,26 @@ func (a *authGRPCServer) SignUp(ctx context.Context, request *gen.SignUpRequest)
 	// if violations != nil {
 	// 	return nil, errorPkg.InvalidArgumentError(violations)
 	// }
-	signRes, err := a.uc.SignUp(ctx, request.Email, request.Password, request.FirstName, request.LastName)
+	signUpRes, err := a.uc.SignUp(ctx, request.Email, request.Password, request.FirstName, request.LastName)
 	if err != nil {
 		return nil, err
 	}
 	return &gen.SignUpResponse{
 		User: &gen.User{
-			Id:        signRes.User.ID.String(),
-			Email:     signRes.User.Email,
-			FirstName: signRes.User.FirstName,
-			LastName:  signRes.User.LastName,
-			FullName:  signRes.User.FullName,
-			NickName:  signRes.User.NickName,
-			CreatedAt: timestamppb.New(signRes.User.CreatedAt),
-			UpdatedAt: timestamppb.New(signRes.User.UpdatedAt),
+			Id:         signUpRes.User.ID.String(),
+			Email:      signUpRes.User.Email,
+			FirstName:  signUpRes.User.FirstName,
+			LastName:   signUpRes.User.LastName,
+			FullName:   signUpRes.User.FullName,
+			NickName:   signUpRes.User.NickName,
+			Role:       signUpRes.User.Role,
+			AvatarUrl:  signUpRes.User.AvatarUrl,
+			ProfileUrl: signUpRes.User.ProfileUrl,
+			CreatedAt:  timestamppb.New(signUpRes.User.CreatedAt),
+			UpdatedAt:  timestamppb.New(signUpRes.User.UpdatedAt),
 		},
-		AccessToken:  signRes.AccessToken,
-		RefreshToken: signRes.RefreshToken,
+		AccessToken:  signUpRes.AccessToken,
+		RefreshToken: signUpRes.RefreshToken,
 	}, nil
 }
 func (a *authGRPCServer) SignIn(ctx context.Context, request *gen.SignInRequest) (*gen.SignInResponse, error) {
@@ -86,26 +89,27 @@ func (a *authGRPCServer) SignIn(ctx context.Context, request *gen.SignInRequest)
 	if violations != nil {
 		return nil, errorPkg.InvalidArgumentError(violations)
 	}
-	signRes, err := a.uc.SignIn(ctx, request.Email, request.Password)
+	signInRes, err := a.uc.SignIn(ctx, request.Email, request.Password)
 	if err != nil {
 		return nil, err
 	}
-	avatarUrl, thumbnailUrl := getAvatarAndThumbnailAvatar(a, ctx, signRes.User.ID)
+	// avatarUrl, thumbnailUrl := getAvatarAndThumbnailAvatar(a, ctx, signInRes.User.ID)
 	return &gen.SignInResponse{
 		User: &gen.User{
-			Id:           signRes.User.ID.String(),
-			Email:        signRes.User.Email,
-			FirstName:    signRes.User.FirstName,
-			LastName:     signRes.User.LastName,
-			FullName:     signRes.User.FullName,
-			NickName:     signRes.User.NickName,
-			AvatarUrl:    avatarUrl,
-			ThumbnailUrl: thumbnailUrl,
-			CreatedAt:    timestamppb.New(signRes.User.CreatedAt),
-			UpdatedAt:    timestamppb.New(signRes.User.UpdatedAt),
+			Id:         signInRes.User.ID.String(),
+			Email:      signInRes.User.Email,
+			FirstName:  signInRes.User.FirstName,
+			LastName:   signInRes.User.LastName,
+			FullName:   signInRes.User.FullName,
+			NickName:   signInRes.User.NickName,
+			Role:       signInRes.User.Role,
+			AvatarUrl:  signInRes.User.AvatarUrl,
+			ProfileUrl: signInRes.User.ProfileUrl,
+			CreatedAt:  timestamppb.New(signInRes.User.CreatedAt),
+			UpdatedAt:  timestamppb.New(signInRes.User.UpdatedAt),
 		},
-		AccessToken:  signRes.AccessToken,
-		RefreshToken: signRes.RefreshToken,
+		AccessToken:  signInRes.AccessToken,
+		RefreshToken: signInRes.RefreshToken,
 	}, nil
 }
 func (a *authGRPCServer) GetUsers(ctx context.Context, request *gen.GetUsersRequest) (*gen.GetUsersResponse, error) {
@@ -116,23 +120,72 @@ func (a *authGRPCServer) GetUsers(ctx context.Context, request *gen.GetUsersRequ
 	}
 	return &gen.GetUsersResponse{
 		Users: lo.Map(users, func(user *domain.User, _ int) *gen.User {
-			avatarUrl, thumbnailUrl := getAvatarAndThumbnailAvatar(a, ctx, user.ID)
+			// avatarUrl, thumbnailUrl := getAvatarAndThumbnailAvatar(a, ctx, user.ID)
 			return &gen.User{
-				Id:           user.ID.String(),
-				Email:        user.Email,
-				FirstName:    user.FirstName,
-				LastName:     user.LastName,
-				FullName:     user.FullName,
-				NickName:     user.NickName,
-				AvatarUrl:    avatarUrl,
-				ThumbnailUrl: thumbnailUrl,
-				CreatedAt:    timestamppb.New(user.CreatedAt),
-				UpdatedAt:    timestamppb.New(user.UpdatedAt),
+				Id:         user.ID.String(),
+				Email:      user.Email,
+				FirstName:  user.FirstName,
+				LastName:   user.LastName,
+				FullName:   user.FullName,
+				NickName:   user.NickName,
+				Role:       user.Role,
+				AvatarUrl:  user.AvatarUrl,
+				ProfileUrl: user.ProfileUrl,
+				CreatedAt:  timestamppb.New(user.CreatedAt),
+				UpdatedAt:  timestamppb.New(user.UpdatedAt),
 			}
 		}),
 	}, nil
 
 }
+
+func (a *authGRPCServer) UpdateUser(ctx context.Context, request *gen.UpdateUserRequest) (*gen.UpdateUserResponse, error) {
+	slog.Info("GET:: UpdateUser")
+	userIdReq, err := uuid.Parse(request.User.Id)
+	if err != nil {
+		return nil, err
+	}
+	md, ok := metadata.FromIncomingContext(ctx)
+	if !ok {
+		return nil, errors.New("no headers found in the incoming context.")
+	}
+	clientId := utils.GetKeyMetadata(md, constant.ClientID)
+	if clientId == "" {
+		return nil, errors.New("No found client ID")
+	}
+	userId, err := uuid.Parse(clientId)
+	if err != nil {
+		return nil, err
+	}
+	if userId != userIdReq {
+		return nil, errors.New("No matched ID please check ID request")
+	}
+	model := &domain.User{
+		ID:         userId,
+		AvatarUrl:  request.User.AvatarUrl,
+		ProfileUrl: request.User.ProfileUrl,
+	}
+	user, err := a.uc.UpdateUser(ctx, model)
+	if err != nil {
+		return nil, err
+	}
+	return &gen.UpdateUserResponse{
+		User: &gen.User{
+			Id:         user.ID.String(),
+			Email:      user.Email,
+			FirstName:  user.FirstName,
+			LastName:   user.LastName,
+			FullName:   user.FullName,
+			NickName:   user.NickName,
+			Role:       user.Role,
+			AvatarUrl:  user.AvatarUrl,
+			ProfileUrl: user.ProfileUrl,
+			CreatedAt:  timestamppb.New(user.CreatedAt),
+			UpdatedAt:  timestamppb.New(user.UpdatedAt),
+		},
+	}, nil
+}
+
 func (a *authGRPCServer) GetProfile(ctx context.Context, request *gen.GetProfileRequest) (*gen.GetProfileResponse, error) {
 	slog.Info("GET:: Profile")
 	var userId uuid.UUID
@@ -161,19 +214,20 @@ func (a *authGRPCServer) GetProfile(ctx context.Context, request *gen.GetProfile
 	if err != nil {
 		return nil, err
 	}
-	avatarUrl, thumbnailUrl := getAvatarAndThumbnailAvatar(a, ctx, userId)
+	// avatarUrl, thumbnailUrl := getAvatarAndThumbnailAvatar(a, ctx, userId)
 	return &gen.GetProfileResponse{
 		User: &gen.User{
-			Id:           user.ID.String(),
-			Email:        user.Email,
-			FirstName:    user.FirstName,
-			LastName:     user.LastName,
-			FullName:     user.FullName,
-			NickName:     user.NickName,
-			AvatarUrl:    avatarUrl,
-			ThumbnailUrl: thumbnailUrl,
-			CreatedAt:    timestamppb.New(user.CreatedAt),
-			UpdatedAt:    timestamppb.New(user.UpdatedAt),
+			Id:         user.ID.String(),
+			Email:      user.Email,
+			FirstName:  user.FirstName,
+			LastName:   user.LastName,
+			FullName:   user.FullName,
+			NickName:   user.NickName,
+			Role:       user.Role,
+			AvatarUrl:  user.AvatarUrl,
+			ProfileUrl: user.ProfileUrl,
+			CreatedAt:  timestamppb.New(user.CreatedAt),
+			UpdatedAt:  timestamppb.New(user.UpdatedAt),
 		},
 	}, nil
 }
@@ -291,14 +345,17 @@ func (a *authGRPCServer) HandleRefreshToken(ctx context.Context, request *gen.Ha
 	}
 	return &gen.HandleRefreshTokenResponse{
 		User: &gen.User{
-			Id:        res.User.ID.String(),
-			Email:     res.User.Email,
-			FirstName: res.User.FirstName,
-			LastName:  res.User.LastName,
-			FullName:  res.User.FullName,
-			NickName:  res.User.NickName,
-			CreatedAt: timestamppb.New(res.User.CreatedAt),
-			UpdatedAt: timestamppb.New(res.User.UpdatedAt),
+			Id:         res.User.ID.String(),
+			Email:      res.User.Email,
+			FirstName:  res.User.FirstName,
+			LastName:   res.User.LastName,
+			FullName:   res.User.FullName,
+			NickName:   res.User.NickName,
+			Role:       res.User.Role,
+			AvatarUrl:  res.User.AvatarUrl,
+			ProfileUrl: res.User.ProfileUrl,
+			CreatedAt:  timestamppb.New(res.User.CreatedAt),
+			UpdatedAt:  timestamppb.New(res.User.UpdatedAt),
 		},
 		AccessToken:  res.AccessToken,
 		RefreshToken: res.RefreshToken,
@@ -320,11 +377,12 @@ func (a *authGRPCServer) GetUserIdsOfCompanyByUserId(ctx context.Context, reques
 		}),
 	}, nil
 }
-func getAvatarAndThumbnailAvatar(a *authGRPCServer, ctx context.Context, userId uuid.UUID) (string, string) {
-	avatarRes, err := a.uploadDomainService.GetAvatarUser(ctx, userId)
-	if err != nil {
-		slog.Warn("uploadDomainService.GetAvatarUser failed", err)
-		return "", ""
-	}
-	return avatarRes.URL, avatarRes.URLThumbnail
-}
+
+// func getAvatarAndThumbnailAvatar(a *authGRPCServer, ctx context.Context, userId uuid.UUID) (string, string) {
+// 	avatarRes, err := a.uploadDomainService.GetAvatarUser(ctx, userId)
+// 	if err != nil {
+// 		slog.Warn("uploadDomainService.GetAvatarUser failed", err)
+// 		return "", ""
+// 	}
+// 	return avatarRes.URL, avatarRes.URLThumbnail
+// }

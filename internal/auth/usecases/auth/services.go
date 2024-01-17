@@ -31,6 +31,15 @@ type service struct {
 	userDeletedEventPub UserDeletedEventPublisher
 }
 
+// UpdateUser implements UseCase.
+func (s *service) UpdateUser(ctx context.Context, user *domain.User) (*domain.User, error) {
+	user, err := s.repo.UpdateUser(ctx, user)
+	if err != nil {
+		return nil, err
+	}
+	return user, nil
+}
+
 // GetUsers implements UseCase.
 func (s *service) GetUsers(ctx context.Context, search string, limit int32, offset int32) ([]*domain.User, error) {
 	if limit == 0 {

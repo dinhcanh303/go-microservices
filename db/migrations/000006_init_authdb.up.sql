@@ -11,6 +11,8 @@ CREATE TABLE
         last_name VARCHAR(255) NOT NULL,
         full_name VARCHAR(255) DEFAULT NULL,
         nick_name VARCHAR(255) DEFAULT NULL UNIQUE,
+        avatar_url text DEFAULT NULL,
+        profile_url text DEFAULT NULL,
         password VARCHAR(255) NOT NULL,
         role VARCHAR(20) DEFAULT 'user', 
         created_at timestamp with time zone NOT NULL DEFAULT current_timestamp,

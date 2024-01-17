@@ -21,8 +21,9 @@ import (
 
 type commentGRPCServer struct {
 	gen.UnimplementedCommentServiceServer
-	cfg *config.Config
-	uc  comments.UseCase
+	cfg           *config.Config
+	uc            comments.UseCase
+	authDomainSvc domain.AuthDomainService
 }
 
 var _ gen.CommentServiceServer = (*commentGRPCServer)(nil)
@@ -33,10 +34,12 @@ func NewGRPCCommentServer(
 	grpcServer *grpc.Server,
 	cfg *config.Config,
 	uc comments.UseCase,
+	authDomainSvc domain.AuthDomainService,
 ) gen.CommentServiceServer {
 	svc := commentGRPCServer{
-		cfg: cfg,
-		uc:  uc,
+		cfg:           cfg,
+		uc:            uc,
+		authDomainSvc: authDomainSvc,
 	}
 	gen.RegisterCommentServiceServer(grpcServer, &svc)
 	reflection.Register(grpcServer)
@@ -183,6 +186,10 @@ func (c *commentGRPCServer) GetCommentsByCommentID(ctx context.Context, request 
 		return nil, errors.Wrap(err, "failed to get comments by post ID")
 	}
 	for _, comment := range comments {
+		user, err := c.authDomainSvc.GetProfile(ctx, comment.UserID)
+		if err != nil {
+			user = &gen.GetProfileResponse{}
+		}
 		res.Comments = append(res.Comments, &gen.CommentHasMetadata{
 			Id:              comment.ID.String(),
 			PostId:          comment.PostID.String(),
@@ -193,6 +200,7 @@ func (c *commentGRPCServer) GetCommentsByCommentID(ctx context.Context, request 
 			ParentCommentId: comment.ParentCommentID.UUID.String(),
 			CreatedAt:       timestamppb.New(comment.CreatedAt),
 			UpdatedAt:       timestamppb.New(comment.UpdatedAt),
+			User:            user.User,
 			Likes: &gen.LikeInfo{
 				YourLikedEmoji:    comment.Likes.YourLikedEmoji,
 				YourLike:          comment.Likes.YourLike,
@@ -240,6 +248,10 @@ func (c *commentGRPCServer) GetCommentsByPostID(ctx context.Context, request *ge
 		return nil, errors.Wrap(err, "failed to get comments by post ID")
 	}
 	for _, comment := range comments {
+		user, err := c.authDomainSvc.GetProfile(ctx, comment.UserID)
+		if err != nil {
+			user = &gen.GetProfileResponse{}
+		}
 		res.Comments = append(res.Comments, &gen.CommentHasChildren{
 			Id:              comment.ID.String(),
 			PostId:          comment.PostID.String(),
@@ -250,6 +262,7 @@ func (c *commentGRPCServer) GetCommentsByPostID(ctx context.Context, request *ge
 			ParentCommentId: comment.ParentCommentID.UUID.String(),
 			CreatedAt:       timestamppb.New(comment.CreatedAt),
 			UpdatedAt:       timestamppb.New(comment.UpdatedAt),
+			User:            user.User,
 			Likes: &gen.LikeInfo{
 				YourLikedEmoji:    comment.Likes.YourLikedEmoji,
 				YourLike:          comment.Likes.YourLike,
@@ -273,6 +286,10 @@ func (c *commentGRPCServer) GetCommentsByPostID(ctx context.Context, request *ge
 				}
 			}),
 			Children: lo.Map(comment.Children, func(item *domain.CommentHasMetadata, _ int) *gen.CommentHasMetadata {
+				user, err := c.authDomainSvc.GetProfile(ctx, comment.UserID)
+				if err != nil {
+					user = &gen.GetProfileResponse{}
+				}
 				return &gen.CommentHasMetadata{
 					Id:      item.ID.String(),
 					PostId:  item.PostID.String(),
@@ -280,6 +297,7 @@ func (c *commentGRPCServer) GetCommentsByPostID(ctx context.Context, request *ge
 					ReplyId: item.ReplyID.UUID.String(),
 					TagIds:  utils.ConvertArUUIDToArString(item.TagIDs),
 					Content: item.Content,
+					User:    user.User,
 					Likes: &gen.LikeInfo{
 						YourLikedEmoji:    comment.Likes.YourLikedEmoji,
 						YourLike:          comment.Likes.YourLike,
