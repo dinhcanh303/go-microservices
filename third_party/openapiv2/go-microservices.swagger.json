@@ -1527,66 +1527,70 @@
             "type": "string"
           },
           {
-            "name": "user.email",
-            "in": "query",
-            "required": false,
-            "type": "string"
-          },
-          {
-            "name": "user.firstName",
-            "in": "query",
-            "required": false,
-            "type": "string"
-          },
-          {
-            "name": "user.lastName",
-            "in": "query",
-            "required": false,
-            "type": "string"
-          },
-          {
-            "name": "user.fullName",
-            "in": "query",
-            "required": false,
-            "type": "string"
-          },
-          {
-            "name": "user.nickName",
-            "in": "query",
-            "required": false,
-            "type": "string"
-          },
-          {
-            "name": "user.avatarUrl",
-            "in": "query",
-            "required": false,
-            "type": "string"
-          },
-          {
-            "name": "user.profileUrl",
-            "in": "query",
-            "required": false,
-            "type": "string"
-          },
-          {
-            "name": "user.role",
-            "in": "query",
-            "required": false,
-            "type": "string"
-          },
-          {
-            "name": "user.createdAt",
-            "in": "query",
-            "required": false,
-            "type": "string",
-            "format": "date-time"
-          },
-          {
-            "name": "user.updatedAt",
-            "in": "query",
-            "required": false,
-            "type": "string",
-            "format": "date-time"
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "user": {
+                  "type": "object",
+                  "properties": {
+                    "email": {
+                      "type": "string"
+                    },
+                    "firstName": {
+                      "type": "string"
+                    },
+                    "lastName": {
+                      "type": "string"
+                    },
+                    "fullName": {
+                      "type": "string"
+                    },
+                    "nickName": {
+                      "type": "string"
+                    },
+                    "avatarUrl": {
+                      "type": "string"
+                    },
+                    "profileUrl": {
+                      "type": "string"
+                    },
+                    "role": {
+                      "type": "string"
+                    },
+                    "resigned": {
+                      "type": "boolean"
+                    },
+                    "gender": {
+                      "type": "boolean"
+                    },
+                    "phone": {
+                      "type": "string"
+                    },
+                    "address": {
+                      "type": "string"
+                    },
+                    "position": {
+                      "type": "string"
+                    },
+                    "dateOfBirth": {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    "createdAt": {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    "updatedAt": {
+                      "type": "string",
+                      "format": "date-time"
+                    }
+                  }
+                }
+              }
+            }
           }
         ],
         "tags": [
@@ -1889,6 +1893,25 @@
         },
         "role": {
           "type": "string"
+        },
+        "resigned": {
+          "type": "boolean"
+        },
+        "gender": {
+          "type": "boolean"
+        },
+        "phone": {
+          "type": "string"
+        },
+        "address": {
+          "type": "string"
+        },
+        "position": {
+          "type": "string"
+        },
+        "dateOfBirth": {
+          "type": "string",
+          "format": "date-time"
         },
         "createdAt": {
           "type": "string",

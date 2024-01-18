@@ -122,17 +122,22 @@ func (a *authGRPCServer) GetUsers(ctx context.Context, request *gen.GetUsersRequ
 		Users: lo.Map(users, func(user *domain.User, _ int) *gen.User {
 			// avatarUrl, thumbnailUrl := getAvatarAndThumbnailAvatar(a, ctx, user.ID)
 			return &gen.User{
-				Id:         user.ID.String(),
-				Email:      user.Email,
-				FirstName:  user.FirstName,
-				LastName:   user.LastName,
-				FullName:   user.FullName,
-				NickName:   user.NickName,
-				Role:       user.Role,
-				AvatarUrl:  user.AvatarUrl,
-				ProfileUrl: user.ProfileUrl,
-				CreatedAt:  timestamppb.New(user.CreatedAt),
-				UpdatedAt:  timestamppb.New(user.UpdatedAt),
+				Id:          user.ID.String(),
+				Email:       user.Email,
+				FirstName:   user.FirstName,
+				LastName:    user.LastName,
+				FullName:    user.FullName,
+				NickName:    user.NickName,
+				Role:        user.Role,
+				AvatarUrl:   user.AvatarUrl,
+				ProfileUrl:  user.ProfileUrl,
+				Gender:      user.Gender,
+				Phone:       user.Phone,
+				Address:     user.Address,
+				DateOfBirth: timestamppb.New(user.DateOfBirth),
+				Position:    user.Position,
+				CreatedAt:   timestamppb.New(user.CreatedAt),
+				UpdatedAt:   timestamppb.New(user.UpdatedAt),
 			}
 		}),
 	}, nil
@@ -141,6 +146,7 @@ func (a *authGRPCServer) GetUsers(ctx context.Context, request *gen.GetUsersRequ
 
 func (a *authGRPCServer) UpdateUser(ctx context.Context, request *gen.UpdateUserRequest) (*gen.UpdateUserResponse, error) {
 	slog.Info("GET:: UpdateUser")
+	slog.Info("REQUEST::", request)
 	userIdReq, err := uuid.Parse(request.User.Id)
 	if err != nil {
 		return nil, err
@@ -161,9 +167,14 @@ func (a *authGRPCServer) UpdateUser(ctx context.Context, request *gen.UpdateUser
 		return nil, errors.New("No matched ID please check ID request")
 	}
 	model := &domain.User{
-		ID:         userId,
-		AvatarUrl:  request.User.AvatarUrl,
-		ProfileUrl: request.User.ProfileUrl,
+		ID:          userId,
+		AvatarUrl:   request.User.AvatarUrl,
+		ProfileUrl:  request.User.ProfileUrl,
+		Gender:      request.User.Gender,
+		Phone:       request.User.Phone,
+		Address:     request.User.Address,
+		DateOfBirth: request.User.DateOfBirth.AsTime(),
+		Position:    request.User.Position,
 	}
 	user, err := a.uc.UpdateUser(ctx, model)
 	if err != nil {
@@ -171,17 +182,22 @@ func (a *authGRPCServer) UpdateUser(ctx context.Context, request *gen.UpdateUser
 	}
 	return &gen.UpdateUserResponse{
 		User: &gen.User{
-			Id:         user.ID.String(),
-			Email:      user.Email,
-			FirstName:  user.FirstName,
-			LastName:   user.LastName,
-			FullName:   user.FullName,
-			NickName:   user.NickName,
-			Role:       user.Role,
-			AvatarUrl:  user.AvatarUrl,
-			ProfileUrl: user.ProfileUrl,
-			CreatedAt:  timestamppb.New(user.CreatedAt),
-			UpdatedAt:  timestamppb.New(user.UpdatedAt),
+			Id:          user.ID.String(),
+			Email:       user.Email,
+			FirstName:   user.FirstName,
+			LastName:    user.LastName,
+			FullName:    user.FullName,
+			NickName:    user.NickName,
+			Role:        user.Role,
+			AvatarUrl:   user.AvatarUrl,
+			ProfileUrl:  user.ProfileUrl,
+			Gender:      user.Gender,
+			Phone:       user.Phone,
+			Address:     user.Address,
+			DateOfBirth: timestamppb.New(user.DateOfBirth),
+			Position:    user.Position,
+			CreatedAt:   timestamppb.New(user.CreatedAt),
+			UpdatedAt:   timestamppb.New(user.UpdatedAt),
 		},
 	}, nil
 }
@@ -217,17 +233,22 @@ func (a *authGRPCServer) GetProfile(ctx context.Context, request *gen.GetProfile
 	// avatarUrl, thumbnailUrl := getAvatarAndThumbnailAvatar(a, ctx, userId)
 	return &gen.GetProfileResponse{
 		User: &gen.User{
-			Id:         user.ID.String(),
-			Email:      user.Email,
-			FirstName:  user.FirstName,
-			LastName:   user.LastName,
-			FullName:   user.FullName,
-			NickName:   user.NickName,
-			Role:       user.Role,
-			AvatarUrl:  user.AvatarUrl,
-			ProfileUrl: user.ProfileUrl,
-			CreatedAt:  timestamppb.New(user.CreatedAt),
-			UpdatedAt:  timestamppb.New(user.UpdatedAt),
+			Id:          user.ID.String(),
+			Email:       user.Email,
+			FirstName:   user.FirstName,
+			LastName:    user.LastName,
+			FullName:    user.FullName,
+			NickName:    user.NickName,
+			Role:        user.Role,
+			AvatarUrl:   user.AvatarUrl,
+			ProfileUrl:  user.ProfileUrl,
+			Gender:      user.Gender,
+			Phone:       user.Phone,
+			Address:     user.Address,
+			DateOfBirth: timestamppb.New(user.DateOfBirth),
+			Position:    user.Position,
+			CreatedAt:   timestamppb.New(user.CreatedAt),
+			UpdatedAt:   timestamppb.New(user.UpdatedAt),
 		},
 	}, nil
 }
@@ -345,17 +366,22 @@ func (a *authGRPCServer) HandleRefreshToken(ctx context.Context, request *gen.Ha
 	}
 	return &gen.HandleRefreshTokenResponse{
 		User: &gen.User{
-			Id:         res.User.ID.String(),
-			Email:      res.User.Email,
-			FirstName:  res.User.FirstName,
-			LastName:   res.User.LastName,
-			FullName:   res.User.FullName,
-			NickName:   res.User.NickName,
-			Role:       res.User.Role,
-			AvatarUrl:  res.User.AvatarUrl,
-			ProfileUrl: res.User.ProfileUrl,
-			CreatedAt:  timestamppb.New(res.User.CreatedAt),
-			UpdatedAt:  timestamppb.New(res.User.UpdatedAt),
+			Id:          res.User.ID.String(),
+			Email:       res.User.Email,
+			FirstName:   res.User.FirstName,
+			LastName:    res.User.LastName,
+			FullName:    res.User.FullName,
+			NickName:    res.User.NickName,
+			Role:        res.User.Role,
+			AvatarUrl:   res.User.AvatarUrl,
+			ProfileUrl:  res.User.ProfileUrl,
+			Gender:      res.User.Gender,
+			Phone:       res.User.Phone,
+			Address:     res.User.Address,
+			DateOfBirth: timestamppb.New(res.User.DateOfBirth),
+			Position:    res.User.Position,
+			CreatedAt:   timestamppb.New(res.User.CreatedAt),
+			UpdatedAt:   timestamppb.New(res.User.UpdatedAt),
 		},
 		AccessToken:  res.AccessToken,
 		RefreshToken: res.RefreshToken,

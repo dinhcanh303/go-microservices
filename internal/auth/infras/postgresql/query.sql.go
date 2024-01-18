@@ -56,7 +56,7 @@ INSERT INTO auth.users
         full_name,
         nick_name
     )
-VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id, email, first_name, last_name, full_name, nick_name, avatar_url, profile_url, password, role, created_at, updated_at
+VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id, email, first_name, last_name, full_name, nick_name, avatar_url, profile_url, role, resigned, gender, phone, address, position, date_of_birth, password, created_at, updated_at
 `
 
 type CreateUserParams struct {
@@ -89,8 +89,14 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (AuthUse
 		&i.NickName,
 		&i.AvatarUrl,
 		&i.ProfileUrl,
-		&i.Password,
 		&i.Role,
+		&i.Resigned,
+		&i.Gender,
+		&i.Phone,
+		&i.Address,
+		&i.Position,
+		&i.DateOfBirth,
+		&i.Password,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 	)
@@ -176,7 +182,7 @@ func (q *Queries) FindKeyByUserID(ctx context.Context, userID uuid.UUID) (AuthKe
 }
 
 const getUser = `-- name: GetUser :one
-SELECT id, email, first_name, last_name, full_name, nick_name, avatar_url, profile_url, password, role, created_at, updated_at FROM auth.users WHERE id = $1
+SELECT id, email, first_name, last_name, full_name, nick_name, avatar_url, profile_url, role, resigned, gender, phone, address, position, date_of_birth, password, created_at, updated_at FROM auth.users WHERE id = $1
 `
 
 func (q *Queries) GetUser(ctx context.Context, id uuid.UUID) (AuthUser, error) {
@@ -191,8 +197,14 @@ func (q *Queries) GetUser(ctx context.Context, id uuid.UUID) (AuthUser, error) {
 		&i.NickName,
 		&i.AvatarUrl,
 		&i.ProfileUrl,
-		&i.Password,
 		&i.Role,
+		&i.Resigned,
+		&i.Gender,
+		&i.Phone,
+		&i.Address,
+		&i.Position,
+		&i.DateOfBirth,
+		&i.Password,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 	)
@@ -200,7 +212,7 @@ func (q *Queries) GetUser(ctx context.Context, id uuid.UUID) (AuthUser, error) {
 }
 
 const getUserByEmail = `-- name: GetUserByEmail :one
-SELECT id, email, first_name, last_name, full_name, nick_name, avatar_url, profile_url, password, role, created_at, updated_at FROM auth.users WHERE email = $1
+SELECT id, email, first_name, last_name, full_name, nick_name, avatar_url, profile_url, role, resigned, gender, phone, address, position, date_of_birth, password, created_at, updated_at FROM auth.users WHERE email = $1
 `
 
 func (q *Queries) GetUserByEmail(ctx context.Context, email string) (AuthUser, error) {
@@ -215,8 +227,14 @@ func (q *Queries) GetUserByEmail(ctx context.Context, email string) (AuthUser, e
 		&i.NickName,
 		&i.AvatarUrl,
 		&i.ProfileUrl,
-		&i.Password,
 		&i.Role,
+		&i.Resigned,
+		&i.Gender,
+		&i.Phone,
+		&i.Address,
+		&i.Position,
+		&i.DateOfBirth,
+		&i.Password,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 	)
@@ -251,7 +269,7 @@ func (q *Queries) GetUserIdsOfCompany(ctx context.Context, dollar_1 sql.NullStri
 }
 
 const getUsers = `-- name: GetUsers :many
-SELECT id, email, first_name, last_name, full_name, nick_name, avatar_url, profile_url, password, role, created_at, updated_at FROM auth.users 
+SELECT id, email, first_name, last_name, full_name, nick_name, avatar_url, profile_url, role, resigned, gender, phone, address, position, date_of_birth, password, created_at, updated_at FROM auth.users 
 WHERE 
     nick_name LIKE COALESCE('%'||$1||'%','%%')
 LIMIT $2
@@ -282,8 +300,14 @@ func (q *Queries) GetUsers(ctx context.Context, arg GetUsersParams) ([]AuthUser,
 			&i.NickName,
 			&i.AvatarUrl,
 			&i.ProfileUrl,
-			&i.Password,
 			&i.Role,
+			&i.Resigned,
+			&i.Gender,
+			&i.Phone,
+			&i.Address,
+			&i.Position,
+			&i.DateOfBirth,
+			&i.Password,
 			&i.CreatedAt,
 			&i.UpdatedAt,
 		); err != nil {
@@ -344,18 +368,37 @@ const updateUser = `-- name: UpdateUser :one
 UPDATE auth.users 
 SET
     avatar_url = COALESCE($1,avatar_url),
-    profile_url = COALESCE($2,profile_url)
-WHERE id = $3 RETURNING id, email, first_name, last_name, full_name, nick_name, avatar_url, profile_url, password, role, created_at, updated_at
+    profile_url = COALESCE($2,profile_url),
+    gender = COALESCE($3,gender),
+    phone = COALESCE($4,phone),
+    address = COALESCE($5,address),
+    date_of_birth = COALESCE($6,date_of_birth),
+    position = COALESCE($7,position)
+WHERE id = $8 RETURNING id, email, first_name, last_name, full_name, nick_name, avatar_url, profile_url, role, resigned, gender, phone, address, position, date_of_birth, password, created_at, updated_at
 `
 
 type UpdateUserParams struct {
-	AvatarUrl  sql.NullString `json:"avatar_url"`
-	ProfileUrl sql.NullString `json:"profile_url"`
-	ID         uuid.UUID      `json:"id"`
+	AvatarUrl   sql.NullString `json:"avatar_url"`
+	ProfileUrl  sql.NullString `json:"profile_url"`
+	Gender      sql.NullBool   `json:"gender"`
+	Phone       sql.NullString `json:"phone"`
+	Address     sql.NullString `json:"address"`
+	DateOfBirth sql.NullTime   `json:"date_of_birth"`
+	Position    sql.NullString `json:"position"`
+	ID          uuid.UUID      `json:"id"`
 }
 
 func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) (AuthUser, error) {
-	row := q.db.QueryRowContext(ctx, updateUser, arg.AvatarUrl, arg.ProfileUrl, arg.ID)
+	row := q.db.QueryRowContext(ctx, updateUser,
+		arg.AvatarUrl,
+		arg.ProfileUrl,
+		arg.Gender,
+		arg.Phone,
+		arg.Address,
+		arg.DateOfBirth,
+		arg.Position,
+		arg.ID,
+	)
 	var i AuthUser
 	err := row.Scan(
 		&i.ID,
@@ -366,8 +409,14 @@ func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) (AuthUse
 		&i.NickName,
 		&i.AvatarUrl,
 		&i.ProfileUrl,
-		&i.Password,
 		&i.Role,
+		&i.Resigned,
+		&i.Gender,
+		&i.Phone,
+		&i.Address,
+		&i.Position,
+		&i.DateOfBirth,
+		&i.Password,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 	)

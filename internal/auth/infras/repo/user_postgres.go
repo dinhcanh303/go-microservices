@@ -3,6 +3,7 @@ package repo
 import (
 	"context"
 	"database/sql"
+	"log/slog"
 
 	"github.com/dinhcanh303/go-microservices/internal/auth/domain"
 	"github.com/dinhcanh303/go-microservices/internal/auth/infras/postgresql"
@@ -24,9 +25,10 @@ func (rp *userRepo) UpdateUser(ctx context.Context, user *domain.User) (*domain.
 	querier := postgresql.New(db)
 	tx, err := db.Begin()
 	if err != nil {
-		return nil, errors.Wrap(err, "commentRepo.Update db failed")
+		return nil, errors.Wrap(err, "userRepo.UpdateUser db failed")
 	}
 	qtx := querier.WithTx(tx)
+	slog.Info("INFO", user.ID, user.AvatarUrl, user.ProfileUrl)
 	result, err := qtx.UpdateUser(ctx, postgresql.UpdateUserParams{
 		ID: user.ID,
 		AvatarUrl: sql.NullString{
@@ -37,22 +39,47 @@ func (rp *userRepo) UpdateUser(ctx context.Context, user *domain.User) (*domain.
 			String: user.ProfileUrl,
 			Valid:  user.ProfileUrl != "",
 		},
+		Gender: sql.NullBool{
+			Bool:  user.Gender,
+			Valid: !user.Gender,
+		},
+		Phone: sql.NullString{
+			String: user.Phone,
+			Valid:  user.Phone != "",
+		},
+		Address: sql.NullString{
+			String: user.Address,
+			Valid:  user.Address != "",
+		},
+		DateOfBirth: sql.NullTime{
+			Time:  user.DateOfBirth,
+			Valid: !user.DateOfBirth.IsZero(),
+		},
+		Position: sql.NullString{
+			String: user.Position,
+			Valid:  user.Position != "",
+		},
 	})
 	if err != nil {
 		return nil, errors.Wrap(err, "commentRepo.UpdateUser failed")
 	}
 	return &domain.User{
-		ID:         result.ID,
-		FirstName:  result.FirstName,
-		LastName:   result.LastName,
-		FullName:   result.FullName.String,
-		Role:       result.Role.String,
-		AvatarUrl:  result.AvatarUrl.String,
-		ProfileUrl: result.ProfileUrl.String,
-		Email:      result.Email,
-		Password:   result.Password,
-		CreatedAt:  result.CreatedAt,
-		UpdatedAt:  result.UpdatedAt,
+		ID:          result.ID,
+		FirstName:   result.FirstName,
+		LastName:    result.LastName,
+		FullName:    result.FullName.String,
+		Role:        result.Role.String,
+		AvatarUrl:   result.AvatarUrl.String,
+		ProfileUrl:  result.ProfileUrl.String,
+		Email:       result.Email,
+		Password:    result.Password,
+		Gender:      result.Gender.Bool,
+		Phone:       result.Phone.String,
+		Address:     result.Address.String,
+		DateOfBirth: result.DateOfBirth.Time,
+		Position:    result.Position.String,
+		CreatedAt:   result.CreatedAt,
+		UpdatedAt:   result.UpdatedAt,
 	}, tx.Commit()
 }
 
@@ -98,17 +125,22 @@ func (rp *userRepo) CreateUser(ctx context.Context, user *domain.User) (*domain.
 		return nil, errors.Wrap(err, "userRepo.Create failed")
 	}
 	return &domain.User{
-		ID:         result.ID,
-		FirstName:  result.FirstName,
-		LastName:   result.LastName,
-		FullName:   result.FullName.String,
-		Role:       result.Role.String,
-		AvatarUrl:  result.AvatarUrl.String,
-		ProfileUrl: result.ProfileUrl.String,
-		Email:      result.Email,
-		Password:   result.Password,
-		CreatedAt:  result.CreatedAt,
-		UpdatedAt:  result.UpdatedAt,
+		ID:          result.ID,
+		FirstName:   result.FirstName,
+		LastName:    result.LastName,
+		FullName:    result.FullName.String,
+		Role:        result.Role.String,
+		AvatarUrl:   result.AvatarUrl.String,
+		ProfileUrl:  result.ProfileUrl.String,
+		Email:       result.Email,
+		Password:    result.Password,
+		Gender:      result.Gender.Bool,
+		Phone:       result.Phone.String,
+		Address:     result.Address.String,
+		DateOfBirth: result.DateOfBirth.Time,
+		Position:    result.Position.String,
+		CreatedAt:   result.CreatedAt,
+		UpdatedAt:   result.UpdatedAt,
 	}, tx.Commit()
 }
 
@@ -121,18 +153,23 @@ func (rp *userRepo) GetUser(ctx context.Context, userId uuid.UUID) (*domain.User
 		return nil, errors.Wrap(err, "userRepo.GetUser failed")
 	}
 	return &domain.User{
-		ID:         user.ID,
-		Email:      user.Email,
-		FirstName:  user.FirstName,
-		LastName:   user.LastName,
-		FullName:   user.FullName.String,
-		NickName:   user.FullName.String,
-		Role:       user.Role.String,
-		AvatarUrl:  user.AvatarUrl.String,
-		ProfileUrl: user.ProfileUrl.String,
-		Password:   user.Password,
-		CreatedAt:  user.CreatedAt,
-		UpdatedAt:  user.UpdatedAt,
+		ID:          user.ID,
+		Email:       user.Email,
+		FirstName:   user.FirstName,
+		LastName:    user.LastName,
+		FullName:    user.FullName.String,
+		NickName:    user.FullName.String,
+		Role:        user.Role.String,
+		AvatarUrl:   user.AvatarUrl.String,
+		ProfileUrl:  user.ProfileUrl.String,
+		Password:    user.Password,
+		Gender:      user.Gender.Bool,
+		Phone:       user.Phone.String,
+		Address:     user.Address.String,
+		DateOfBirth: user.DateOfBirth.Time,
+		Position:    user.Position.String,
+		CreatedAt:   user.CreatedAt,
+		UpdatedAt:   user.UpdatedAt,
 	}, nil
 }
 

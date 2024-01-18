@@ -31,7 +31,12 @@ OFFSET $3;
 UPDATE auth.users 
 SET
     avatar_url = COALESCE(sqlc.narg(avatar_url),avatar_url),
-    profile_url = COALESCE(sqlc.narg(profile_url),profile_url)
+    profile_url = COALESCE(sqlc.narg(profile_url),profile_url),
+    gender = COALESCE(sqlc.narg(gender),gender),
+    phone = COALESCE(sqlc.narg(phone),phone),
+    address = COALESCE(sqlc.narg(address),address),
+    date_of_birth = COALESCE(sqlc.narg(date_of_birth),date_of_birth),
+    position = COALESCE(sqlc.narg(position),position)
 WHERE id = sqlc.arg(id) RETURNING *;
 
 -- name: FindKeyByUserID :one

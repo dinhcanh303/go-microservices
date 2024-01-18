@@ -86,6 +86,7 @@ service AuthService {
     rpc UpdateUser(UpdateUserRequest) returns (UpdateUserResponse){
         option (google.api.http) = {
             put: "/api/v1/users/{user.id}",
+            body: "*"
         };
         option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
             summary: "Set Avatar User"
@@ -169,8 +170,14 @@ message User {
     string avatar_url = 7;
     string profile_url = 8;
     string role = 9;
-    google.protobuf.Timestamp created_at = 10;
-    google.protobuf.Timestamp updated_at = 11;
+    bool resigned = 10;
+    bool gender = 11;
+    string phone = 12;
+    string address = 13;
+    string position = 14;
+    google.protobuf.Timestamp date_of_birth = 15;
+    google.protobuf.Timestamp created_at = 16;
+    google.protobuf.Timestamp updated_at = 17;
 }
 message VerifyRequest{}
 message VerifyResponse{}
