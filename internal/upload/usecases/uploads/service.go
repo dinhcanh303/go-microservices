@@ -116,6 +116,7 @@ func (s *uploadService) UploadFile(echoCtx echo.Context, location string) ([]*do
 	slog.Info("Service: UploadFile")
 	ctx := context.Background()
 	form, err := echoCtx.MultipartForm()
+	slog.Info("Form", form)
 	if err != nil {
 		return nil, errors.Wrap(err, "Get Upload Form Error")
 	}

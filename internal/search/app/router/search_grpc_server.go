@@ -37,11 +37,11 @@ func NewSearchGRPCServer(
 	return &svc
 }
 func (c *searchGRPCServer) Search(ctx context.Context, request *gen.SearchRequest) (*gen.SearchResponse, error) {
-	keyWord := request.KeyWord
-	if keyWord == "" {
+	searchText := request.Q
+	if searchText == "" {
 		return nil, errors.New("key word search empty")
 	}
-	hits, err := meiliSearch(c.meili, constant.MEILI_SEARCH_INDEX, keyWord, []string{"name", "email"})
+	hits, err := meiliSearch(c.meili, constant.MEILI_SEARCH_INDEX, searchText, []string{"name", "email"})
 	if err != nil {
 		return nil, err
 	}

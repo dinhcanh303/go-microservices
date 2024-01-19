@@ -92,6 +92,7 @@ services:
       PG_REP_URL: postgres://postgres:123456@postgres-slave:5432/postgres?sslmode=disable
       LIKE_CLIENT_URL: like:5004
       UPLOAD_CLIENT_URL: upload:5006
+      AUTH_CLIENT_URL: auth:5007
     ports:
       - 5003:5003
     depends_on:

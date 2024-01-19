@@ -245,7 +245,16 @@
                     "replyId": {
                       "type": "string"
                     },
+                    "replyName": {
+                      "type": "string"
+                    },
                     "tagIds": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "tagNames": {
                       "type": "array",
                       "items": {
                         "type": "string"
@@ -1394,7 +1403,7 @@
         ]
       }
     },
-    "/api/v1/search/{keyWord}": {
+    "/api/v1/search": {
       "get": {
         "summary": "Search User and Group by Melisearch",
         "operationId": "SearchService_Search",
@@ -1414,9 +1423,9 @@
         },
         "parameters": [
           {
-            "name": "keyWord",
-            "in": "path",
-            "required": true,
+            "name": "q",
+            "in": "query",
+            "required": false,
             "type": "string"
           }
         ],
@@ -1941,7 +1950,16 @@
         "replyId": {
           "type": "string"
         },
+        "replyName": {
+          "type": "string"
+        },
         "tagIds": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "tagNames": {
           "type": "array",
           "items": {
             "type": "string"
@@ -1978,7 +1996,16 @@
         "replyId": {
           "type": "string"
         },
+        "replyName": {
+          "type": "string"
+        },
         "tagIds": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "tagNames": {
           "type": "array",
           "items": {
             "type": "string"
@@ -2035,7 +2062,16 @@
         "replyId": {
           "type": "string"
         },
+        "replyName": {
+          "type": "string"
+        },
         "tagIds": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "tagNames": {
           "type": "array",
           "items": {
             "type": "string"
