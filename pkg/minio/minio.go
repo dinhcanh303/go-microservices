@@ -7,9 +7,12 @@ import (
 	"io"
 	"log"
 	"log/slog"
+	"math/rand"
 	"mime/multipart"
 	"net/http"
+	"path"
 	"path/filepath"
+	"strings"
 	"time"
 
 	configs "github.com/dinhcanh303/go-microservices/pkg/config"
@@ -60,6 +63,12 @@ func (m *minio) UploadFile(ctx context.Context, file *multipart.FileHeader, buff
 	objectName := folder + file.Filename
 	contentType := file.Header.Get("Content-Type")
 	fileSize := file.Size
+	// Check if the file already exists
+	if _, err := client.StatObject(ctx, config.BucketName, objectName, minioV7.StatObjectOptions{}); err == nil {
+		// File already exists, add a suffix to the filename
+		suffix := generateUniqueSuffix()
+		objectName = addSuffixToObject(objectName, suffix) // Add your desired suffix logic
+	}
 	info, err := client.PutObject(ctx, config.BucketName, objectName, buffer, fileSize, minioV7.PutObjectOptions{
 		ContentType: contentType,
 	})
@@ -78,6 +87,21 @@ func (m *minio) UploadFile(ctx context.Context, file *multipart.FileHeader, buff
 	slog.Info("Successfully uploaded %s of size %d\n", objectName, info.Size)
 	return &info, fileInfo, nil
 }
+
+func addSuffixToObject(objectName, suffix string) string {
+	baseName := strings.TrimSuffix(objectName, path.Ext(objectName))
+	ext := path.Ext(objectName)
+	return baseName + suffix + ext
+}
+
+// Helper function to generate a unique suffix
+func generateUniqueSuffix() string {
+	// Use timestamp and a random component to generate a unique suffix
+	timestamp := time.Now().UnixNano()
+	random := rand.Intn(100000) // Adjust the range based on your requirements
+	return fmt.Sprintf("_%d_%d", timestamp, random)
+}
+
 func getExtensionFile(fileName string) string {
 	extension := filepath.Ext(fileName)
 	return extension[1:]
