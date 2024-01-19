@@ -32,7 +32,7 @@ func (s *service) GetCommentsByCommentID(ctx context.Context, commentId uuid.UUI
 		if err != nil {
 			likeInfo = &domainLike.LikesInfo{}
 		}
-		attachments, err := s.uploadDomainSvc.GetAttachmentsByType(ctx, "Attachment/Comment", comment.ID)
+		attachments, err := s.uploadDomainSvc.GetAttachmentsByType(ctx, "Comment", comment.ID)
 		if err != nil {
 			attachments = make([]*domainUpload.Attachment, 0)
 		}
@@ -118,7 +118,7 @@ func (s *service) GetCommentsByPostID(ctx context.Context, postId, userId uuid.U
 		if err != nil {
 			likeInfo = &domainLike.LikesInfo{}
 		}
-		attachments, err := s.uploadDomainSvc.GetAttachmentsByType(ctx, "Attachment/Comment", comment.ID)
+		attachments, err := s.uploadDomainSvc.GetAttachmentsByType(ctx, "Comment", comment.ID)
 		if err != nil {
 			attachments = make([]*domainUpload.Attachment, 0)
 		}
@@ -126,6 +126,7 @@ func (s *service) GetCommentsByPostID(ctx context.Context, postId, userId uuid.U
 			ID:              comments[i].ID,
 			UserID:          comments[i].UserID,
 			ReplyID:         comments[i].ReplyID,
+			TagIDs:          comments[i].TagIDs,
 			Content:         comments[i].Content,
 			PostID:          comments[i].PostID,
 			ParentCommentID: comments[i].ParentCommentID,
@@ -138,6 +139,7 @@ func (s *service) GetCommentsByPostID(ctx context.Context, postId, userId uuid.U
 			ID:              comments[i].ID,
 			UserID:          comments[i].UserID,
 			ReplyID:         comments[i].ReplyID,
+			TagIDs:          comments[i].TagIDs,
 			Content:         comments[i].Content,
 			PostID:          comments[i].PostID,
 			ParentCommentID: comments[i].ParentCommentID,

@@ -153,38 +153,44 @@ message Comment {
     string post_id = 2;
     string user_id = 3;
     string reply_id = 4;
-    repeated string tag_ids = 5;
-    string content = 6;
-    string parent_comment_id = 7;
-    google.protobuf.Timestamp created_at = 8;
-    google.protobuf.Timestamp updated_at = 9;
+    string reply_name = 5;
+    repeated string tag_ids = 6;
+    repeated string tag_names = 7;
+    string content = 8;
+    string parent_comment_id = 9;
+    google.protobuf.Timestamp created_at = 10;
+    google.protobuf.Timestamp updated_at = 11;
 }
 message CommentHasMetadata {
     string id = 1;
     string post_id = 2;
     string user_id = 3;
     string reply_id = 4;
-    repeated string tag_ids = 5;
-    string content = 6;
-    string parent_comment_id = 7;
-    authapi.User user = 8;
-    likeapi.LikeInfo likes = 9;
-    repeated uploadapi.Attachment attachments = 10;
-    google.protobuf.Timestamp created_at = 11;
-    google.protobuf.Timestamp updated_at = 12;
+    string reply_name = 5;
+    repeated string tag_ids = 6;
+    repeated string tag_names = 7;
+    string content = 8;
+    string parent_comment_id = 9;
+    authapi.User user = 10;
+    likeapi.LikeInfo likes = 11;
+    repeated uploadapi.Attachment attachments = 12;
+    google.protobuf.Timestamp created_at = 13;
+    google.protobuf.Timestamp updated_at = 14;
 }
 message CommentHasChildren {
     string id = 1;
     string post_id = 2;
     string user_id = 3;
     string reply_id = 4;
-    repeated string tag_ids = 5;
-    string content = 6;
-    string parent_comment_id = 7;
-    authapi.User user = 8;
-    repeated CommentHasMetadata children = 9;
-    likeapi.LikeInfo likes = 10;
-    repeated uploadapi.Attachment attachments = 11;
-    google.protobuf.Timestamp created_at = 12;
-    google.protobuf.Timestamp updated_at = 13;
+    string reply_name = 5;
+    repeated string tag_ids = 6;
+    repeated string tag_names = 7;
+    string content = 8;
+    string parent_comment_id = 9;
+    authapi.User user = 10;
+    repeated CommentHasMetadata children = 11;
+    likeapi.LikeInfo likes = 12;
+    repeated uploadapi.Attachment attachments = 13;
+    google.protobuf.Timestamp created_at = 14;
+    google.protobuf.Timestamp updated_at = 15;
 }

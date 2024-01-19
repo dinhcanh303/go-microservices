@@ -7,6 +7,7 @@ import (
 	"github.com/dinhcanh303/go-microservices/internal/comment/domain"
 	"github.com/dinhcanh303/go-microservices/internal/comment/usecases/comments"
 	domainUpload "github.com/dinhcanh303/go-microservices/internal/upload/domain"
+	"github.com/dinhcanh303/go-microservices/pkg/constant"
 	"github.com/dinhcanh303/go-microservices/pkg/utils"
 	"github.com/dinhcanh303/go-microservices/proto/gen"
 	"github.com/google/uuid"
@@ -190,12 +191,26 @@ func (c *commentGRPCServer) GetCommentsByCommentID(ctx context.Context, request 
 		if err != nil {
 			user = &gen.GetProfileResponse{}
 		}
+		replyName := ""
+		if comment.UserID == comment.ReplyID.UUID {
+			replyName = user.User.FullName
+		} else {
+			if comment.ReplyID.UUID.String() != constant.NullUUID {
+				replyUser, err := c.authDomainSvc.GetProfile(ctx, comment.ReplyID.UUID)
+				if err == nil {
+					replyName = replyUser.User.FullName
+				}
+			}
+		}
+		tagIds, tagNames := handleTags(ctx, comment.TagIDs, c.authDomainSvc)
 		res.Comments = append(res.Comments, &gen.CommentHasMetadata{
 			Id:              comment.ID.String(),
 			PostId:          comment.PostID.String(),
 			UserId:          comment.UserID.String(),
 			ReplyId:         comment.ReplyID.UUID.String(),
-			TagIds:          utils.ConvertArUUIDToArString(comment.TagIDs),
+			ReplyName:       replyName,
+			TagIds:          tagIds,
+			TagNames:        tagNames,
 			Content:         comment.Content,
 			ParentCommentId: comment.ParentCommentID.UUID.String(),
 			CreatedAt:       timestamppb.New(comment.CreatedAt),
@@ -252,12 +267,27 @@ func (c *commentGRPCServer) GetCommentsByPostID(ctx context.Context, request *ge
 		if err != nil {
 			user = &gen.GetProfileResponse{}
 		}
+		replyName := ""
+		if comment.UserID == comment.ReplyID.UUID {
+			replyName = user.User.FullName
+		} else {
+			if comment.ReplyID.UUID.String() != constant.NullUUID {
+				replyUser, err := c.authDomainSvc.GetProfile(ctx, comment.ReplyID.UUID)
+				if err == nil {
+					replyName = replyUser.User.FullName
+				}
+			}
+		}
+		slog.Info("Comment TagIDs", comment.TagIDs)
+		tagIds, tagNames := handleTags(ctx, comment.TagIDs, c.authDomainSvc)
 		res.Comments = append(res.Comments, &gen.CommentHasChildren{
 			Id:              comment.ID.String(),
 			PostId:          comment.PostID.String(),
 			UserId:          comment.UserID.String(),
 			ReplyId:         comment.ReplyID.UUID.String(),
-			TagIds:          utils.ConvertArUUIDToArString(comment.TagIDs),
+			ReplyName:       replyName,
+			TagIds:          tagIds,
+			TagNames:        tagNames,
 			Content:         comment.Content,
 			ParentCommentId: comment.ParentCommentID.UUID.String(),
 			CreatedAt:       timestamppb.New(comment.CreatedAt),
@@ -269,55 +299,69 @@ func (c *commentGRPCServer) GetCommentsByPostID(ctx context.Context, request *ge
 				OthersLikedEmojis: comment.Likes.OthersLikedEmojis,
 				OthersLikes:       comment.Likes.OthersLikes,
 			},
-			Attachments: lo.Map(comment.Attachments, func(item *domainUpload.Attachment, _ int) *gen.Attachment {
+			Attachments: lo.Map(comment.Attachments, func(attachment *domainUpload.Attachment, _ int) *gen.Attachment {
 				return &gen.Attachment{
-					Id:             item.ID.String(),
-					UserId:         item.UserID.String(),
-					AttachableType: item.AttachableType,
-					AttachableId:   item.AttachableID.String(),
-					Filename:       item.FileName,
-					Url:            item.URL,
-					UrlThumbnail:   item.URLThumbnail,
-					Extension:      item.Extension,
-					MimeType:       item.MimeType,
-					Folder:         item.Folder,
-					CreatedAt:      timestamppb.New(item.CreatedAt),
-					UpdatedAt:      timestamppb.New(item.UpdatedAt),
+					Id:             attachment.ID.String(),
+					UserId:         attachment.UserID.String(),
+					AttachableType: attachment.AttachableType,
+					AttachableId:   attachment.AttachableID.String(),
+					Filename:       attachment.FileName,
+					Url:            attachment.URL,
+					UrlThumbnail:   attachment.URLThumbnail,
+					Extension:      attachment.Extension,
+					MimeType:       attachment.MimeType,
+					Folder:         attachment.Folder,
+					CreatedAt:      timestamppb.New(attachment.CreatedAt),
+					UpdatedAt:      timestamppb.New(attachment.UpdatedAt),
 				}
 			}),
 			Children: lo.Map(comment.Children, func(item *domain.CommentHasMetadata, _ int) *gen.CommentHasMetadata {
-				user, err := c.authDomainSvc.GetProfile(ctx, comment.UserID)
+				user, err := c.authDomainSvc.GetProfile(ctx, item.UserID)
 				if err != nil {
 					user = &gen.GetProfileResponse{}
 				}
+				replyName := ""
+				if item.UserID == item.ReplyID.UUID {
+					replyName = user.User.FullName
+				} else {
+					if item.ReplyID.UUID.String() != constant.NullUUID {
+						replyUser, err := c.authDomainSvc.GetProfile(ctx, item.ReplyID.UUID)
+						if err == nil {
+							replyName = replyUser.User.FullName
+						}
+					}
+				}
+				tagIds, tagNames := handleTags(ctx, item.TagIDs, c.authDomainSvc)
 				return &gen.CommentHasMetadata{
-					Id:      item.ID.String(),
-					PostId:  item.PostID.String(),
-					UserId:  item.UserID.String(),
-					ReplyId: item.ReplyID.UUID.String(),
-					TagIds:  utils.ConvertArUUIDToArString(item.TagIDs),
-					Content: item.Content,
-					User:    user.User,
+					Id:        item.ID.String(),
+					PostId:    item.PostID.String(),
+					UserId:    item.UserID.String(),
+					ReplyId:   item.ReplyID.UUID.String(),
+					ReplyName: replyName,
+					TagIds:    tagIds,
+					TagNames:  tagNames,
+					Content:   item.Content,
+					User:      user.User,
 					Likes: &gen.LikeInfo{
-						YourLikedEmoji:    comment.Likes.YourLikedEmoji,
-						YourLike:          comment.Likes.YourLike,
-						OthersLikedEmojis: comment.Likes.OthersLikedEmojis,
-						OthersLikes:       comment.Likes.OthersLikes,
+						YourLikedEmoji:    item.Likes.YourLikedEmoji,
+						YourLike:          item.Likes.YourLike,
+						OthersLikedEmojis: item.Likes.OthersLikedEmojis,
+						OthersLikes:       item.Likes.OthersLikes,
 					},
-					Attachments: lo.Map(comment.Attachments, func(item *domainUpload.Attachment, _ int) *gen.Attachment {
+					Attachments: lo.Map(item.Attachments, func(attachment *domainUpload.Attachment, _ int) *gen.Attachment {
 						return &gen.Attachment{
-							Id:             item.ID.String(),
-							UserId:         item.UserID.String(),
-							AttachableType: item.AttachableType,
-							AttachableId:   item.AttachableID.String(),
-							Filename:       item.FileName,
-							Url:            item.URL,
-							UrlThumbnail:   item.URLThumbnail,
-							Extension:      item.Extension,
-							MimeType:       item.MimeType,
-							Folder:         item.Folder,
-							CreatedAt:      timestamppb.New(item.CreatedAt),
-							UpdatedAt:      timestamppb.New(item.UpdatedAt),
+							Id:             attachment.ID.String(),
+							UserId:         attachment.UserID.String(),
+							AttachableType: attachment.AttachableType,
+							AttachableId:   attachment.AttachableID.String(),
+							Filename:       attachment.FileName,
+							Url:            attachment.URL,
+							UrlThumbnail:   attachment.URLThumbnail,
+							Extension:      attachment.Extension,
+							MimeType:       attachment.MimeType,
+							Folder:         attachment.Folder,
+							CreatedAt:      timestamppb.New(attachment.CreatedAt),
+							UpdatedAt:      timestamppb.New(attachment.UpdatedAt),
 						}
 					}),
 					ParentCommentId: item.ParentCommentID.UUID.String(),
@@ -361,4 +405,14 @@ func (c *commentGRPCServer) UpdateComment(ctx context.Context, request *gen.Upda
 		},
 	}
 	return res, nil
+}
+func handleTags(ctx context.Context, tagIds []uuid.UUID, authDomainSvc domain.AuthDomainService) ([]string, []string) {
+	slog.Info("Tag IDS", tagIds)
+	strTagIds := utils.ConvertArUUIDToArString(tagIds)
+	tagNames := make([]string, 0)
+	for _, tagId := range tagIds {
+		user, _ := authDomainSvc.GetProfile(ctx, tagId)
+		tagNames = append(tagNames, user.User.FullName)
+	}
+	return strTagIds, tagNames
 }
