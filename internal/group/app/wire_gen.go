@@ -10,6 +10,7 @@ import (
 	"github.com/dinhcanh303/go-microservices/cmd/group/config"
 	"github.com/dinhcanh303/go-microservices/internal/group/app/router"
 	"github.com/dinhcanh303/go-microservices/internal/group/infras"
+	grpc2 "github.com/dinhcanh303/go-microservices/internal/group/infras/grpc"
 	"github.com/dinhcanh303/go-microservices/internal/group/infras/repo"
 	"github.com/dinhcanh303/go-microservices/internal/group/usecases/groupmembers"
 	"github.com/dinhcanh303/go-microservices/internal/group/usecases/groups"
@@ -52,7 +53,14 @@ func InitApp(cfg *config.Config, cfg2 *configs.Redis, dbConnStr postgres.DBConnS
 		cleanup()
 		return nil, nil, err
 	}
-	groupServiceServer := router.NewGRPCGroupServer(grpcServer, cfg, useCase, groupmembersUseCase, redisEngine)
+	authDomainService, err := grpc2.NewGRPCAuthClient(cfg)
+	if err != nil {
+		cleanup3()
+		cleanup2()
+		cleanup()
+		return nil, nil, err
+	}
+	groupServiceServer := router.NewGRPCGroupServer(grpcServer, cfg, useCase, groupmembersUseCase, redisEngine, authDomainService)
 	app := New(cfg, dbEngine, useCase, groupmembersUseCase, groupServiceServer, groupCreatedEventPublisher, groupDeletedEventPublisher)
 	return app, func() {
 		cleanup3()

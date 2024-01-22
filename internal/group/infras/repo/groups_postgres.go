@@ -37,6 +37,7 @@ func (rp *groupRepo) GetGroupsByUserId(ctx context.Context, userId uuid.UUID, li
 			Description: item.Description,
 			Status:      item.Status,
 			UserID:      item.UserID,
+			ProfileUrl:  item.ProfileUrl.String,
 			CreatedAt:   item.CreatedAt,
 			UpdatedAt:   item.UpdatedAt,
 		}
@@ -87,6 +88,7 @@ func (rp *groupRepo) Create(ctx context.Context, group *domain.Group) (*domain.G
 		Name:        result.Name,
 		Description: result.Description,
 		Status:      result.Status,
+		ProfileUrl:  result.ProfileUrl.String,
 		UserID:      result.UserID,
 		CreatedAt:   result.CreatedAt,
 		UpdatedAt:   result.UpdatedAt,
@@ -124,6 +126,7 @@ func (rp *groupRepo) Get(ctx context.Context, id uuid.UUID) (*domain.Group, erro
 		Description: result.Description,
 		Status:      result.Status,
 		UserID:      result.UserID,
+		ProfileUrl:  result.ProfileUrl.String,
 		CreatedAt:   result.CreatedAt,
 		UpdatedAt:   result.UpdatedAt,
 	}, nil
@@ -148,6 +151,10 @@ func (rp *groupRepo) Update(ctx context.Context, group *domain.Group) (*domain.G
 			String: group.Description,
 			Valid:  group.Description != "",
 		},
+		ProfileUrl: sql.NullString{
+			String: group.ProfileUrl,
+			Valid:  group.ProfileUrl != "",
+		},
 		Status: sql.NullInt32{
 			Int32: group.Status,
 			Valid: group.Status != 0,
@@ -163,6 +170,7 @@ func (rp *groupRepo) Update(ctx context.Context, group *domain.Group) (*domain.G
 		Description: result.Description,
 		Status:      result.Status,
 		UserID:      result.UserID,
+		ProfileUrl:  result.ProfileUrl.String,
 		CreatedAt:   result.CreatedAt,
 		UpdatedAt:   result.UpdatedAt,
 	}, tx.Commit()

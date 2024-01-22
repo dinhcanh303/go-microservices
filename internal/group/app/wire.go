@@ -7,6 +7,7 @@ import (
 	"github.com/dinhcanh303/go-microservices/cmd/group/config"
 	"github.com/dinhcanh303/go-microservices/internal/group/app/router"
 	"github.com/dinhcanh303/go-microservices/internal/group/infras"
+	infrasGRPC "github.com/dinhcanh303/go-microservices/internal/group/infras/grpc"
 	"github.com/dinhcanh303/go-microservices/internal/group/infras/repo"
 	groupmembersUC "github.com/dinhcanh303/go-microservices/internal/group/usecases/groupmembers"
 	groupsUC "github.com/dinhcanh303/go-microservices/internal/group/usecases/groups"
@@ -41,6 +42,7 @@ func InitApp(
 		groupsUC.UseCaseSet,
 		infras.GroupCreatedEventPublisherSet,
 		infras.GroupDeletedEventPublisherSet,
+		infrasGRPC.AuthGRPCClientSet,
 	))
 }
 func dbEngineFunc(url postgres.DBConnString, urlRead postgres.DBConnReadString) (postgres.DBEngine, func(), error) {

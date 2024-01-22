@@ -14,6 +14,7 @@ type Group struct {
 	Description string    `json:"description"`
 	Status      int32     `json:"status"`
 	UserID      uuid.UUID `json:"user_id"`
+	ProfileUrl  string    `json:"profile_url"`
 	CreatedAt   time.Time `json:"created_at"`
 	UpdatedAt   time.Time `json:"updated_at"`
 }

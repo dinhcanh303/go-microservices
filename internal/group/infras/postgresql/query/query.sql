@@ -20,7 +20,8 @@ UPDATE "group".groups
 SET
     name = COALESCE(sqlc.narg('name'),name),
     description = COALESCE(sqlc.narg('description'),description),
-    status = COALESCE(sqlc.narg('status'),status)
+    status = COALESCE(sqlc.narg('status'),status),
+    profile_url = COALESCE(sqlc.narg('profile_url'),profile_url)
 WHERE id = sqlc.arg(id) RETURNING *;
 
 -- name: Delete :exec

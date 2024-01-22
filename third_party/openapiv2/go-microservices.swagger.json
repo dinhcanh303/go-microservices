@@ -1068,7 +1068,7 @@
             "type": "string"
           },
           {
-            "name": "entityUpload",
+            "name": "entityUploadId",
             "in": "query",
             "required": false,
             "type": "string"
@@ -2296,7 +2296,7 @@
           "type": "array",
           "items": {
             "type": "object",
-            "$ref": "#/definitions/groupapiGroupMember"
+            "$ref": "#/definitions/groupapiGroupMemberMetadata"
           }
         }
       }
@@ -2306,6 +2306,10 @@
       "properties": {
         "group": {
           "$ref": "#/definitions/groupapiGroup"
+        },
+        "countGroupMembers": {
+          "type": "string",
+          "format": "int64"
         }
       }
     },
@@ -2361,6 +2365,35 @@
         },
         "userId": {
           "type": "string"
+        },
+        "role": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "groupapiGroupMemberMetadata": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "groupId": {
+          "type": "string"
+        },
+        "userId": {
+          "type": "string"
+        },
+        "user": {
+          "$ref": "#/definitions/authapiUser"
         },
         "role": {
           "type": "integer",
@@ -2762,7 +2795,7 @@
         "attachableId": {
           "type": "string"
         },
-        "entityUpload": {
+        "entityUploadId": {
           "type": "string"
         },
         "userId": {

@@ -25,7 +25,8 @@ func New(
 	ucGroupMember groupmembers.UseCase,
 	groupGRPCServer gen.GroupServiceServer,
 	groupCreatedEventPub groups.GroupCreatedEventPublisher,
-	groupDeletedEventPub groups.GroupDeletedEventPublisher) *App {
+	groupDeletedEventPub groups.GroupDeletedEventPublisher,
+) *App {
 	return &App{
 		Cfg:                  cfg,
 		UC:                   uc,

@@ -23,10 +23,11 @@ import (
 
 type groupGRPCServer struct {
 	gen.UnimplementedGroupServiceServer
-	cfg           *config.Config
-	ucGroup       groups.UseCase
-	ucGroupMember groupmembers.UseCase
-	redis         redis.RedisEngine
+	cfg               *config.Config
+	ucGroup           groups.UseCase
+	ucGroupMember     groupmembers.UseCase
+	authDomainService domain.AuthDomainService
+	redis             redis.RedisEngine
 }
 
 var _ gen.GroupServiceServer = (*groupGRPCServer)(nil)
@@ -39,12 +40,14 @@ func NewGRPCGroupServer(
 	ucGroup groups.UseCase,
 	ucGroupMember groupmembers.UseCase,
 	redis redis.RedisEngine,
+	authDomainService domain.AuthDomainService,
 ) gen.GroupServiceServer {
 	svc := groupGRPCServer{
-		cfg:           cfg,
-		ucGroup:       ucGroup,
-		ucGroupMember: ucGroupMember,
-		redis:         redis,
+		cfg:               cfg,
+		ucGroup:           ucGroup,
+		ucGroupMember:     ucGroupMember,
+		redis:             redis,
+		authDomainService: authDomainService,
 	}
 	gen.RegisterGroupServiceServer(grpcServer, &svc)
 	reflection.Register(grpcServer)
@@ -62,11 +65,16 @@ func (g *groupGRPCServer) GetGroupMembers(ctx context.Context, request *gen.GetG
 		return nil, errors.Wrap(err, "ucGroupMember.GetAllGroupMembers failed")
 	}
 	return &gen.GetGroupMembersResponse{
-		GroupMembers: lo.Map(groupMembers, func(groupMember *domain.GroupMember, _ int) *gen.GroupMember {
-			return &gen.GroupMember{
+		GroupMembers: lo.Map(groupMembers, func(groupMember *domain.GroupMember, _ int) *gen.GroupMemberMetadata {
+			user, err := g.authDomainService.GetProfile(ctx, groupMember.UserID)
+			if err != nil {
+				user = &gen.GetProfileResponse{}
+			}
+			return &gen.GroupMemberMetadata{
 				Id:        groupMember.ID.String(),
 				GroupId:   groupMember.GroupID.String(),
 				UserId:    groupMember.UserID.String(),
+				User:      user.User,
 				Role:      groupMember.Role,
 				CreatedAt: timestamppb.New(groupMember.CreatedAt),
 				UpdatedAt: timestamppb.New(groupMember.UpdatedAt),
@@ -250,6 +258,10 @@ func (g *groupGRPCServer) GetGroup(ctx context.Context, request *gen.GetGroupReq
 	if err != nil {
 		return nil, errors.Wrap(err, "ucGroup.GetGroup failed")
 	}
+	countMembers, err := g.ucGroupMember.CountGroupMembers(ctx, group.ID)
+	if err != nil {
+		countMembers = 0
+	}
 	return &gen.GetGroupResponse{
 		Group: &gen.Group{
 			Id:          group.ID.String(),
@@ -260,6 +272,7 @@ func (g *groupGRPCServer) GetGroup(ctx context.Context, request *gen.GetGroupReq
 			CreatedAt:   timestamppb.New(group.CreatedAt),
 			UpdatedAt:   timestamppb.New(group.UpdatedAt),
 		},
+		CountGroupMembers: countMembers,
 	}, nil
 }
 

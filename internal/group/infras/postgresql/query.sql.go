@@ -32,7 +32,7 @@ INSERT INTO
         description,
         user_id
     )
-VALUES ($1, $2, $3, $4, $5) RETURNING id, user_id, name, description, status, created_at, updated_at
+VALUES ($1, $2, $3, $4, $5) RETURNING id, user_id, name, description, status, profile_url, created_at, updated_at
 `
 
 type CreateParams struct {
@@ -58,6 +58,7 @@ func (q *Queries) Create(ctx context.Context, arg CreateParams) (GroupGroup, err
 		&i.Name,
 		&i.Description,
 		&i.Status,
+		&i.ProfileUrl,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 	)
@@ -184,7 +185,7 @@ func (q *Queries) DeleteGroupMembersByGroupId(ctx context.Context, groupID uuid.
 }
 
 const get = `-- name: Get :one
-SELECT id, user_id, name, description, status, created_at, updated_at FROM "group".groups WHERE id = $1
+SELECT id, user_id, name, description, status, profile_url, created_at, updated_at FROM "group".groups WHERE id = $1
 `
 
 func (q *Queries) Get(ctx context.Context, id uuid.UUID) (GroupGroup, error) {
@@ -196,6 +197,7 @@ func (q *Queries) Get(ctx context.Context, id uuid.UUID) (GroupGroup, error) {
 		&i.Name,
 		&i.Description,
 		&i.Status,
+		&i.ProfileUrl,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 	)
@@ -267,7 +269,7 @@ func (q *Queries) GetGroupMembers(ctx context.Context, groupID uuid.UUID) ([]Gro
 }
 
 const getGroupsByUserId = `-- name: GetGroupsByUserId :many
-SELECT g.id, g.user_id, g.name, g.description, g.status, g.created_at, g.updated_at
+SELECT g.id, g.user_id, g.name, g.description, g.status, g.profile_url, g.created_at, g.updated_at
 FROM "group".groups AS g
 INNER JOIN "group".group_members AS gm ON g.id = gm.group_id
 WHERE gm.user_id = $1 LIMIT $2 OFFSET $3
@@ -294,6 +296,7 @@ func (q *Queries) GetGroupsByUserId(ctx context.Context, arg GetGroupsByUserIdPa
 			&i.Name,
 			&i.Description,
 			&i.Status,
+			&i.ProfileUrl,
 			&i.CreatedAt,
 			&i.UpdatedAt,
 		); err != nil {
@@ -311,7 +314,7 @@ func (q *Queries) GetGroupsByUserId(ctx context.Context, arg GetGroupsByUserIdPa
 }
 
 const getWithUnscoped = `-- name: GetWithUnscoped :one
-SELECT id, user_id, name, description, status, created_at, updated_at FROM "group".groups WHERE id = $1 AND deleted_at IS NOT NULL
+SELECT id, user_id, name, description, status, profile_url, created_at, updated_at FROM "group".groups WHERE id = $1 AND deleted_at IS NOT NULL
 `
 
 func (q *Queries) GetWithUnscoped(ctx context.Context, id uuid.UUID) (GroupGroup, error) {
@@ -323,6 +326,7 @@ func (q *Queries) GetWithUnscoped(ctx context.Context, id uuid.UUID) (GroupGroup
 		&i.Name,
 		&i.Description,
 		&i.Status,
+		&i.ProfileUrl,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 	)
@@ -334,14 +338,16 @@ UPDATE "group".groups
 SET
     name = COALESCE($1,name),
     description = COALESCE($2,description),
-    status = COALESCE($3,status)
-WHERE id = $4 RETURNING id, user_id, name, description, status, created_at, updated_at
+    status = COALESCE($3,status),
+    profile_url = COALESCE($4,profile_url)
+WHERE id = $5 RETURNING id, user_id, name, description, status, profile_url, created_at, updated_at
 `
 
 type UpdateParams struct {
 	Name        sql.NullString `json:"name"`
 	Description sql.NullString `json:"description"`
 	Status      sql.NullInt32  `json:"status"`
+	ProfileUrl  sql.NullString `json:"profile_url"`
 	ID          uuid.UUID      `json:"id"`
 }
 
@@ -350,6 +356,7 @@ func (q *Queries) Update(ctx context.Context, arg UpdateParams) (GroupGroup, err
 		arg.Name,
 		arg.Description,
 		arg.Status,
+		arg.ProfileUrl,
 		arg.ID,
 	)
 	var i GroupGroup
@@ -359,6 +366,7 @@ func (q *Queries) Update(ctx context.Context, arg UpdateParams) (GroupGroup, err
 		&i.Name,
 		&i.Description,
 		&i.Status,
+		&i.ProfileUrl,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 	)
