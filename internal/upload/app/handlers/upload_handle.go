@@ -99,12 +99,18 @@ func (s *UploadHandler) UpdateAttachment(ctx echo.Context) error {
 	if err != nil {
 		return responses.ErrorResponse(ctx, http.StatusNotFound, responses.ErrorString("Parse failed", err))
 	}
-	entityUpload := updateAttachment.EntityUpload
+	// var entityUploadId uuid.UUID
+	// if updateAttachment.EntityUploadID != "" {
+	// 	entityUploadId, err = uuid.Parse(updateAttachment.EntityUploadID)
+	// 	if err != nil {
+	// 		return responses.ErrorResponse(ctx, http.StatusNotFound, responses.ErrorString("Parse failed", err))
+	// 	}
+	// }
 	attachment, err := s.uc.UpdateAttachment(context.Background(), &domain.Attachment{
 		ID:             attachmentId,
 		AttachableType: attachableType,
 		AttachableID:   attachableId,
-		EntityUpload:   entityUpload,
+		EntityUploadID: updateAttachment.EntityUploadID,
 	})
 	if err != nil {
 		return responses.ErrorResponse(ctx, http.StatusNotFound, responses.ErrorString("Handler UpdateAttachment failed", err))
@@ -136,11 +142,18 @@ func (s *UploadHandler) UpdateAttachmentsByIds(ctx echo.Context) error {
 	if err != nil {
 		return responses.ErrorResponse(ctx, http.StatusNotFound, responses.ErrorString("Parse failed", err))
 	}
-	entityUpload := updateAttachment.EntityUpload
+	// var entityUploadId uuid.UUID
+	// if updateAttachment.EntityUploadID != "" {
+	// 	entityUploadId, err = uuid.Parse(updateAttachment.EntityUploadID)
+	// 	if err != nil {
+	// 		return responses.ErrorResponse(ctx, http.StatusNotFound, responses.ErrorString("Parse failed", err))
+	// 	}
+	// }
+
 	attachment, err := s.uc.UpdateAttachmentsByIds(context.Background(), attachmentIds, &domain.Attachment{
 		AttachableType: attachableType,
 		AttachableID:   attachableId,
-		EntityUpload:   entityUpload,
+		EntityUploadID: updateAttachment.EntityUploadID,
 	})
 	if err != nil {
 		return responses.ErrorResponse(ctx, http.StatusNotFound, responses.ErrorString("Handler UpdateAttachmentsByIds failed", err))

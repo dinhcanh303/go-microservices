@@ -9,7 +9,7 @@ CREATE TABLE
         attachable_type VARCHAR(255) DEFAULT NULL,
         attachable_id uuid DEFAULT NULL,
         user_id uuid NOT NULL,
-        entity_upload VARCHAR(255) DEFAULT NULL,
+        entity_upload_id VARCHAR(255) DEFAULT NULL,
         filename VARCHAR(255) NOT NULL,
         extension VARCHAR(255) NOT NULL,
         mime_type VARCHAR(255) DEFAULT NULL,

@@ -10,6 +10,7 @@ CREATE TABLE "group".groups (
     name text NOT NULL,
     description text NOT NULL,
     status integer NOT NULL DEFAULT 1,
+    profile_url text DEFAULT NULL,
     created_at timestamp with time zone NOT NULL DEFAULT current_timestamp,
     updated_at timestamp with time zone NOT NULL DEFAULT (now()),
     -- deleted_at timestamp with time zone NULL,

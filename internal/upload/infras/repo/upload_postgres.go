@@ -7,6 +7,7 @@ import (
 	"github.com/dinhcanh303/go-microservices/internal/upload/domain"
 	"github.com/dinhcanh303/go-microservices/internal/upload/infras/postgresql"
 	"github.com/dinhcanh303/go-microservices/internal/upload/usecases/uploads"
+	"github.com/dinhcanh303/go-microservices/pkg/constant"
 	"github.com/dinhcanh303/go-microservices/pkg/postgres"
 	"github.com/google/uuid"
 	"github.com/google/wire"
@@ -19,26 +20,48 @@ type attachmentRepo struct {
 }
 
 // GetAttachmentsByOptional implements uploads.AttachmentRepo.
-func (rp *attachmentRepo) GetAttachmentsByOptional(ctx context.Context, userId uuid.UUID, attachableType string, entity string, mimeType string) ([]*domain.Attachment, error) {
+func (rp *attachmentRepo) GetAttachmentsByOptional(ctx context.Context, attachment *domain.Attachment) ([]*domain.Attachment, error) {
 	db := rp.pg.GetDBRead()
 	querier := postgresql.New(db)
-	results, err := querier.GetAttachmentsByOptional(ctx, postgresql.GetAttachmentsByOptionalParams{
-		AttachableType: sql.NullString{
-			String: attachableType,
-			Valid:  attachableType != "",
-		},
-		UserID: userId,
-		EntityUpload: sql.NullString{
-			String: entity,
-			Valid:  entity != "",
-		},
-		Column4: sql.NullString{
-			String: mimeType,
-			Valid:  mimeType != "",
-		},
-	})
-	if err != nil {
-		return nil, errors.Wrap(err, "qtx.GetAttachments(...) failed")
+	var results []postgresql.UploadAttachment
+	var err error
+	if attachment.UserID.String() != constant.NullUUID {
+		results, err = querier.GetAttachmentsByUserId(ctx, postgresql.GetAttachmentsByUserIdParams{
+			AttachableType: sql.NullString{
+				String: attachment.AttachableType,
+				Valid:  attachment.AttachableType != "",
+			},
+			EntityUploadID: sql.NullString{
+				String: attachment.EntityUploadID,
+				Valid:  attachment.EntityUploadID != "",
+			},
+			UserID: attachment.UserID,
+			Column2: sql.NullString{
+				String: attachment.MimeType,
+				Valid:  attachment.MimeType != "",
+			},
+		})
+		if err != nil {
+			return nil, errors.Wrap(err, "qtx.GetAttachments(...) failed")
+		}
+	} else {
+		results, err = querier.GetAttachmentsByOptional(ctx, postgresql.GetAttachmentsByOptionalParams{
+			AttachableType: sql.NullString{
+				String: attachment.AttachableType,
+				Valid:  attachment.AttachableType != "",
+			},
+			EntityUploadID: sql.NullString{
+				String: attachment.EntityUploadID,
+				Valid:  attachment.EntityUploadID != "",
+			},
+			Column2: sql.NullString{
+				String: attachment.MimeType,
+				Valid:  attachment.MimeType != "",
+			},
+		})
+		if err != nil {
+			return nil, errors.Wrap(err, "qtx.GetAttachments(...) failed")
+		}
 	}
 	return lo.Map(results, func(item postgresql.UploadAttachment, _ int) *domain.Attachment {
 		return &domain.Attachment{
@@ -46,6 +69,7 @@ func (rp *attachmentRepo) GetAttachmentsByOptional(ctx context.Context, userId u
 			AttachableType: item.AttachableType.String,
 			AttachableID:   item.AttachableID.UUID,
 			UserID:         item.UserID,
+			EntityUploadID: item.EntityUploadID.String,
 			FileName:       item.Filename,
 			Extension:      item.Extension,
 			MimeType:       item.MimeType.String,
@@ -81,6 +105,7 @@ func (rp *attachmentRepo) GetLastAttachmentByType(ctx context.Context, attachabl
 		AttachableType: result.AttachableType.String,
 		AttachableID:   result.AttachableID.UUID,
 		UserID:         result.UserID,
+		EntityUploadID: result.EntityUploadID.String,
 		FileName:       result.Filename,
 		Extension:      result.Extension,
 		MimeType:       result.MimeType.String,
@@ -115,6 +140,7 @@ func (rp *attachmentRepo) GetAttachmentsByType(ctx context.Context, attachableTy
 			AttachableType: item.AttachableType.String,
 			AttachableID:   item.AttachableID.UUID,
 			UserID:         item.UserID,
+			EntityUploadID: item.EntityUploadID.String,
 			FileName:       item.Filename,
 			Extension:      item.Extension,
 			MimeType:       item.MimeType.String,
@@ -145,6 +171,10 @@ func (rp *attachmentRepo) UpdateByIds(ctx context.Context, attachmentIds []uuid.
 			UUID:  attachment.AttachableID,
 			Valid: true,
 		},
+		EntityUploadID: sql.NullString{
+			String: attachment.EntityUploadID,
+			Valid:  attachment.EntityUploadID != "",
+		},
 		Column1: attachmentIds,
 	})
 	if err != nil {
@@ -156,6 +186,7 @@ func (rp *attachmentRepo) UpdateByIds(ctx context.Context, attachmentIds []uuid.
 			AttachableType: item.AttachableType.String,
 			AttachableID:   item.AttachableID.UUID,
 			UserID:         item.UserID,
+			EntityUploadID: item.EntityUploadID.String,
 			FileName:       item.Filename,
 			Extension:      item.Extension,
 			MimeType:       item.MimeType.String,
@@ -198,6 +229,7 @@ func (rp *attachmentRepo) GetByIds(ctx context.Context, attachmentIds []uuid.UUI
 			AttachableType: item.AttachableType.String,
 			AttachableID:   item.AttachableID.UUID,
 			UserID:         item.UserID,
+			EntityUploadID: item.EntityUploadID.String,
 			FileName:       item.Filename,
 			Extension:      item.Extension,
 			MimeType:       item.MimeType.String,
@@ -247,6 +279,7 @@ func (rp *attachmentRepo) Create(ctx context.Context, attachment *domain.Attachm
 		AttachableType: result.AttachableType.String,
 		AttachableID:   result.AttachableID.UUID,
 		UserID:         result.UserID,
+		EntityUploadID: result.EntityUploadID.String,
 		FileName:       result.Filename,
 		Extension:      result.Extension,
 		MimeType:       result.MimeType.String,
@@ -288,6 +321,7 @@ func (rp *attachmentRepo) Get(ctx context.Context, attachmentId uuid.UUID) (*dom
 		AttachableType: result.AttachableType.String,
 		AttachableID:   result.AttachableID.UUID,
 		UserID:         result.UserID,
+		EntityUploadID: result.EntityUploadID.String,
 		FileName:       result.Filename,
 		Extension:      result.Extension,
 		MimeType:       result.MimeType.String,
@@ -318,6 +352,10 @@ func (rp *attachmentRepo) Update(ctx context.Context, attachment *domain.Attachm
 			UUID:  attachment.AttachableID,
 			Valid: true,
 		},
+		EntityUploadID: sql.NullString{
+			String: attachment.EntityUploadID,
+			Valid:  attachment.EntityUploadID != "",
+		},
 	})
 	if err != nil {
 		return nil, errors.Wrap(err, "qtx.Create(ctx, postgresql.CreateParams) failed")
@@ -328,6 +366,7 @@ func (rp *attachmentRepo) Update(ctx context.Context, attachment *domain.Attachm
 		AttachableType: result.AttachableType.String,
 		AttachableID:   result.AttachableID.UUID,
 		UserID:         result.UserID,
+		EntityUploadID: result.EntityUploadID.String,
 		FileName:       result.Filename,
 		Extension:      result.Extension,
 		MimeType:       result.MimeType.String,

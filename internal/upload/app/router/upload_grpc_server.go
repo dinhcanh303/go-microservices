@@ -61,6 +61,7 @@ func (g *uploadGRPCServer) GetAttachmentsByType(
 				AttachableType: item.AttachableType,
 				AttachableId:   item.AttachableID.String(),
 				UserId:         item.UserID.String(),
+				EntityUploadId: item.EntityUploadID,
 				Filename:       item.FileName,
 				Extension:      item.Extension,
 				MimeType:       item.MimeType,
@@ -80,11 +81,28 @@ func (g *uploadGRPCServer) GetAttachmentsByOptional(
 ) (*gen.GetAttachmentsByOptionalResponse, error) {
 	slog.Info("GET: GetAttachmentsByOptional")
 	slog.Info("Request::", request)
-	userId, err := uuid.Parse(request.UserId)
-	if err != nil {
-		return nil, errors.Wrap(err, "Failed to parse")
+	var err error
+	var userId uuid.UUID
+	if request.UserId != "" {
+		userId, err = uuid.Parse(request.UserId)
+		if err != nil {
+			return nil, errors.Wrap(err, "Failed to parse user id")
+		}
 	}
-	attachments, err := g.uc.GetAttachmentsByOptional(ctx, userId, request.AttachableType, request.EntityUpload, request.MimeType)
+	// var entityUploadId uuid.UUID
+	// if request.EntityUploadId != "" {
+	// 	entityUploadId, err = uuid.Parse(request.EntityUploadId)
+	// 	if err != nil {
+	// 		return nil, errors.Wrap(err, "Failed to parse entity upload id")
+	// 	}
+	// }
+	attachment := &domain.Attachment{
+		AttachableType: request.AttachableType,
+		MimeType:       request.MimeType,
+		UserID:         userId,
+		EntityUploadID: request.EntityUploadId,
+	}
+	attachments, err := g.uc.GetAttachmentsByOptional(ctx, attachment)
 	if err != nil {
 		return nil, errors.Wrap(err, "uploadGRPCServer.GetAttachmentsByOptional failed")
 	}
@@ -95,6 +113,7 @@ func (g *uploadGRPCServer) GetAttachmentsByOptional(
 				AttachableType: item.AttachableType,
 				AttachableId:   item.AttachableID.String(),
 				UserId:         item.UserID.String(),
+				EntityUploadId: item.EntityUploadID,
 				Filename:       item.FileName,
 				Extension:      item.Extension,
 				MimeType:       item.MimeType,
@@ -128,6 +147,7 @@ func (g *uploadGRPCServer) GetAvatarUser(
 			AttachableType: attachment.AttachableType,
 			AttachableId:   attachment.AttachableID.String(),
 			UserId:         attachment.UserID.String(),
+			EntityUploadId: attachment.EntityUploadID,
 			Filename:       attachment.FileName,
 			Extension:      attachment.Extension,
 			MimeType:       attachment.MimeType,

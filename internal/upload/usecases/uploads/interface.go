@@ -16,9 +16,9 @@ type (
 		Update(ctx context.Context, attachment *domain.Attachment) (*domain.Attachment, error)
 		UpdateByIds(ctx context.Context, attachmentIds []uuid.UUID, attachment *domain.Attachment) ([]*domain.Attachment, error)
 		Delete(ctx context.Context, attachmentId uuid.UUID) (bool, error)
-		DeleteByIds(ctx context.Context, attachmenIds []uuid.UUID) (bool, error)
+		DeleteByIds(ctx context.Context, attachmentIds []uuid.UUID) (bool, error)
 		GetAttachmentsByType(ctx context.Context, attachableType string, attachableId uuid.UUID) ([]*domain.Attachment, error)
-		GetAttachmentsByOptional(ctx context.Context, userId uuid.UUID, attachableType, entity, mimeType string) ([]*domain.Attachment, error)
+		GetAttachmentsByOptional(ctx context.Context, attachment *domain.Attachment) ([]*domain.Attachment, error)
 		GetLastAttachmentByType(ctx context.Context, attachableType string, attachableId uuid.UUID) (*domain.Attachment, error)
 	}
 	UseCase interface {
@@ -33,6 +33,6 @@ type (
 	UseCaseGRPC interface {
 		GetAttachmentsByType(ctx context.Context, attachableType string, attachableId uuid.UUID) ([]*domain.Attachment, error)
 		GetLastAttachmentByType(ctx context.Context, attachableType string, attachableId uuid.UUID) (*domain.Attachment, error)
-		GetAttachmentsByOptional(ctx context.Context, userId uuid.UUID, attachableType, entity, mimeType string) ([]*domain.Attachment, error)
+		GetAttachmentsByOptional(ctx context.Context, attachment *domain.Attachment) ([]*domain.Attachment, error)
 	}
 )

@@ -23,6 +23,7 @@ func (s *uploadService) UpdateAttachmentsByIds(ctx context.Context, attachmentId
 	results, err := s.repo.UpdateByIds(ctx, attachmentIds, &domain.Attachment{
 		AttachableType: attachment.AttachableType,
 		AttachableID:   attachment.AttachableID,
+		EntityUploadID: attachment.EntityUploadID,
 	})
 	if err != nil {
 		return nil, errors.Wrap(err, "uploadService.UpdateAttachmentsByIds failed")
@@ -104,6 +105,7 @@ func (s *uploadService) UpdateAttachment(ctx context.Context, attachment *domain
 		ID:             attachment.ID,
 		AttachableType: attachment.AttachableType,
 		AttachableID:   attachment.AttachableID,
+		EntityUploadID: attachment.EntityUploadID,
 	})
 	if err != nil {
 		return nil, errors.Wrap(err, "uploadService.UpdateAttachment failed")
