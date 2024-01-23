@@ -11,8 +11,8 @@ import (
 type Post struct {
 	ID        uuid.UUID     `json:"id"`
 	Status    int32         `json:"status"`
-	Title     string        `json:"title"`
 	Content   string        `json:"content"`
+	BgContent string        `json:"bg_content"`
 	UserID    uuid.UUID     `json:"user_id"`
 	GroupID   uuid.NullUUID `json:"group_id"`
 	CreatedAt time.Time     `json:"created_at"`
@@ -22,8 +22,8 @@ type Post struct {
 type PostExtra struct {
 	ID        uuid.UUID                          `json:"id"`
 	Status    int32                              `json:"status"`
-	Title     string                             `json:"title"`
 	Content   string                             `json:"content"`
+	BgContent string                             `json:"bg_content"`
 	UserID    uuid.UUID                          `json:"user_id"`
 	GroupID   uuid.NullUUID                      `json:"group_id"`
 	CreatedAt time.Time                          `json:"created_at"`

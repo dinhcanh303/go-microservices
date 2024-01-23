@@ -14,8 +14,8 @@ type PostPost struct {
 	ID        uuid.UUID     `json:"id"`
 	UserID    uuid.UUID     `json:"user_id"`
 	GroupID   uuid.NullUUID `json:"group_id"`
-	Title     string        `json:"title"`
 	Content   string        `json:"content"`
+	BgContent string        `json:"bg_content"`
 	Status    int32         `json:"status"`
 	CreatedAt time.Time     `json:"created_at"`
 	UpdatedAt time.Time     `json:"updated_at"`

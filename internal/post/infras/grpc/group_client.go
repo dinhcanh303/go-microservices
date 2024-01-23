@@ -6,6 +6,7 @@ import (
 
 	"github.com/dinhcanh303/go-microservices/cmd/post/config"
 	"github.com/dinhcanh303/go-microservices/internal/post/domain"
+	"github.com/dinhcanh303/go-microservices/pkg/utils"
 	"github.com/dinhcanh303/go-microservices/proto/gen"
 	"github.com/google/uuid"
 	"github.com/google/wire"
@@ -18,10 +19,14 @@ type groupGRPCClient struct {
 }
 
 // GetGroup implements domain.GroupDomainService.
-func (g *groupGRPCClient) GetGroup(ctx context.Context, id uuid.NullUUID) (*gen.GetGroupResponse, error) {
+func (g *groupGRPCClient) GetGroup(ctx context.Context, groupId uuid.NullUUID) (*gen.GetGroupResponse, error) {
 	client := gen.NewGroupServiceClient(g.conn)
-	res, err := client.GetGroup(ctx, &gen.GetGroupRequest{
-		Id: id.UUID.String(),
+	ctxBackground, err := utils.OutgoingContext(ctx)
+	if err != nil {
+		return nil, err
+	}
+	res, err := client.GetGroup(ctxBackground, &gen.GetGroupRequest{
+		Id: groupId.UUID.String(),
 	})
 	if err != nil {
 		slog.Warn("groupGRPCClient.GetGroup failed", err)

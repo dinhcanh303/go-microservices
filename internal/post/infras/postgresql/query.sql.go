@@ -18,29 +18,29 @@ INSERT INTO
     post.posts (
         id,
         status,
-        title,
         content,
+        bg_content,
         user_id,
         group_id
     )
-VALUES ($1, $2, $3, $4, $5, $6) RETURNING id, user_id, group_id, title, content, status, created_at, updated_at
+VALUES ($1, $2, $3, $4, $5, $6) RETURNING id, user_id, group_id, content, bg_content, status, created_at, updated_at
 `
 
 type CreateParams struct {
-	ID      uuid.UUID     `json:"id"`
-	Status  int32         `json:"status"`
-	Title   string        `json:"title"`
-	Content string        `json:"content"`
-	UserID  uuid.UUID     `json:"user_id"`
-	GroupID uuid.NullUUID `json:"group_id"`
+	ID        uuid.UUID     `json:"id"`
+	Status    int32         `json:"status"`
+	Content   string        `json:"content"`
+	BgContent string        `json:"bg_content"`
+	UserID    uuid.UUID     `json:"user_id"`
+	GroupID   uuid.NullUUID `json:"group_id"`
 }
 
 func (q *Queries) Create(ctx context.Context, arg CreateParams) (PostPost, error) {
 	row := q.db.QueryRowContext(ctx, create,
 		arg.ID,
 		arg.Status,
-		arg.Title,
 		arg.Content,
+		arg.BgContent,
 		arg.UserID,
 		arg.GroupID,
 	)
@@ -49,8 +49,8 @@ func (q *Queries) Create(ctx context.Context, arg CreateParams) (PostPost, error
 		&i.ID,
 		&i.UserID,
 		&i.GroupID,
-		&i.Title,
 		&i.Content,
+		&i.BgContent,
 		&i.Status,
 		&i.CreatedAt,
 		&i.UpdatedAt,
@@ -68,7 +68,7 @@ func (q *Queries) Delete(ctx context.Context, id uuid.UUID) error {
 }
 
 const get = `-- name: Get :one
-SELECT id, user_id, group_id, title, content, status, created_at, updated_at FROM post.posts WHERE id = $1
+SELECT id, user_id, group_id, content, bg_content, status, created_at, updated_at FROM post.posts WHERE id = $1
 `
 
 func (q *Queries) Get(ctx context.Context, id uuid.UUID) (PostPost, error) {
@@ -78,8 +78,8 @@ func (q *Queries) Get(ctx context.Context, id uuid.UUID) (PostPost, error) {
 		&i.ID,
 		&i.UserID,
 		&i.GroupID,
-		&i.Title,
 		&i.Content,
+		&i.BgContent,
 		&i.Status,
 		&i.CreatedAt,
 		&i.UpdatedAt,
@@ -88,7 +88,7 @@ func (q *Queries) Get(ctx context.Context, id uuid.UUID) (PostPost, error) {
 }
 
 const getByFeed = `-- name: GetByFeed :many
-SELECT id, user_id, group_id, title, content, status, created_at, updated_at
+SELECT id, user_id, group_id, content, bg_content, status, created_at, updated_at
 FROM post.posts
 WHERE user_id = ANY($1::uuid[])
    OR group_id = ANY($2::uuid[])
@@ -121,8 +121,8 @@ func (q *Queries) GetByFeed(ctx context.Context, arg GetByFeedParams) ([]PostPos
 			&i.ID,
 			&i.UserID,
 			&i.GroupID,
-			&i.Title,
 			&i.Content,
+			&i.BgContent,
 			&i.Status,
 			&i.CreatedAt,
 			&i.UpdatedAt,
@@ -141,7 +141,7 @@ func (q *Queries) GetByFeed(ctx context.Context, arg GetByFeedParams) ([]PostPos
 }
 
 const getByGroupId = `-- name: GetByGroupId :many
-SELECT id, user_id, group_id, title, content, status, created_at, updated_at FROM post.posts WHERE group_id = ANY($1::uuid[]) ORDER BY created_at DESC LIMIT $2 OFFSET $3
+SELECT id, user_id, group_id, content, bg_content, status, created_at, updated_at FROM post.posts WHERE group_id = ANY($1::uuid[]) ORDER BY created_at DESC LIMIT $2 OFFSET $3
 `
 
 type GetByGroupIdParams struct {
@@ -163,8 +163,8 @@ func (q *Queries) GetByGroupId(ctx context.Context, arg GetByGroupIdParams) ([]P
 			&i.ID,
 			&i.UserID,
 			&i.GroupID,
-			&i.Title,
 			&i.Content,
+			&i.BgContent,
 			&i.Status,
 			&i.CreatedAt,
 			&i.UpdatedAt,
@@ -183,7 +183,7 @@ func (q *Queries) GetByGroupId(ctx context.Context, arg GetByGroupIdParams) ([]P
 }
 
 const getByUserId = `-- name: GetByUserId :many
-SELECT id, user_id, group_id, title, content, status, created_at, updated_at FROM post.posts 
+SELECT id, user_id, group_id, content, bg_content, status, created_at, updated_at FROM post.posts 
 WHERE user_id = $1 AND group_id IS NULL ORDER BY created_at DESC LIMIT $2 OFFSET $3
 `
 
@@ -206,8 +206,8 @@ func (q *Queries) GetByUserId(ctx context.Context, arg GetByUserIdParams) ([]Pos
 			&i.ID,
 			&i.UserID,
 			&i.GroupID,
-			&i.Title,
 			&i.Content,
+			&i.BgContent,
 			&i.Status,
 			&i.CreatedAt,
 			&i.UpdatedAt,
@@ -228,23 +228,23 @@ func (q *Queries) GetByUserId(ctx context.Context, arg GetByUserIdParams) ([]Pos
 const update = `-- name: Update :one
 UPDATE post.posts 
 SET
-    title = COALESCE($1,title),
-    content = COALESCE($2,content),
+    content = COALESCE($1,content),
+    bg_content = COALESCE($2,bg_content),
     status = COALESCE($3,status)
-WHERE id = $4 RETURNING id, user_id, group_id, title, content, status, created_at, updated_at
+WHERE id = $4 RETURNING id, user_id, group_id, content, bg_content, status, created_at, updated_at
 `
 
 type UpdateParams struct {
-	Title   sql.NullString `json:"title"`
-	Content sql.NullString `json:"content"`
-	Status  sql.NullInt32  `json:"status"`
-	ID      uuid.UUID      `json:"id"`
+	Content   sql.NullString `json:"content"`
+	BgContent sql.NullString `json:"bg_content"`
+	Status    sql.NullInt32  `json:"status"`
+	ID        uuid.UUID      `json:"id"`
 }
 
 func (q *Queries) Update(ctx context.Context, arg UpdateParams) (PostPost, error) {
 	row := q.db.QueryRowContext(ctx, update,
-		arg.Title,
 		arg.Content,
+		arg.BgContent,
 		arg.Status,
 		arg.ID,
 	)
@@ -253,8 +253,8 @@ func (q *Queries) Update(ctx context.Context, arg UpdateParams) (PostPost, error
 		&i.ID,
 		&i.UserID,
 		&i.GroupID,
-		&i.Title,
 		&i.Content,
+		&i.BgContent,
 		&i.Status,
 		&i.CreatedAt,
 		&i.UpdatedAt,

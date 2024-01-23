@@ -6,8 +6,8 @@ INSERT INTO
     post.posts (
         id,
         status,
-        title,
         content,
+        bg_content,
         user_id,
         group_id
     )
@@ -16,8 +16,8 @@ VALUES ($1, $2, $3, $4, $5, $6) RETURNING *;
 -- name: Update :one
 UPDATE post.posts 
 SET
-    title = COALESCE(sqlc.narg(title),title),
     content = COALESCE(sqlc.narg(content),content),
+    bg_content = COALESCE(sqlc.narg(bg_content),bg_content),
     status = COALESCE(sqlc.narg(status),status)
 WHERE id = sqlc.arg(id) RETURNING *;
 

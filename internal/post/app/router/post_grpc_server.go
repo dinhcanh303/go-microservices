@@ -68,10 +68,10 @@ func (p *postGRPCServer) CreatePost(ctx context.Context, request *gen.CreatePost
 	}
 	groupId, _ := uuid.Parse(request.Post.GroupId)
 	model := domain.Post{
-		Title:   request.Post.Title,
-		Content: request.Post.Content,
-		Status:  request.Post.Status,
-		UserID:  user.ID,
+		Content:   request.Post.Content,
+		BgContent: request.Post.BgContent,
+		Status:    request.Post.Status,
+		UserID:    user.ID,
 		GroupID: uuid.NullUUID{
 			UUID:  groupId,
 			Valid: request.Post.GroupId != "",
@@ -84,8 +84,8 @@ func (p *postGRPCServer) CreatePost(ctx context.Context, request *gen.CreatePost
 	res := &gen.CreatePostResponse{
 		Post: &gen.Post{
 			Id:        post.ID.String(),
-			Title:     post.Title,
 			Content:   post.Content,
+			BgContent: post.BgContent,
 			UserId:    post.UserID.String(),
 			GroupId:   post.GroupID.UUID.String(),
 			Status:    post.Status,
@@ -218,10 +218,10 @@ func (p *postGRPCServer) UpdatePost(ctx context.Context, request *gen.UpdatePost
 		return nil, errors.Wrap(err, "failed to parse")
 	}
 	model := domain.Post{
-		ID:      id,
-		Title:   request.Post.Title,
-		Content: request.Post.Content,
-		Status:  request.Post.Status,
+		ID:        id,
+		Content:   request.Post.Content,
+		BgContent: request.Post.BgContent,
+		Status:    request.Post.Status,
 	}
 	post, err := p.uc.UpdatePost(ctx, &model)
 	if err != nil {
@@ -230,8 +230,8 @@ func (p *postGRPCServer) UpdatePost(ctx context.Context, request *gen.UpdatePost
 	res := &gen.UpdatePostResponse{
 		Post: &gen.Post{
 			Id:        post.ID.String(),
-			Title:     post.Title,
 			Content:   post.Content,
+			BgContent: post.BgContent,
 			UserId:    post.UserID.String(),
 			GroupId:   post.GroupID.UUID.String(),
 			Status:    post.Status,
@@ -262,6 +262,7 @@ func manyPostResponse(posts []*domain.Post, p *postGRPCServer, ctx context.Conte
 		if err != nil {
 			user = &gen.GetProfileResponse{}
 		}
+		slog.Info("GROUP ID", post.GroupID)
 		group, err := p.groupDomainService.GetGroup(ctx, post.GroupID)
 		if err != nil {
 			group = &gen.GetGroupResponse{}
@@ -279,8 +280,8 @@ func manyPostResponse(posts []*domain.Post, p *postGRPCServer, ctx context.Conte
 		results = append(results, &gen.GetPostResponse{
 			Post: &gen.Post{
 				Id:        post.ID.String(),
-				Title:     post.Title,
 				Content:   post.Content,
+				BgContent: post.BgContent,
 				UserId:    post.UserID.String(),
 				GroupId:   post.GroupID.UUID.String(),
 				Status:    post.Status,

@@ -42,7 +42,7 @@ func (rp *postRepo) GetByFeed(ctx context.Context, userIds []uuid.UUID, groupIds
 	return lo.Map(results, func(item postgresql.PostPost, _ int) *domain.Post {
 		return &domain.Post{
 			ID:        item.ID,
-			Title:     item.Title,
+			BgContent: item.BgContent,
 			Content:   item.Content,
 			Status:    item.Status,
 			UserID:    item.UserID,
@@ -68,7 +68,7 @@ func (rp *postRepo) GetByGroupId(ctx context.Context, groupIds []uuid.UUID, limi
 	return lo.Map(results, func(item postgresql.PostPost, _ int) *domain.Post {
 		return &domain.Post{
 			ID:        item.ID,
-			Title:     item.Title,
+			BgContent: item.BgContent,
 			Content:   item.Content,
 			Status:    item.Status,
 			UserID:    item.UserID,
@@ -94,7 +94,7 @@ func (rp *postRepo) GetByUserId(ctx context.Context, userId uuid.UUID, limit, of
 	return lo.Map(results, func(item postgresql.PostPost, _ int) *domain.Post {
 		return &domain.Post{
 			ID:        item.ID,
-			Title:     item.Title,
+			BgContent: item.BgContent,
 			Content:   item.Content,
 			Status:    item.Status,
 			UserID:    item.UserID,
@@ -115,12 +115,12 @@ func (rp *postRepo) Create(ctx context.Context, post *domain.Post) (*domain.Post
 	}
 	qtx := querier.WithTx(tx)
 	result, err := qtx.Create(ctx, postgresql.CreateParams{
-		ID:      uuid.New(),
-		Title:   post.Title,
-		Content: post.Content,
-		Status:  post.Status,
-		UserID:  post.UserID,
-		GroupID: post.GroupID,
+		ID:        uuid.New(),
+		Content:   post.Content,
+		BgContent: post.BgContent,
+		Status:    post.Status,
+		UserID:    post.UserID,
+		GroupID:   post.GroupID,
 	})
 	if err != nil {
 		return nil, errors.Wrap(err, "qtx.Create(ctx, postgresql.CreateParams) failed")
@@ -128,7 +128,7 @@ func (rp *postRepo) Create(ctx context.Context, post *domain.Post) (*domain.Post
 
 	return &domain.Post{
 		ID:        result.ID,
-		Title:     result.Title,
+		BgContent: result.BgContent,
 		Content:   result.Content,
 		Status:    result.Status,
 		UserID:    result.UserID,
@@ -165,7 +165,7 @@ func (rp *postRepo) Get(ctx context.Context, id uuid.UUID) (*domain.Post, error)
 
 	return &domain.Post{
 		ID:        result.ID,
-		Title:     result.Title,
+		BgContent: result.BgContent,
 		Content:   result.Content,
 		Status:    result.Status,
 		UserID:    result.UserID,
@@ -186,9 +186,9 @@ func (rp *postRepo) Update(ctx context.Context, post *domain.Post) (*domain.Post
 	qtx := querier.WithTx(tx)
 	result, err := qtx.Update(ctx, postgresql.UpdateParams{
 		ID: post.ID,
-		Title: sql.NullString{
-			String: post.Title,
-			Valid:  post.Title != "",
+		BgContent: sql.NullString{
+			String: post.BgContent,
+			Valid:  post.BgContent != "",
 		},
 		Content: sql.NullString{
 			String: post.Content,
@@ -205,7 +205,7 @@ func (rp *postRepo) Update(ctx context.Context, post *domain.Post) (*domain.Post
 
 	return &domain.Post{
 		ID:        result.ID,
-		Title:     result.Title,
+		BgContent: result.BgContent,
 		Content:   result.Content,
 		Status:    result.Status,
 		UserID:    result.UserID,
