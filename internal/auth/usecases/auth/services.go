@@ -31,6 +31,15 @@ type service struct {
 	userDeletedEventPub UserDeletedEventPublisher
 }
 
+// GetUsersInviteGroup implements UseCase.
+func (s *service) GetUsersInviteGroup(ctx context.Context, groupIds []uuid.UUID, limit int32, offset int32) ([]*domain.User, error) {
+	users, err := s.repo.GetUsersInviteGroup(ctx, groupIds, limit, offset)
+	if err != nil {
+		return nil, err
+	}
+	return users, nil
+}
+
 // UpdateUser implements UseCase.
 func (s *service) UpdateUser(ctx context.Context, user *domain.User) (*domain.User, error) {
 	user, err := s.repo.UpdateUser(ctx, user)

@@ -151,6 +151,7 @@ services:
       PG_URL: postgres://postgres:123456@postgres-master:5432/postgres?sslmode=disable
       PG_REP_URL: postgres://postgres:123456@postgres-slave:5432/postgres?sslmode=disable
       UPLOAD_CLIENT_URL: upload:5006
+      GROUP_CLIENT_URL: group:5001
     depends_on:
       - search
     ports:

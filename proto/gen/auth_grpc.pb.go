@@ -27,6 +27,8 @@ const (
 	AuthService_GetUserIdsOfCompanyByUserId_FullMethodName = "/authapi.AuthService/GetUserIdsOfCompanyByUserId"
 	AuthService_GetProfile_FullMethodName                  = "/authapi.AuthService/GetProfile"
 	AuthService_GetUsers_FullMethodName                    = "/authapi.AuthService/GetUsers"
+	AuthService_GetUsersInviteByGroupId_FullMethodName     = "/authapi.AuthService/GetUsersInviteByGroupId"
+	AuthService_GetUsersBirthDay_FullMethodName            = "/authapi.AuthService/GetUsersBirthDay"
 	AuthService_UpdateUser_FullMethodName                  = "/authapi.AuthService/UpdateUser"
 )
 
@@ -42,6 +44,8 @@ type AuthServiceClient interface {
 	GetUserIdsOfCompanyByUserId(ctx context.Context, in *GetUserIdsOfCompanyByUserIdRequest, opts ...grpc.CallOption) (*GetUserIdsOfCompanyByUserIdResponse, error)
 	GetProfile(ctx context.Context, in *GetProfileRequest, opts ...grpc.CallOption) (*GetProfileResponse, error)
 	GetUsers(ctx context.Context, in *GetUsersRequest, opts ...grpc.CallOption) (*GetUsersResponse, error)
+	GetUsersInviteByGroupId(ctx context.Context, in *GetUsersInviteGroupIdRequest, opts ...grpc.CallOption) (*GetUsersInviteGroupIdResponse, error)
+	GetUsersBirthDay(ctx context.Context, in *GetUsersBirthDayRequest, opts ...grpc.CallOption) (*GetUsersBirthDayResponse, error)
 	UpdateUser(ctx context.Context, in *UpdateUserRequest, opts ...grpc.CallOption) (*UpdateUserResponse, error)
 }
 
@@ -125,6 +129,24 @@ func (c *authServiceClient) GetUsers(ctx context.Context, in *GetUsersRequest, o
 	return out, nil
 }
 
+func (c *authServiceClient) GetUsersInviteByGroupId(ctx context.Context, in *GetUsersInviteGroupIdRequest, opts ...grpc.CallOption) (*GetUsersInviteGroupIdResponse, error) {
+	out := new(GetUsersInviteGroupIdResponse)
+	err := c.cc.Invoke(ctx, AuthService_GetUsersInviteByGroupId_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *authServiceClient) GetUsersBirthDay(ctx context.Context, in *GetUsersBirthDayRequest, opts ...grpc.CallOption) (*GetUsersBirthDayResponse, error) {
+	out := new(GetUsersBirthDayResponse)
+	err := c.cc.Invoke(ctx, AuthService_GetUsersBirthDay_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *authServiceClient) UpdateUser(ctx context.Context, in *UpdateUserRequest, opts ...grpc.CallOption) (*UpdateUserResponse, error) {
 	out := new(UpdateUserResponse)
 	err := c.cc.Invoke(ctx, AuthService_UpdateUser_FullMethodName, in, out, opts...)
@@ -146,6 +168,8 @@ type AuthServiceServer interface {
 	GetUserIdsOfCompanyByUserId(context.Context, *GetUserIdsOfCompanyByUserIdRequest) (*GetUserIdsOfCompanyByUserIdResponse, error)
 	GetProfile(context.Context, *GetProfileRequest) (*GetProfileResponse, error)
 	GetUsers(context.Context, *GetUsersRequest) (*GetUsersResponse, error)
+	GetUsersInviteByGroupId(context.Context, *GetUsersInviteGroupIdRequest) (*GetUsersInviteGroupIdResponse, error)
+	GetUsersBirthDay(context.Context, *GetUsersBirthDayRequest) (*GetUsersBirthDayResponse, error)
 	UpdateUser(context.Context, *UpdateUserRequest) (*UpdateUserResponse, error)
 	mustEmbedUnimplementedAuthServiceServer()
 }
@@ -177,6 +201,12 @@ func (UnimplementedAuthServiceServer) GetProfile(context.Context, *GetProfileReq
 }
 func (UnimplementedAuthServiceServer) GetUsers(context.Context, *GetUsersRequest) (*GetUsersResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetUsers not implemented")
+}
+func (UnimplementedAuthServiceServer) GetUsersInviteByGroupId(context.Context, *GetUsersInviteGroupIdRequest) (*GetUsersInviteGroupIdResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetUsersInviteByGroupId not implemented")
+}
+func (UnimplementedAuthServiceServer) GetUsersBirthDay(context.Context, *GetUsersBirthDayRequest) (*GetUsersBirthDayResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetUsersBirthDay not implemented")
 }
 func (UnimplementedAuthServiceServer) UpdateUser(context.Context, *UpdateUserRequest) (*UpdateUserResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateUser not implemented")
@@ -338,6 +368,42 @@ func _AuthService_GetUsers_Handler(srv interface{}, ctx context.Context, dec fun
 	return interceptor(ctx, in, info, handler)
 }
 
+func _AuthService_GetUsersInviteByGroupId_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetUsersInviteGroupIdRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AuthServiceServer).GetUsersInviteByGroupId(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AuthService_GetUsersInviteByGroupId_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AuthServiceServer).GetUsersInviteByGroupId(ctx, req.(*GetUsersInviteGroupIdRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AuthService_GetUsersBirthDay_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetUsersBirthDayRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AuthServiceServer).GetUsersBirthDay(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AuthService_GetUsersBirthDay_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AuthServiceServer).GetUsersBirthDay(ctx, req.(*GetUsersBirthDayRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _AuthService_UpdateUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(UpdateUserRequest)
 	if err := dec(in); err != nil {
@@ -394,6 +460,14 @@ var AuthService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetUsers",
 			Handler:    _AuthService_GetUsers_Handler,
+		},
+		{
+			MethodName: "GetUsersInviteByGroupId",
+			Handler:    _AuthService_GetUsersInviteByGroupId_Handler,
+		},
+		{
+			MethodName: "GetUsersBirthDay",
+			Handler:    _AuthService_GetUsersBirthDay_Handler,
 		},
 		{
 			MethodName: "UpdateUser",

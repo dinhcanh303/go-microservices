@@ -19,6 +19,36 @@ type userRepo struct {
 	pg postgres.DBEngine
 }
 
+// GetUsersInviteGroup implements auth.UserRepo.
+func (rp *userRepo) GetUsersInviteGroup(ctx context.Context, groupIds []uuid.UUID, limit int32, offset int32) ([]*domain.User, error) {
+	db := rp.pg.GetDBRead()
+	querier := postgresql.New(db)
+	users, err := querier.GetUsersInviteGroup(ctx, postgresql.GetUsersInviteGroupParams{
+		Column1: groupIds,
+		Limit:   limit,
+		Offset:  offset,
+	})
+	if err != nil {
+		return nil, errors.Wrap(err, "userRepo.GetUsers failed")
+	}
+	return lo.Map(users, func(user postgresql.AuthUser, _ int) *domain.User {
+		return &domain.User{
+			ID:         user.ID,
+			Email:      user.Email,
+			FirstName:  user.FirstName,
+			LastName:   user.LastName,
+			FullName:   user.FullName.String,
+			NickName:   user.NickName.String,
+			Role:       user.Role.String,
+			AvatarUrl:  user.AvatarUrl.String,
+			ProfileUrl: user.ProfileUrl.String,
+			// Password:  user.Password,
+			CreatedAt: user.CreatedAt,
+			UpdatedAt: user.UpdatedAt,
+		}
+	}), nil
+}
+
 // UpdateUser implements auth.UserRepo.
 func (rp *userRepo) UpdateUser(ctx context.Context, user *domain.User) (*domain.User, error) {
 	db := rp.pg.GetDB()

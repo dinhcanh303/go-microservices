@@ -32,6 +32,7 @@ type authGRPCServer struct {
 	uc                  auth.UseCase
 	ucKey               keys.UseCase
 	uploadDomainService domain.UploadDomainService
+	groupDomainService  domain.GroupDomainService
 }
 
 var _ gen.AuthServiceServer = (*authGRPCServer)(nil)
@@ -43,12 +44,14 @@ func NewAuthGRPCServer(
 	cfg *config.Config,
 	uc auth.UseCase,
 	ucKey keys.UseCase,
-	uploadDomainService domain.UploadDomainService) gen.AuthServiceServer {
+	uploadDomainService domain.UploadDomainService,
+	groupDomainService domain.GroupDomainService) gen.AuthServiceServer {
 	svc := authGRPCServer{
 		cfg:                 cfg,
 		uc:                  uc,
 		ucKey:               ucKey,
 		uploadDomainService: uploadDomainService,
+		groupDomainService:  groupDomainService,
 	}
 	gen.RegisterAuthServiceServer(grpcServer, &svc)
 	reflection.Register(grpcServer)
@@ -201,7 +204,45 @@ func (a *authGRPCServer) UpdateUser(ctx context.Context, request *gen.UpdateUser
 		},
 	}, nil
 }
-
+func (a *authGRPCServer) GetUsersInviteByGroupId(ctx context.Context, request *gen.GetUsersInviteGroupIdRequest) (*gen.GetUsersInviteGroupIdResponse, error) {
+	groupMembers, err := a.groupDomainService.GetGroupMembers(ctx, request.GroupId)
+	if err != nil {
+		return &gen.GetUsersInviteGroupIdResponse{}, nil
+	}
+	groupMemberIdsString := lo.Map(groupMembers.GroupMembers, func(groupMember *gen.GroupMemberMetadata, index int) string {
+		return groupMember.UserId
+	})
+	groupMemberIds, err := utils.ConvertArStringToArUUID(groupMemberIdsString)
+	if err != nil {
+		return nil, err
+	}
+	inviteMembers, err := a.uc.GetUsersInviteGroup(ctx, groupMemberIds, request.Limit, request.Offset)
+	if err != nil {
+		return nil, err
+	}
+	return &gen.GetUsersInviteGroupIdResponse{
+		Users: lo.Map(inviteMembers, func(user *domain.User, _ int) *gen.User {
+			return &gen.User{
+				Id:          user.ID.String(),
+				Email:       user.Email,
+				FirstName:   user.FirstName,
+				LastName:    user.LastName,
+				FullName:    user.FullName,
+				NickName:    user.NickName,
+				Role:        user.Role,
+				AvatarUrl:   user.AvatarUrl,
+				ProfileUrl:  user.ProfileUrl,
+				Gender:      user.Gender,
+				Phone:       user.Phone,
+				Address:     user.Address,
+				DateOfBirth: timestamppb.New(user.DateOfBirth),
+				Position:    user.Position,
+				CreatedAt:   timestamppb.New(user.CreatedAt),
+				UpdatedAt:   timestamppb.New(user.UpdatedAt),
+			}
+		}),
+	}, nil
+}
 func (a *authGRPCServer) GetProfile(ctx context.Context, request *gen.GetProfileRequest) (*gen.GetProfileResponse, error) {
 	slog.Info("GET:: Profile")
 	var userId uuid.UUID

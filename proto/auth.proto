@@ -83,6 +83,24 @@ service AuthService {
             description: ""
         };
     }
+    rpc GetUsersInviteByGroupId(GetUsersInviteGroupIdRequest) returns (GetUsersInviteGroupIdResponse){
+        option (google.api.http) = {
+            get: "/api/v1/users/{group_id}/invite",
+        };
+        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+            summary: "Get All User can invite Group"
+            description: ""
+        };
+    }
+    rpc GetUsersBirthDay(GetUsersBirthDayRequest) returns (GetUsersBirthDayResponse){
+        option (google.api.http) = {
+            get: "/api/v1/users/birthdays",
+        };
+        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+            summary: "Get Users Birth Day"
+            description: ""
+        };
+    }
     rpc UpdateUser(UpdateUserRequest) returns (UpdateUserResponse){
         option (google.api.http) = {
             put: "/api/v1/users/{user.id}",
@@ -93,6 +111,18 @@ service AuthService {
             description: ""
         };
     }
+}
+message GetUsersBirthDayRequest{}
+message GetUsersBirthDayResponse{
+    repeated User users=1;
+}
+message GetUsersInviteGroupIdRequest {
+    string group_id = 1;
+    int32 limit = 2;
+    int32 offset = 3;
+}
+message GetUsersInviteGroupIdResponse {
+    repeated User users=1;
 }
 message UpdateUserRequest {
     User user = 1;

@@ -15,6 +15,7 @@ type UserRepo interface {
 	GetUsers(ctx context.Context, search string, limit, offset int32) ([]*domain.User, error)
 	GetUserByEmail(ctx context.Context, email string) (*domain.User, error)
 	GetUserIdsOfCompany(ctx context.Context, company string) ([]uuid.UUID, error)
+	GetUsersInviteGroup(ctx context.Context, groupIds []uuid.UUID, limit, offset int32) ([]*domain.User, error)
 }
 type UseCase interface {
 	SignIn(ctx context.Context, email, password string) (*domain.UserAuth, error)
@@ -24,6 +25,7 @@ type UseCase interface {
 	GetUserIdsOfCompanyByUserId(ctx context.Context, userId uuid.UUID) ([]uuid.UUID, error)
 	GetUser(ctx context.Context, userID uuid.UUID) (*domain.User, error)
 	GetUsers(ctx context.Context, search string, limit, offset int32) ([]*domain.User, error)
+	GetUsersInviteGroup(ctx context.Context, groupIds []uuid.UUID, limit, offset int32) ([]*domain.User, error)
 	UpdateUser(ctx context.Context, user *domain.User) (*domain.User, error)
 }
 

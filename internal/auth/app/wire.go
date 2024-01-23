@@ -44,6 +44,7 @@ func InitApp(
 		infras.UserCreatedEventPublisherSet,
 		infras.UserDeletedEventPublisherSet,
 		infrasGRPC.UploadGRPCClientSet,
+		infrasGRPC.GroupGRPCClientSet,
 		publisher.EventPublisherSet,
 	))
 }
