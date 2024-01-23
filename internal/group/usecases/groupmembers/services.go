@@ -13,6 +13,15 @@ type service struct {
 	repo GroupMemberRepo
 }
 
+// CheckGroupMember implements UseCase.
+func (s *service) CheckGroupMember(ctx context.Context, groupId uuid.UUID, userId uuid.UUID) (bool, error) {
+	result, err := s.repo.CheckGroupMember(ctx, groupId, userId)
+	if err != nil {
+		return false, errors.Wrap(err, "service.CheckGroupMember")
+	}
+	return result, nil
+}
+
 var _ UseCase = (*service)(nil)
 
 var UseCaseSet = wire.NewSet(NewService)

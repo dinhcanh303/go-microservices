@@ -12,6 +12,26 @@ import (
 	"github.com/google/uuid"
 )
 
+const checkGroupMember = `-- name: CheckGroupMember :one
+SELECT EXISTS (
+    SELECT 1
+    FROM "group".group_members
+    WHERE group_id = $1 AND user_id = $2
+) AS member_exists
+`
+
+type CheckGroupMemberParams struct {
+	GroupID uuid.UUID `json:"group_id"`
+	UserID  uuid.UUID `json:"user_id"`
+}
+
+func (q *Queries) CheckGroupMember(ctx context.Context, arg CheckGroupMemberParams) (bool, error) {
+	row := q.db.QueryRowContext(ctx, checkGroupMember, arg.GroupID, arg.UserID)
+	var member_exists bool
+	err := row.Scan(&member_exists)
+	return member_exists, err
+}
+
 const countGroupMembers = `-- name: CountGroupMembers :one
 SELECT count(*) FROM "group".group_members WHERE group_id = $1
 `

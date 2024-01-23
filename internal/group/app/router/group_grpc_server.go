@@ -173,6 +173,7 @@ func (g *groupGRPCServer) GetGroupsByUserId(ctx context.Context, request *gen.Ge
 				Description: group.Description,
 				Status:      group.Status,
 				UserId:      group.UserID.String(),
+				ProfileUrl:  group.ProfileUrl,
 				CreatedAt:   timestamppb.New(group.CreatedAt),
 				UpdatedAt:   timestamppb.New(group.UpdatedAt),
 			}
@@ -233,6 +234,7 @@ func (g *groupGRPCServer) CreateGroup(ctx context.Context, request *gen.CreateGr
 			Description: group.Description,
 			UserId:      group.UserID.String(),
 			Status:      group.Status,
+			ProfileUrl:  group.ProfileUrl,
 			CreatedAt:   timestamppb.New(group.CreatedAt),
 			UpdatedAt:   timestamppb.New(group.UpdatedAt),
 		},
@@ -250,6 +252,10 @@ func (g *groupGRPCServer) GetGroup(ctx context.Context, request *gen.GetGroupReq
 	// 		return nil, errors.Wrap(err, "failed to unmarshal")
 	// 	}
 	// }
+	payloadUser, err := utils.ExtractMetadataUser(ctx)
+	if err != nil {
+		return nil, err
+	}
 	id, err := uuid.Parse(request.Id)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to parse id")
@@ -262,6 +268,10 @@ func (g *groupGRPCServer) GetGroup(ctx context.Context, request *gen.GetGroupReq
 	if err != nil {
 		countMembers = 0
 	}
+	isMember, err := g.ucGroupMember.CheckGroupMember(ctx, group.ID, payloadUser.ID)
+	if err != nil {
+		isMember = false
+	}
 	return &gen.GetGroupResponse{
 		Group: &gen.Group{
 			Id:          group.ID.String(),
@@ -269,10 +279,12 @@ func (g *groupGRPCServer) GetGroup(ctx context.Context, request *gen.GetGroupReq
 			Description: group.Description,
 			UserId:      group.UserID.String(),
 			Status:      group.Status,
+			ProfileUrl:  group.ProfileUrl,
 			CreatedAt:   timestamppb.New(group.CreatedAt),
 			UpdatedAt:   timestamppb.New(group.UpdatedAt),
 		},
 		CountGroupMembers: countMembers,
+		IsMember:          isMember,
 	}, nil
 }
 
@@ -303,6 +315,7 @@ func (g *groupGRPCServer) UpdateGroup(ctx context.Context, request *gen.UpdateGr
 		Name:        request.Group.Name,
 		Description: request.Group.Description,
 		Status:      request.Group.Status,
+		ProfileUrl:  request.Group.ProfileUrl,
 	}
 
 	group, err := g.ucGroup.UpdateGroup(ctx, &model)
@@ -316,6 +329,7 @@ func (g *groupGRPCServer) UpdateGroup(ctx context.Context, request *gen.UpdateGr
 			Description: group.Description,
 			UserId:      group.UserID.String(),
 			Status:      group.Status,
+			ProfileUrl:  group.ProfileUrl,
 			CreatedAt:   timestamppb.New(group.CreatedAt),
 			UpdatedAt:   timestamppb.New(group.UpdatedAt),
 		},

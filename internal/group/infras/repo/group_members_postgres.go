@@ -18,6 +18,25 @@ type groupMemberRepo struct {
 	pg postgres.DBEngine
 }
 
+// CheckGroupMember implements groupmembers.GroupMemberRepo.
+func (rp *groupMemberRepo) CheckGroupMember(ctx context.Context, groupId uuid.UUID, userId uuid.UUID) (bool, error) {
+	db := rp.pg.GetDB()
+	querier := postgresql.New(db)
+	tx, err := db.Begin()
+	if err != nil {
+		return false, errors.Wrap(err, "CheckGroupMember")
+	}
+	qtx := querier.WithTx(tx)
+	result, err := qtx.CheckGroupMember(ctx, postgresql.CheckGroupMemberParams{
+		GroupID: groupId,
+		UserID:  userId,
+	})
+	if err != nil {
+		return false, errors.Wrap(err, "qtx.CheckGroupMember(ctx, groupId,userId) failed")
+	}
+	return result, tx.Commit()
+}
+
 // CountGroupMember implements groupmembers.GroupMemberRepo.
 func (rp *groupMemberRepo) CountGroupMembers(ctx context.Context, groupId uuid.UUID) (int64, error) {
 	db := rp.pg.GetDB()

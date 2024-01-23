@@ -145,6 +145,7 @@ message DeleteGroupMemberResponse {
 message GetGroupResponse {
     Group group = 1;
     int64 count_group_members = 2;
+    bool is_member = 3;
 }
 message UpdateGroupRequest {
     Group group = 1;
@@ -176,7 +177,8 @@ message GroupRequest {
     string name = 1;
     string description = 2;
     int32 status = 3;
-    repeated string user_ids = 4;
+    int32 profile_url = 4;
+    repeated string user_ids = 5;
 }
 message Group {
     string id = 1;
@@ -184,8 +186,9 @@ message Group {
     string description = 3;
     int32 status = 4;
     string user_id = 5;
-    google.protobuf.Timestamp created_at = 6;
-    google.protobuf.Timestamp updated_at = 7;
+    string profile_url = 6;
+    google.protobuf.Timestamp created_at = 7;
+    google.protobuf.Timestamp updated_at = 8;
 }
 message GroupMemberRequest {
     string group_id = 1;

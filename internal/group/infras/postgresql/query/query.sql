@@ -60,6 +60,13 @@ DELETE FROM "group".group_members WHERE id = $1;
 -- name: GetGroupMembers :many
 SELECT * FROM "group".group_members WHERE group_id = $1;
 
+-- name: CheckGroupMember :one
+SELECT EXISTS (
+    SELECT 1
+    FROM "group".group_members
+    WHERE group_id = $1 AND user_id = $2
+) AS member_exists;
+
 -- name: CountGroupMembers :one
 SELECT count(*) FROM "group".group_members WHERE group_id = $1;
 
