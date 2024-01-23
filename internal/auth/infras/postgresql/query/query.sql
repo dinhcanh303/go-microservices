@@ -27,6 +27,19 @@ WHERE
 LIMIT $2
 OFFSET $3;
 
+
+-- name: GetUsersInviteGroup :many
+SELECT * FROM auth.users 
+WHERE 
+    id != ANY($1::uuid[])
+LIMIT $2
+OFFSET $3;
+
+-- name: GetUsersByBirthDay :many
+SELECT * FROM auth.users 
+WHERE 
+    date_of_birth BETWEEN $1 AND $2;
+
 -- name: UpdateUser :one
 UPDATE auth.users 
 SET

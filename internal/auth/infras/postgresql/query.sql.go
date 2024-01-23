@@ -324,6 +324,115 @@ func (q *Queries) GetUsers(ctx context.Context, arg GetUsersParams) ([]AuthUser,
 	return items, nil
 }
 
+const getUsersByBirthDay = `-- name: GetUsersByBirthDay :many
+SELECT id, email, first_name, last_name, full_name, nick_name, avatar_url, profile_url, role, resigned, gender, phone, address, position, date_of_birth, password, created_at, updated_at FROM auth.users 
+WHERE 
+    date_of_birth BETWEEN $1 AND $2
+`
+
+type GetUsersByBirthDayParams struct {
+	DateOfBirth   sql.NullTime `json:"date_of_birth"`
+	DateOfBirth_2 sql.NullTime `json:"date_of_birth_2"`
+}
+
+func (q *Queries) GetUsersByBirthDay(ctx context.Context, arg GetUsersByBirthDayParams) ([]AuthUser, error) {
+	rows, err := q.db.QueryContext(ctx, getUsersByBirthDay, arg.DateOfBirth, arg.DateOfBirth_2)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []AuthUser
+	for rows.Next() {
+		var i AuthUser
+		if err := rows.Scan(
+			&i.ID,
+			&i.Email,
+			&i.FirstName,
+			&i.LastName,
+			&i.FullName,
+			&i.NickName,
+			&i.AvatarUrl,
+			&i.ProfileUrl,
+			&i.Role,
+			&i.Resigned,
+			&i.Gender,
+			&i.Phone,
+			&i.Address,
+			&i.Position,
+			&i.DateOfBirth,
+			&i.Password,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getUsersInviteGroup = `-- name: GetUsersInviteGroup :many
+SELECT id, email, first_name, last_name, full_name, nick_name, avatar_url, profile_url, role, resigned, gender, phone, address, position, date_of_birth, password, created_at, updated_at FROM auth.users 
+WHERE 
+    id != ANY($1::uuid[])
+LIMIT $2
+OFFSET $3
+`
+
+type GetUsersInviteGroupParams struct {
+	Column1 []uuid.UUID `json:"column_1"`
+	Limit   int32       `json:"limit"`
+	Offset  int32       `json:"offset"`
+}
+
+func (q *Queries) GetUsersInviteGroup(ctx context.Context, arg GetUsersInviteGroupParams) ([]AuthUser, error) {
+	rows, err := q.db.QueryContext(ctx, getUsersInviteGroup, pq.Array(arg.Column1), arg.Limit, arg.Offset)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []AuthUser
+	for rows.Next() {
+		var i AuthUser
+		if err := rows.Scan(
+			&i.ID,
+			&i.Email,
+			&i.FirstName,
+			&i.LastName,
+			&i.FullName,
+			&i.NickName,
+			&i.AvatarUrl,
+			&i.ProfileUrl,
+			&i.Role,
+			&i.Resigned,
+			&i.Gender,
+			&i.Phone,
+			&i.Address,
+			&i.Position,
+			&i.DateOfBirth,
+			&i.Password,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const updateKeyByUserID = `-- name: UpdateKeyByUserID :one
 UPDATE auth.keys 
 SET

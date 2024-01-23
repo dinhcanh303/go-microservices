@@ -770,6 +770,9 @@
                     "userId": {
                       "type": "string"
                     },
+                    "profileUrl": {
+                      "type": "string"
+                    },
                     "createdAt": {
                       "type": "string",
                       "format": "date-time"
@@ -1207,10 +1210,10 @@
                 "post": {
                   "type": "object",
                   "properties": {
-                    "title": {
+                    "content": {
                       "type": "string"
                     },
-                    "content": {
+                    "bgContent": {
                       "type": "string"
                     },
                     "status": {
@@ -1457,6 +1460,74 @@
             "name": "search",
             "in": "query",
             "required": false,
+            "type": "string"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          }
+        ],
+        "tags": [
+          "AuthService"
+        ]
+      }
+    },
+    "/api/v1/users/birthdays": {
+      "get": {
+        "summary": "Get Users Birth Day",
+        "operationId": "AuthService_GetUsersBirthDay",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/authapiGetUsersBirthDayResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          }
+        },
+        "tags": [
+          "AuthService"
+        ]
+      }
+    },
+    "/api/v1/users/{groupId}/invite": {
+      "get": {
+        "summary": "Get All User can invite Group",
+        "operationId": "AuthService_GetUsersInviteByGroupId",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/authapiGetUsersInviteGroupIdResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "groupId",
+            "in": "path",
+            "required": true,
             "type": "string"
           },
           {
@@ -1776,6 +1847,30 @@
           "type": "array",
           "items": {
             "type": "string"
+          }
+        }
+      }
+    },
+    "authapiGetUsersBirthDayResponse": {
+      "type": "object",
+      "properties": {
+        "users": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/authapiUser"
+          }
+        }
+      }
+    },
+    "authapiGetUsersInviteGroupIdResponse": {
+      "type": "object",
+      "properties": {
+        "users": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/authapiUser"
           }
         }
       }
@@ -2310,6 +2405,9 @@
         "countGroupMembers": {
           "type": "string",
           "format": "int64"
+        },
+        "isMember": {
+          "type": "boolean"
         }
       }
     },
@@ -2342,6 +2440,9 @@
           "format": "int32"
         },
         "userId": {
+          "type": "string"
+        },
+        "profileUrl": {
           "type": "string"
         },
         "createdAt": {
@@ -2431,6 +2532,10 @@
           "type": "string"
         },
         "status": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "profileUrl": {
           "type": "integer",
           "format": "int32"
         },
@@ -2688,10 +2793,10 @@
         "id": {
           "type": "string"
         },
-        "title": {
+        "content": {
           "type": "string"
         },
-        "content": {
+        "bgContent": {
           "type": "string"
         },
         "status": {
@@ -2717,10 +2822,10 @@
     "postapiPostRequest": {
       "type": "object",
       "properties": {
-        "title": {
+        "content": {
           "type": "string"
         },
-        "content": {
+        "bgContent": {
           "type": "string"
         },
         "status": {
