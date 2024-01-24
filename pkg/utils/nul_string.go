@@ -1,8 +1,10 @@
 package utils
 
 import (
-	"log/slog"
+	"fmt"
 	"strings"
+
+	"github.com/lib/pq"
 )
 
 func HandleNullString(value interface{}) string {
@@ -12,19 +14,29 @@ func HandleNullString(value interface{}) string {
 	return "" // or any default value you prefer
 }
 
-func HandleNullStringSlice(value interface{}) []string {
-	slog.Info("Value::", value)
-	if value != "{}" {
-		return []string{} //extractStrings(value)
+func HandleInterfaceToArrayString(value interface{}) []string {
+	switch v := value.(type) {
+	case []string:
+		return v
+	case pq.StringArray:
+		return []string(v)
+	case []uint8:
+		fmt.Printf("Type: []uint8\n")
+		result := convertStringToArray(string(v))
+		// Assuming it's binary data, you might want to convert it to a string
+		return result
+	case nil:
+		return nil
+	default:
+		return []string{}
 	}
-	return []string{} // or any default value you prefer
 }
-func extractStrings(input interface{}) []string {
-	// Remove the surrounding curly braces
-	input = strings.Trim(input.(string), "{}")
-	// Split the string using commas
-	parts := strings.Split(input.(string), ",")
-	// Trim any leading or trailing spaces from each part
+func convertStringToArray(str string) []string {
+	if str == "{}" {
+		return []string{}
+	}
+	str = strings.Trim(str, "{}")
+	parts := strings.Split(str, ",")
 	for i, part := range parts {
 		parts[i] = strings.TrimSpace(part)
 	}

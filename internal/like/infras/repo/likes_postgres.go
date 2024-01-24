@@ -59,7 +59,7 @@ func (rp *likeRepo) GetLikesInfoByCommentID(ctx context.Context, commentID uuid.
 	return &domain.LikesInfo{
 		YourLikedEmoji:    utils.HandleNullString(results.YourLikedEmoji),
 		YourLike:          results.YourLike,
-		OthersLikedEmojis: utils.HandleNullStringSlice(results.OthersLikedEmojis),
+		OthersLikedEmojis: utils.HandleInterfaceToArrayString(results.OthersLikedEmojis),
 		OthersLikes:       results.OthersLikes,
 	}, nil
 }
@@ -79,7 +79,7 @@ func (rp *likeRepo) GetLikesInfoByPostID(ctx context.Context, postID uuid.UUID, 
 	return &domain.LikesInfo{
 		YourLikedEmoji:    utils.HandleNullString(results.YourLikedEmoji),
 		YourLike:          results.YourLike,
-		OthersLikedEmojis: utils.HandleNullStringSlice(results.OthersLikedEmojis),
+		OthersLikedEmojis: utils.HandleInterfaceToArrayString(results.OthersLikedEmojis),
 		OthersLikes:       results.OthersLikes,
 	}, nil
 }
