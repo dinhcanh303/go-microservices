@@ -134,7 +134,7 @@ SELECT
     COUNT(*) FILTER (WHERE user_id = $1) AS your_like,
     COUNT(*) FILTER (WHERE user_id != $1) AS others_likes,
 	COALESCE(MIN(CASE WHEN user_id = $1 THEN emoji END),'') AS your_liked_emoji,
-	COALESCE(ARRAY_AGG(DISTINCT emoji ), '{}') AS others_liked_emojis
+	COALESCE(ARRAY_AGG(DISTINCT (emoji)::TEXT ), '{}') AS others_liked_emojis
 FROM "like".likes
 WHERE likeable_type = $2 AND likeable_id = $3
 LIMIT 1
