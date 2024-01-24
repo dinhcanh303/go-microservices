@@ -92,12 +92,21 @@ service AuthService {
             description: ""
         };
     }
-    rpc GetUsersBirthDay(GetUsersBirthDayRequest) returns (GetUsersBirthDayResponse){
+    rpc GetUsersBirthDayByCurrentMonth(GetUsersBirthDayByCurrentMonthRequest) returns (GetUsersBirthDayByCurrentMonthResponse){
         option (google.api.http) = {
-            get: "/api/v1/users/birthdays",
+            get: "/api/v1/users/current-month/birthdays",
         };
         option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
-            summary: "Get Users Birth Day"
+            summary: "Get Users Birth Day by Current Month"
+            description: ""
+        };
+    }
+    rpc GetUsersBirthDayByCurrentDay(GetUsersBirthDayByCurrentDayRequest) returns (GetUsersBirthDayByCurrentDayResponse){
+        option (google.api.http) = {
+            get: "/api/v1/users/current-day/birthdays",
+        };
+        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+            summary: "Get Users Birth Day by Current Day"
             description: ""
         };
     }
@@ -112,8 +121,12 @@ service AuthService {
         };
     }
 }
-message GetUsersBirthDayRequest{}
-message GetUsersBirthDayResponse{
+message GetUsersBirthDayByCurrentMonthRequest{}
+message GetUsersBirthDayByCurrentMonthResponse{
+    repeated User users=1;
+}
+message GetUsersBirthDayByCurrentDayRequest{}
+message GetUsersBirthDayByCurrentDayResponse{
     repeated User users=1;
 }
 message GetUsersInviteGroupIdRequest {

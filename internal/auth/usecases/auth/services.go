@@ -31,6 +31,24 @@ type service struct {
 	userDeletedEventPub UserDeletedEventPublisher
 }
 
+// GetUsersBirthDayByCurrentDay implements UseCase.
+func (s *service) GetUsersBirthDayByCurrentDay(ctx context.Context) ([]*domain.User, error) {
+	users, err := s.repo.GetUsersBirthDayByCurrentDay(ctx)
+	if err != nil {
+		return nil, err
+	}
+	return users, nil
+}
+
+// GetUsersBirthDayByCurrentMonth implements UseCase.
+func (s *service) GetUsersBirthDayByCurrentMonth(ctx context.Context) ([]*domain.User, error) {
+	users, err := s.repo.GetUsersBirthDayByCurrentMonth(ctx)
+	if err != nil {
+		return nil, err
+	}
+	return users, nil
+}
+
 // GetUsersInviteGroup implements UseCase.
 func (s *service) GetUsersInviteGroup(ctx context.Context, groupIds []uuid.UUID, limit int32, offset int32) ([]*domain.User, error) {
 	users, err := s.repo.GetUsersInviteGroup(ctx, groupIds, limit, offset)

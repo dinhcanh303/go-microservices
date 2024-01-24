@@ -19,6 +19,68 @@ type userRepo struct {
 	pg postgres.DBEngine
 }
 
+// GetUsersBirthDayByCurrentDay implements auth.UserRepo.
+func (rp *userRepo) GetUsersBirthDayByCurrentDay(ctx context.Context) ([]*domain.User, error) {
+	db := rp.pg.GetDBRead()
+	querier := postgresql.New(db)
+	users, err := querier.GetUsersBirthDayByCurrentDay(ctx)
+	if err != nil {
+		return nil, errors.Wrap(err, "userRepo.GetUsersBirthDayByCurrentDay failed")
+	}
+	return lo.Map(users, func(user postgresql.AuthUser, _ int) *domain.User {
+		return &domain.User{
+			ID:          user.ID,
+			Email:       user.Email,
+			FirstName:   user.FirstName,
+			LastName:    user.LastName,
+			FullName:    user.FullName.String,
+			NickName:    user.NickName.String,
+			Role:        user.Role.String,
+			AvatarUrl:   user.AvatarUrl.String,
+			ProfileUrl:  user.ProfileUrl.String,
+			Gender:      user.Gender.Bool,
+			Phone:       user.Phone.String,
+			Address:     user.Address.String,
+			DateOfBirth: user.DateOfBirth.Time,
+			Position:    user.Position.String,
+			// Password:  user.Password,
+			CreatedAt: user.CreatedAt,
+			UpdatedAt: user.UpdatedAt,
+		}
+	}), nil
+}
+
+// GetUsersBirthDayByCurrentMonth implements auth.UserRepo.
+func (rp *userRepo) GetUsersBirthDayByCurrentMonth(ctx context.Context) ([]*domain.User, error) {
+	db := rp.pg.GetDBRead()
+	querier := postgresql.New(db)
+	users, err := querier.GetUsersBirthDayByCurrentMonth(ctx)
+	if err != nil {
+		return nil, errors.Wrap(err, "userRepo.GetUsersBirthDayByCurrentMonth failed")
+	}
+	return lo.Map(users, func(user postgresql.AuthUser, _ int) *domain.User {
+		return &domain.User{
+			ID:          user.ID,
+			Email:       user.Email,
+			FirstName:   user.FirstName,
+			LastName:    user.LastName,
+			FullName:    user.FullName.String,
+			NickName:    user.NickName.String,
+			Role:        user.Role.String,
+			AvatarUrl:   user.AvatarUrl.String,
+			ProfileUrl:  user.ProfileUrl.String,
+			Gender:      user.Gender.Bool,
+			Phone:       user.Phone.String,
+			Address:     user.Address.String,
+			DateOfBirth: user.DateOfBirth.Time,
+			Position:    user.Position.String,
+			// Password:  user.Password,
+			CreatedAt: user.CreatedAt,
+			UpdatedAt: user.UpdatedAt,
+		}
+	}), nil
+}
+
 // GetUsersInviteGroup implements auth.UserRepo.
 func (rp *userRepo) GetUsersInviteGroup(ctx context.Context, groupIds []uuid.UUID, limit int32, offset int32) ([]*domain.User, error) {
 	db := rp.pg.GetDBRead()
@@ -33,15 +95,20 @@ func (rp *userRepo) GetUsersInviteGroup(ctx context.Context, groupIds []uuid.UUI
 	}
 	return lo.Map(users, func(user postgresql.AuthUser, _ int) *domain.User {
 		return &domain.User{
-			ID:         user.ID,
-			Email:      user.Email,
-			FirstName:  user.FirstName,
-			LastName:   user.LastName,
-			FullName:   user.FullName.String,
-			NickName:   user.NickName.String,
-			Role:       user.Role.String,
-			AvatarUrl:  user.AvatarUrl.String,
-			ProfileUrl: user.ProfileUrl.String,
+			ID:          user.ID,
+			Email:       user.Email,
+			FirstName:   user.FirstName,
+			LastName:    user.LastName,
+			FullName:    user.FullName.String,
+			NickName:    user.NickName.String,
+			Role:        user.Role.String,
+			AvatarUrl:   user.AvatarUrl.String,
+			ProfileUrl:  user.ProfileUrl.String,
+			Gender:      user.Gender.Bool,
+			Phone:       user.Phone.String,
+			Address:     user.Address.String,
+			DateOfBirth: user.DateOfBirth.Time,
+			Position:    user.Position.String,
 			// Password:  user.Password,
 			CreatedAt: user.CreatedAt,
 			UpdatedAt: user.UpdatedAt,
@@ -220,15 +287,20 @@ func (rp *userRepo) GetUsers(ctx context.Context, search string, limit, offset i
 	}
 	return lo.Map(users, func(user postgresql.AuthUser, _ int) *domain.User {
 		return &domain.User{
-			ID:         user.ID,
-			Email:      user.Email,
-			FirstName:  user.FirstName,
-			LastName:   user.LastName,
-			FullName:   user.FullName.String,
-			NickName:   user.NickName.String,
-			Role:       user.Role.String,
-			AvatarUrl:  user.AvatarUrl.String,
-			ProfileUrl: user.ProfileUrl.String,
+			ID:          user.ID,
+			Email:       user.Email,
+			FirstName:   user.FirstName,
+			LastName:    user.LastName,
+			FullName:    user.FullName.String,
+			NickName:    user.NickName.String,
+			Role:        user.Role.String,
+			AvatarUrl:   user.AvatarUrl.String,
+			ProfileUrl:  user.ProfileUrl.String,
+			Gender:      user.Gender.Bool,
+			Phone:       user.Phone.String,
+			Address:     user.Address.String,
+			DateOfBirth: user.DateOfBirth.Time,
+			Position:    user.Position.String,
 			// Password:  user.Password,
 			CreatedAt: user.CreatedAt,
 			UpdatedAt: user.UpdatedAt,

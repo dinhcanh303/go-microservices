@@ -35,10 +35,16 @@ WHERE
 LIMIT $2
 OFFSET $3;
 
--- name: GetUsersByBirthDay :many
+-- name: GetUsersBirthDayByCurrentMonth :many
 SELECT * FROM auth.users 
 WHERE 
-    date_of_birth BETWEEN $1 AND $2;
+    EXTRACT(MONTH FROM date_of_birth) = EXTRACT(MONTH FROM CURRENT_DATE);
+
+-- name: GetUsersBirthDayByCurrentDay :many
+SELECT * FROM auth.users 
+WHERE 
+    EXTRACT(MONTH FROM date_of_birth) = EXTRACT(MONTH FROM CURRENT_DATE)
+    AND EXTRACT(DAY FROM date_of_birth) = EXTRACT(DAY FROM CURRENT_DATE);
 
 -- name: UpdateUser :one
 UPDATE auth.users 

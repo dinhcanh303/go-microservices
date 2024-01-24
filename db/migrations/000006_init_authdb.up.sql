@@ -21,6 +21,7 @@ CREATE TABLE
         position VARCHAR(255) DEFAULT NULL,
         date_of_birth DATE DEFAULT NULL,
         password VARCHAR(255) NOT NULL,
+        -- settings JSONB NOT NULL DEFAULT '{}'::JSONB,
         created_at timestamp with time zone NOT NULL DEFAULT current_timestamp,
         updated_at timestamp with time zone NOT NULL DEFAULT (now()),
         CONSTRAINT pk_users PRIMARY KEY (id)

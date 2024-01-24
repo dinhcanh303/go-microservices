@@ -347,20 +347,38 @@ func local_request_AuthService_GetUsersInviteByGroupId_0(ctx context.Context, ma
 
 }
 
-func request_AuthService_GetUsersBirthDay_0(ctx context.Context, marshaler runtime.Marshaler, client AuthServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq GetUsersBirthDayRequest
+func request_AuthService_GetUsersBirthDayByCurrentMonth_0(ctx context.Context, marshaler runtime.Marshaler, client AuthServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var protoReq GetUsersBirthDayByCurrentMonthRequest
 	var metadata runtime.ServerMetadata
 
-	msg, err := client.GetUsersBirthDay(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
+	msg, err := client.GetUsersBirthDayByCurrentMonth(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
 	return msg, metadata, err
 
 }
 
-func local_request_AuthService_GetUsersBirthDay_0(ctx context.Context, marshaler runtime.Marshaler, server AuthServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq GetUsersBirthDayRequest
+func local_request_AuthService_GetUsersBirthDayByCurrentMonth_0(ctx context.Context, marshaler runtime.Marshaler, server AuthServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var protoReq GetUsersBirthDayByCurrentMonthRequest
 	var metadata runtime.ServerMetadata
 
-	msg, err := server.GetUsersBirthDay(ctx, &protoReq)
+	msg, err := server.GetUsersBirthDayByCurrentMonth(ctx, &protoReq)
+	return msg, metadata, err
+
+}
+
+func request_AuthService_GetUsersBirthDayByCurrentDay_0(ctx context.Context, marshaler runtime.Marshaler, client AuthServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var protoReq GetUsersBirthDayByCurrentDayRequest
+	var metadata runtime.ServerMetadata
+
+	msg, err := client.GetUsersBirthDayByCurrentDay(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
+	return msg, metadata, err
+
+}
+
+func local_request_AuthService_GetUsersBirthDayByCurrentDay_0(ctx context.Context, marshaler runtime.Marshaler, server AuthServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var protoReq GetUsersBirthDayByCurrentDayRequest
+	var metadata runtime.ServerMetadata
+
+	msg, err := server.GetUsersBirthDayByCurrentDay(ctx, &protoReq)
 	return msg, metadata, err
 
 }
@@ -664,7 +682,7 @@ func RegisterAuthServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux
 
 	})
 
-	mux.Handle("GET", pattern_AuthService_GetUsersBirthDay_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("GET", pattern_AuthService_GetUsersBirthDayByCurrentMonth_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		var stream runtime.ServerTransportStream
@@ -672,12 +690,12 @@ func RegisterAuthServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/authapi.AuthService/GetUsersBirthDay", runtime.WithHTTPPathPattern("/api/v1/users/birthdays"))
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/authapi.AuthService/GetUsersBirthDayByCurrentMonth", runtime.WithHTTPPathPattern("/api/v1/users/current-month/birthdays"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_AuthService_GetUsersBirthDay_0(annotatedContext, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_AuthService_GetUsersBirthDayByCurrentMonth_0(annotatedContext, inboundMarshaler, server, req, pathParams)
 		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
 		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
 		if err != nil {
@@ -685,7 +703,32 @@ func RegisterAuthServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux
 			return
 		}
 
-		forward_AuthService_GetUsersBirthDay_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_AuthService_GetUsersBirthDayByCurrentMonth_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+
+	})
+
+	mux.Handle("GET", pattern_AuthService_GetUsersBirthDayByCurrentDay_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+		ctx, cancel := context.WithCancel(req.Context())
+		defer cancel()
+		var stream runtime.ServerTransportStream
+		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
+		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
+		var err error
+		var annotatedContext context.Context
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/authapi.AuthService/GetUsersBirthDayByCurrentDay", runtime.WithHTTPPathPattern("/api/v1/users/current-day/birthdays"))
+		if err != nil {
+			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		resp, md, err := local_request_AuthService_GetUsersBirthDayByCurrentDay_0(annotatedContext, inboundMarshaler, server, req, pathParams)
+		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
+		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
+		if err != nil {
+			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
+			return
+		}
+
+		forward_AuthService_GetUsersBirthDayByCurrentDay_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
@@ -953,25 +996,47 @@ func RegisterAuthServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux
 
 	})
 
-	mux.Handle("GET", pattern_AuthService_GetUsersBirthDay_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("GET", pattern_AuthService_GetUsersBirthDayByCurrentMonth_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/authapi.AuthService/GetUsersBirthDay", runtime.WithHTTPPathPattern("/api/v1/users/birthdays"))
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/authapi.AuthService/GetUsersBirthDayByCurrentMonth", runtime.WithHTTPPathPattern("/api/v1/users/current-month/birthdays"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_AuthService_GetUsersBirthDay_0(annotatedContext, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_AuthService_GetUsersBirthDayByCurrentMonth_0(annotatedContext, inboundMarshaler, client, req, pathParams)
 		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
 		if err != nil {
 			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
 			return
 		}
 
-		forward_AuthService_GetUsersBirthDay_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_AuthService_GetUsersBirthDayByCurrentMonth_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+
+	})
+
+	mux.Handle("GET", pattern_AuthService_GetUsersBirthDayByCurrentDay_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+		ctx, cancel := context.WithCancel(req.Context())
+		defer cancel()
+		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
+		var err error
+		var annotatedContext context.Context
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/authapi.AuthService/GetUsersBirthDayByCurrentDay", runtime.WithHTTPPathPattern("/api/v1/users/current-day/birthdays"))
+		if err != nil {
+			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		resp, md, err := request_AuthService_GetUsersBirthDayByCurrentDay_0(annotatedContext, inboundMarshaler, client, req, pathParams)
+		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
+		if err != nil {
+			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
+			return
+		}
+
+		forward_AuthService_GetUsersBirthDayByCurrentDay_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
@@ -1019,7 +1084,9 @@ var (
 
 	pattern_AuthService_GetUsersInviteByGroupId_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3, 2, 4}, []string{"api", "v1", "users", "group_id", "invite"}, ""))
 
-	pattern_AuthService_GetUsersBirthDay_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"api", "v1", "users", "birthdays"}, ""))
+	pattern_AuthService_GetUsersBirthDayByCurrentMonth_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 2, 4}, []string{"api", "v1", "users", "current-month", "birthdays"}, ""))
+
+	pattern_AuthService_GetUsersBirthDayByCurrentDay_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 2, 4}, []string{"api", "v1", "users", "current-day", "birthdays"}, ""))
 
 	pattern_AuthService_UpdateUser_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3}, []string{"api", "v1", "users", "user.id"}, ""))
 )
@@ -1043,7 +1110,9 @@ var (
 
 	forward_AuthService_GetUsersInviteByGroupId_0 = runtime.ForwardResponseMessage
 
-	forward_AuthService_GetUsersBirthDay_0 = runtime.ForwardResponseMessage
+	forward_AuthService_GetUsersBirthDayByCurrentMonth_0 = runtime.ForwardResponseMessage
+
+	forward_AuthService_GetUsersBirthDayByCurrentDay_0 = runtime.ForwardResponseMessage
 
 	forward_AuthService_UpdateUser_0 = runtime.ForwardResponseMessage
 )

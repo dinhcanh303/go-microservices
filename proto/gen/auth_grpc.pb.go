@@ -19,17 +19,18 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	AuthService_SignIn_FullMethodName                      = "/authapi.AuthService/SignIn"
-	AuthService_SignUp_FullMethodName                      = "/authapi.AuthService/SignUp"
-	AuthService_Verify_FullMethodName                      = "/authapi.AuthService/Verify"
-	AuthService_Logout_FullMethodName                      = "/authapi.AuthService/Logout"
-	AuthService_HandleRefreshToken_FullMethodName          = "/authapi.AuthService/HandleRefreshToken"
-	AuthService_GetUserIdsOfCompanyByUserId_FullMethodName = "/authapi.AuthService/GetUserIdsOfCompanyByUserId"
-	AuthService_GetProfile_FullMethodName                  = "/authapi.AuthService/GetProfile"
-	AuthService_GetUsers_FullMethodName                    = "/authapi.AuthService/GetUsers"
-	AuthService_GetUsersInviteByGroupId_FullMethodName     = "/authapi.AuthService/GetUsersInviteByGroupId"
-	AuthService_GetUsersBirthDay_FullMethodName            = "/authapi.AuthService/GetUsersBirthDay"
-	AuthService_UpdateUser_FullMethodName                  = "/authapi.AuthService/UpdateUser"
+	AuthService_SignIn_FullMethodName                         = "/authapi.AuthService/SignIn"
+	AuthService_SignUp_FullMethodName                         = "/authapi.AuthService/SignUp"
+	AuthService_Verify_FullMethodName                         = "/authapi.AuthService/Verify"
+	AuthService_Logout_FullMethodName                         = "/authapi.AuthService/Logout"
+	AuthService_HandleRefreshToken_FullMethodName             = "/authapi.AuthService/HandleRefreshToken"
+	AuthService_GetUserIdsOfCompanyByUserId_FullMethodName    = "/authapi.AuthService/GetUserIdsOfCompanyByUserId"
+	AuthService_GetProfile_FullMethodName                     = "/authapi.AuthService/GetProfile"
+	AuthService_GetUsers_FullMethodName                       = "/authapi.AuthService/GetUsers"
+	AuthService_GetUsersInviteByGroupId_FullMethodName        = "/authapi.AuthService/GetUsersInviteByGroupId"
+	AuthService_GetUsersBirthDayByCurrentMonth_FullMethodName = "/authapi.AuthService/GetUsersBirthDayByCurrentMonth"
+	AuthService_GetUsersBirthDayByCurrentDay_FullMethodName   = "/authapi.AuthService/GetUsersBirthDayByCurrentDay"
+	AuthService_UpdateUser_FullMethodName                     = "/authapi.AuthService/UpdateUser"
 )
 
 // AuthServiceClient is the client API for AuthService service.
@@ -45,7 +46,8 @@ type AuthServiceClient interface {
 	GetProfile(ctx context.Context, in *GetProfileRequest, opts ...grpc.CallOption) (*GetProfileResponse, error)
 	GetUsers(ctx context.Context, in *GetUsersRequest, opts ...grpc.CallOption) (*GetUsersResponse, error)
 	GetUsersInviteByGroupId(ctx context.Context, in *GetUsersInviteGroupIdRequest, opts ...grpc.CallOption) (*GetUsersInviteGroupIdResponse, error)
-	GetUsersBirthDay(ctx context.Context, in *GetUsersBirthDayRequest, opts ...grpc.CallOption) (*GetUsersBirthDayResponse, error)
+	GetUsersBirthDayByCurrentMonth(ctx context.Context, in *GetUsersBirthDayByCurrentMonthRequest, opts ...grpc.CallOption) (*GetUsersBirthDayByCurrentMonthResponse, error)
+	GetUsersBirthDayByCurrentDay(ctx context.Context, in *GetUsersBirthDayByCurrentDayRequest, opts ...grpc.CallOption) (*GetUsersBirthDayByCurrentDayResponse, error)
 	UpdateUser(ctx context.Context, in *UpdateUserRequest, opts ...grpc.CallOption) (*UpdateUserResponse, error)
 }
 
@@ -138,9 +140,18 @@ func (c *authServiceClient) GetUsersInviteByGroupId(ctx context.Context, in *Get
 	return out, nil
 }
 
-func (c *authServiceClient) GetUsersBirthDay(ctx context.Context, in *GetUsersBirthDayRequest, opts ...grpc.CallOption) (*GetUsersBirthDayResponse, error) {
-	out := new(GetUsersBirthDayResponse)
-	err := c.cc.Invoke(ctx, AuthService_GetUsersBirthDay_FullMethodName, in, out, opts...)
+func (c *authServiceClient) GetUsersBirthDayByCurrentMonth(ctx context.Context, in *GetUsersBirthDayByCurrentMonthRequest, opts ...grpc.CallOption) (*GetUsersBirthDayByCurrentMonthResponse, error) {
+	out := new(GetUsersBirthDayByCurrentMonthResponse)
+	err := c.cc.Invoke(ctx, AuthService_GetUsersBirthDayByCurrentMonth_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *authServiceClient) GetUsersBirthDayByCurrentDay(ctx context.Context, in *GetUsersBirthDayByCurrentDayRequest, opts ...grpc.CallOption) (*GetUsersBirthDayByCurrentDayResponse, error) {
+	out := new(GetUsersBirthDayByCurrentDayResponse)
+	err := c.cc.Invoke(ctx, AuthService_GetUsersBirthDayByCurrentDay_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -169,7 +180,8 @@ type AuthServiceServer interface {
 	GetProfile(context.Context, *GetProfileRequest) (*GetProfileResponse, error)
 	GetUsers(context.Context, *GetUsersRequest) (*GetUsersResponse, error)
 	GetUsersInviteByGroupId(context.Context, *GetUsersInviteGroupIdRequest) (*GetUsersInviteGroupIdResponse, error)
-	GetUsersBirthDay(context.Context, *GetUsersBirthDayRequest) (*GetUsersBirthDayResponse, error)
+	GetUsersBirthDayByCurrentMonth(context.Context, *GetUsersBirthDayByCurrentMonthRequest) (*GetUsersBirthDayByCurrentMonthResponse, error)
+	GetUsersBirthDayByCurrentDay(context.Context, *GetUsersBirthDayByCurrentDayRequest) (*GetUsersBirthDayByCurrentDayResponse, error)
 	UpdateUser(context.Context, *UpdateUserRequest) (*UpdateUserResponse, error)
 	mustEmbedUnimplementedAuthServiceServer()
 }
@@ -205,8 +217,11 @@ func (UnimplementedAuthServiceServer) GetUsers(context.Context, *GetUsersRequest
 func (UnimplementedAuthServiceServer) GetUsersInviteByGroupId(context.Context, *GetUsersInviteGroupIdRequest) (*GetUsersInviteGroupIdResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetUsersInviteByGroupId not implemented")
 }
-func (UnimplementedAuthServiceServer) GetUsersBirthDay(context.Context, *GetUsersBirthDayRequest) (*GetUsersBirthDayResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetUsersBirthDay not implemented")
+func (UnimplementedAuthServiceServer) GetUsersBirthDayByCurrentMonth(context.Context, *GetUsersBirthDayByCurrentMonthRequest) (*GetUsersBirthDayByCurrentMonthResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetUsersBirthDayByCurrentMonth not implemented")
+}
+func (UnimplementedAuthServiceServer) GetUsersBirthDayByCurrentDay(context.Context, *GetUsersBirthDayByCurrentDayRequest) (*GetUsersBirthDayByCurrentDayResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetUsersBirthDayByCurrentDay not implemented")
 }
 func (UnimplementedAuthServiceServer) UpdateUser(context.Context, *UpdateUserRequest) (*UpdateUserResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateUser not implemented")
@@ -386,20 +401,38 @@ func _AuthService_GetUsersInviteByGroupId_Handler(srv interface{}, ctx context.C
 	return interceptor(ctx, in, info, handler)
 }
 
-func _AuthService_GetUsersBirthDay_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetUsersBirthDayRequest)
+func _AuthService_GetUsersBirthDayByCurrentMonth_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetUsersBirthDayByCurrentMonthRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(AuthServiceServer).GetUsersBirthDay(ctx, in)
+		return srv.(AuthServiceServer).GetUsersBirthDayByCurrentMonth(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: AuthService_GetUsersBirthDay_FullMethodName,
+		FullMethod: AuthService_GetUsersBirthDayByCurrentMonth_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AuthServiceServer).GetUsersBirthDay(ctx, req.(*GetUsersBirthDayRequest))
+		return srv.(AuthServiceServer).GetUsersBirthDayByCurrentMonth(ctx, req.(*GetUsersBirthDayByCurrentMonthRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AuthService_GetUsersBirthDayByCurrentDay_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetUsersBirthDayByCurrentDayRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AuthServiceServer).GetUsersBirthDayByCurrentDay(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AuthService_GetUsersBirthDayByCurrentDay_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AuthServiceServer).GetUsersBirthDayByCurrentDay(ctx, req.(*GetUsersBirthDayByCurrentDayRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -466,8 +499,12 @@ var AuthService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _AuthService_GetUsersInviteByGroupId_Handler,
 		},
 		{
-			MethodName: "GetUsersBirthDay",
-			Handler:    _AuthService_GetUsersBirthDay_Handler,
+			MethodName: "GetUsersBirthDayByCurrentMonth",
+			Handler:    _AuthService_GetUsersBirthDayByCurrentMonth_Handler,
+		},
+		{
+			MethodName: "GetUsersBirthDayByCurrentDay",
+			Handler:    _AuthService_GetUsersBirthDayByCurrentDay_Handler,
 		},
 		{
 			MethodName: "UpdateUser",

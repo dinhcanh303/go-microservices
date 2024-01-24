@@ -324,19 +324,63 @@ func (q *Queries) GetUsers(ctx context.Context, arg GetUsersParams) ([]AuthUser,
 	return items, nil
 }
 
-const getUsersByBirthDay = `-- name: GetUsersByBirthDay :many
+const getUsersBirthDayByCurrentDay = `-- name: GetUsersBirthDayByCurrentDay :many
 SELECT id, email, first_name, last_name, full_name, nick_name, avatar_url, profile_url, role, resigned, gender, phone, address, position, date_of_birth, password, created_at, updated_at FROM auth.users 
 WHERE 
-    date_of_birth BETWEEN $1 AND $2
+    EXTRACT(MONTH FROM date_of_birth) = EXTRACT(MONTH FROM CURRENT_DATE)
+    AND EXTRACT(DAY FROM date_of_birth) = EXTRACT(DAY FROM CURRENT_DATE)
 `
 
-type GetUsersByBirthDayParams struct {
-	DateOfBirth   sql.NullTime `json:"date_of_birth"`
-	DateOfBirth_2 sql.NullTime `json:"date_of_birth_2"`
+func (q *Queries) GetUsersBirthDayByCurrentDay(ctx context.Context) ([]AuthUser, error) {
+	rows, err := q.db.QueryContext(ctx, getUsersBirthDayByCurrentDay)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []AuthUser
+	for rows.Next() {
+		var i AuthUser
+		if err := rows.Scan(
+			&i.ID,
+			&i.Email,
+			&i.FirstName,
+			&i.LastName,
+			&i.FullName,
+			&i.NickName,
+			&i.AvatarUrl,
+			&i.ProfileUrl,
+			&i.Role,
+			&i.Resigned,
+			&i.Gender,
+			&i.Phone,
+			&i.Address,
+			&i.Position,
+			&i.DateOfBirth,
+			&i.Password,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
 }
 
-func (q *Queries) GetUsersByBirthDay(ctx context.Context, arg GetUsersByBirthDayParams) ([]AuthUser, error) {
-	rows, err := q.db.QueryContext(ctx, getUsersByBirthDay, arg.DateOfBirth, arg.DateOfBirth_2)
+const getUsersBirthDayByCurrentMonth = `-- name: GetUsersBirthDayByCurrentMonth :many
+SELECT id, email, first_name, last_name, full_name, nick_name, avatar_url, profile_url, role, resigned, gender, phone, address, position, date_of_birth, password, created_at, updated_at FROM auth.users 
+WHERE 
+    EXTRACT(MONTH FROM date_of_birth) = EXTRACT(MONTH FROM CURRENT_DATE)
+`
+
+func (q *Queries) GetUsersBirthDayByCurrentMonth(ctx context.Context) ([]AuthUser, error) {
+	rows, err := q.db.QueryContext(ctx, getUsersBirthDayByCurrentMonth)
 	if err != nil {
 		return nil, err
 	}
