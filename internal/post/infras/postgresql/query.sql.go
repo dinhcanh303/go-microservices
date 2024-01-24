@@ -90,8 +90,9 @@ func (q *Queries) Get(ctx context.Context, id uuid.UUID) (PostPost, error) {
 const getByFeed = `-- name: GetByFeed :many
 SELECT id, user_id, group_id, content, bg_content, status, created_at, updated_at
 FROM post.posts
-WHERE user_id = ANY($1::uuid[])
-   OR group_id = ANY($2::uuid[])
+WHERE (user_id = ANY($1::uuid[])
+    OR group_id = ANY($2::uuid[]) )
+AND status IN (1,2)
 ORDER BY created_at DESC
 LIMIT $3 OFFSET $4
 `

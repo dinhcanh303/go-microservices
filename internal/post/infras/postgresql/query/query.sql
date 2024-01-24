@@ -31,8 +31,9 @@ WHERE user_id = $1 AND group_id IS NULL ORDER BY created_at DESC LIMIT $2 OFFSET
 -- name: GetByFeed :many
 SELECT *
 FROM post.posts
-WHERE user_id = ANY($1::uuid[])
-   OR group_id = ANY($2::uuid[])
+WHERE (user_id = ANY($1::uuid[])
+    OR group_id = ANY($2::uuid[]) )
+AND status IN (1,2)
 ORDER BY created_at DESC
 LIMIT $3 OFFSET $4;
 -- name: Delete :exec
