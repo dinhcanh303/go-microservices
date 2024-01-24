@@ -90,7 +90,7 @@ UNION
 SELECT *
 FROM comment.comments
 WHERE parent_comment_id = $1
-ORDER BY created_at DESC
+-- ORDER BY created_at DESC
 LIMIT $2 OFFSET $3;
 
 -- name: CountByPostID :one

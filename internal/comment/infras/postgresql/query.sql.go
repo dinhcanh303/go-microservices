@@ -127,7 +127,6 @@ const getCommentsByCommentID = `-- name: GetCommentsByCommentID :many
 SELECT id, user_id, content, reply_id, tag_ids, post_id, parent_comment_id, created_at, updated_at
 FROM comment.comments
 WHERE parent_comment_id = $1
-ORDER BY created_at DESC
 LIMIT $2 OFFSET $3
 `
 
@@ -137,6 +136,7 @@ type GetCommentsByCommentIDParams struct {
 	Offset          int32         `json:"offset"`
 }
 
+// ORDER BY created_at DESC
 func (q *Queries) GetCommentsByCommentID(ctx context.Context, arg GetCommentsByCommentIDParams) ([]CommentComment, error) {
 	rows, err := q.db.QueryContext(ctx, getCommentsByCommentID, arg.ParentCommentID, arg.Limit, arg.Offset)
 	if err != nil {
