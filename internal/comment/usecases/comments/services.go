@@ -4,7 +4,6 @@ import (
 	"context"
 
 	"github.com/dinhcanh303/go-microservices/internal/comment/domain"
-	domainLike "github.com/dinhcanh303/go-microservices/internal/like/domain"
 	sharedkernel "github.com/dinhcanh303/go-microservices/internal/pkg/shared_kernel"
 	domainUpload "github.com/dinhcanh303/go-microservices/internal/upload/domain"
 	"github.com/dinhcanh303/go-microservices/pkg/constant"
@@ -30,7 +29,7 @@ func (s *service) GetCommentsByCommentID(ctx context.Context, commentId uuid.UUI
 	for i, comment := range comments {
 		likeInfo, err := s.likeDomainSvc.GetLikesInfoByCommentID(ctx, comment.ID, userId)
 		if err != nil {
-			likeInfo = &domainLike.LikesInfo{}
+			likeInfo = nil
 		}
 		attachments, err := s.uploadDomainSvc.GetAttachmentsByType(ctx, "Comment", comment.ID)
 		if err != nil {
@@ -116,7 +115,7 @@ func (s *service) GetCommentsByPostID(ctx context.Context, postId, userId uuid.U
 		likeInfo, err := s.likeDomainSvc.GetLikesInfoByCommentID(ctx, comment.ID, userId)
 		slog.Info("LIKE INFO::", likeInfo)
 		if err != nil {
-			likeInfo = &domainLike.LikesInfo{}
+			likeInfo = nil
 		}
 		attachments, err := s.uploadDomainSvc.GetAttachmentsByType(ctx, "Comment", comment.ID)
 		if err != nil {
