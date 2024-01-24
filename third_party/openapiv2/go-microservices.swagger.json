@@ -1482,15 +1482,38 @@
         ]
       }
     },
-    "/api/v1/users/birthdays": {
+    "/api/v1/users/current-day/birthdays": {
       "get": {
-        "summary": "Get Users Birth Day",
-        "operationId": "AuthService_GetUsersBirthDay",
+        "summary": "Get Users Birth Day by Current Day",
+        "operationId": "AuthService_GetUsersBirthDayByCurrentDay",
         "responses": {
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/authapiGetUsersBirthDayResponse"
+              "$ref": "#/definitions/authapiGetUsersBirthDayByCurrentDayResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          }
+        },
+        "tags": [
+          "AuthService"
+        ]
+      }
+    },
+    "/api/v1/users/current-month/birthdays": {
+      "get": {
+        "summary": "Get Users Birth Day by Current Month",
+        "operationId": "AuthService_GetUsersBirthDayByCurrentMonth",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/authapiGetUsersBirthDayByCurrentMonthResponse"
             }
           },
           "default": {
@@ -1851,7 +1874,19 @@
         }
       }
     },
-    "authapiGetUsersBirthDayResponse": {
+    "authapiGetUsersBirthDayByCurrentDayResponse": {
+      "type": "object",
+      "properties": {
+        "users": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/authapiUser"
+          }
+        }
+      }
+    },
+    "authapiGetUsersBirthDayByCurrentMonthResponse": {
       "type": "object",
       "properties": {
         "users": {
