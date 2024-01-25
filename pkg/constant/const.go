@@ -18,5 +18,5 @@ const (
 	LikeCommentType = "Like/Comment"
 	LikePostType    = "Like/Post"
 
-	CACHE_AUTH_SV_LIST_USERS = "cache-auth-sv-list-users"
+	CACHE_AUTH_SV_LIST_USERS = "sv-auth-list-users"
 )
