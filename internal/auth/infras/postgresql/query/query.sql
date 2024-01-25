@@ -12,18 +12,17 @@ INSERT INTO auth.users
 VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *;
 
 -- name: GetUser :one
-SELECT * FROM auth.users WHERE id = $1;
+SELECT * FROM auth.users WHERE id = $1 AND resigned = FALSE;
 
 -- name: GetUserByEmail :one
-SELECT * FROM auth.users WHERE email = $1;
+SELECT * FROM auth.users WHERE email = $1 AND resigned = FALSE;
 
 -- name: GetUserIdsOfCompany :many
 SELECT u.id FROM auth.users AS u WHERE email LIKE '%' || $1 || '%'; 
 
 -- name: GetUsers :many
 SELECT * FROM auth.users 
-WHERE 
-    nick_name LIKE COALESCE('%'||$1||'%','%%')
+WHERE resigned = FALSE AND nick_name LIKE COALESCE('%'||$1||'%','%%')
 LIMIT $2
 OFFSET $3;
 
@@ -31,20 +30,19 @@ OFFSET $3;
 -- name: GetUsersInviteGroup :many
 SELECT * FROM auth.users 
 WHERE 
-    id != ANY($1::uuid[])
+    resigned = FALSE AND id != ANY($1::uuid[])
 LIMIT $2
 OFFSET $3;
 
 -- name: GetUsersBirthDayByCurrentMonth :many
 SELECT * FROM auth.users 
 WHERE 
-    EXTRACT(MONTH FROM date_of_birth) = EXTRACT(MONTH FROM CURRENT_DATE);
+    resigned = FALSE AND EXTRACT(MONTH FROM date_of_birth) = EXTRACT(MONTH FROM CURRENT_DATE);
 
 -- name: GetUsersBirthDayByCurrentDay :many
 SELECT * FROM auth.users 
-WHERE 
-    EXTRACT(MONTH FROM date_of_birth) = EXTRACT(MONTH FROM CURRENT_DATE)
-    AND EXTRACT(DAY FROM date_of_birth) = EXTRACT(DAY FROM CURRENT_DATE);
+WHERE resigned = FALSE AND EXTRACT(MONTH FROM date_of_birth) = EXTRACT(MONTH FROM CURRENT_DATE)
+AND EXTRACT(DAY FROM date_of_birth) = EXTRACT(DAY FROM CURRENT_DATE);
 
 -- name: UpdateUser :one
 UPDATE auth.users 
@@ -55,7 +53,8 @@ SET
     phone = COALESCE(sqlc.narg(phone),phone),
     address = COALESCE(sqlc.narg(address),address),
     date_of_birth = COALESCE(sqlc.narg(date_of_birth),date_of_birth),
-    position = COALESCE(sqlc.narg(position),position)
+    position = COALESCE(sqlc.narg(position),position),
+    settings = COALESCE(sqlc.narg(settings),settings)
 WHERE id = sqlc.arg(id) RETURNING *;
 
 -- name: FindKeyByUserID :one

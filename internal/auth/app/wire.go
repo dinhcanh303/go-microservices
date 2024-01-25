@@ -16,6 +16,7 @@ import (
 	"github.com/dinhcanh303/go-microservices/pkg/postgres"
 	"github.com/dinhcanh303/go-microservices/pkg/rabbitmq"
 	"github.com/dinhcanh303/go-microservices/pkg/rabbitmq/publisher"
+	"github.com/dinhcanh303/go-microservices/pkg/redis"
 	"github.com/dinhcanh303/go-microservices/pkg/token"
 	"github.com/google/wire"
 	"github.com/rabbitmq/amqp091-go"
@@ -24,6 +25,7 @@ import (
 
 func InitApp(
 	cfg *config.Config,
+	cfg2 *configs.Redis,
 	cfgLdap *configs.Ldap,
 	dbConnStr postgres.DBConnString,
 	dbReadConnStr postgres.DBConnReadString,
@@ -36,6 +38,7 @@ func InitApp(
 		ldapClientFunc,
 		jwtFunc,
 		rabbitMQFunc,
+		redisEngineFunc,
 		router.AuthGRPCServerSet,
 		auth.UseCaseSet,
 		keys.UseCaseSet,
@@ -69,4 +72,11 @@ func rabbitMQFunc(url rabbitmq.RabbitMQConnStr) (*amqp091.Connection, func(), er
 		return nil, nil, err
 	}
 	return conn, func() { conn.Close() }, nil
+}
+func redisEngineFunc(config *configs.Redis) (redis.RedisEngine, func(), error) {
+	redis, err := redis.NewRedisClient(config)
+	if err != nil {
+		return nil, nil, err
+	}
+	return redis, func() { redis.Close() }, nil
 }

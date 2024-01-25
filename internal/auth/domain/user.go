@@ -1,6 +1,7 @@
 package domain
 
 import (
+	"encoding/json"
 	"time"
 
 	sharedkernel "github.com/dinhcanh303/go-microservices/internal/pkg/shared_kernel"
@@ -9,24 +10,39 @@ import (
 
 type User struct {
 	sharedkernel.AggregateRoot
-	ID          uuid.UUID `json:"id"`
-	Email       string    `json:"email"`
-	Password    string    `json:"password"`
-	FirstName   string    `json:"first_name"`
-	LastName    string    `json:"last_name"`
-	FullName    string    `json:"full_name"`
-	NickName    string    `json:"nick_name"`
-	Role        string    `json:"role"`
-	AvatarUrl   string    `json:"avatar_url"`
-	ProfileUrl  string    `json:"profile_url"`
-	Resigned    bool      `json:"resigned"`
-	Gender      bool      `json:"gender"`
-	Phone       string    `json:"phone"`
-	Address     string    `json:"address"`
-	Position    string    `json:"position"`
-	DateOfBirth time.Time `json:"date_of_birth"`
-	CreatedAt   time.Time `json:"created_at"`
-	UpdatedAt   time.Time `json:"updated_at"`
+	ID          uuid.UUID       `json:"id"`
+	Email       string          `json:"email"`
+	Password    string          `json:"password"`
+	FirstName   string          `json:"first_name"`
+	LastName    string          `json:"last_name"`
+	FullName    string          `json:"full_name"`
+	NickName    string          `json:"nick_name"`
+	Role        string          `json:"role"`
+	AvatarUrl   string          `json:"avatar_url"`
+	ProfileUrl  string          `json:"profile_url"`
+	Resigned    bool            `json:"resigned"`
+	Gender      bool            `json:"gender"`
+	Phone       string          `json:"phone"`
+	Address     string          `json:"address"`
+	Position    string          `json:"position"`
+	DateOfBirth time.Time       `json:"date_of_birth"`
+	Settings    json.RawMessage `json:"settings"`
+	CreatedAt   time.Time       `json:"created_at"`
+	UpdatedAt   time.Time       `json:"updated_at"`
+}
+
+type Settings struct {
+	Social Social `json:"social"`
+}
+type Social struct {
+	Post   Post   `json:"post"`
+	System System `json:"system"`
+}
+type Post struct {
+	StatusDefault int32 `json:"status_default"`
+}
+type System struct {
+	Theme string `json:"theme"`
 }
 type UserAuth struct {
 	User         *User  `json:"user"`

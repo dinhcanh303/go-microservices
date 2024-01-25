@@ -2,6 +2,7 @@ package router
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"log/slog"
 	"strconv"
@@ -13,6 +14,7 @@ import (
 	"github.com/dinhcanh303/go-microservices/internal/auth/usecases/keys"
 	"github.com/dinhcanh303/go-microservices/pkg/constant"
 	errorPkg "github.com/dinhcanh303/go-microservices/pkg/error"
+	"github.com/dinhcanh303/go-microservices/pkg/redis"
 	"github.com/dinhcanh303/go-microservices/pkg/token"
 	"github.com/dinhcanh303/go-microservices/pkg/utils"
 	"github.com/dinhcanh303/go-microservices/proto/gen"
@@ -23,6 +25,7 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/reflection"
+	"google.golang.org/protobuf/types/known/anypb"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
@@ -33,6 +36,7 @@ type authGRPCServer struct {
 	ucKey               keys.UseCase
 	uploadDomainService domain.UploadDomainService
 	groupDomainService  domain.GroupDomainService
+	redis               redis.RedisEngine
 }
 
 var _ gen.AuthServiceServer = (*authGRPCServer)(nil)
@@ -45,13 +49,15 @@ func NewAuthGRPCServer(
 	uc auth.UseCase,
 	ucKey keys.UseCase,
 	uploadDomainService domain.UploadDomainService,
-	groupDomainService domain.GroupDomainService) gen.AuthServiceServer {
+	groupDomainService domain.GroupDomainService,
+	redis redis.RedisEngine) gen.AuthServiceServer {
 	svc := authGRPCServer{
 		cfg:                 cfg,
 		uc:                  uc,
 		ucKey:               ucKey,
 		uploadDomainService: uploadDomainService,
 		groupDomainService:  groupDomainService,
+		redis:               redis,
 	}
 	gen.RegisterAuthServiceServer(grpcServer, &svc)
 	reflection.Register(grpcServer)
@@ -119,7 +125,7 @@ func (a *authGRPCServer) GetUsers(ctx context.Context, request *gen.GetUsersRequ
 	slog.Info("GET:: GetUsers")
 	users, err := a.uc.GetUsers(ctx, request.GetSearch(), request.GetLimit(), request.GetOffset())
 	if err != nil {
-		return nil, err
+		return nil, errors.Wrap(err, "uc.GetUsers failed")
 	}
 	return &gen.GetUsersResponse{
 		Users: lo.Map(users, func(user *domain.User, _ int) *gen.User {
@@ -154,23 +160,15 @@ func (a *authGRPCServer) UpdateUser(ctx context.Context, request *gen.UpdateUser
 	if err != nil {
 		return nil, err
 	}
-	md, ok := metadata.FromIncomingContext(ctx)
-	if !ok {
-		return nil, errors.New("no headers found in the incoming context.")
-	}
-	clientId := utils.GetKeyMetadata(md, constant.ClientID)
-	if clientId == "" {
-		return nil, errors.New("No found client ID")
-	}
-	userId, err := uuid.Parse(clientId)
+	payloadUser, err := utils.ExtractMetadataUser(ctx)
 	if err != nil {
 		return nil, err
 	}
-	if userId != userIdReq {
+	if payloadUser.ID != userIdReq {
 		return nil, errors.New("No matched ID please check ID request")
 	}
 	model := &domain.User{
-		ID:          userId,
+		ID:          payloadUser.ID,
 		AvatarUrl:   request.User.AvatarUrl,
 		ProfileUrl:  request.User.ProfileUrl,
 		Gender:      request.User.Gender,
@@ -183,6 +181,7 @@ func (a *authGRPCServer) UpdateUser(ctx context.Context, request *gen.UpdateUser
 	if err != nil {
 		return nil, err
 	}
+
 	return &gen.UpdateUserResponse{
 		User: &gen.User{
 			Id:          user.ID.String(),
@@ -201,6 +200,59 @@ func (a *authGRPCServer) UpdateUser(ctx context.Context, request *gen.UpdateUser
 			Position:    user.Position,
 			CreatedAt:   timestamppb.New(user.CreatedAt),
 			UpdatedAt:   timestamppb.New(user.UpdatedAt),
+		},
+	}, nil
+}
+
+func (a *authGRPCServer) UpdateUserSettings(ctx context.Context, request *gen.UpdateUserSettingsRequest) (*gen.UpdateUserSettingsResponse, error) {
+	slog.Info("GET:: UpdateUserSettings")
+	payloadUser, err := utils.ExtractMetadataUser(ctx)
+	if err != nil {
+		return nil, err
+	}
+	user, err := a.uc.GetUser(ctx, payloadUser.ID)
+	if err != nil {
+		return nil, err
+	}
+	var settings domain.Settings
+	_ = json.Unmarshal(user.Settings, &settings)
+	slog.Info("REQUEST::", request)
+	slog.Info("SETTING::", settings)
+	// if request.Theme != nil {
+	// 	settings.Social.System.Theme = request.Theme
+	// }
+	// if request.StatusPost != nil {
+	// 	settings.Social.Post.StatusDefault = request.StatusPost
+	// }
+	settingJson, err := json.Marshal(settings)
+	slog.Info("SETTING JSON::", settingJson)
+	model := &domain.User{
+		ID:       payloadUser.ID,
+		Settings: settingJson,
+	}
+	slog.Info("MODEL::", model)
+	userUpdated, err := a.uc.UpdateUser(ctx, model)
+	if err != nil {
+		return nil, err
+	}
+	return &gen.UpdateUserSettingsResponse{
+		User: &gen.User{
+			Id:          userUpdated.ID.String(),
+			Email:       userUpdated.Email,
+			FirstName:   userUpdated.FirstName,
+			LastName:    userUpdated.LastName,
+			FullName:    userUpdated.FullName,
+			NickName:    userUpdated.NickName,
+			Role:        userUpdated.Role,
+			AvatarUrl:   userUpdated.AvatarUrl,
+			ProfileUrl:  userUpdated.ProfileUrl,
+			Gender:      userUpdated.Gender,
+			Phone:       userUpdated.Phone,
+			Address:     userUpdated.Address,
+			DateOfBirth: timestamppb.New(userUpdated.DateOfBirth),
+			Position:    userUpdated.Position,
+			CreatedAt:   timestamppb.New(userUpdated.CreatedAt),
+			UpdatedAt:   timestamppb.New(userUpdated.UpdatedAt),
 		},
 	}, nil
 }
@@ -329,6 +381,12 @@ func (a *authGRPCServer) GetProfile(ctx context.Context, request *gen.GetProfile
 		return nil, err
 	}
 	// avatarUrl, thumbnailUrl := getAvatarAndThumbnailAvatar(a, ctx, userId)
+	settingsAny := &anypb.Any{}
+	if user.Settings != nil {
+		slog.Info("JSONB", user.Settings)
+		settingsAny.Value = user.Settings
+		settingsAny.TypeUrl = "json.RawMessage"
+	}
 	return &gen.GetProfileResponse{
 		User: &gen.User{
 			Id:          user.ID.String(),
@@ -345,8 +403,9 @@ func (a *authGRPCServer) GetProfile(ctx context.Context, request *gen.GetProfile
 			Address:     user.Address,
 			DateOfBirth: timestamppb.New(user.DateOfBirth),
 			Position:    user.Position,
-			CreatedAt:   timestamppb.New(user.CreatedAt),
-			UpdatedAt:   timestamppb.New(user.UpdatedAt),
+			// Settings:    settingsAny,
+			CreatedAt: timestamppb.New(user.CreatedAt),
+			UpdatedAt: timestamppb.New(user.UpdatedAt),
 		},
 	}, nil
 }

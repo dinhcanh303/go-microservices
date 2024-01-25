@@ -5,14 +5,19 @@ import (
 	"log/slog"
 
 	"github.com/dinhcanh303/go-microservices/internal/auth/domain"
+	"github.com/dinhcanh303/go-microservices/pkg/redis"
+	"github.com/dinhcanh303/go-microservices/pkg/utils"
 	"github.com/google/uuid"
 	"github.com/google/wire"
 	"github.com/pkg/errors"
 )
 
 type service struct {
-	repo KeyRepo
+	repo  KeyRepo
+	redis redis.RedisEngine
 }
+
+const KEY_PREFIX_KEY_TOKEN = "auth_key_token_"
 
 // CreateKeyToken implements UseCase.
 func (s *service) CreateKeyToken(ctx context.Context, key *domain.Key) (*domain.Key, error) {
@@ -26,6 +31,7 @@ func (s *service) CreateKeyToken(ctx context.Context, key *domain.Key) (*domain.
 		}
 		return keyToken, nil
 	}
+
 	keyToken, err := s.repo.UpdateKeyByUserID(ctx, &domain.Key{
 		UserID:            foundKeyToken.UserID,
 		PublicKey:         key.PublicKey,
@@ -36,6 +42,11 @@ func (s *service) CreateKeyToken(ctx context.Context, key *domain.Key) (*domain.
 	if err != nil {
 		return nil, errors.Wrap(err, "Update Key Token failed")
 	}
+	//Del cache
+	err = s.redis.Invalidate(KEY_PREFIX_KEY_TOKEN + userID.String())
+	if err != nil {
+		slog.Error("Invalidate cache key failed")
+	}
 	return keyToken, nil
 }
 
@@ -45,6 +56,7 @@ func (s *service) DeleteKeyByID(ctx context.Context, id int64) error {
 	if err != nil {
 		return errors.Wrap(err, "service.DeleteKeyByID failed")
 	}
+
 	return nil
 }
 
@@ -53,6 +65,11 @@ func (s *service) DeleteKeyByUserID(ctx context.Context, userID uuid.UUID) error
 	err := s.repo.DeleteKeyByUserID(ctx, userID)
 	if err != nil {
 		return errors.Wrap(err, "service.DeleteKeyByUserID failed")
+	}
+	//Del cache
+	err = s.redis.Invalidate(KEY_PREFIX_KEY_TOKEN + userID.String())
+	if err != nil {
+		slog.Error("Invalidate cache key failed")
 	}
 	return nil
 }
@@ -77,18 +94,29 @@ func (s *service) FindKeyByRefreshTokenUsed(ctx context.Context, refreshToken st
 
 // FindKeyByUserID implements UseCase.
 func (s *service) FindKeyByUserID(ctx context.Context, userID uuid.UUID) (*domain.Key, error) {
-	key, err := s.repo.FindKeyByUserID(ctx, userID)
+	var key *domain.Key
+	keyCache := KEY_PREFIX_KEY_TOKEN + userID.String()
+	err := utils.HandleHitCache(key, s.redis, keyCache)
 	if err != nil {
-		return nil, errors.Wrap(err, "service.FindKeyByUserID failed")
+		key, err = s.repo.FindKeyByUserID(ctx, userID)
+		if err != nil {
+			return nil, errors.Wrap(err, "service.FindKeyByUserID failed")
+		}
+		err = s.redis.Set(keyCache, key, 0)
+		if err != nil {
+			return nil, errors.Wrap(err, "failed set value in cache")
+		}
 	}
 	return key, nil
 }
 
 var _ UseCase = (*service)(nil)
 
-func NewUseCase(repo KeyRepo) UseCase {
+func NewUseCase(repo KeyRepo,
+	redis redis.RedisEngine) UseCase {
 	return &service{
-		repo: repo,
+		repo:  repo,
+		redis: redis,
 	}
 }
 

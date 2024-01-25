@@ -212,6 +212,11 @@ func (g *groupGRPCServer) CreateGroup(ctx context.Context, request *gen.CreateGr
 	if err != nil {
 		return nil, errors.Wrap(err, "ucGroup.CreateGroup failed")
 	}
+	//Del cache
+	err = g.redis.Invalidate(group.ID.String())
+	if err != nil {
+		slog.Error("Invalidate cache group failed : ID", group.ID.String())
+	}
 	if request.Group.UserIds != nil {
 		for _, userId := range request.Group.UserIds {
 			userIdParsed, err := uuid.Parse(userId)
@@ -225,7 +230,6 @@ func (g *groupGRPCServer) CreateGroup(ctx context.Context, request *gen.CreateGr
 				Role:    constant.MEMBER,
 			})
 		}
-
 	}
 	res := &gen.CreateGroupResponse{
 		Group: &gen.Group{
@@ -244,25 +248,27 @@ func (g *groupGRPCServer) CreateGroup(ctx context.Context, request *gen.CreateGr
 
 func (g *groupGRPCServer) GetGroup(ctx context.Context, request *gen.GetGroupRequest) (*gen.GetGroupResponse, error) {
 	slog.Info("GET: GetGroup")
-	// res := &gen.GetGroupResponse{}
-	// byteData, check, err := g.redis.Get(request.Id)
-	// if !check && err != nil {
-	// 	err = json.Unmarshal(byteData, res)
-	// 	if err != nil {
-	// 		return nil, errors.Wrap(err, "failed to unmarshal")
-	// 	}
-	// }
+	group := &domain.Group{}
+	groupId := request.Id
+	err := utils.HandleHitCache(group, g.redis, groupId)
+	if err != nil {
+		slog.Info("MISS_CACHE", err)
+		id, err := uuid.Parse(groupId)
+		if err != nil {
+			return nil, errors.Wrap(err, "failed to parse id")
+		}
+		group, err = g.ucGroup.GetGroup(ctx, id)
+		if err != nil {
+			return nil, errors.Wrap(err, "ucGroup.GetGroup failed")
+		}
+		err = g.redis.Set(group.ID.String(), group, 0)
+		if err != nil {
+			return nil, errors.Wrap(err, "failed set value in cache")
+		}
+	}
 	payloadUser, err := utils.ExtractMetadataUser(ctx)
 	if err != nil {
 		return nil, err
-	}
-	id, err := uuid.Parse(request.Id)
-	if err != nil {
-		return nil, errors.Wrap(err, "failed to parse id")
-	}
-	group, err := g.ucGroup.GetGroup(ctx, id)
-	if err != nil {
-		return nil, errors.Wrap(err, "ucGroup.GetGroup failed")
 	}
 	countMembers, err := g.ucGroupMember.CountGroupMembers(ctx, group.ID)
 	if err != nil {
@@ -299,6 +305,12 @@ func (g *groupGRPCServer) DeleteGroup(ctx context.Context, request *gen.DeleteGr
 		return nil, errors.Wrap(err, "ucGroup.DeleteGroup failed")
 	}
 
+	//Del cache
+	err = g.redis.Invalidate(request.Id)
+	if err != nil {
+		slog.Error("Invalidate cache group failed : ID", request.Id)
+	}
+
 	return &gen.DeleteGroupResponse{
 		Deleted: deleted,
 	}, nil
@@ -321,6 +333,12 @@ func (g *groupGRPCServer) UpdateGroup(ctx context.Context, request *gen.UpdateGr
 	group, err := g.ucGroup.UpdateGroup(ctx, &model)
 	if err != nil {
 		return nil, errors.Wrap(err, "ucGroup.UpdateGroup failed")
+	}
+
+	//Del cache
+	err = g.redis.Invalidate(group.ID.String())
+	if err != nil {
+		slog.Error("Invalidate cache group failed : ID", group.ID.String())
 	}
 	res := &gen.UpdateGroupResponse{
 		Group: &gen.Group{

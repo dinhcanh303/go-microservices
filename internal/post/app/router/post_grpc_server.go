@@ -267,11 +267,6 @@ func manyPostResponse(posts []*domain.Post, p *postGRPCServer, ctx context.Conte
 		if err != nil {
 			group = &gen.GetGroupResponse{}
 		}
-		// comments, err := p.commentDomainService.GetCommentsByPostID(ctx, post.ID)
-		// if err != nil {
-		// 	slog.Warn("commentDomainService.GetCommentsByPostID failed", err)
-		// 	comments = make([]*sharedkernel.CommentHasChildren, 0)
-		// }
 		attachments, err := p.uploadDomainService.GetAttachmentsByType(ctx, constant.ATTACHMENT_POST, post.ID)
 		if err != nil {
 			slog.Warn("uploadDomainService.GetAttachmentsByType failed", err)
@@ -313,42 +308,6 @@ func manyPostResponse(posts []*domain.Post, p *postGRPCServer, ctx context.Conte
 				OthersLikedEmojis: likeInfo.OthersLikedEmojis,
 				OthersLikes:       likeInfo.OthersLikes,
 			},
-			// Comments: lo.Map(comments, func(item *sharedkernel.CommentHasChildren, _ int) *gen.CommentHasChildren {
-			// 	return &gen.CommentHasChildren{
-			// 		Id:              item.ID.String(),
-			// 		PostId:          item.PostID.String(),
-			// 		ReplyToId:       item.ReplyToID.UUID.String(),
-			// 		Content:         item.Content,
-			// 		ParentCommentId: item.ParentCommentID.UUID.String(),
-			// 		Likes: &gen.LikeInfo{
-			// 			YourLikedEmoji:    item.Likes.YourLikedEmoji,
-			// 			YourLike:          item.Likes.YourLike,
-			// 			OthersLikedEmojis: item.Likes.OthersLikedEmojis,
-			// 			OthersLikes:       item.Likes.OthersLikes,
-			// 		},
-			// 		Children: lo.Map(item.Children, func(item *domainComment.CommentHasMetadata, _ int) *gen.CommentHasMetadata {
-			// 			return &gen.CommentHasMetadata{
-			// 				Id:              item.ID.String(),
-			// 				PostId:          item.PostID.String(),
-			// 				UserId:          item.UserID.String(),
-			// 				ReplyToId:       item.ID.String(),
-			// 				Content:         item.Content,
-			// 				ParentCommentId: item.ParentCommentID.UUID.String(),
-			// 				Likes: &gen.LikeInfo{
-			// 					YourLikedEmoji:    item.Likes.YourLikedEmoji,
-			// 					YourLike:          item.Likes.YourLike,
-			// 					OthersLikedEmojis: item.Likes.OthersLikedEmojis,
-			// 					OthersLikes:       item.Likes.OthersLikes,
-			// 				},
-			// 				CreatedAt: timestamppb.New(item.CreatedAt),
-			// 				UpdatedAt: timestamppb.New(item.UpdatedAt),
-			// 			}
-			// 		}),
-			// 		UserId:    item.UserID.String(),
-			// 		CreatedAt: timestamppb.New(item.CreatedAt),
-			// 		UpdatedAt: timestamppb.New(item.UpdatedAt),
-			// 	}
-			// }),
 		})
 	}
 	return results

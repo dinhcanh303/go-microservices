@@ -31,6 +31,7 @@ const (
 	AuthService_GetUsersBirthDayByCurrentMonth_FullMethodName = "/authapi.AuthService/GetUsersBirthDayByCurrentMonth"
 	AuthService_GetUsersBirthDayByCurrentDay_FullMethodName   = "/authapi.AuthService/GetUsersBirthDayByCurrentDay"
 	AuthService_UpdateUser_FullMethodName                     = "/authapi.AuthService/UpdateUser"
+	AuthService_UpdateUserSettings_FullMethodName             = "/authapi.AuthService/UpdateUserSettings"
 )
 
 // AuthServiceClient is the client API for AuthService service.
@@ -49,6 +50,7 @@ type AuthServiceClient interface {
 	GetUsersBirthDayByCurrentMonth(ctx context.Context, in *GetUsersBirthDayByCurrentMonthRequest, opts ...grpc.CallOption) (*GetUsersBirthDayByCurrentMonthResponse, error)
 	GetUsersBirthDayByCurrentDay(ctx context.Context, in *GetUsersBirthDayByCurrentDayRequest, opts ...grpc.CallOption) (*GetUsersBirthDayByCurrentDayResponse, error)
 	UpdateUser(ctx context.Context, in *UpdateUserRequest, opts ...grpc.CallOption) (*UpdateUserResponse, error)
+	UpdateUserSettings(ctx context.Context, in *UpdateUserSettingsRequest, opts ...grpc.CallOption) (*UpdateUserSettingsResponse, error)
 }
 
 type authServiceClient struct {
@@ -167,6 +169,15 @@ func (c *authServiceClient) UpdateUser(ctx context.Context, in *UpdateUserReques
 	return out, nil
 }
 
+func (c *authServiceClient) UpdateUserSettings(ctx context.Context, in *UpdateUserSettingsRequest, opts ...grpc.CallOption) (*UpdateUserSettingsResponse, error) {
+	out := new(UpdateUserSettingsResponse)
+	err := c.cc.Invoke(ctx, AuthService_UpdateUserSettings_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // AuthServiceServer is the server API for AuthService service.
 // All implementations must embed UnimplementedAuthServiceServer
 // for forward compatibility
@@ -183,6 +194,7 @@ type AuthServiceServer interface {
 	GetUsersBirthDayByCurrentMonth(context.Context, *GetUsersBirthDayByCurrentMonthRequest) (*GetUsersBirthDayByCurrentMonthResponse, error)
 	GetUsersBirthDayByCurrentDay(context.Context, *GetUsersBirthDayByCurrentDayRequest) (*GetUsersBirthDayByCurrentDayResponse, error)
 	UpdateUser(context.Context, *UpdateUserRequest) (*UpdateUserResponse, error)
+	UpdateUserSettings(context.Context, *UpdateUserSettingsRequest) (*UpdateUserSettingsResponse, error)
 	mustEmbedUnimplementedAuthServiceServer()
 }
 
@@ -225,6 +237,9 @@ func (UnimplementedAuthServiceServer) GetUsersBirthDayByCurrentDay(context.Conte
 }
 func (UnimplementedAuthServiceServer) UpdateUser(context.Context, *UpdateUserRequest) (*UpdateUserResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateUser not implemented")
+}
+func (UnimplementedAuthServiceServer) UpdateUserSettings(context.Context, *UpdateUserSettingsRequest) (*UpdateUserSettingsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateUserSettings not implemented")
 }
 func (UnimplementedAuthServiceServer) mustEmbedUnimplementedAuthServiceServer() {}
 
@@ -455,6 +470,24 @@ func _AuthService_UpdateUser_Handler(srv interface{}, ctx context.Context, dec f
 	return interceptor(ctx, in, info, handler)
 }
 
+func _AuthService_UpdateUserSettings_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateUserSettingsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AuthServiceServer).UpdateUserSettings(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AuthService_UpdateUserSettings_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AuthServiceServer).UpdateUserSettings(ctx, req.(*UpdateUserSettingsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // AuthService_ServiceDesc is the grpc.ServiceDesc for AuthService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -509,6 +542,10 @@ var AuthService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "UpdateUser",
 			Handler:    _AuthService_UpdateUser_Handler,
+		},
+		{
+			MethodName: "UpdateUserSettings",
+			Handler:    _AuthService_UpdateUserSettings_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

@@ -1528,6 +1528,39 @@
         ]
       }
     },
+    "/api/v1/users/settings": {
+      "put": {
+        "summary": "Set Avatar User",
+        "operationId": "AuthService_UpdateUserSettings",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/authapiUpdateUserSettingsResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/authapiUpdateUserSettingsRequest"
+            }
+          }
+        ],
+        "tags": [
+          "AuthService"
+        ]
+      }
+    },
     "/api/v1/users/{groupId}/invite": {
       "get": {
         "summary": "Get All User can invite Group",
@@ -1681,6 +1714,9 @@
                     "dateOfBirth": {
                       "type": "string",
                       "format": "date-time"
+                    },
+                    "settings": {
+                      "$ref": "#/definitions/protobufAny"
                     },
                     "createdAt": {
                       "type": "string",
@@ -2003,6 +2039,26 @@
         }
       }
     },
+    "authapiUpdateUserSettingsRequest": {
+      "type": "object",
+      "properties": {
+        "postStatus": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "systemTheme": {
+          "type": "string"
+        }
+      }
+    },
+    "authapiUpdateUserSettingsResponse": {
+      "type": "object",
+      "properties": {
+        "user": {
+          "$ref": "#/definitions/authapiUser"
+        }
+      }
+    },
     "authapiUser": {
       "type": "object",
       "properties": {
@@ -2051,6 +2107,9 @@
         "dateOfBirth": {
           "type": "string",
           "format": "date-time"
+        },
+        "settings": {
+          "$ref": "#/definitions/protobufAny"
         },
         "createdAt": {
           "type": "string",
@@ -2903,7 +2962,10 @@
         "email": {
           "type": "string"
         },
-        "avatar": {
+        "avatarUrl": {
+          "type": "string"
+        },
+        "profileUrl": {
           "type": "string"
         },
         "type": {

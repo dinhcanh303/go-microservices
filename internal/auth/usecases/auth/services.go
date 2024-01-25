@@ -13,6 +13,7 @@ import (
 	"github.com/dinhcanh303/go-microservices/internal/pkg/event"
 	"github.com/dinhcanh303/go-microservices/pkg/constant"
 	"github.com/dinhcanh303/go-microservices/pkg/ldap"
+	"github.com/dinhcanh303/go-microservices/pkg/redis"
 	"github.com/dinhcanh303/go-microservices/pkg/token"
 	"github.com/dinhcanh303/go-microservices/pkg/utils"
 	"github.com/google/uuid"
@@ -29,6 +30,7 @@ type service struct {
 	jwt                 token.JWT
 	userCreatedEventPub UserCreatedEventPublisher
 	userDeletedEventPub UserDeletedEventPublisher
+	redis               redis.RedisEngine
 }
 
 // GetUsersBirthDayByCurrentDay implements UseCase.
@@ -64,6 +66,11 @@ func (s *service) UpdateUser(ctx context.Context, user *domain.User) (*domain.Us
 	if err != nil {
 		return nil, err
 	}
+	//Del cache
+	err = s.redis.Invalidate(constant.CACHE_AUTH_SV_LIST_USERS)
+	if err != nil {
+		slog.Error("Invalidate cache list users failed")
+	}
 	return user, nil
 }
 
@@ -72,9 +79,18 @@ func (s *service) GetUsers(ctx context.Context, search string, limit int32, offs
 	if limit == 0 {
 		limit = 1000
 	}
-	users, err := s.repo.GetUsers(ctx, search, limit, offset)
+	var users []*domain.User
+	keyCache := constant.CACHE_AUTH_SV_LIST_USERS
+	err := utils.HandleHitCache(users, s.redis, keyCache)
 	if err != nil {
-		return nil, err
+		users, err = s.repo.GetUsers(ctx, search, limit, offset)
+		if err != nil {
+			return nil, errors.Wrap(err, "uc.GetUsers failed")
+		}
+		err = s.redis.Set(keyCache, users, 0)
+		if err != nil {
+			return nil, errors.Wrap(err, "failed set value in cache")
+		}
 	}
 	return users, nil
 }
@@ -82,6 +98,7 @@ func (s *service) GetUsers(ctx context.Context, search string, limit int32, offs
 // GetUser implements UseCase.
 func (s *service) GetUser(ctx context.Context, userId uuid.UUID) (*domain.User, error) {
 	user, err := s.repo.GetUser(ctx, userId)
+	//
 	if err != nil {
 		return nil, err
 	}
@@ -158,6 +175,11 @@ func (s *service) SignIn(ctx context.Context, email string, password string) (*d
 				if err != nil {
 					return nil, errors.Wrap(err, "create account using ldap failed")
 				}
+				//Del cache
+				err = s.redis.Invalidate(constant.CACHE_AUTH_SV_LIST_USERS)
+				if err != nil {
+					slog.Error("Invalidate cache list users failed")
+				}
 			}
 			return createTokenPairAndResponse(ctx, s, foundUser, false)
 		}
@@ -197,6 +219,11 @@ func (s *service) SignUp(ctx context.Context, email, password, fistName, lastNam
 	if err != nil {
 		return nil, status.Error(codes.Unknown, err.Error())
 	}
+	//Del cache
+	err = s.redis.Invalidate(constant.CACHE_AUTH_SV_LIST_USERS)
+	if err != nil {
+		slog.Error("Invalidate cache list users failed")
+	}
 	if err == nil {
 		// Publish event created group
 		eventBytes, err := json.Marshal(event.UserCreated{
@@ -223,6 +250,7 @@ func NewUseCase(
 	jwt token.JWT,
 	userCreatedEventPub UserCreatedEventPublisher,
 	userDeletedEventPub UserDeletedEventPublisher,
+	redis redis.RedisEngine,
 ) UseCase {
 	return &service{
 		repo:                repo,
@@ -231,6 +259,7 @@ func NewUseCase(
 		jwt:                 jwt,
 		userCreatedEventPub: userCreatedEventPub,
 		userDeletedEventPub: userDeletedEventPub,
+		redis:               redis,
 	}
 }
 

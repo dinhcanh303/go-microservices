@@ -44,6 +44,10 @@ func main() {
 	if err != nil {
 		slog.Error("Failed get config Ldap", err)
 	}
+	cfgRedis, err := configs.NewConfigRedis()
+	if err != nil {
+		slog.Error("Failed get config", err)
+	}
 	slog.Info("⚡ Init App", "name", cfg.Name, "version", cfg.Version)
 
 	//set up logrus
@@ -66,7 +70,7 @@ func main() {
 		defer server.GracefulStop()
 		<-ctx.Done()
 	}()
-	cleanup := prepareApp(ctx, cancel, cfg, cfgLdap, server)
+	cleanup := prepareApp(ctx, cancel, cfg, cfgRedis, cfgLdap, server)
 
 	//gRPC Server
 	address := fmt.Sprintf("%s:%d", cfg.HTTP.Host, cfg.HTTP.Port)
@@ -119,8 +123,8 @@ func main() {
 
 }
 
-func prepareApp(ctx context.Context, cancel context.CancelFunc, cfg *config.Config, cfgLdap *configs.Ldap, server *grpc.Server) func() {
-	a, cleanup, err := app.InitApp(cfg, cfgLdap, postgres.DBConnString(cfg.PG.DbURL), postgres.DBConnReadString(cfg.PG.DbRepURL),
+func prepareApp(ctx context.Context, cancel context.CancelFunc, cfg *config.Config, cfgRedis *configs.Redis, cfgLdap *configs.Ldap, server *grpc.Server) func() {
+	a, cleanup, err := app.InitApp(cfg, cfgRedis, cfgLdap, postgres.DBConnString(cfg.PG.DbURL), postgres.DBConnReadString(cfg.PG.DbRepURL),
 		rabbitmq.RabbitMQConnStr(cfg.RabbitMQ.URL), server)
 	if err != nil {
 		slog.Error("Failed init app", err)

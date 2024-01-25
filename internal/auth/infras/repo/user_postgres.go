@@ -265,6 +265,7 @@ func (rp *userRepo) GetUser(ctx context.Context, userId uuid.UUID) (*domain.User
 		Address:     user.Address.String,
 		DateOfBirth: user.DateOfBirth.Time,
 		Position:    user.Position.String,
+		Settings:    user.Settings,
 		CreatedAt:   user.CreatedAt,
 		UpdatedAt:   user.UpdatedAt,
 	}, nil

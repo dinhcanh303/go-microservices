@@ -5,6 +5,7 @@ package authapi;
 import "google/api/annotations.proto";
 import "protoc-gen-openapiv2/options/annotations.proto";
 import "google/protobuf/timestamp.proto";
+import "google/protobuf/any.proto";
 
 option go_package = "github.com/dinhcanh303/go-microsevices/proto/gen";
 
@@ -120,6 +121,23 @@ service AuthService {
             description: ""
         };
     }
+    rpc UpdateUserSettings(UpdateUserSettingsRequest) returns (UpdateUserSettingsResponse){
+        option (google.api.http) = {
+            put: "/api/v1/users/settings",
+            body: "*"
+        };
+        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+            summary: "Set Avatar User"
+            description: ""
+        };
+    }
+}
+message UpdateUserSettingsRequest{
+    int32 post_status = 1;
+    string system_theme = 2;
+}
+message UpdateUserSettingsResponse {
+    User user = 1;
 }
 message GetUsersBirthDayByCurrentMonthRequest{}
 message GetUsersBirthDayByCurrentMonthResponse{
@@ -219,8 +237,9 @@ message User {
     string address = 13;
     string position = 14;
     google.protobuf.Timestamp date_of_birth = 15;
-    google.protobuf.Timestamp created_at = 16;
-    google.protobuf.Timestamp updated_at = 17;
+    google.protobuf.Any settings = 16;
+    google.protobuf.Timestamp created_at = 17;
+    google.protobuf.Timestamp updated_at = 18;
 }
 message VerifyRequest{}
 message VerifyResponse{}

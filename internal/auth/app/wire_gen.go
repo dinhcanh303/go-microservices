@@ -19,6 +19,7 @@ import (
 	"github.com/dinhcanh303/go-microservices/pkg/postgres"
 	"github.com/dinhcanh303/go-microservices/pkg/rabbitmq"
 	"github.com/dinhcanh303/go-microservices/pkg/rabbitmq/publisher"
+	"github.com/dinhcanh303/go-microservices/pkg/redis"
 	"github.com/dinhcanh303/go-microservices/pkg/token"
 	"github.com/rabbitmq/amqp091-go"
 	"google.golang.org/grpc"
@@ -26,28 +27,36 @@ import (
 
 // Injectors from wire.go:
 
-func InitApp(cfg *config.Config, cfgLdap *configs.Ldap, dbConnStr postgres.DBConnString, dbReadConnStr postgres.DBConnReadString, rabbitMQConnStr rabbitmq.RabbitMQConnStr, grpcServer *grpc.Server) (*App, func(), error) {
+func InitApp(cfg *config.Config, cfg2 *configs.Redis, cfgLdap *configs.Ldap, dbConnStr postgres.DBConnString, dbReadConnStr postgres.DBConnReadString, rabbitMQConnStr rabbitmq.RabbitMQConnStr, grpcServer *grpc.Server) (*App, func(), error) {
 	dbEngine, cleanup, err := dbEngineFunc(dbConnStr, dbReadConnStr)
 	if err != nil {
 		return nil, nil, err
 	}
 	userRepo := repo.NewUserRepo(dbEngine)
 	keyRepo := repo.NewKeyRepo(dbEngine)
-	useCase := keys.NewUseCase(keyRepo)
-	ldapClient, cleanup2, err := ldapClientFunc(cfgLdap)
+	redisEngine, cleanup2, err := redisEngineFunc(cfg2)
 	if err != nil {
 		cleanup()
 		return nil, nil, err
 	}
-	jwt := jwtFunc()
-	connection, cleanup3, err := rabbitMQFunc(rabbitMQConnStr)
+	useCase := keys.NewUseCase(keyRepo, redisEngine)
+	ldapClient, cleanup3, err := ldapClientFunc(cfgLdap)
 	if err != nil {
+		cleanup2()
+		cleanup()
+		return nil, nil, err
+	}
+	jwt := jwtFunc()
+	connection, cleanup4, err := rabbitMQFunc(rabbitMQConnStr)
+	if err != nil {
+		cleanup3()
 		cleanup2()
 		cleanup()
 		return nil, nil, err
 	}
 	eventPublisher, err := publisher.NewPublisher(connection)
 	if err != nil {
+		cleanup4()
 		cleanup3()
 		cleanup2()
 		cleanup()
@@ -55,9 +64,10 @@ func InitApp(cfg *config.Config, cfgLdap *configs.Ldap, dbConnStr postgres.DBCon
 	}
 	userCreatedEventPublisher := infras.NewUserCreatedEventPublisher(eventPublisher)
 	userDeletedEventPublisher := infras.NewUserDeletedEventPublisher(eventPublisher)
-	authUseCase := auth.NewUseCase(userRepo, useCase, ldapClient, jwt, userCreatedEventPublisher, userDeletedEventPublisher)
+	authUseCase := auth.NewUseCase(userRepo, useCase, ldapClient, jwt, userCreatedEventPublisher, userDeletedEventPublisher, redisEngine)
 	uploadDomainService, err := grpc2.NewGRPCUploadClient(cfg)
 	if err != nil {
+		cleanup4()
 		cleanup3()
 		cleanup2()
 		cleanup()
@@ -65,14 +75,16 @@ func InitApp(cfg *config.Config, cfgLdap *configs.Ldap, dbConnStr postgres.DBCon
 	}
 	groupDomainService, err := grpc2.NewGRPCGroupClient(cfg)
 	if err != nil {
+		cleanup4()
 		cleanup3()
 		cleanup2()
 		cleanup()
 		return nil, nil, err
 	}
-	authServiceServer := router.NewAuthGRPCServer(grpcServer, cfg, authUseCase, useCase, uploadDomainService, groupDomainService)
+	authServiceServer := router.NewAuthGRPCServer(grpcServer, cfg, authUseCase, useCase, uploadDomainService, groupDomainService, redisEngine)
 	app := New(cfg, cfgLdap, dbEngine, authUseCase, authServiceServer, userCreatedEventPublisher, userDeletedEventPublisher, uploadDomainService)
 	return app, func() {
+		cleanup4()
 		cleanup3()
 		cleanup2()
 		cleanup()
@@ -105,4 +117,14 @@ func rabbitMQFunc(url rabbitmq.RabbitMQConnStr) (*amqp091.Connection, func(), er
 		return nil, nil, err
 	}
 	return conn, func() { conn.Close() }, nil
+}
+
+func redisEngineFunc(config2 *configs.Redis) (redis.RedisEngine, func(), error) {
+	redis2, err := redis.NewRedisClient(config2)
+	if err != nil {
+		return nil, nil, err
+	}
+	return redis2, func() {
+		redis2.Close()
+	}, nil
 }

@@ -6,6 +6,7 @@ package postgresql
 
 import (
 	"database/sql"
+	"encoding/json"
 	"time"
 
 	"github.com/google/uuid"
@@ -32,22 +33,23 @@ type AuthKey struct {
 }
 
 type AuthUser struct {
-	ID          uuid.UUID      `json:"id"`
-	Email       string         `json:"email"`
-	FirstName   string         `json:"first_name"`
-	LastName    string         `json:"last_name"`
-	FullName    sql.NullString `json:"full_name"`
-	NickName    sql.NullString `json:"nick_name"`
-	AvatarUrl   sql.NullString `json:"avatar_url"`
-	ProfileUrl  sql.NullString `json:"profile_url"`
-	Role        sql.NullString `json:"role"`
-	Resigned    sql.NullBool   `json:"resigned"`
-	Gender      sql.NullBool   `json:"gender"`
-	Phone       sql.NullString `json:"phone"`
-	Address     sql.NullString `json:"address"`
-	Position    sql.NullString `json:"position"`
-	DateOfBirth sql.NullTime   `json:"date_of_birth"`
-	Password    string         `json:"password"`
-	CreatedAt   time.Time      `json:"created_at"`
-	UpdatedAt   time.Time      `json:"updated_at"`
+	ID          uuid.UUID       `json:"id"`
+	Email       string          `json:"email"`
+	FirstName   string          `json:"first_name"`
+	LastName    string          `json:"last_name"`
+	FullName    sql.NullString  `json:"full_name"`
+	NickName    sql.NullString  `json:"nick_name"`
+	AvatarUrl   sql.NullString  `json:"avatar_url"`
+	ProfileUrl  sql.NullString  `json:"profile_url"`
+	Role        sql.NullString  `json:"role"`
+	Resigned    sql.NullBool    `json:"resigned"`
+	Gender      sql.NullBool    `json:"gender"`
+	Phone       sql.NullString  `json:"phone"`
+	Address     sql.NullString  `json:"address"`
+	Position    sql.NullString  `json:"position"`
+	DateOfBirth sql.NullTime    `json:"date_of_birth"`
+	Password    string          `json:"password"`
+	Settings    json.RawMessage `json:"settings"`
+	CreatedAt   time.Time       `json:"created_at"`
+	UpdatedAt   time.Time       `json:"updated_at"`
 }
