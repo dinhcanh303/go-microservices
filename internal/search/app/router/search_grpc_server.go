@@ -57,11 +57,11 @@ func (c *searchGRPCServer) Search(ctx context.Context, request *gen.SearchReques
 	return &gen.SearchResponse{
 		Search: lo.Map(results, func(item searchRes, _ int) *gen.Search {
 			return &gen.Search{
-				Id:     item.ID.String(),
-				Name:   item.Name,
-				Email:  item.Email,
-				Avatar: item.Email,
-				Type:   item.Type,
+				Id:        item.ID.String(),
+				Name:      item.Name,
+				Email:     item.Email,
+				AvatarUrl: item.Email,
+				Type:      item.Type,
 			}
 		}),
 	}, nil
