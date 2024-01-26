@@ -7,6 +7,8 @@ import (
 	sharedkernel "github.com/dinhcanh303/go-microservices/internal/pkg/shared_kernel"
 	domainUpload "github.com/dinhcanh303/go-microservices/internal/upload/domain"
 	"github.com/dinhcanh303/go-microservices/pkg/constant"
+	"github.com/dinhcanh303/go-microservices/pkg/redis"
+	"github.com/dinhcanh303/go-microservices/pkg/utils"
 	"github.com/google/uuid"
 	"github.com/google/wire"
 	"github.com/pkg/errors"
@@ -15,15 +17,50 @@ import (
 
 type service struct {
 	commentRepo     CommentRepo
+	redis           redis.RedisEngine
 	likeDomainSvc   domain.LikeDomainService
 	uploadDomainSvc domain.UploadDomainService
 }
 
+var (
+	CACHE_SV_COMMENT_COMMENTS_BY_COMMENT_ID    = "sv_comment_comments_by_comment_id_"
+	CACHE_SV_COMMENT_COMMENTS_BY_POST_ID       = "sv_comment_comments_by_post_id_"
+	CACHE_SV_COMMENT_COMMENTS_COUNT_BY_POST_ID = "sv_comment_comments_count_by_post_id_"
+	CACHE_SV_COMMENT_COMMENTS                  = "sv_comment_comments_count_by_post_id_"
+)
+var _ UseCase = (*service)(nil)
+
+var UseCaseSet = wire.NewSet(NewService)
+
+func NewService(commentRepo CommentRepo,
+	redis redis.RedisEngine,
+	likeDomainSvc domain.LikeDomainService,
+	uploadDomainSvc domain.UploadDomainService) UseCase {
+	return &service{
+		commentRepo:     commentRepo,
+		redis:           redis,
+		likeDomainSvc:   likeDomainSvc,
+		uploadDomainSvc: uploadDomainSvc,
+	}
+}
+
 // GetCommentsByCommentID implements UseCase.
-func (s *service) GetCommentsByCommentID(ctx context.Context, commentId uuid.UUID, userId uuid.UUID, limit int32, offset int32) ([]*domain.CommentHasMetadata, error) {
-	comments, err := s.commentRepo.GetCommentsByCommentID(ctx, commentId, limit, offset)
+func (s *service) GetCommentsByCommentID(ctx context.Context,
+	commentId uuid.UUID,
+	userId uuid.UUID,
+	limit int32, offset int32) ([]*domain.CommentHasMetadata, error) {
+	var comments []*domain.Comment
+	keyCache := CACHE_SV_COMMENT_COMMENTS_BY_COMMENT_ID + commentId.String() + "_" + utils.String(limit) + "_" + utils.String(offset)
+	err := utils.HandleHitCache(comments, s.redis, keyCache)
 	if err != nil {
-		return nil, errors.Wrap(err, "service.GetCommentsByCommentID")
+		comments, err = s.commentRepo.GetCommentsByCommentID(ctx, commentId, limit, offset)
+		if err != nil {
+			return nil, errors.Wrap(err, "service.GetCommentsByCommentID")
+		}
+		err = s.redis.Set(keyCache, comments, 0)
+		if err != nil {
+			slog.Error("set cached comments failed", err)
+		}
 	}
 	var commentsHasMetadata []*domain.CommentHasMetadata
 	for i, comment := range comments {
@@ -52,25 +89,16 @@ func (s *service) GetCommentsByCommentID(ctx context.Context, commentId uuid.UUI
 	return commentsHasMetadata, nil
 }
 
-var _ UseCase = (*service)(nil)
-
-var UseCaseSet = wire.NewSet(NewService)
-
-func NewService(commentRepo CommentRepo,
-	likeDomainSvc domain.LikeDomainService,
-	uploadDomainSvc domain.UploadDomainService) UseCase {
-	return &service{
-		commentRepo:     commentRepo,
-		likeDomainSvc:   likeDomainSvc,
-		uploadDomainSvc: uploadDomainSvc,
-	}
-}
-
 // CreateComment implements UseCase.
 func (s *service) CreateComment(ctx context.Context, comment *domain.Comment) (*domain.Comment, error) {
 	comment, err := s.commentRepo.Create(ctx, comment)
 	if err != nil {
 		return nil, errors.Wrap(err, "service.CreateComment")
+	}
+	//Invalidate cache
+	err = s.redis.InvalidatePrefix(CACHE_SV_COMMENT_COMMENTS)
+	if err != nil {
+		slog.Error("Invalidate cache comments failed", err)
 	}
 	return comment, nil
 }
@@ -81,6 +109,11 @@ func (s *service) DeleteComment(ctx context.Context, id uuid.UUID) (bool, error)
 	if err != nil {
 		return false, errors.Wrap(err, "service.DeleteComment")
 	}
+	//Invalidate cache
+	err = s.redis.InvalidatePrefix(CACHE_SV_COMMENT_COMMENTS)
+	if err != nil {
+		slog.Error("Invalidate cache comments failed", err)
+	}
 	return isDelete, nil
 }
 
@@ -89,6 +122,11 @@ func (s *service) DeleteAllCommentByPostID(ctx context.Context, postId uuid.UUID
 	isDelete, err := s.commentRepo.DeleteAllByPostID(ctx, postId)
 	if err != nil {
 		return false, errors.Wrap(err, "service.DeleteAllCommentByPostID")
+	}
+	//Invalidate cache
+	err = s.redis.InvalidatePrefix(CACHE_SV_COMMENT_COMMENTS)
+	if err != nil {
+		slog.Error("Invalidate cache comments failed", err)
 	}
 	return isDelete, nil
 }
@@ -104,10 +142,20 @@ func (s *service) GetComment(ctx context.Context, id uuid.UUID) (*domain.Comment
 
 // GetCommentsByPostID implements UseCase.
 func (s *service) GetCommentsByPostID(ctx context.Context, postId, userId uuid.UUID, limit, offset int32) ([]*sharedkernel.CommentHasChildren, error) {
-	comments, err := s.commentRepo.GetCommentsByPostID(ctx, postId, limit, offset)
+	var comments []*domain.Comment
+	keyCache := CACHE_SV_COMMENT_COMMENTS_BY_POST_ID + postId.String() + "_" + utils.String(limit) + "_" + utils.String(offset)
+	err := utils.HandleHitCache(comments, s.redis, keyCache)
 	if err != nil {
-		return nil, errors.Wrap(err, "service.GetCommentsByPostID")
+		comments, err = s.commentRepo.GetCommentsByPostID(ctx, postId, limit, offset)
+		if err != nil {
+			return nil, errors.Wrap(err, "service.GetCommentsByPostID")
+		}
+		err = s.redis.Set(keyCache, comments, 0)
+		if err != nil {
+			slog.Error("set cached comments failed", err)
+		}
 	}
+
 	commentMap := make(map[uuid.UUID]*sharedkernel.CommentHasChildren)
 	var commentsHasChildren []*sharedkernel.CommentHasChildren
 	slog.Info("COMMENT::", comments)
@@ -166,6 +214,12 @@ func (s *service) UpdateComment(ctx context.Context, comment *domain.Comment) (*
 	if err != nil {
 		return nil, errors.Wrap(err, "service.UpdateComment")
 	}
+	//Invalidate cache
+	err = s.redis.InvalidatePrefix(CACHE_SV_COMMENT_COMMENTS)
+	if err != nil {
+		slog.Error("Invalidate cache comments failed", err)
+	}
+
 	return comment, nil
 }
 
@@ -180,9 +234,19 @@ func (s *service) CountCommentByCommentID(ctx context.Context, commentId uuid.UU
 
 // CountCommentByPostID implements UseCase.
 func (s *service) CountCommentByPostID(ctx context.Context, postId uuid.UUID) (int64, error) {
-	count, err := s.commentRepo.CountByPostID(ctx, postId)
+	var count int64
+	keyCache := CACHE_SV_COMMENT_COMMENTS_COUNT_BY_POST_ID + postId.String()
+	err := utils.HandleHitCache(count, s.redis, keyCache)
 	if err != nil {
-		return 0, errors.Wrap(err, "service.UpdateComment")
+		count, err = s.commentRepo.CountByPostID(ctx, postId)
+		if err != nil {
+			return 0, errors.Wrap(err, "service.UpdateComment")
+		}
+		err = s.redis.Set(keyCache, count, 0)
+		if err != nil {
+			slog.Error("set cache count comment by post failed", err)
+		}
 	}
+
 	return count, nil
 }

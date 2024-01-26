@@ -131,12 +131,6 @@ func (p *postGRPCServer) NewFeed(ctx context.Context, request *gen.NewFeedReques
 	if err != nil {
 		return nil, errors.Wrap(err, "uc.GetPostsByFeed failed")
 	}
-	// slog.Info("LENGTH", len(posts))
-	// if len(posts) == 0 {
-	// 	return &gen.NewFeedResponse{
-	// 		Posts: nil,
-	// 	}, nil
-	// }
 	results := manyPostResponse(posts, p, ctx)
 	return &gen.NewFeedResponse{
 		Posts: results,
@@ -247,6 +241,7 @@ func manyPostResponse(posts []*domain.Post, p *postGRPCServer, ctx context.Conte
 	results := make([]*gen.GetPostResponse, 0)
 	// channel := make(chan *gen.GetPostResponse, len(posts))
 	// var wg sync.WaitGroup
+	slog.Info("POST ROUTER::", posts)
 	for _, post := range posts {
 		likeInfo, err := p.likeDomainService.GetLikesByPostID(ctx, post.ID)
 		if err != nil {

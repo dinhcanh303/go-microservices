@@ -58,6 +58,22 @@ func (r *redis) Invalidate(key string) error {
 	return r.client.Del(ctx, key).Err()
 }
 
+func (r *redis) InvalidatePrefix(prefix string) error {
+	r.rwMutex.Lock()
+	defer r.rwMutex.Unlock()
+	pattern := prefix + "*"
+	keys, err := r.client.Keys(ctx, pattern).Result()
+	if err != nil {
+		return err
+	}
+	for _, key := range keys {
+		if err := r.client.Del(ctx, key).Err(); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
 // Set implements RedisEngine.
 func (r *redis) Set(key string, value any, timeToLive time.Duration) error {
 	r.rwMutex.Lock()
