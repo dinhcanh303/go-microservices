@@ -5,7 +5,6 @@ import (
 	"testing"
 
 	configs "github.com/dinhcanh303/go-microservices/pkg/config"
-	"github.com/dinhcanh303/go-microservices/pkg/utils"
 	"github.com/stretchr/testify/require"
 )
 
@@ -40,10 +39,7 @@ func TestInvalidateRedis(t *testing.T) {
 	require.NoError(t, err)
 }
 func connectRedis() (RedisEngine, error) {
-	err := utils.LoadFileEnvOnLocal()
-	if err != nil {
-		return nil, err
-	}
+
 	cfg, err := configs.NewConfigRedis()
 	if err != nil {
 		return nil, err
