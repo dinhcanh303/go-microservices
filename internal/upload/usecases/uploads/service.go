@@ -4,7 +4,9 @@ import (
 	"context"
 
 	"github.com/dinhcanh303/go-microservices/internal/upload/domain"
+	"github.com/dinhcanh303/go-microservices/pkg/constant"
 	"github.com/dinhcanh303/go-microservices/pkg/minio"
+	"github.com/dinhcanh303/go-microservices/pkg/redis"
 	"github.com/dinhcanh303/go-microservices/pkg/utils"
 	"github.com/google/uuid"
 	"github.com/google/wire"
@@ -15,11 +17,14 @@ import (
 
 type uploadService struct {
 	repo  AttachmentRepo
+	redis redis.RedisEngine
 	minio minio.MinioService
 }
 
 // UpdateAttachmentsByIds implements UseCase.
-func (s *uploadService) UpdateAttachmentsByIds(ctx context.Context, attachmentIds []uuid.UUID, attachment *domain.Attachment) ([]*domain.Attachment, error) {
+func (s *uploadService) UpdateAttachmentsByIds(ctx context.Context,
+	attachmentIds []uuid.UUID,
+	attachment *domain.Attachment) ([]*domain.Attachment, error) {
 	results, err := s.repo.UpdateByIds(ctx, attachmentIds, &domain.Attachment{
 		AttachableType: attachment.AttachableType,
 		AttachableID:   attachment.AttachableID,
@@ -28,6 +33,11 @@ func (s *uploadService) UpdateAttachmentsByIds(ctx context.Context, attachmentId
 	if err != nil {
 		return nil, errors.Wrap(err, "uploadService.UpdateAttachmentsByIds failed")
 	}
+	// Del cache
+	err = s.redis.InvalidatePrefix(constant.CACHE_SV_UPLOAD_ATTACHMENTS)
+	if err != nil {
+		slog.Error("Invalidate cache attachments failed")
+	}
 	return results, nil
 }
 
@@ -35,9 +45,13 @@ var _ UseCase = (*uploadService)(nil)
 
 var UseCaseSet = wire.NewSet(NewUploadService)
 
-func NewUploadService(repo AttachmentRepo, minio minio.MinioService) UseCase {
+func NewUploadService(
+	repo AttachmentRepo,
+	redis redis.RedisEngine,
+	minio minio.MinioService) UseCase {
 	return &uploadService{
 		repo:  repo,
+		redis: redis,
 		minio: minio,
 	}
 }
@@ -57,6 +71,11 @@ func (s *uploadService) DeleteAttachmentsByIds(ctx context.Context, attachmentId
 	deleted, err := s.repo.DeleteByIds(ctx, attachmentIds)
 	if err != nil {
 		return false, errors.Wrap(err, "uploadService.DeleteAttachment failed")
+	}
+	// Del cache
+	err = s.redis.InvalidatePrefix(constant.CACHE_SV_UPLOAD_ATTACHMENTS)
+	if err != nil {
+		slog.Error("Invalidate cache attachments failed")
 	}
 	return deleted, nil
 }
@@ -78,14 +97,31 @@ func (s *uploadService) DeleteAttachment(ctx context.Context, attachmentId uuid.
 	if err != nil {
 		return false, errors.Wrap(err, "uploadService.DeleteAttachment failed")
 	}
+	// Del cache
+	err = s.redis.InvalidatePrefix(constant.CACHE_SV_UPLOAD_ATTACHMENTS)
+	if err != nil {
+		slog.Error("Invalidate cache attachments failed")
+	}
 	return deleted, nil
 }
 
 // GetAttachmentByIds implements UseCase.
 func (s *uploadService) GetAttachmentByIds(ctx context.Context, attachmentIds []uuid.UUID) ([]*domain.Attachment, error) {
-	attachments, err := s.repo.GetByIds(ctx, attachmentIds)
+	var attachments []*domain.Attachment
+	keyCache := constant.CACHE_SV_UPLOAD_ATTACHMENTS
+	for _, id := range attachmentIds {
+		keyCache += id.String() + "_"
+	}
+	err := utils.HandleHitCache(attachments, s.redis, keyCache)
 	if err != nil {
-		return nil, errors.Wrap(err, "uploadService.GetAttachment failed")
+		attachments, err := s.repo.GetByIds(ctx, attachmentIds)
+		if err != nil {
+			return nil, errors.Wrap(err, "uploadService.GetAttachment failed")
+		}
+		err = s.redis.Set(keyCache, attachments, 0)
+		if err != nil {
+			slog.Error("set cache attachments failed")
+		}
 	}
 	return attachments, nil
 }
@@ -109,6 +145,11 @@ func (s *uploadService) UpdateAttachment(ctx context.Context, attachment *domain
 	})
 	if err != nil {
 		return nil, errors.Wrap(err, "uploadService.UpdateAttachment failed")
+	}
+	// Del cache
+	err = s.redis.InvalidatePrefix(constant.CACHE_SV_UPLOAD_ATTACHMENTS)
+	if err != nil {
+		slog.Error("Invalidate cache attachments failed")
 	}
 	return result, nil
 }

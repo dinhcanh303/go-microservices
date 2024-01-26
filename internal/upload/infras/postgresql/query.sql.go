@@ -166,7 +166,7 @@ func (q *Queries) GetAttachmentsByOptional(ctx context.Context, arg GetAttachmen
 }
 
 const getAttachmentsByType = `-- name: GetAttachmentsByType :many
-SELECT id, attachable_type, attachable_id, user_id, entity_upload_id, filename, extension, mime_type, folder, url, url_thumbnail, created_at, updated_at FROM upload.attachments WHERE attachable_type = $1 AND attachable_id = $2
+SELECT id, attachable_type, attachable_id, user_id, entity_upload_id, filename, extension, mime_type, folder, url, url_thumbnail, created_at, updated_at FROM upload.attachments WHERE attachable_type = $1 AND attachable_id = $2 ORDER BY updated_at
 `
 
 type GetAttachmentsByTypeParams struct {

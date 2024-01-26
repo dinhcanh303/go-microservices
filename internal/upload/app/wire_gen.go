@@ -15,28 +15,36 @@ import (
 	"github.com/dinhcanh303/go-microservices/pkg/config"
 	"github.com/dinhcanh303/go-microservices/pkg/minio"
 	"github.com/dinhcanh303/go-microservices/pkg/postgres"
+	"github.com/dinhcanh303/go-microservices/pkg/redis"
 	"google.golang.org/grpc"
 )
 
 // Injectors from wire.go:
 
-func InitApp(cfg *config.Config, cfgMinio *configs.Minio, dbConnStr postgres.DBConnString, dbReadConnStr postgres.DBConnReadString, grpcServer *grpc.Server) (*App, func(), error) {
+func InitApp(cfg *config.Config, cfg2 *configs.Redis, cfgMinio *configs.Minio, dbConnStr postgres.DBConnString, dbReadConnStr postgres.DBConnReadString, grpcServer *grpc.Server) (*App, func(), error) {
 	dbEngine, cleanup, err := dbEngineFunc(dbConnStr, dbReadConnStr)
 	if err != nil {
 		return nil, nil, err
 	}
 	attachmentRepo := repo.NewAttachmentRepo(dbEngine)
-	minioService, cleanup2, err := minioFunc(cfgMinio)
+	redisEngine, cleanup2, err := redisEngineFunc(cfg2)
 	if err != nil {
 		cleanup()
 		return nil, nil, err
 	}
-	useCase := uploads.NewUploadService(attachmentRepo, minioService)
-	useCaseGRPC := uploads.NewUploadGRPCService(attachmentRepo)
+	minioService, cleanup3, err := minioFunc(cfgMinio)
+	if err != nil {
+		cleanup2()
+		cleanup()
+		return nil, nil, err
+	}
+	useCase := uploads.NewUploadService(attachmentRepo, redisEngine, minioService)
+	useCaseGRPC := uploads.NewUploadGRPCService(attachmentRepo, redisEngine)
 	uploadHandler := handlers.NewUploadHandler(useCase)
 	uploadServiceServer := router.NewGRPCUploadServer(grpcServer, cfg, useCaseGRPC)
 	app := New(cfg, cfgMinio, dbEngine, useCase, useCaseGRPC, uploadHandler, uploadServiceServer)
 	return app, func() {
+		cleanup3()
 		cleanup2()
 		cleanup()
 	}, nil
@@ -54,4 +62,14 @@ func dbEngineFunc(url postgres.DBConnString, urlRead postgres.DBConnReadString) 
 
 func minioFunc(cfg *configs.Minio) (minio.MinioService, func(), error) {
 	return minio.NewMinio(cfg), func() {}, nil
+}
+
+func redisEngineFunc(config2 *configs.Redis) (redis.RedisEngine, func(), error) {
+	redis2, err := redis.NewRedisClient(config2)
+	if err != nil {
+		return nil, nil, err
+	}
+	return redis2, func() {
+		redis2.Close()
+	}, nil
 }

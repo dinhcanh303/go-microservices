@@ -80,7 +80,6 @@ func (g *uploadGRPCServer) GetAttachmentsByOptional(
 	request *gen.GetAttachmentsByOptionalRequest,
 ) (*gen.GetAttachmentsByOptionalResponse, error) {
 	slog.Info("GET: GetAttachmentsByOptional")
-	slog.Info("Request::", request)
 	var err error
 	var userId uuid.UUID
 	if request.UserId != "" {

@@ -35,6 +35,10 @@ func main() {
 	if err != nil {
 		slog.Error("Failed get config", err)
 	}
+	cfgRedis, err := configs.NewConfigRedis()
+	if err != nil {
+		slog.Error("Failed get config", err)
+	}
 	slog.Info("⚡ Init App", "name", cfg.Name, "version", cfg.Version)
 
 	//set up logrus
@@ -53,7 +57,7 @@ func main() {
 		<-ctx.Done()
 	}()
 	e := echo.New()
-	cleanup := prepareApp(ctx, cancel, cfg, cfgMinio, e, server)
+	cleanup := prepareApp(ctx, cancel, cfg, cfgRedis, cfgMinio, e, server)
 	// Echo Server
 	echoServerReady := make(chan struct{})
 	go func() {
@@ -100,8 +104,14 @@ func main() {
 	}
 }
 
-func prepareApp(ctx context.Context, cancel context.CancelFunc, cfg *config.Config, cfgMinio *configs.Minio, echo *echo.Echo, server *grpc.Server) func() {
-	app, cleanup, err := app.InitApp(cfg, cfgMinio, postgres.DBConnString(cfg.PG.DbURL), postgres.DBConnReadString(cfg.PG.DbRepURL), server)
+func prepareApp(ctx context.Context,
+	cancel context.CancelFunc,
+	cfg *config.Config,
+	cfgRedis *configs.Redis,
+	cfgMinio *configs.Minio,
+	echo *echo.Echo,
+	server *grpc.Server) func() {
+	app, cleanup, err := app.InitApp(cfg, cfgRedis, cfgMinio, postgres.DBConnString(cfg.PG.DbURL), postgres.DBConnReadString(cfg.PG.DbRepURL), server)
 	if err != nil {
 		slog.Error("Failed init app", err)
 		cancel()
