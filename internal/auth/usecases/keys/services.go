@@ -17,7 +17,7 @@ type service struct {
 	redis redis.RedisEngine
 }
 
-const KEY_PREFIX_KEY_TOKEN = "auth_key_token_"
+var CACHE_SV_AUTH_KEY_TOKEN_USER_ID = "sv_auth_key_token_user_id_"
 
 // CreateKeyToken implements UseCase.
 func (s *service) CreateKeyToken(ctx context.Context, key *domain.Key) (*domain.Key, error) {
@@ -28,6 +28,11 @@ func (s *service) CreateKeyToken(ctx context.Context, key *domain.Key) (*domain.
 		keyToken, err := s.repo.CreateKey(ctx, key)
 		if err != nil {
 			return nil, errors.Wrap(err, "Create Key Token failed")
+		}
+		//Del cache
+		err = s.redis.Invalidate(CACHE_SV_AUTH_KEY_TOKEN_USER_ID + userID.String())
+		if err != nil {
+			slog.Error("Invalidate cache key failed")
 		}
 		return keyToken, nil
 	}
@@ -43,7 +48,7 @@ func (s *service) CreateKeyToken(ctx context.Context, key *domain.Key) (*domain.
 		return nil, errors.Wrap(err, "Update Key Token failed")
 	}
 	//Del cache
-	err = s.redis.Invalidate(KEY_PREFIX_KEY_TOKEN + userID.String())
+	err = s.redis.Invalidate(CACHE_SV_AUTH_KEY_TOKEN_USER_ID + userID.String())
 	if err != nil {
 		slog.Error("Invalidate cache key failed")
 	}
@@ -67,7 +72,7 @@ func (s *service) DeleteKeyByUserID(ctx context.Context, userID uuid.UUID) error
 		return errors.Wrap(err, "service.DeleteKeyByUserID failed")
 	}
 	//Del cache
-	err = s.redis.Invalidate(KEY_PREFIX_KEY_TOKEN + userID.String())
+	err = s.redis.Invalidate(CACHE_SV_AUTH_KEY_TOKEN_USER_ID + userID.String())
 	if err != nil {
 		slog.Error("Invalidate cache key failed")
 	}
@@ -95,7 +100,7 @@ func (s *service) FindKeyByRefreshTokenUsed(ctx context.Context, refreshToken st
 // FindKeyByUserID implements UseCase.
 func (s *service) FindKeyByUserID(ctx context.Context, userID uuid.UUID) (*domain.Key, error) {
 	var key *domain.Key
-	keyCache := KEY_PREFIX_KEY_TOKEN + userID.String()
+	keyCache := CACHE_SV_AUTH_KEY_TOKEN_USER_ID + userID.String()
 	err := utils.HandleHitCache(key, s.redis, keyCache)
 	if err != nil {
 		key, err = s.repo.FindKeyByUserID(ctx, userID)
