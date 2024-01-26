@@ -8,6 +8,7 @@ import (
 	groupmembers "github.com/dinhcanh303/go-microservices/internal/group/usecases/groupmembers"
 	"github.com/dinhcanh303/go-microservices/internal/pkg/event"
 	"github.com/dinhcanh303/go-microservices/pkg/constant"
+	"github.com/dinhcanh303/go-microservices/pkg/redis"
 	"github.com/dinhcanh303/go-microservices/pkg/utils"
 	"golang.org/x/exp/slog"
 
@@ -20,9 +21,12 @@ var _ UseCase = (*service)(nil)
 
 var UseCaseSet = wire.NewSet(NewService)
 
+var CACHE_SV_GROUP_GROUP_ID = "sv_group_group_id_"
+
 type service struct {
 	repo                 GroupRepo
 	repoGroupMember      groupmembers.GroupMemberRepo
+	redis                redis.RedisEngine
 	groupCreatedEventPub GroupCreatedEventPublisher
 	groupDeletedEventPub GroupDeletedEventPublisher
 }
@@ -61,6 +65,11 @@ func (s *service) CreateGroup(ctx context.Context, group *domain.Group) (*domain
 	if err != nil {
 		return nil, errors.Wrap(err, "service.Create")
 	}
+	//Del cache
+	err = s.redis.Invalidate(CACHE_SV_GROUP_GROUP_ID + group.ID.String())
+	if err != nil {
+		slog.Error("Invalidate cache group failed : ID", group.ID.String())
+	}
 	if result != nil {
 		// Publish event created group
 		eventBytes, err := json.Marshal(event.GroupCreated{
@@ -96,6 +105,11 @@ func (s *service) DeleteGroup(ctx context.Context, id uuid.UUID) (bool, error) {
 	// if err != nil {
 	// 	slog.Error("service.DeleteGroup can't DeleteAllGroupMembers please check", err)
 	// }
+	//Del cache
+	err = s.redis.Invalidate(CACHE_SV_GROUP_GROUP_ID + id.String())
+	if err != nil {
+		slog.Error("Invalidate cache group failed : ID", id)
+	}
 	if result {
 		// Publish event created group
 		eventBytes, err := json.Marshal(event.GroupDeleted{
@@ -111,12 +125,22 @@ func (s *service) DeleteGroup(ctx context.Context, id uuid.UUID) (bool, error) {
 
 // Get implements UseCase.
 func (s *service) GetGroup(ctx context.Context, id uuid.UUID) (*domain.Group, error) {
-
-	result, err := s.repo.Get(ctx, id)
+	var group *domain.Group
+	keyCache := CACHE_SV_GROUP_GROUP_ID + id.String()
+	err := utils.HandleHitCache(group, s.redis, keyCache)
 	if err != nil {
-		return nil, errors.Wrap(err, "service.GetGroup")
+		slog.Info("MISS_CACHE", err)
+		group, err = s.repo.Get(ctx, id)
+		if err != nil {
+			return nil, errors.Wrap(err, "service.GetGroup")
+		}
+		err = s.redis.Set(keyCache, group, 0)
+		if err != nil {
+			return nil, errors.Wrap(err, "failed set value in cache")
+		}
 	}
-	return result, nil
+
+	return group, nil
 }
 
 // Update implements UseCase.
@@ -125,13 +149,24 @@ func (s *service) UpdateGroup(ctx context.Context, group *domain.Group) (*domain
 	if err != nil {
 		return nil, errors.Wrap(err, "service.UpdateGroup")
 	}
+	//Del cache
+	err = s.redis.Invalidate(CACHE_SV_GROUP_GROUP_ID + group.ID.String())
+	if err != nil {
+		slog.Error("Invalidate cache group failed : ID", group.ID.String())
+	}
 	return result, nil
 }
 
-func NewService(repo GroupRepo, repoGroupMember groupmembers.GroupMemberRepo, groupCreatedEventPub GroupCreatedEventPublisher, groupDeletedEventPub GroupDeletedEventPublisher) UseCase {
+func NewService(
+	repo GroupRepo,
+	repoGroupMember groupmembers.GroupMemberRepo,
+	redis redis.RedisEngine,
+	groupCreatedEventPub GroupCreatedEventPublisher,
+	groupDeletedEventPub GroupDeletedEventPublisher) UseCase {
 	return &service{
 		repo:                 repo,
 		repoGroupMember:      repoGroupMember,
+		redis:                redis,
 		groupCreatedEventPub: groupCreatedEventPub,
 		groupDeletedEventPub: groupDeletedEventPub,
 	}

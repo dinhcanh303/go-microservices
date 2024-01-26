@@ -32,27 +32,28 @@ func InitApp(cfg *config.Config, cfg2 *configs.Redis, dbConnStr postgres.DBConnS
 	}
 	groupRepo := repo.NewGroupRepo(dbEngine)
 	groupMemberRepo := repo.NewGroupMemberRepo(dbEngine)
-	connection, cleanup2, err := rabbitMQFunc(rabbitMQConnStr)
+	redisEngine, cleanup2, err := redisEngineFunc(cfg2)
 	if err != nil {
+		cleanup()
+		return nil, nil, err
+	}
+	connection, cleanup3, err := rabbitMQFunc(rabbitMQConnStr)
+	if err != nil {
+		cleanup2()
 		cleanup()
 		return nil, nil, err
 	}
 	eventPublisher, err := publisher.NewPublisher(connection)
 	if err != nil {
+		cleanup3()
 		cleanup2()
 		cleanup()
 		return nil, nil, err
 	}
 	groupCreatedEventPublisher := infras.NewGroupCreatedEventPublisher(eventPublisher)
 	groupDeletedEventPublisher := infras.NewGroupDeletedEventPublisher(eventPublisher)
-	useCase := groups.NewService(groupRepo, groupMemberRepo, groupCreatedEventPublisher, groupDeletedEventPublisher)
+	useCase := groups.NewService(groupRepo, groupMemberRepo, redisEngine, groupCreatedEventPublisher, groupDeletedEventPublisher)
 	groupmembersUseCase := groupmembers.NewService(groupMemberRepo)
-	redisEngine, cleanup3, err := redisEngineFunc(cfg2)
-	if err != nil {
-		cleanup2()
-		cleanup()
-		return nil, nil, err
-	}
 	authDomainService, err := grpc2.NewGRPCAuthClient(cfg)
 	if err != nil {
 		cleanup3()
@@ -60,7 +61,7 @@ func InitApp(cfg *config.Config, cfg2 *configs.Redis, dbConnStr postgres.DBConnS
 		cleanup()
 		return nil, nil, err
 	}
-	groupServiceServer := router.NewGRPCGroupServer(grpcServer, cfg, useCase, groupmembersUseCase, redisEngine, authDomainService)
+	groupServiceServer := router.NewGRPCGroupServer(grpcServer, cfg, useCase, groupmembersUseCase, authDomainService)
 	app := New(cfg, dbEngine, useCase, groupmembersUseCase, groupServiceServer, groupCreatedEventPublisher, groupDeletedEventPublisher)
 	return app, func() {
 		cleanup3()
