@@ -12,47 +12,60 @@ import (
 	grpc2 "github.com/dinhcanh303/go-microservices/internal/post/infras/grpc"
 	"github.com/dinhcanh303/go-microservices/internal/post/infras/repo"
 	"github.com/dinhcanh303/go-microservices/internal/post/usecases/posts"
+	"github.com/dinhcanh303/go-microservices/pkg/config"
 	"github.com/dinhcanh303/go-microservices/pkg/postgres"
+	"github.com/dinhcanh303/go-microservices/pkg/redis"
 	"google.golang.org/grpc"
 )
 
 // Injectors from wire.go:
 
-func InitApp(cfg *config.Config, dbConnStr postgres.DBConnString, dbReadConnStr postgres.DBConnReadString, grpcServer *grpc.Server) (*App, func(), error) {
+func InitApp(cfg *config.Config, cfg2 *configs.Redis, dbConnStr postgres.DBConnString, dbReadConnStr postgres.DBConnReadString, grpcServer *grpc.Server) (*App, func(), error) {
 	dbEngine, cleanup, err := dbEngineFunc(dbConnStr, dbReadConnStr)
 	if err != nil {
 		return nil, nil, err
 	}
 	postRepo := repo.NewPostRepo(dbEngine)
-	useCase := posts.NewUseCase(postRepo)
+	redisEngine, cleanup2, err := redisEngineFunc(cfg2)
+	if err != nil {
+		cleanup()
+		return nil, nil, err
+	}
+	useCase := posts.NewUseCase(postRepo, redisEngine)
 	uploadDomainService, err := grpc2.NewGRPCUploadClient(cfg)
 	if err != nil {
+		cleanup2()
 		cleanup()
 		return nil, nil, err
 	}
 	commentDomainService, err := grpc2.NewGRPCCommentClient(cfg)
 	if err != nil {
+		cleanup2()
 		cleanup()
 		return nil, nil, err
 	}
 	likeDomainService, err := grpc2.NewGRPCLikeClient(cfg)
 	if err != nil {
+		cleanup2()
 		cleanup()
 		return nil, nil, err
 	}
 	groupDomainService, err := grpc2.NewGRPCGroupClient(cfg)
 	if err != nil {
+		cleanup2()
 		cleanup()
 		return nil, nil, err
 	}
 	authDomainService, err := grpc2.NewGRPCAuthClient(cfg)
 	if err != nil {
+		cleanup2()
 		cleanup()
 		return nil, nil, err
 	}
 	postServiceServer := router.NewGRPCPostServer(grpcServer, cfg, useCase, uploadDomainService, commentDomainService, likeDomainService, groupDomainService, authDomainService)
 	app := New(cfg, dbEngine, useCase, postServiceServer, commentDomainService, likeDomainService, uploadDomainService)
 	return app, func() {
+		cleanup2()
 		cleanup()
 	}, nil
 }
@@ -65,4 +78,14 @@ func dbEngineFunc(url postgres.DBConnString, urlRead postgres.DBConnReadString) 
 		return nil, nil, err
 	}
 	return db, func() { db.Close() }, nil
+}
+
+func redisEngineFunc(config2 *configs.Redis) (redis.RedisEngine, func(), error) {
+	redis2, err := redis.NewRedisClient(config2)
+	if err != nil {
+		return nil, nil, err
+	}
+	return redis2, func() {
+		redis2.Close()
+	}, nil
 }
