@@ -2,8 +2,11 @@ package likes
 
 import (
 	"context"
+	"log/slog"
 
 	"github.com/dinhcanh303/go-microservices/internal/like/domain"
+	"github.com/dinhcanh303/go-microservices/pkg/redis"
+	"github.com/dinhcanh303/go-microservices/pkg/utils"
 	"github.com/google/uuid"
 	"github.com/google/wire"
 	"github.com/pkg/errors"
@@ -11,6 +14,23 @@ import (
 
 type service struct {
 	likeRepo LikeRepo
+	redis    redis.RedisEngine
+}
+
+var (
+	CACHE_SV_LIKE_LIKE_INFO_LIKEABLE_ID = "sv_like_like_info_likeable_id_"
+)
+var _ UseCase = (*service)(nil)
+
+var UseCaseSet = wire.NewSet(NewService)
+
+func NewService(
+	likeRepo LikeRepo,
+	redis redis.RedisEngine) UseCase {
+	return &service{
+		likeRepo: likeRepo,
+		redis:    redis,
+	}
 }
 
 // GetLikeByUserId implements UseCase.
@@ -24,30 +44,39 @@ func (s *service) GetLikeByUserId(ctx context.Context, likeableType string, like
 
 // GetLikesInfoByCommentID implements UseCase.
 func (s *service) GetLikesInfoByCommentID(ctx context.Context, commentID uuid.UUID, userID uuid.UUID) (*domain.LikesInfo, error) {
-	likeInfo, err := s.likeRepo.GetLikesInfoByCommentID(ctx, commentID, userID)
+	var likeInfo *domain.LikesInfo
+	keyCache := CACHE_SV_LIKE_LIKE_INFO_LIKEABLE_ID + commentID.String() + "_" + userID.String()
+	err := utils.HandleHitCache(likeInfo, s.redis, keyCache)
 	if err != nil {
-		return nil, errors.Wrap(err, "service.GetLikesInfoByCommentID")
+		likeInfo, err = s.likeRepo.GetLikesInfoByCommentID(ctx, commentID, userID)
+		if err != nil {
+			return nil, errors.Wrap(err, "service.GetLikesInfoByCommentID")
+		}
+		err = s.redis.Set(keyCache, likeInfo, 0)
+		if err != nil {
+			slog.Error("set cache like info by comment id", err)
+		}
 	}
 	return likeInfo, nil
 }
 
 // GetLikesInfoByPostID implements UseCase.
 func (s *service) GetLikesInfoByPostID(ctx context.Context, postID uuid.UUID, userID uuid.UUID) (*domain.LikesInfo, error) {
-	likeInfo, err := s.likeRepo.GetLikesInfoByPostID(ctx, postID, userID)
+	var likeInfo *domain.LikesInfo
+	keyCache := CACHE_SV_LIKE_LIKE_INFO_LIKEABLE_ID + postID.String() + "_" + userID.String()
+	err := utils.HandleHitCache(likeInfo, s.redis, keyCache)
 	if err != nil {
-		return nil, errors.Wrap(err, "service.GetLikesInfoByPostID")
+		likeInfo, err = s.likeRepo.GetLikesInfoByPostID(ctx, postID, userID)
+		if err != nil {
+			return nil, errors.Wrap(err, "service.GetLikesInfoByPostID")
+		}
+		err = s.redis.Set(keyCache, likeInfo, 0)
+		if err != nil {
+			slog.Error("set cache like info by comment id", err)
+		}
 	}
+
 	return likeInfo, nil
-}
-
-var _ UseCase = (*service)(nil)
-
-var UseCaseSet = wire.NewSet(NewService)
-
-func NewService(likeRepo LikeRepo) UseCase {
-	return &service{
-		likeRepo: likeRepo,
-	}
 }
 
 // CreateLike implements UseCase.
@@ -55,6 +84,12 @@ func (s *service) CreateLike(ctx context.Context, like *domain.Like) (*domain.Li
 	like, err := s.likeRepo.Create(ctx, like)
 	if err != nil {
 		return nil, errors.Wrap(err, "service.CreateLike")
+	}
+	//Del cache
+	keyCache := CACHE_SV_LIKE_LIKE_INFO_LIKEABLE_ID + like.LikeableID.String() + "_" + like.UserID.String()
+	err = s.redis.Invalidate(keyCache)
+	if err != nil {
+		slog.Error("Invalidate cache like info failed", err)
 	}
 	return like, nil
 }
@@ -64,6 +99,12 @@ func (s *service) DeleteLike(ctx context.Context, id uuid.UUID) (bool, error) {
 	like, err := s.likeRepo.Delete(ctx, id)
 	if err != nil {
 		return false, errors.Wrap(err, "service.CreateLike")
+	}
+	//Del cache
+	keyCache := CACHE_SV_LIKE_LIKE_INFO_LIKEABLE_ID
+	err = s.redis.InvalidatePrefix(keyCache)
+	if err != nil {
+		slog.Error("Invalidate cache like info failed", err)
 	}
 	return like, nil
 }
@@ -91,6 +132,12 @@ func (s *service) UpdateLike(ctx context.Context, like *domain.Like) (*domain.Li
 	like, err := s.likeRepo.Update(ctx, like)
 	if err != nil {
 		return nil, errors.Wrap(err, "service.UpdateLike")
+	}
+	//Del cache
+	keyCache := CACHE_SV_LIKE_LIKE_INFO_LIKEABLE_ID + like.LikeableID.String() + "_" + like.UserID.String()
+	err = s.redis.Invalidate(keyCache)
+	if err != nil {
+		slog.Error("Invalidate cache like info failed", err)
 	}
 	return like, nil
 }

@@ -10,6 +10,7 @@ import (
 
 	"github.com/dinhcanh303/go-microservices/cmd/like/config"
 	"github.com/dinhcanh303/go-microservices/internal/like/app"
+	configs "github.com/dinhcanh303/go-microservices/pkg/config"
 	"github.com/dinhcanh303/go-microservices/pkg/logger"
 	"github.com/dinhcanh303/go-microservices/pkg/postgres"
 	"github.com/sirupsen/logrus"
@@ -25,6 +26,10 @@ func main() {
 	}
 	ctx, cancel := context.WithCancel(context.Background())
 	cfg, err := config.NewConfig()
+	if err != nil {
+		slog.Error("Failed get config", err)
+	}
+	cfgRedis, err := configs.NewConfigRedis()
 	if err != nil {
 		slog.Error("Failed get config", err)
 	}
@@ -45,7 +50,7 @@ func main() {
 		defer server.GracefulStop()
 		<-ctx.Done()
 	}()
-	cleanup := prepareApp(ctx, cancel, cfg, server)
+	cleanup := prepareApp(ctx, cancel, cfg, cfgRedis, server)
 
 	//gRPC Server
 	address := fmt.Sprintf("%s:%d", cfg.HTTP.Host, cfg.HTTP.Port)
@@ -81,8 +86,8 @@ func main() {
 	}
 }
 
-func prepareApp(ctx context.Context, cancel context.CancelFunc, cfg *config.Config, server *grpc.Server) func() {
-	_, cleanup, err := app.InitApp(cfg, postgres.DBConnString(cfg.PG.DbURL), postgres.DBConnReadString(cfg.PG.DbRepURL), server)
+func prepareApp(ctx context.Context, cancel context.CancelFunc, cfg *config.Config, cfgRedis *configs.Redis, server *grpc.Server) func() {
+	_, cleanup, err := app.InitApp(cfg, cfgRedis, postgres.DBConnString(cfg.PG.DbURL), postgres.DBConnReadString(cfg.PG.DbRepURL), server)
 	if err != nil {
 		slog.Error("Failed init app", err)
 		cancel()

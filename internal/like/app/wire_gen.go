@@ -11,22 +11,30 @@ import (
 	"github.com/dinhcanh303/go-microservices/internal/like/app/router"
 	"github.com/dinhcanh303/go-microservices/internal/like/infras/repo"
 	"github.com/dinhcanh303/go-microservices/internal/like/usecases/likes"
+	"github.com/dinhcanh303/go-microservices/pkg/config"
 	"github.com/dinhcanh303/go-microservices/pkg/postgres"
+	"github.com/dinhcanh303/go-microservices/pkg/redis"
 	"google.golang.org/grpc"
 )
 
 // Injectors from wire.go:
 
-func InitApp(cfg *config.Config, dbConnStr postgres.DBConnString, dbReadConnStr postgres.DBConnReadString, grpcServer *grpc.Server) (*App, func(), error) {
+func InitApp(cfg *config.Config, cfg2 *configs.Redis, dbConnStr postgres.DBConnString, dbReadConnStr postgres.DBConnReadString, grpcServer *grpc.Server) (*App, func(), error) {
 	dbEngine, cleanup, err := dbEngineFunc(dbConnStr, dbReadConnStr)
 	if err != nil {
 		return nil, nil, err
 	}
 	likeRepo := repo.NewLikeRepo(dbEngine)
-	useCase := likes.NewService(likeRepo)
+	redisEngine, cleanup2, err := redisEngineFunc(cfg2)
+	if err != nil {
+		cleanup()
+		return nil, nil, err
+	}
+	useCase := likes.NewService(likeRepo, redisEngine)
 	likeServiceServer := router.NewGRPCLikeServer(grpcServer, cfg, useCase)
 	app := New(cfg, dbEngine, useCase, likeServiceServer)
 	return app, func() {
+		cleanup2()
 		cleanup()
 	}, nil
 }
@@ -39,4 +47,14 @@ func dbEngineFunc(url postgres.DBConnString, urlRead postgres.DBConnReadString) 
 		return nil, nil, err
 	}
 	return db, func() { db.Close() }, nil
+}
+
+func redisEngineFunc(config2 *configs.Redis) (redis.RedisEngine, func(), error) {
+	redis2, err := redis.NewRedisClient(config2)
+	if err != nil {
+		return nil, nil, err
+	}
+	return redis2, func() {
+		redis2.Close()
+	}, nil
 }
