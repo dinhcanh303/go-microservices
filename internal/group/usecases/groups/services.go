@@ -8,6 +8,7 @@ import (
 	groupmembers "github.com/dinhcanh303/go-microservices/internal/group/usecases/groupmembers"
 	"github.com/dinhcanh303/go-microservices/internal/pkg/event"
 	sharedkernel "github.com/dinhcanh303/go-microservices/internal/pkg/shared_kernel"
+	"github.com/dinhcanh303/go-microservices/pkg/constant"
 	"github.com/dinhcanh303/go-microservices/pkg/redis"
 	"github.com/dinhcanh303/go-microservices/pkg/utils"
 	"golang.org/x/exp/slog"
@@ -44,24 +45,42 @@ func NewService(
 	}
 }
 
-var CACHE_SV_GROUP_GROUP_ID = "sv_group_group_id_"
-
 // GetGroupsByUserId implements UseCase.
 func (s *service) GetGroupsByUserId(ctx context.Context, userId uuid.UUID, limit, offset int32) ([]*domain.Group, error) {
-	result, err := s.repo.GetGroupsByUserId(ctx, userId, limit, offset)
+	var groups []*domain.Group
+	keyCache := constant.CacheGroupsByUserId + userId.String() +
+		constant.CacheLimit + utils.String(limit) + constant.CacheOffset + utils.String(offset)
+	err := utils.HandleHitCache(groups, s.redis, keyCache)
 	if err != nil {
-		return nil, errors.Wrap(err, "service.GetGroupsByUserId")
+		groups, err = s.repo.GetGroupsByUserId(ctx, userId, limit, offset)
+		if err != nil {
+			return nil, errors.Wrap(err, "service.GetGroupsByUserId")
+		}
+		err = s.redis.Set(keyCache, groups)
+		if err != nil {
+			slog.Warn("failed set value in cache", err)
+		}
 	}
-	return result, nil
+
+	return groups, nil
 }
 
 // GetGroupIdsByUserId implements UseCase.
 func (s *service) GetGroupIdsByUserId(ctx context.Context, userId uuid.UUID) ([]string, error) {
-	result, err := s.repo.GetGroupIdsByUserId(ctx, userId)
+	var groupIds []string
+	keyCache := constant.CacheGroupIdsByUserId + userId.String()
+	err := utils.HandleHitCache(groupIds, s.redis, keyCache)
 	if err != nil {
-		return nil, errors.Wrap(err, "service.GetGroupIdsByUserId")
+		groupIds, err = s.repo.GetGroupIdsByUserId(ctx, userId)
+		if err != nil {
+			return nil, errors.Wrap(err, "service.GetGroupIdsByUserId")
+		}
+		err = s.redis.Set(keyCache, groupIds)
+		if err != nil {
+			slog.Warn("failed set value in cache", err)
+		}
 	}
-	return result, nil
+	return groupIds, nil
 }
 
 // Create implements UseCase.
@@ -81,9 +100,17 @@ func (s *service) CreateGroup(ctx context.Context, group *domain.Group) (*domain
 		return nil, errors.Wrap(err, "service.Create")
 	}
 	//Del cache
-	err = s.redis.Invalidate(CACHE_SV_GROUP_GROUP_ID + group.ID.String())
+	err = s.redis.Invalidate(constant.CacheGroup + group.ID.String())
 	if err != nil {
 		slog.Error("Invalidate cache group failed : ID", group.ID.String())
+	}
+	err = s.redis.Invalidate(constant.CacheGroupsByUserId + user.ID.String())
+	if err != nil {
+		slog.Error("Invalidate cache group by user id failed : ID", user.ID.String())
+	}
+	err = s.redis.Invalidate(constant.CacheGroupIdsByUserId + user.ID.String())
+	if err != nil {
+		slog.Error("Invalidate cache group ids by user id failed : ID", user.ID.String())
 	}
 	if result != nil {
 		// Publish event created group
@@ -112,6 +139,10 @@ func (s *service) CreateGroup(ctx context.Context, group *domain.Group) (*domain
 
 // Delete implements UseCase.
 func (s *service) DeleteGroup(ctx context.Context, id uuid.UUID) (bool, error) {
+	group, err := s.repo.Get(ctx, id)
+	if err != nil {
+		return false, errors.Wrap(err, "service.DeleteGroup")
+	}
 	result, err := s.repo.Delete(ctx, id)
 	if err != nil {
 		return false, errors.Wrap(err, "service.DeleteGroup")
@@ -121,9 +152,17 @@ func (s *service) DeleteGroup(ctx context.Context, id uuid.UUID) (bool, error) {
 		slog.Error("service.DeleteGroup can't DeleteAllGroupMembers please check", err)
 	}
 	//Del cache
-	err = s.redis.Invalidate(CACHE_SV_GROUP_GROUP_ID + id.String())
+	err = s.redis.Invalidate(constant.CacheGroup + id.String())
 	if err != nil {
 		slog.Error("Invalidate cache group failed : ID", id)
+	}
+	err = s.redis.Invalidate(constant.CacheGroupsByUserId + group.UserID.String())
+	if err != nil {
+		slog.Error("Invalidate cache group by user id failed : ID", group.UserID.String())
+	}
+	err = s.redis.Invalidate(constant.CacheGroupIdsByUserId + group.UserID.String())
+	if err != nil {
+		slog.Error("Invalidate cache group ids by user id failed : ID", group.UserID.String())
 	}
 	if result {
 		// Publish event created group
@@ -141,7 +180,7 @@ func (s *service) DeleteGroup(ctx context.Context, id uuid.UUID) (bool, error) {
 // Get implements UseCase.
 func (s *service) GetGroup(ctx context.Context, id uuid.UUID) (*domain.Group, error) {
 	var group *domain.Group
-	keyCache := CACHE_SV_GROUP_GROUP_ID + id.String()
+	keyCache := constant.CacheGroup + id.String()
 	err := utils.HandleHitCache(group, s.redis, keyCache)
 	if err != nil {
 		slog.Info("MISS_CACHE", err)
@@ -149,25 +188,32 @@ func (s *service) GetGroup(ctx context.Context, id uuid.UUID) (*domain.Group, er
 		if err != nil {
 			return nil, errors.Wrap(err, "service.GetGroup")
 		}
-		err = s.redis.Set(keyCache, group, 0)
+		err = s.redis.Set(keyCache, group)
 		if err != nil {
-			return nil, errors.Wrap(err, "failed set value in cache")
+			slog.Warn("failed set value in cache", err)
 		}
 	}
-
 	return group, nil
 }
 
 // Update implements UseCase.
 func (s *service) UpdateGroup(ctx context.Context, group *domain.Group) (*domain.Group, error) {
-	result, err := s.repo.Update(ctx, group)
+	group, err := s.repo.Update(ctx, group)
 	if err != nil {
 		return nil, errors.Wrap(err, "service.UpdateGroup")
 	}
 	//Del cache
-	err = s.redis.Invalidate(CACHE_SV_GROUP_GROUP_ID + group.ID.String())
+	err = s.redis.Invalidate(constant.CacheGroup + group.ID.String())
 	if err != nil {
 		slog.Error("Invalidate cache group failed : ID", group.ID.String())
 	}
-	return result, nil
+	err = s.redis.Invalidate(constant.CacheGroupsByUserId + group.UserID.String())
+	if err != nil {
+		slog.Error("Invalidate cache group by user id failed : ID", group.UserID.String())
+	}
+	err = s.redis.Invalidate(constant.CacheGroupIdsByUserId + group.UserID.String())
+	if err != nil {
+		slog.Error("Invalidate cache group ids by user id failed : ID", group.UserID.String())
+	}
+	return group, nil
 }

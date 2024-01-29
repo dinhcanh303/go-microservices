@@ -5,6 +5,7 @@ import (
 	"log/slog"
 
 	"github.com/dinhcanh303/go-microservices/internal/auth/domain"
+	"github.com/dinhcanh303/go-microservices/pkg/constant"
 	"github.com/dinhcanh303/go-microservices/pkg/redis"
 	"github.com/dinhcanh303/go-microservices/pkg/utils"
 	"github.com/google/uuid"
@@ -29,8 +30,6 @@ func NewUseCase(repo KeyRepo,
 
 var UseCaseSet = wire.NewSet(NewUseCase)
 
-var CACHE_SV_AUTH_KEY_TOKEN_USER_ID = "sv_auth_key_token_user_id_"
-
 // CreateKeyToken implements UseCase.
 func (s *service) CreateKeyToken(ctx context.Context, key *domain.Key) (*domain.Key, error) {
 	userID := key.UserID
@@ -42,7 +41,7 @@ func (s *service) CreateKeyToken(ctx context.Context, key *domain.Key) (*domain.
 			return nil, errors.Wrap(err, "Create Key Token failed")
 		}
 		//Del cache
-		err = s.redis.Invalidate(CACHE_SV_AUTH_KEY_TOKEN_USER_ID + userID.String())
+		err = s.redis.Invalidate(constant.CacheKeyTokenUser + userID.String())
 		if err != nil {
 			slog.Error("Invalidate cache key failed")
 		}
@@ -60,7 +59,7 @@ func (s *service) CreateKeyToken(ctx context.Context, key *domain.Key) (*domain.
 		return nil, errors.Wrap(err, "Update Key Token failed")
 	}
 	//Del cache
-	err = s.redis.Invalidate(CACHE_SV_AUTH_KEY_TOKEN_USER_ID + userID.String())
+	err = s.redis.Invalidate(constant.CacheKeyTokenUser + userID.String())
 	if err != nil {
 		slog.Error("Invalidate cache key failed")
 	}
@@ -84,7 +83,7 @@ func (s *service) DeleteKeyByUserID(ctx context.Context, userID uuid.UUID) error
 		return errors.Wrap(err, "service.DeleteKeyByUserID failed")
 	}
 	//Del cache
-	err = s.redis.Invalidate(CACHE_SV_AUTH_KEY_TOKEN_USER_ID + userID.String())
+	err = s.redis.Invalidate(constant.CacheKeyTokenUser + userID.String())
 	if err != nil {
 		slog.Error("Invalidate cache key failed")
 	}
@@ -112,14 +111,14 @@ func (s *service) FindKeyByRefreshTokenUsed(ctx context.Context, refreshToken st
 // FindKeyByUserID implements UseCase.
 func (s *service) FindKeyByUserID(ctx context.Context, userID uuid.UUID) (*domain.Key, error) {
 	var key *domain.Key
-	keyCache := CACHE_SV_AUTH_KEY_TOKEN_USER_ID + userID.String()
+	keyCache := constant.CacheKeyTokenUser + userID.String()
 	err := utils.HandleHitCache(key, s.redis, keyCache)
 	if err != nil {
 		key, err = s.repo.FindKeyByUserID(ctx, userID)
 		if err != nil {
 			return nil, errors.Wrap(err, "service.FindKeyByUserID failed")
 		}
-		err = s.redis.Set(keyCache, key, 0)
+		err = s.redis.Set(keyCache, key)
 		if err != nil {
 			return nil, errors.Wrap(err, "failed set value in cache")
 		}

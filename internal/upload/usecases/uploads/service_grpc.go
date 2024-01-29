@@ -36,16 +36,16 @@ func NewUploadGRPCService(
 // GetAttachmentsByOptional implements UseCaseGRPC.
 func (s *uploadGRPCService) GetAttachmentsByOptional(ctx context.Context, attachment *domain.Attachment) ([]*domain.Attachment, error) {
 	var attachments []*domain.Attachment
-	keyCache := constant.CACHE_SV_UPLOAD_ATTACHMENTS +
-		attachment.UserID.String() + "_" + strings.ToLower(attachment.AttachableType) +
-		"_" + attachment.EntityUploadID + "_" + attachment.MimeType
+	keyCache := constant.CacheAttachments +
+		attachment.UserID.String() + ":" + strings.ToLower(attachment.AttachableType) +
+		":" + attachment.EntityUploadID + ":" + attachment.MimeType
 	err := utils.HandleHitCache(attachments, s.redis, keyCache)
 	if err != nil {
 		attachments, err = s.repo.GetAttachmentsByOptional(ctx, attachment)
 		if err != nil {
 			return nil, errors.Wrap(err, "uploadService.GetAttachmentsByOptional failed")
 		}
-		err = s.redis.Set(keyCache, attachments, 0)
+		err = s.redis.Set(keyCache, attachments)
 		if err != nil {
 			slog.Error("set cache attachments failed")
 		}
@@ -56,15 +56,15 @@ func (s *uploadGRPCService) GetAttachmentsByOptional(ctx context.Context, attach
 // GetLastAttachmentByType implements UseCaseGRPC.
 func (s *uploadGRPCService) GetLastAttachmentByType(ctx context.Context, attachableType string, attachableId uuid.UUID) (*domain.Attachment, error) {
 	var attachments []*domain.Attachment
-	keyCache := constant.CACHE_SV_UPLOAD_ATTACHMENTS + strings.ToLower(attachableType) +
-		"_" + attachableId.String()
+	keyCache := constant.CacheAttachments + strings.ToLower(attachableType) +
+		":" + attachableId.String()
 	err := utils.HandleHitCache(attachments, s.redis, keyCache)
 	if err != nil {
 		attachments, err = s.repo.GetAttachmentsByType(ctx, attachableType, attachableId)
 		if err != nil {
 			return nil, errors.Wrap(err, "uploadService.GetAttachmentsByType failed")
 		}
-		err = s.redis.Set(keyCache, attachments, 0)
+		err = s.redis.Set(keyCache, attachments)
 		if err != nil {
 			slog.Error("set cache attachments failed")
 		}
@@ -78,15 +78,15 @@ func (s *uploadGRPCService) GetLastAttachmentByType(ctx context.Context, attacha
 // GetAttachmentsByType implements UseCaseGRPC.
 func (s *uploadGRPCService) GetAttachmentsByType(ctx context.Context, attachableType string, attachableId uuid.UUID) ([]*domain.Attachment, error) {
 	var attachments []*domain.Attachment
-	keyCache := constant.CACHE_SV_UPLOAD_ATTACHMENTS + strings.ToLower(attachableType) +
-		"_" + attachableId.String()
+	keyCache := constant.CacheAttachments + strings.ToLower(attachableType) +
+		":" + attachableId.String()
 	err := utils.HandleHitCache(attachments, s.redis, keyCache)
 	if err != nil {
 		attachments, err = s.repo.GetAttachmentsByType(ctx, attachableType, attachableId)
 		if err != nil {
 			return nil, errors.Wrap(err, "uploadService.GetAttachmentsByType failed")
 		}
-		err = s.redis.Set(keyCache, attachments, 0)
+		err = s.redis.Set(keyCache, attachments)
 		if err != nil {
 			slog.Error("set cache attachments failed")
 		}

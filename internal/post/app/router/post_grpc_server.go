@@ -238,10 +238,8 @@ func (p *postGRPCServer) UpdatePost(ctx context.Context, request *gen.UpdatePost
 
 // private function
 func manyPostResponse(posts []*domain.Post, p *postGRPCServer, ctx context.Context) []*gen.GetPostResponse {
-	results := make([]*gen.GetPostResponse, 0)
-	// channel := make(chan *gen.GetPostResponse, len(posts))
+	results := make([]*gen.GetPostResponse, len(posts))
 	// var wg sync.WaitGroup
-	slog.Info("POST ROUTER::", posts)
 	for _, post := range posts {
 		likeInfo, err := p.likeDomainService.GetLikesByPostID(ctx, post.ID)
 		if err != nil {
@@ -257,7 +255,6 @@ func manyPostResponse(posts []*domain.Post, p *postGRPCServer, ctx context.Conte
 		if err != nil {
 			user = &gen.GetProfileResponse{}
 		}
-		slog.Info("GROUP ID", post.GroupID)
 		group, err := p.groupDomainService.GetGroup(ctx, post.GroupID)
 		if err != nil {
 			group = &gen.GetGroupResponse{}

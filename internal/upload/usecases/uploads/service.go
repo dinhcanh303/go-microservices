@@ -49,7 +49,7 @@ func (s *uploadService) UpdateAttachmentsByIds(ctx context.Context,
 		return nil, errors.Wrap(err, "uploadService.UpdateAttachmentsByIds failed")
 	}
 	// Del cache
-	err = s.redis.InvalidatePrefix(constant.CACHE_SV_UPLOAD_ATTACHMENTS)
+	err = s.redis.InvalidatePrefix(constant.CacheAttachments)
 	if err != nil {
 		slog.Error("Invalidate cache attachments failed")
 	}
@@ -73,7 +73,7 @@ func (s *uploadService) DeleteAttachmentsByIds(ctx context.Context, attachmentId
 		return false, errors.Wrap(err, "uploadService.DeleteAttachment failed")
 	}
 	// Del cache
-	err = s.redis.InvalidatePrefix(constant.CACHE_SV_UPLOAD_ATTACHMENTS)
+	err = s.redis.InvalidatePrefix(constant.CacheAttachments)
 	if err != nil {
 		slog.Error("Invalidate cache attachments failed")
 	}
@@ -98,7 +98,7 @@ func (s *uploadService) DeleteAttachment(ctx context.Context, attachmentId uuid.
 		return false, errors.Wrap(err, "uploadService.DeleteAttachment failed")
 	}
 	// Del cache
-	err = s.redis.InvalidatePrefix(constant.CACHE_SV_UPLOAD_ATTACHMENTS)
+	err = s.redis.InvalidatePrefix(constant.CacheAttachments)
 	if err != nil {
 		slog.Error("Invalidate cache attachments failed")
 	}
@@ -108,7 +108,7 @@ func (s *uploadService) DeleteAttachment(ctx context.Context, attachmentId uuid.
 // GetAttachmentByIds implements UseCase.
 func (s *uploadService) GetAttachmentByIds(ctx context.Context, attachmentIds []uuid.UUID) ([]*domain.Attachment, error) {
 	var attachments []*domain.Attachment
-	keyCache := constant.CACHE_SV_UPLOAD_ATTACHMENTS
+	keyCache := constant.CacheAttachments
 	for _, id := range attachmentIds {
 		keyCache += id.String() + "_"
 	}
@@ -118,7 +118,7 @@ func (s *uploadService) GetAttachmentByIds(ctx context.Context, attachmentIds []
 		if err != nil {
 			return nil, errors.Wrap(err, "uploadService.GetAttachment failed")
 		}
-		err = s.redis.Set(keyCache, attachments, 0)
+		err = s.redis.Set(keyCache, attachments)
 		if err != nil {
 			slog.Error("set cache attachments failed")
 		}
@@ -147,7 +147,7 @@ func (s *uploadService) UpdateAttachment(ctx context.Context, attachment *domain
 		return nil, errors.Wrap(err, "uploadService.UpdateAttachment failed")
 	}
 	// Del cache
-	err = s.redis.InvalidatePrefix(constant.CACHE_SV_UPLOAD_ATTACHMENTS)
+	err = s.redis.InvalidatePrefix(constant.CacheAttachments)
 	if err != nil {
 		slog.Error("Invalidate cache attachments failed")
 	}

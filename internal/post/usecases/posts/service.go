@@ -32,14 +32,6 @@ func NewUseCase(
 	}
 }
 
-var (
-	CACHE_SV_POST            = "sv_post_"
-	CACHE_SV_POST_FEED       = "sv_post_feed_"
-	CACHE_SV_POST_FEED_GROUP = "sv_post_feed_group_"
-	CACHE_SV_POST_GROUP_ID   = "sv_post_group_id_"
-	CACHE_SV_POST_USER_ID    = "sv_post_user_id_"
-)
-
 // GetPostsByFeedGroup implements UseCase.
 func (uc *usecase) GetPostsByFeedGroup(ctx context.Context, groupIds []uuid.UUID, limit int32, offset int32) ([]*domain.Post, error) {
 	var posts []*domain.Post
@@ -47,14 +39,15 @@ func (uc *usecase) GetPostsByFeedGroup(ctx context.Context, groupIds []uuid.UUID
 	for _, groupId := range groupIds {
 		key += groupId.String() + "_"
 	}
-	keyCache := CACHE_SV_POST_FEED_GROUP + key + utils.String(limit) + "_" + utils.String(offset)
+	keyCache := constant.CachePostsFeedGroup + key + constant.CacheLimit +
+		utils.String(limit) + constant.CacheOffset + utils.String(offset)
 	err := utils.HandleHitCache(posts, uc.redis, keyCache)
 	if err != nil {
 		posts, err = uc.postRepo.GetByGroupId(ctx, groupIds, limit, offset)
 		if err != nil {
 			return nil, errors.Wrap(err, "uc.GetPostsByGroupId failed")
 		}
-		err = uc.redis.Set(keyCache, posts, 0)
+		err = uc.redis.Set(keyCache, posts)
 		if err != nil {
 			return nil, errors.Wrap(err, "failed set value in cache")
 		}
@@ -72,14 +65,15 @@ func (uc *usecase) GetPostsByFeed(ctx context.Context, userIds []uuid.UUID, grou
 	for _, groupId := range groupIds {
 		key += groupId.String() + "_"
 	}
-	keyCache := CACHE_SV_POST_FEED + key + utils.String(limit) + "_" + utils.String(offset)
+	keyCache := constant.CachePostsFeed + key + constant.CacheLimit +
+		utils.String(limit) + constant.CacheOffset + utils.String(offset)
 	err := utils.HandleHitCache(posts, uc.redis, keyCache)
 	if err != nil {
 		posts, err = uc.postRepo.GetByFeed(ctx, userIds, groupIds, limit, offset)
 		if err != nil {
 			return nil, errors.Wrap(err, "uc.GetPostsByFeed failed")
 		}
-		err = uc.redis.Set(keyCache, posts, 0)
+		err = uc.redis.Set(keyCache, posts)
 		if err != nil {
 			return nil, errors.Wrap(err, "failed set value in cache")
 		}
@@ -92,14 +86,15 @@ func (uc *usecase) GetPostsByGroupId(ctx context.Context, groupId uuid.UUID, lim
 	groupIds := make([]uuid.UUID, 0)
 	groupIds = append(groupIds, groupId)
 	var posts []*domain.Post
-	keyCache := CACHE_SV_POST_GROUP_ID + groupId.String() + "_" + utils.String(limit) + "_" + utils.String(offset)
+	keyCache := constant.CachePostsGroupId + groupId.String() + constant.CacheLimit +
+		utils.String(limit) + constant.CacheOffset + utils.String(offset)
 	err := utils.HandleHitCache(posts, uc.redis, keyCache)
 	if err != nil {
 		posts, err = uc.postRepo.GetByGroupId(ctx, groupIds, limit, offset)
 		if err != nil {
 			return nil, errors.Wrap(err, "uc.GetPostsByGroupId failed")
 		}
-		err = uc.redis.Set(keyCache, posts, 0)
+		err = uc.redis.Set(keyCache, posts)
 		if err != nil {
 			return nil, errors.Wrap(err, "failed set value in cache")
 		}
@@ -110,14 +105,15 @@ func (uc *usecase) GetPostsByGroupId(ctx context.Context, groupId uuid.UUID, lim
 // GetPostsByUserId implements UseCase.
 func (uc *usecase) GetPostsByUserId(ctx context.Context, userId uuid.UUID, limit int32, offset int32) ([]*domain.Post, error) {
 	var posts []*domain.Post
-	keyCache := CACHE_SV_POST_USER_ID + userId.String() + "_" + utils.String(limit) + "_" + utils.String(offset)
+	keyCache := constant.CachePostsUserId + userId.String() + constant.CacheLimit +
+		utils.String(limit) + constant.CacheOffset + utils.String(offset)
 	err := utils.HandleHitCache(posts, uc.redis, keyCache)
 	if err != nil {
 		posts, err = uc.postRepo.GetByUserId(ctx, userId, limit, offset)
 		if err != nil {
 			return nil, errors.Wrap(err, "uc.GetPostsByUserId failed")
 		}
-		err = uc.redis.Set(keyCache, posts, 0)
+		err = uc.redis.Set(keyCache, posts)
 		if err != nil {
 			return nil, errors.Wrap(err, "failed set value in cache")
 		}
@@ -132,21 +128,21 @@ func (uc *usecase) CreatePost(ctx context.Context, post *domain.Post) (*domain.P
 	if err != nil {
 		return nil, errors.Wrap(err, "postRepo.Create")
 	}
-	err = uc.redis.InvalidatePrefix(CACHE_SV_POST_FEED)
+	err = uc.redis.InvalidatePrefix(constant.CachePostsFeed)
 	if err != nil {
 		slog.Error("InvalidatePrefix cache key failed")
 	}
 	if post.GroupID.UUID.String() != constant.NullUUID {
-		err = uc.redis.InvalidatePrefix(CACHE_SV_POST_GROUP_ID + post.GroupID.UUID.String())
+		err = uc.redis.InvalidatePrefix(constant.CachePostsGroupId + post.GroupID.UUID.String())
 		if err != nil {
 			slog.Error("InvalidatePrefix cache key failed")
 		}
-		err = uc.redis.InvalidatePrefix(CACHE_SV_POST_FEED_GROUP)
+		err = uc.redis.InvalidatePrefix(constant.CachePostsFeedGroup)
 		if err != nil {
 			slog.Error("InvalidatePrefix cache key failed")
 		}
 	} else {
-		err = uc.redis.InvalidatePrefix(CACHE_SV_POST_USER_ID + post.UserID.String())
+		err = uc.redis.InvalidatePrefix(constant.CachePostsUserId + post.UserID.String())
 		if err != nil {
 			slog.Error("InvalidatePrefix cache key failed")
 		}
@@ -160,7 +156,7 @@ func (uc *usecase) DeletePost(ctx context.Context, id uuid.UUID) (bool, error) {
 	if err != nil {
 		return false, errors.Wrap(err, "postRepo.Delete")
 	}
-	err = uc.redis.InvalidatePrefix(CACHE_SV_POST)
+	err = uc.redis.InvalidatePrefix(constant.CachePosts)
 	if err != nil {
 		slog.Error("InvalidatePrefix cache key failed")
 	}
@@ -182,21 +178,21 @@ func (uc *usecase) UpdatePost(ctx context.Context, post *domain.Post) (*domain.P
 	if err != nil {
 		return nil, errors.Wrap(err, "postRepo.UpdatePost")
 	}
-	err = uc.redis.InvalidatePrefix(CACHE_SV_POST_FEED)
+	err = uc.redis.InvalidatePrefix(constant.CachePostsFeed)
 	if err != nil {
 		slog.Error("InvalidatePrefix cache key failed")
 	}
 	if post.GroupID.UUID.String() != constant.NullUUID {
-		err = uc.redis.InvalidatePrefix(CACHE_SV_POST_GROUP_ID + post.GroupID.UUID.String())
+		err = uc.redis.InvalidatePrefix(constant.CachePostsGroupId + post.GroupID.UUID.String())
 		if err != nil {
 			slog.Error("InvalidatePrefix cache key failed")
 		}
-		err = uc.redis.InvalidatePrefix(CACHE_SV_POST_FEED_GROUP)
+		err = uc.redis.InvalidatePrefix(constant.CachePostsFeedGroup)
 		if err != nil {
 			slog.Error("InvalidatePrefix cache key failed")
 		}
 	} else {
-		err = uc.redis.InvalidatePrefix(CACHE_SV_POST_USER_ID + post.UserID.String())
+		err = uc.redis.InvalidatePrefix(constant.CachePostsUserId + post.UserID.String())
 		if err != nil {
 			slog.Error("InvalidatePrefix cache key failed")
 		}

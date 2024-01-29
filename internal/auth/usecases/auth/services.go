@@ -57,8 +57,6 @@ func NewUseCase(
 
 var UseCaseSet = wire.NewSet(NewUseCase)
 
-var CACHE_SV_AUTH_USERS = "sv_auth_users"
-
 // GetUsersBirthDayByCurrentDay implements UseCase.
 func (s *service) GetUsersBirthDayByCurrentDay(ctx context.Context) ([]*domain.User, error) {
 	users, err := s.repo.GetUsersBirthDayByCurrentDay(ctx)
@@ -93,7 +91,7 @@ func (s *service) UpdateUser(ctx context.Context, user *domain.User) (*domain.Us
 		return nil, err
 	}
 	//Del cache
-	err = s.redis.Invalidate(CACHE_SV_AUTH_USERS)
+	err = s.redis.Invalidate(constant.CacheUsers)
 	if err != nil {
 		slog.Error("Invalidate cache list users failed")
 	}
@@ -106,13 +104,14 @@ func (s *service) GetUsers(ctx context.Context, search string, limit int32, offs
 		limit = 1000
 	}
 	var users []*domain.User
-	err := utils.HandleHitCache(users, s.redis, CACHE_SV_AUTH_USERS)
+	keyCache := constant.CacheUsers
+	err := utils.HandleHitCache(users, s.redis, keyCache)
 	if err != nil {
 		users, err = s.repo.GetUsers(ctx, search, limit, offset)
 		if err != nil {
 			return nil, errors.Wrap(err, "uc.GetUsers failed")
 		}
-		err = s.redis.Set(CACHE_SV_AUTH_USERS, users, 0)
+		err = s.redis.Set(keyCache, users)
 		if err != nil {
 			return nil, errors.Wrap(err, "failed set value in cache")
 		}
@@ -201,7 +200,7 @@ func (s *service) SignIn(ctx context.Context, email string, password string) (*d
 					return nil, errors.Wrap(err, "create account using ldap failed")
 				}
 				//Del cache
-				err = s.redis.Invalidate(CACHE_SV_AUTH_USERS)
+				err = s.redis.Invalidate(constant.CacheUsers)
 				if err != nil {
 					slog.Error("Invalidate cache list users failed")
 				}
@@ -245,7 +244,7 @@ func (s *service) SignUp(ctx context.Context, email, password, fistName, lastNam
 		return nil, status.Error(codes.Unknown, err.Error())
 	}
 	//Del cache
-	err = s.redis.Invalidate(CACHE_SV_AUTH_USERS)
+	err = s.redis.Invalidate(constant.CacheUsers)
 	if err != nil {
 		slog.Error("Invalidate cache list users failed")
 	}
