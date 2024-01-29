@@ -17,20 +17,6 @@ type authGRPCClient struct {
 	conn *grpc.ClientConn
 }
 
-// GetProfile implements domain.AuthDomainService.
-func (a *authGRPCClient) GetProfile(ctx context.Context, id uuid.UUID) (*gen.GetProfileResponse, error) {
-	client := gen.NewAuthServiceClient(a.conn)
-
-	res, err := client.GetProfile(ctx, &gen.GetProfileRequest{
-		Id: id.String(),
-	})
-	if err != nil {
-		slog.Warn("authGRPCClient.GetProfile failed", err)
-		return &gen.GetProfileResponse{}, err
-	}
-	return res, nil
-}
-
 var _ domain.AuthDomainService = (*authGRPCClient)(nil)
 
 var AuthGRPCClientSet = wire.NewSet(NewGRPCAuthClient)
@@ -43,4 +29,18 @@ func NewGRPCAuthClient(cfg *config.Config) (domain.AuthDomainService, error) {
 	return &authGRPCClient{
 		conn: conn,
 	}, nil
+}
+
+// GetProfile implements domain.AuthDomainService.
+func (a *authGRPCClient) GetProfile(ctx context.Context, id uuid.UUID) (*gen.GetProfileResponse, error) {
+	client := gen.NewAuthServiceClient(a.conn)
+
+	res, err := client.GetProfile(ctx, &gen.GetProfileRequest{
+		Id: id.String(),
+	})
+	if err != nil {
+		slog.Warn("authGRPCClient.GetProfile failed", err)
+		return &gen.GetProfileResponse{}, err
+	}
+	return res, nil
 }

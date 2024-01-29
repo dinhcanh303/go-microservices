@@ -18,6 +18,14 @@ type groupRepo struct {
 	pg postgres.DBEngine
 }
 
+var _ groups.GroupRepo = (*groupRepo)(nil)
+
+var RepositoryGroupSet = wire.NewSet(NewGroupRepo)
+
+func NewGroupRepo(pg postgres.DBEngine) groups.GroupRepo {
+	return &groupRepo{pg: pg}
+}
+
 // GetAllGroupByUserId implements groups.GroupRepo.
 func (rp *groupRepo) GetGroupsByUserId(ctx context.Context, userId uuid.UUID, limit, offset int32) ([]*domain.Group, error) {
 	db := rp.pg.GetDBRead()
@@ -54,14 +62,6 @@ func (rp *groupRepo) GetGroupIdsByUserId(ctx context.Context, userId uuid.UUID) 
 		return item.String()
 	}), nil
 }
-
-func NewGroupRepo(pg postgres.DBEngine) groups.GroupRepo {
-	return &groupRepo{pg: pg}
-}
-
-var _ groups.GroupRepo = (*groupRepo)(nil)
-
-var RepositoryGroupSet = wire.NewSet(NewGroupRepo)
 
 // Create implements groups.GroupRepo.
 func (rp *groupRepo) Create(ctx context.Context, group *domain.Group) (*domain.Group, error) {

@@ -7,7 +7,7 @@ import (
 	"github.com/dinhcanh303/go-microservices/internal/group/domain"
 	"github.com/dinhcanh303/go-microservices/internal/group/usecases/groupmembers"
 	"github.com/dinhcanh303/go-microservices/internal/group/usecases/groups"
-	"github.com/dinhcanh303/go-microservices/pkg/constant"
+	sharedkernel "github.com/dinhcanh303/go-microservices/internal/pkg/shared_kernel"
 	"github.com/dinhcanh303/go-microservices/pkg/utils"
 	"github.com/dinhcanh303/go-microservices/proto/gen"
 	"github.com/google/uuid"
@@ -218,7 +218,7 @@ func (g *groupGRPCServer) CreateGroup(ctx context.Context, request *gen.CreateGr
 				ID:      uuid.New(),
 				GroupID: group.ID,
 				UserID:  userIdParsed,
-				Role:    constant.MEMBER,
+				Role:    int32(sharedkernel.USER),
 			})
 		}
 	}

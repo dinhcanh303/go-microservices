@@ -18,6 +18,14 @@ type groupMemberRepo struct {
 	pg postgres.DBEngine
 }
 
+var _ groupmembers.GroupMemberRepo = (*groupMemberRepo)(nil)
+
+var RepositoryGroupMemberSet = wire.NewSet(NewGroupMemberRepo)
+
+func NewGroupMemberRepo(pg postgres.DBEngine) groupmembers.GroupMemberRepo {
+	return &groupMemberRepo{pg: pg}
+}
+
 // CheckGroupMember implements groupmembers.GroupMemberRepo.
 func (rp *groupMemberRepo) CheckGroupMember(ctx context.Context, groupId uuid.UUID, userId uuid.UUID) (bool, error) {
 	db := rp.pg.GetDB()
@@ -162,11 +170,3 @@ func (rp *groupMemberRepo) UpdateGroupMember(ctx context.Context, groupMember *d
 		UpdatedAt: result.UpdatedAt,
 	}, tx.Commit()
 }
-
-func NewGroupMemberRepo(pg postgres.DBEngine) groupmembers.GroupMemberRepo {
-	return &groupMemberRepo{pg: pg}
-}
-
-var _ groupmembers.GroupMemberRepo = (*groupMemberRepo)(nil)
-
-var RepositoryGroupMemberSet = wire.NewSet(NewGroupMemberRepo)

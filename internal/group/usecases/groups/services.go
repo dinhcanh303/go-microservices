@@ -7,7 +7,7 @@ import (
 	"github.com/dinhcanh303/go-microservices/internal/group/domain"
 	groupmembers "github.com/dinhcanh303/go-microservices/internal/group/usecases/groupmembers"
 	"github.com/dinhcanh303/go-microservices/internal/pkg/event"
-	"github.com/dinhcanh303/go-microservices/pkg/constant"
+	sharedkernel "github.com/dinhcanh303/go-microservices/internal/pkg/shared_kernel"
 	"github.com/dinhcanh303/go-microservices/pkg/redis"
 	"github.com/dinhcanh303/go-microservices/pkg/utils"
 	"golang.org/x/exp/slog"
@@ -17,12 +17,6 @@ import (
 	"github.com/pkg/errors"
 )
 
-var _ UseCase = (*service)(nil)
-
-var UseCaseSet = wire.NewSet(NewService)
-
-var CACHE_SV_GROUP_GROUP_ID = "sv_group_group_id_"
-
 type service struct {
 	repo                 GroupRepo
 	repoGroupMember      groupmembers.GroupMemberRepo
@@ -30,6 +24,27 @@ type service struct {
 	groupCreatedEventPub GroupCreatedEventPublisher
 	groupDeletedEventPub GroupDeletedEventPublisher
 }
+
+var _ UseCase = (*service)(nil)
+
+var UseCaseSet = wire.NewSet(NewService)
+
+func NewService(
+	repo GroupRepo,
+	repoGroupMember groupmembers.GroupMemberRepo,
+	redis redis.RedisEngine,
+	groupCreatedEventPub GroupCreatedEventPublisher,
+	groupDeletedEventPub GroupDeletedEventPublisher) UseCase {
+	return &service{
+		repo:                 repo,
+		repoGroupMember:      repoGroupMember,
+		redis:                redis,
+		groupCreatedEventPub: groupCreatedEventPub,
+		groupDeletedEventPub: groupDeletedEventPub,
+	}
+}
+
+var CACHE_SV_GROUP_GROUP_ID = "sv_group_group_id_"
 
 // GetGroupsByUserId implements UseCase.
 func (s *service) GetGroupsByUserId(ctx context.Context, userId uuid.UUID, limit, offset int32) ([]*domain.Group, error) {
@@ -87,7 +102,7 @@ func (s *service) CreateGroup(ctx context.Context, group *domain.Group) (*domain
 		ID:      uuid.New(),
 		GroupID: result.ID,
 		UserID:  user.ID,
-		Role:    constant.OWNER,
+		Role:    int32(sharedkernel.OWNER),
 	})
 	if err != nil {
 		return nil, errors.New("create group member owner failed")
@@ -101,10 +116,10 @@ func (s *service) DeleteGroup(ctx context.Context, id uuid.UUID) (bool, error) {
 	if err != nil {
 		return false, errors.Wrap(err, "service.DeleteGroup")
 	}
-	// err = s.repoGroupMember.DeleteAllGroupMembersByGroupId(ctx, id)
-	// if err != nil {
-	// 	slog.Error("service.DeleteGroup can't DeleteAllGroupMembers please check", err)
-	// }
+	err = s.repoGroupMember.DeleteGroupMembersByGroupId(ctx, id)
+	if err != nil {
+		slog.Error("service.DeleteGroup can't DeleteAllGroupMembers please check", err)
+	}
 	//Del cache
 	err = s.redis.Invalidate(CACHE_SV_GROUP_GROUP_ID + id.String())
 	if err != nil {
@@ -155,19 +170,4 @@ func (s *service) UpdateGroup(ctx context.Context, group *domain.Group) (*domain
 		slog.Error("Invalidate cache group failed : ID", group.ID.String())
 	}
 	return result, nil
-}
-
-func NewService(
-	repo GroupRepo,
-	repoGroupMember groupmembers.GroupMemberRepo,
-	redis redis.RedisEngine,
-	groupCreatedEventPub GroupCreatedEventPublisher,
-	groupDeletedEventPub GroupDeletedEventPublisher) UseCase {
-	return &service{
-		repo:                 repo,
-		repoGroupMember:      repoGroupMember,
-		redis:                redis,
-		groupCreatedEventPub: groupCreatedEventPub,
-		groupDeletedEventPub: groupDeletedEventPub,
-	}
 }
