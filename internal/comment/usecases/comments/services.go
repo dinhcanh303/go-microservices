@@ -22,12 +22,6 @@ type service struct {
 	uploadDomainSvc domain.UploadDomainService
 }
 
-var (
-	CACHE_SV_COMMENT_COMMENTS_BY_COMMENT_ID    = "sv_comment_comments_by_comment_id_"
-	CACHE_SV_COMMENT_COMMENTS_BY_POST_ID       = "sv_comment_comments_by_post_id_"
-	CACHE_SV_COMMENT_COMMENTS_COUNT_BY_POST_ID = "sv_comment_comments_count_by_post_id_"
-	CACHE_SV_COMMENT_COMMENTS                  = "sv_comment_comments_count_by_post_id_"
-)
 var _ UseCase = (*service)(nil)
 
 var UseCaseSet = wire.NewSet(NewService)
@@ -43,6 +37,13 @@ func NewService(commentRepo CommentRepo,
 		uploadDomainSvc: uploadDomainSvc,
 	}
 }
+
+var (
+	CACHE_SV_COMMENT_COMMENTS_BY_COMMENT_ID    = "sv_comment_comments_by_comment_id_"
+	CACHE_SV_COMMENT_COMMENTS_BY_POST_ID       = "sv_comment_comments_by_post_id_"
+	CACHE_SV_COMMENT_COMMENTS_COUNT_BY_POST_ID = "sv_comment_comments_count_by_post_id_"
+	CACHE_SV_COMMENT_COMMENTS                  = "sv_comment_comments_count_by_post_id_"
+)
 
 // GetCommentsByCommentID implements UseCase.
 func (s *service) GetCommentsByCommentID(ctx context.Context,

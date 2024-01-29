@@ -19,6 +19,16 @@ type commentRepo struct {
 	pg postgres.DBEngine
 }
 
+var _ comments.CommentRepo = (*commentRepo)(nil)
+
+var RepositorySet = wire.NewSet(NewCommentRepo)
+
+func NewCommentRepo(pg postgres.DBEngine) comments.CommentRepo {
+	return &commentRepo{
+		pg: pg,
+	}
+}
+
 // GetCommentsByCommentID implements comments.CommentRepo.
 func (rp *commentRepo) GetCommentsByCommentID(ctx context.Context, commentId uuid.UUID, limit int32, offset int32) ([]*domain.Comment, error) {
 	db := rp.pg.GetDBRead()
@@ -48,16 +58,6 @@ func (rp *commentRepo) GetCommentsByCommentID(ctx context.Context, commentId uui
 			UpdatedAt:       item.UpdatedAt,
 		}
 	}), nil
-}
-
-var _ comments.CommentRepo = (*commentRepo)(nil)
-
-var RepositorySet = wire.NewSet(NewCommentRepo)
-
-func NewCommentRepo(pg postgres.DBEngine) comments.CommentRepo {
-	return &commentRepo{
-		pg: pg,
-	}
 }
 
 // CountByCommentID implements comments.CommentRepo.
