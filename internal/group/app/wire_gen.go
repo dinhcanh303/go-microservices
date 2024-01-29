@@ -53,7 +53,7 @@ func InitApp(cfg *config.Config, cfg2 *configs.Redis, dbConnStr postgres.DBConnS
 	groupCreatedEventPublisher := infras.NewGroupCreatedEventPublisher(eventPublisher)
 	groupDeletedEventPublisher := infras.NewGroupDeletedEventPublisher(eventPublisher)
 	useCase := groups.NewService(groupRepo, groupMemberRepo, redisEngine, groupCreatedEventPublisher, groupDeletedEventPublisher)
-	groupmembersUseCase := groupmembers.NewService(groupMemberRepo)
+	groupmembersUseCase := groupmembers.NewService(groupMemberRepo, redisEngine)
 	authDomainService, err := grpc2.NewGRPCAuthClient(cfg)
 	if err != nil {
 		cleanup3()

@@ -26,15 +26,15 @@ createdb:
 dropdb:
 	docker exec -it mcs-postgres dropdb postgres
 
-migrate-refresh: migratedown migrateup
+migrate-refresh: migrate-down migrate-up
 
-migrateup:
+migrate-up:
 	migrate -path db/migrations -database "$(PG_URL)" -verbose up
 
-migratedown:
+migrate-down:
 	migrate -path db/migrations -database "$(PG_URL)" -verbose down
 
-.PHONY: createdb dropdb migrateup migratedown migrate-refresh
+.PHONY: createdb dropdb migrate-up migrate-down migrate-refresh
 
 db_docs:
 	dbdocs build docs/db.dbml

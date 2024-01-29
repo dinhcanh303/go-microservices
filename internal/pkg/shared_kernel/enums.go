@@ -1,22 +1,50 @@
 package sharedkernel
 
-type Status int32
+import "fmt"
+
+type StatusPost int32
 
 const (
-	StatusPublic Status = iota
+	StatusPublic StatusPost = iota + 1
 	StatusPrivate
 	StatusCompany
 	StatusFriends
 )
 
-func (e Status) Int32() int32 {
-	return int32(e)
+func (s StatusPost) String() string {
+	return fmt.Sprintf("%d", int32(s))
 }
-func (e Status) String() string {
-	return []string{
-		"Public",
-		"Private",
-		"Company",
-		"Friends",
-	}[e]
+
+// func (e StatusPost) String() string {
+// 	return []string{
+// 		"Public",
+// 		"Private",
+// 		"Company",
+// 		"Friends",
+// 	}[e]
+// }
+
+type RoleGroupMember int32
+
+const (
+	OWNER RoleGroupMember = iota + 1
+	ADMIN
+	MODERATOR
+	USER
+)
+
+func (r RoleGroupMember) String() string {
+	return fmt.Sprintf("%d", int32(r))
+}
+
+type StatusGroupMember int32
+
+const (
+	StatusPending StatusGroupMember = iota + 1
+	StatusAccepted
+	StatusBlocked
+)
+
+func (e StatusGroupMember) String() string {
+	return fmt.Sprintf("%d", int32(e))
 }
