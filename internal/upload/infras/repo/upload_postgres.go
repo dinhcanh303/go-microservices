@@ -19,6 +19,14 @@ type attachmentRepo struct {
 	pg postgres.DBEngine
 }
 
+var _ uploads.AttachmentRepo = (*attachmentRepo)(nil)
+
+var RepositoryUploadSet = wire.NewSet(NewAttachmentRepo)
+
+func NewAttachmentRepo(pg postgres.DBEngine) uploads.AttachmentRepo {
+	return &attachmentRepo{pg: pg}
+}
+
 // GetAttachmentsByOptional implements uploads.AttachmentRepo.
 func (rp *attachmentRepo) GetAttachmentsByOptional(ctx context.Context, attachment *domain.Attachment) ([]*domain.Attachment, error) {
 	db := rp.pg.GetDBRead()
@@ -377,11 +385,3 @@ func (rp *attachmentRepo) Update(ctx context.Context, attachment *domain.Attachm
 		UpdatedAt:      result.UpdatedAt,
 	}, tx.Commit()
 }
-
-func NewAttachmentRepo(pg postgres.DBEngine) uploads.AttachmentRepo {
-	return &attachmentRepo{pg: pg}
-}
-
-var _ uploads.AttachmentRepo = (*attachmentRepo)(nil)
-
-var RepositoryUploadSet = wire.NewSet(NewAttachmentRepo)

@@ -21,6 +21,21 @@ type uploadService struct {
 	minio minio.MinioService
 }
 
+var _ UseCase = (*uploadService)(nil)
+
+var UseCaseSet = wire.NewSet(NewUploadService)
+
+func NewUploadService(
+	repo AttachmentRepo,
+	redis redis.RedisEngine,
+	minio minio.MinioService) UseCase {
+	return &uploadService{
+		repo:  repo,
+		redis: redis,
+		minio: minio,
+	}
+}
+
 // UpdateAttachmentsByIds implements UseCase.
 func (s *uploadService) UpdateAttachmentsByIds(ctx context.Context,
 	attachmentIds []uuid.UUID,
@@ -39,21 +54,6 @@ func (s *uploadService) UpdateAttachmentsByIds(ctx context.Context,
 		slog.Error("Invalidate cache attachments failed")
 	}
 	return results, nil
-}
-
-var _ UseCase = (*uploadService)(nil)
-
-var UseCaseSet = wire.NewSet(NewUploadService)
-
-func NewUploadService(
-	repo AttachmentRepo,
-	redis redis.RedisEngine,
-	minio minio.MinioService) UseCase {
-	return &uploadService{
-		repo:  repo,
-		redis: redis,
-		minio: minio,
-	}
 }
 
 // DeleteAttachmentsByIds implements UseCase.

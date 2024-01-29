@@ -21,13 +21,13 @@ type UploadHandler struct {
 	uc uploads.UseCase
 }
 
+var UploadHandlerSet = wire.NewSet(NewUploadHandler)
+
 func NewUploadHandler(uc uploads.UseCase) *UploadHandler {
 	return &UploadHandler{
 		uc: uc,
 	}
 }
-
-var UploadHandlerSet = wire.NewSet(NewUploadHandler)
 
 // DeleteAttachment implements uploads.UseCase.
 func (s *UploadHandler) DeleteAttachmentsByIds(ctx echo.Context) error {

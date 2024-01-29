@@ -88,13 +88,6 @@ func (g *uploadGRPCServer) GetAttachmentsByOptional(
 			return nil, errors.Wrap(err, "Failed to parse user id")
 		}
 	}
-	// var entityUploadId uuid.UUID
-	// if request.EntityUploadId != "" {
-	// 	entityUploadId, err = uuid.Parse(request.EntityUploadId)
-	// 	if err != nil {
-	// 		return nil, errors.Wrap(err, "Failed to parse entity upload id")
-	// 	}
-	// }
 	attachment := &domain.Attachment{
 		AttachableType: request.AttachableType,
 		MimeType:       request.MimeType,
