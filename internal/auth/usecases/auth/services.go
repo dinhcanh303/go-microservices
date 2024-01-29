@@ -33,6 +33,30 @@ type service struct {
 	redis               redis.RedisEngine
 }
 
+var _ UseCase = (*service)(nil)
+
+func NewUseCase(
+	repo UserRepo,
+	ucKeys keys.UseCase,
+	ldapClient ldap.LdapClient,
+	jwt token.JWT,
+	userCreatedEventPub UserCreatedEventPublisher,
+	userDeletedEventPub UserDeletedEventPublisher,
+	redis redis.RedisEngine,
+) UseCase {
+	return &service{
+		repo:                repo,
+		ucKeys:              ucKeys,
+		ldapClient:          ldapClient,
+		jwt:                 jwt,
+		userCreatedEventPub: userCreatedEventPub,
+		userDeletedEventPub: userDeletedEventPub,
+		redis:               redis,
+	}
+}
+
+var UseCaseSet = wire.NewSet(NewUseCase)
+
 var CACHE_SV_AUTH_USERS = "sv_auth_users"
 
 // GetUsersBirthDayByCurrentDay implements UseCase.
@@ -241,30 +265,6 @@ func (s *service) SignUp(ctx context.Context, email, password, fistName, lastNam
 	}
 	return createTokenPairAndResponse(ctx, s, newUser, true)
 }
-
-var _ UseCase = (*service)(nil)
-
-func NewUseCase(
-	repo UserRepo,
-	ucKeys keys.UseCase,
-	ldapClient ldap.LdapClient,
-	jwt token.JWT,
-	userCreatedEventPub UserCreatedEventPublisher,
-	userDeletedEventPub UserDeletedEventPublisher,
-	redis redis.RedisEngine,
-) UseCase {
-	return &service{
-		repo:                repo,
-		ucKeys:              ucKeys,
-		ldapClient:          ldapClient,
-		jwt:                 jwt,
-		userCreatedEventPub: userCreatedEventPub,
-		userDeletedEventPub: userDeletedEventPub,
-		redis:               redis,
-	}
-}
-
-var UseCaseSet = wire.NewSet(NewUseCase)
 
 func checkEmailCompany(email string) bool {
 	return strings.Contains(email, constant.SuffixEmailCompany)

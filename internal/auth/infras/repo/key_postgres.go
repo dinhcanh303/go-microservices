@@ -17,6 +17,14 @@ type keyRepo struct {
 	pg postgres.DBEngine
 }
 
+var _ keys.KeyRepo = (*keyRepo)(nil)
+
+func NewKeyRepo(pg postgres.DBEngine) keys.KeyRepo {
+	return &keyRepo{pg: pg}
+}
+
+var KeyRepoSet = wire.NewSet(NewKeyRepo)
+
 // CreateKey implements keys.KeyRepo.
 func (rp *keyRepo) CreateKey(ctx context.Context, key *domain.Key) (*domain.Key, error) {
 	db := rp.pg.GetDB()
@@ -167,11 +175,3 @@ func (rp *keyRepo) FindKeyByUserID(ctx context.Context, userID uuid.UUID) (*doma
 		UpdatedAt:         key.UpdatedAt,
 	}, nil
 }
-
-var _ keys.KeyRepo = (*keyRepo)(nil)
-
-func NewKeyRepo(pg postgres.DBEngine) keys.KeyRepo {
-	return &keyRepo{pg: pg}
-}
-
-var KeyRepoSet = wire.NewSet(NewKeyRepo)

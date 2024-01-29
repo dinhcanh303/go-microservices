@@ -17,6 +17,18 @@ type service struct {
 	redis redis.RedisEngine
 }
 
+var _ UseCase = (*service)(nil)
+
+func NewUseCase(repo KeyRepo,
+	redis redis.RedisEngine) UseCase {
+	return &service{
+		repo:  repo,
+		redis: redis,
+	}
+}
+
+var UseCaseSet = wire.NewSet(NewUseCase)
+
 var CACHE_SV_AUTH_KEY_TOKEN_USER_ID = "sv_auth_key_token_user_id_"
 
 // CreateKeyToken implements UseCase.
@@ -114,15 +126,3 @@ func (s *service) FindKeyByUserID(ctx context.Context, userID uuid.UUID) (*domai
 	}
 	return key, nil
 }
-
-var _ UseCase = (*service)(nil)
-
-func NewUseCase(repo KeyRepo,
-	redis redis.RedisEngine) UseCase {
-	return &service{
-		repo:  repo,
-		redis: redis,
-	}
-}
-
-var UseCaseSet = wire.NewSet(NewUseCase)

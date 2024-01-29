@@ -560,12 +560,3 @@ func (a *authGRPCServer) GetUserIdsOfCompanyByUserId(ctx context.Context, reques
 		}),
 	}, nil
 }
-
-// func getAvatarAndThumbnailAvatar(a *authGRPCServer, ctx context.Context, userId uuid.UUID) (string, string) {
-// 	avatarRes, err := a.uploadDomainService.GetAvatarUser(ctx, userId)
-// 	if err != nil {
-// 		slog.Warn("uploadDomainService.GetAvatarUser failed", err)
-// 		return "", ""
-// 	}
-// 	return avatarRes.URL, avatarRes.URLThumbnail
-// }

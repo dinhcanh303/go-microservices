@@ -19,6 +19,14 @@ type userRepo struct {
 	pg postgres.DBEngine
 }
 
+var _ auth.UserRepo = (*userRepo)(nil)
+
+func NewUserRepo(pg postgres.DBEngine) auth.UserRepo {
+	return &userRepo{pg: pg}
+}
+
+var UserRepoSet = wire.NewSet(NewUserRepo)
+
 // GetUsersBirthDayByCurrentDay implements auth.UserRepo.
 func (rp *userRepo) GetUsersBirthDayByCurrentDay(ctx context.Context) ([]*domain.User, error) {
 	db := rp.pg.GetDBRead()
@@ -332,11 +340,3 @@ func (rp *userRepo) GetUserByEmail(ctx context.Context, email string) (*domain.U
 		UpdatedAt:  user.UpdatedAt,
 	}, nil
 }
-
-var _ auth.UserRepo = (*userRepo)(nil)
-
-func NewUserRepo(pg postgres.DBEngine) auth.UserRepo {
-	return &userRepo{pg: pg}
-}
-
-var UserRepoSet = wire.NewSet(NewUserRepo)
