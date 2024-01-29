@@ -17,9 +17,6 @@ type service struct {
 	redis    redis.RedisEngine
 }
 
-var (
-	CACHE_SV_LIKE_LIKE_INFO_LIKEABLE_ID = "sv_like_like_info_likeable_id_"
-)
 var _ UseCase = (*service)(nil)
 
 var UseCaseSet = wire.NewSet(NewService)
@@ -32,6 +29,8 @@ func NewService(
 		redis:    redis,
 	}
 }
+
+var CACHE_SV_LIKE_LIKE_INFO_LIKEABLE_ID = "sv_like_like_info_likeable_id_"
 
 // GetLikeByUserId implements UseCase.
 func (s *service) GetLikeByUserId(ctx context.Context, likeableType string, likeableId uuid.UUID, userId uuid.UUID) (*domain.Like, error) {

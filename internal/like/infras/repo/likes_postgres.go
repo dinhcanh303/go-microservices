@@ -20,6 +20,16 @@ type likeRepo struct {
 	pg postgres.DBEngine
 }
 
+var _ likes.LikeRepo = (*likeRepo)(nil)
+
+var RepositorySet = wire.NewSet(NewLikeRepo)
+
+func NewLikeRepo(pg postgres.DBEngine) likes.LikeRepo {
+	return &likeRepo{
+		pg: pg,
+	}
+}
+
 // GetLikeByUserId implements likes.LikeRepo.
 func (rp *likeRepo) GetLikeByUserId(ctx context.Context, likeableType string, likeableId uuid.UUID, userId uuid.UUID) (*domain.Like, error) {
 	db := rp.pg.GetDBRead()
@@ -82,16 +92,6 @@ func (rp *likeRepo) GetLikesInfoByPostID(ctx context.Context, postID uuid.UUID, 
 		OthersLikedEmojis: utils.HandleInterfaceToArrayString(results.OthersLikedEmojis),
 		OthersLikes:       results.OthersLikes,
 	}, nil
-}
-
-var _ likes.LikeRepo = (*likeRepo)(nil)
-
-var RepositorySet = wire.NewSet(NewLikeRepo)
-
-func NewLikeRepo(pg postgres.DBEngine) likes.LikeRepo {
-	return &likeRepo{
-		pg: pg,
-	}
 }
 
 // Create implements likes.LikeRepo.
