@@ -18,6 +18,21 @@ type uploadGRPCClient struct {
 	conn *grpc.ClientConn
 }
 
+var _ domain.UploadDomainService = (*uploadGRPCClient)(nil)
+
+var UploadGRPCClientSet = wire.NewSet(NewGRPCUploadClient)
+
+func NewGRPCUploadClient(cfg *config.Config) (domain.UploadDomainService, error) {
+	conn, err := grpc.Dial(cfg.UploadClient.URL,
+		grpc.WithTransportCredentials(insecure.NewCredentials()))
+	if err != nil {
+		return nil, err
+	}
+	return &uploadGRPCClient{
+		conn: conn,
+	}, nil
+}
+
 // GetAttachmentsByType implements domain.UploadDomainService.
 func (u *uploadGRPCClient) GetAttachmentsByType(ctx context.Context, attachableType string, attachableId uuid.UUID) ([]*domainUpload.Attachment, error) {
 	client := gen.NewUploadServiceClient(u.conn)
@@ -47,19 +62,4 @@ func (u *uploadGRPCClient) GetAttachmentsByType(ctx context.Context, attachableT
 		})
 	}
 	return results, nil
-}
-
-var UploadGRPCClientSet = wire.NewSet(NewGRPCUploadClient)
-
-var _ domain.UploadDomainService = (*uploadGRPCClient)(nil)
-
-func NewGRPCUploadClient(cfg *config.Config) (domain.UploadDomainService, error) {
-	conn, err := grpc.Dial(cfg.UploadClient.URL,
-		grpc.WithTransportCredentials(insecure.NewCredentials()))
-	if err != nil {
-		return nil, err
-	}
-	return &uploadGRPCClient{
-		conn: conn,
-	}, nil
 }

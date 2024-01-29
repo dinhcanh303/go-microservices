@@ -22,6 +22,20 @@ type commentGRPCClient struct {
 	conn *grpc.ClientConn
 }
 
+var _ domain.CommentDomainService = (*commentGRPCClient)(nil)
+
+var CommentGRPCClientSet = wire.NewSet(NewGRPCCommentClient)
+
+func NewGRPCCommentClient(cfg *config.Config) (domain.CommentDomainService, error) {
+	conn, err := grpc.Dial(cfg.CommentClient.URL, grpc.WithTransportCredentials(insecure.NewCredentials()))
+	if err != nil {
+		return nil, err
+	}
+	return &commentGRPCClient{
+		conn: conn,
+	}, nil
+}
+
 // CountCommentByPostID implements domain.CommentDomainService.
 func (c *commentGRPCClient) CountCommentByPostID(ctx context.Context, postId uuid.UUID) (int64, error) {
 	client := gen.NewCommentServiceClient(c.conn)
@@ -37,20 +51,6 @@ func (c *commentGRPCClient) CountCommentByPostID(ctx context.Context, postId uui
 		return 0, nil
 	}
 	return res.Count, nil
-}
-
-var CommentGRPCClientSet = wire.NewSet(NewGRPCCommentClient)
-
-var _ domain.CommentDomainService = (*commentGRPCClient)(nil)
-
-func NewGRPCCommentClient(cfg *config.Config) (domain.CommentDomainService, error) {
-	conn, err := grpc.Dial(cfg.CommentClient.URL, grpc.WithTransportCredentials(insecure.NewCredentials()))
-	if err != nil {
-		return nil, err
-	}
-	return &commentGRPCClient{
-		conn: conn,
-	}, nil
 }
 
 // GetCommentsByPostID implements domain.CommentDomainService.

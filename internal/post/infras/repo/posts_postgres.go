@@ -18,13 +18,13 @@ type postRepo struct {
 	pg postgres.DBEngine
 }
 
-func NewPostRepo(pg postgres.DBEngine) posts.PostRepo {
-	return &postRepo{pg: pg}
-}
-
 var _ posts.PostRepo = (*postRepo)(nil)
 
 var RepositoryPostSet = wire.NewSet(NewPostRepo)
+
+func NewPostRepo(pg postgres.DBEngine) posts.PostRepo {
+	return &postRepo{pg: pg}
+}
 
 // GetByFeed implements posts.PostRepo.
 func (rp *postRepo) GetByFeed(ctx context.Context, userIds []uuid.UUID, groupIds []uuid.UUID, limit int32, offset int32) ([]*domain.Post, error) {

@@ -18,6 +18,20 @@ type groupGRPCClient struct {
 	conn *grpc.ClientConn
 }
 
+var _ domain.GroupDomainService = (*groupGRPCClient)(nil)
+
+var GroupGRPCClientSet = wire.NewSet(NewGRPCGroupClient)
+
+func NewGRPCGroupClient(cfg *config.Config) (domain.GroupDomainService, error) {
+	conn, err := grpc.Dial(cfg.GroupClient.URL, grpc.WithTransportCredentials(insecure.NewCredentials()))
+	if err != nil {
+		return nil, err
+	}
+	return &groupGRPCClient{
+		conn: conn,
+	}, nil
+}
+
 // GetGroup implements domain.GroupDomainService.
 func (g *groupGRPCClient) GetGroup(ctx context.Context, groupId uuid.NullUUID) (*gen.GetGroupResponse, error) {
 	client := gen.NewGroupServiceClient(g.conn)
@@ -54,18 +68,4 @@ func (g *groupGRPCClient) GetGroupIdsByUserId(ctx context.Context, userId uuid.U
 	}
 	return results, nil
 
-}
-
-var _ domain.GroupDomainService = (*groupGRPCClient)(nil)
-
-var GroupGRPCClientSet = wire.NewSet(NewGRPCGroupClient)
-
-func NewGRPCGroupClient(cfg *config.Config) (domain.GroupDomainService, error) {
-	conn, err := grpc.Dial(cfg.GroupClient.URL, grpc.WithTransportCredentials(insecure.NewCredentials()))
-	if err != nil {
-		return nil, err
-	}
-	return &groupGRPCClient{
-		conn: conn,
-	}, nil
 }

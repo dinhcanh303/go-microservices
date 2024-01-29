@@ -19,6 +19,7 @@ type usecase struct {
 }
 
 var _ UseCase = (*usecase)(nil)
+
 var UseCaseSet = wire.NewSet(NewUseCase)
 
 func NewUseCase(
@@ -126,8 +127,8 @@ func (uc *usecase) GetPostsByUserId(ctx context.Context, userId uuid.UUID, limit
 
 // CreatePost implements UseCase.
 func (uc *usecase) CreatePost(ctx context.Context, post *domain.Post) (*domain.Post, error) {
+	slog.Info("Create Post")
 	post, err := uc.postRepo.Create(ctx, post)
-	slog.Info("CREATE POST", post)
 	if err != nil {
 		return nil, errors.Wrap(err, "postRepo.Create")
 	}
