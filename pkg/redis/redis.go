@@ -75,15 +75,20 @@ func (r *redis) InvalidatePrefix(prefix string) error {
 }
 
 // Set implements RedisEngine.
-func (r *redis) Set(key string, value any, timeToLive time.Duration) error {
+func (r *redis) Set(key string, value any, timeToLive ...time.Duration) error {
 	r.rwMutex.Lock()
 	defer r.rwMutex.Unlock()
 	byteValue, err := json.Marshal(value)
 	if err != nil {
 		return err
 	}
+	//set default value 0
+	var ttl time.Duration
+	if len(timeToLive) > 0 {
+		ttl = timeToLive[0]
+	}
 	//Set value to redis cache
-	return r.client.Set(ctx, key, byteValue, timeToLive).Err()
+	return r.client.Set(ctx, key, byteValue, ttl).Err()
 }
 
 // Close implements RedisEngine.
