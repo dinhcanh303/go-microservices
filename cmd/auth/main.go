@@ -15,7 +15,6 @@ import (
 	"github.com/dinhcanh303/go-microservices/pkg/logger"
 	"github.com/dinhcanh303/go-microservices/pkg/postgres"
 	"github.com/dinhcanh303/go-microservices/pkg/rabbitmq"
-	"github.com/dinhcanh303/go-microservices/pkg/rabbitmq/publisher"
 	grpc_middleware "github.com/grpc-ecosystem/go-grpc-middleware"
 	grpc_zap "github.com/grpc-ecosystem/go-grpc-middleware/logging/zap"
 	grpc_recovery "github.com/grpc-ecosystem/go-grpc-middleware/recovery"
@@ -132,15 +131,11 @@ func prepareApp(ctx context.Context, cancel context.CancelFunc, cfg *config.Conf
 		<-ctx.Done()
 	}
 
-	a.UserDeletedEventPub.Configure(
-		publisher.ExChangeName("search-exchange"),
-		publisher.BindingKey("search-routing-key"),
-		publisher.MessageTypeName("auth-deleted"),
-	)
-	a.UserCreatedEventPub.Configure(
-		publisher.ExChangeName("search-exchange"),
-		publisher.BindingKey("search-routing-key"),
-		publisher.MessageTypeName("auth-created"),
-	)
+	// a.UserDeletedEventPub.Configure(
+	// 	publisher.ExChangeName("search-exchange"),
+	// 	publisher.BindingKey("search-routing-key"),
+	// 	publisher.MessageTypeName("auth-deleted"),
+	// )
+
 	return cleanup
 }

@@ -4,7 +4,6 @@ import (
 	"context"
 
 	"github.com/dinhcanh303/go-microservices/internal/auth/domain"
-	"github.com/dinhcanh303/go-microservices/pkg/rabbitmq/publisher"
 	"github.com/google/uuid"
 )
 
@@ -19,6 +18,9 @@ type UserRepo interface {
 	GetUsersBirthDayByCurrentMonth(ctx context.Context) ([]*domain.User, error)
 	GetUsersBirthDayByCurrentDay(ctx context.Context) ([]*domain.User, error)
 }
+type ListenTrigger interface {
+	ChangeDBUser() error
+}
 type UseCase interface {
 	SignIn(ctx context.Context, email, password string) (*domain.UserAuth, error)
 	SignUp(ctx context.Context, email, password, fistName, lastName string) (*domain.UserAuth, error)
@@ -31,13 +33,4 @@ type UseCase interface {
 	UpdateUser(ctx context.Context, user *domain.User) (*domain.User, error)
 	GetUsersBirthDayByCurrentMonth(ctx context.Context) ([]*domain.User, error)
 	GetUsersBirthDayByCurrentDay(ctx context.Context) ([]*domain.User, error)
-}
-
-type UserCreatedEventPublisher interface {
-	Configure(...publisher.Option)
-	Publish(context.Context, []byte, string) error
-}
-type UserDeletedEventPublisher interface {
-	Configure(...publisher.Option)
-	Publish(context.Context, []byte, string) error
 }

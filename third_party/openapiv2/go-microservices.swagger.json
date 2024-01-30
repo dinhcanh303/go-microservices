@@ -2500,8 +2500,8 @@
           "type": "string",
           "format": "int64"
         },
-        "isMember": {
-          "type": "boolean"
+        "roleGroupMember": {
+          "type": "string"
         }
       }
     },

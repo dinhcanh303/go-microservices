@@ -2,7 +2,6 @@ package auth
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"log/slog"
 	"strings"
@@ -10,7 +9,6 @@ import (
 
 	"github.com/dinhcanh303/go-microservices/internal/auth/domain"
 	"github.com/dinhcanh303/go-microservices/internal/auth/usecases/keys"
-	"github.com/dinhcanh303/go-microservices/internal/pkg/event"
 	"github.com/dinhcanh303/go-microservices/pkg/constant"
 	"github.com/dinhcanh303/go-microservices/pkg/ldap"
 	"github.com/dinhcanh303/go-microservices/pkg/redis"
@@ -24,13 +22,11 @@ import (
 )
 
 type service struct {
-	repo                UserRepo
-	ucKeys              keys.UseCase
-	ldapClient          ldap.LdapClient
-	jwt                 token.JWT
-	userCreatedEventPub UserCreatedEventPublisher
-	userDeletedEventPub UserDeletedEventPublisher
-	redis               redis.RedisEngine
+	repo       UserRepo
+	ucKeys     keys.UseCase
+	ldapClient ldap.LdapClient
+	jwt        token.JWT
+	redis      redis.RedisEngine
 }
 
 var _ UseCase = (*service)(nil)
@@ -40,18 +36,14 @@ func NewUseCase(
 	ucKeys keys.UseCase,
 	ldapClient ldap.LdapClient,
 	jwt token.JWT,
-	userCreatedEventPub UserCreatedEventPublisher,
-	userDeletedEventPub UserDeletedEventPublisher,
 	redis redis.RedisEngine,
 ) UseCase {
 	return &service{
-		repo:                repo,
-		ucKeys:              ucKeys,
-		ldapClient:          ldapClient,
-		jwt:                 jwt,
-		userCreatedEventPub: userCreatedEventPub,
-		userDeletedEventPub: userDeletedEventPub,
-		redis:               redis,
+		repo:       repo,
+		ucKeys:     ucKeys,
+		ldapClient: ldapClient,
+		jwt:        jwt,
+		redis:      redis,
 	}
 }
 
@@ -248,20 +240,20 @@ func (s *service) SignUp(ctx context.Context, email, password, fistName, lastNam
 	if err != nil {
 		slog.Error("Invalidate cache list users failed")
 	}
-	if err == nil {
-		// Publish event created group
-		eventBytes, err := json.Marshal(event.UserCreated{
-			ID:     newUser.ID,
-			Name:   newUser.FullName,
-			Avatar: "",
-			Email:  newUser.Email,
-			Type:   "user",
-		})
-		if err != nil {
-			slog.Error("json marshal error", err)
-		}
-		s.userCreatedEventPub.Publish(ctx, eventBytes, "text/plain")
-	}
+	// if err == nil {
+	// 	// Publish event created group
+	// 	eventBytes, err := json.Marshal(event.UserCreated{
+	// 		ID:     newUser.ID,
+	// 		Name:   newUser.FullName,
+	// 		Avatar: "",
+	// 		Email:  newUser.Email,
+	// 		Type:   "user",
+	// 	})
+	// 	if err != nil {
+	// 		slog.Error("json marshal error", err)
+	// 	}
+	// 	s.userCreatedEventPub.Publish(ctx, eventBytes, "text/plain")
+	// }
 	return createTokenPairAndResponse(ctx, s, newUser, true)
 }
 

@@ -21,11 +21,13 @@ type userRepo struct {
 
 var _ auth.UserRepo = (*userRepo)(nil)
 
-func NewUserRepo(pg postgres.DBEngine) auth.UserRepo {
-	return &userRepo{pg: pg}
-}
-
 var UserRepoSet = wire.NewSet(NewUserRepo)
+
+func NewUserRepo(pg postgres.DBEngine) auth.UserRepo {
+	return &userRepo{
+		pg: pg,
+	}
+}
 
 // GetUsersBirthDayByCurrentDay implements auth.UserRepo.
 func (rp *userRepo) GetUsersBirthDayByCurrentDay(ctx context.Context) ([]*domain.User, error) {

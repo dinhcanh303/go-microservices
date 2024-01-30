@@ -29,6 +29,7 @@
         "openapiv",
         "opentracing",
         "ossp",
+        "plpgsql",
         "protobuf",
         "protoc",
         "protoimpl",

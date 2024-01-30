@@ -10,14 +10,12 @@ import (
 )
 
 type App struct {
-	Cfg                 *config.Config
-	CfgLdap             *configs.Ldap
-	PG                  postgres.DBEngine
-	UC                  auth.UseCase
-	AuthGRPCServer      gen.AuthServiceServer
-	UserCreatedEventPub auth.UserCreatedEventPublisher
-	UserDeletedEventPub auth.UserDeletedEventPublisher
-	UploadDomainSvc     domain.UploadDomainService
+	Cfg             *config.Config
+	CfgLdap         *configs.Ldap
+	PG              postgres.DBEngine
+	UC              auth.UseCase
+	AuthGRPCServer  gen.AuthServiceServer
+	UploadDomainSvc domain.UploadDomainService
 }
 
 func New(
@@ -26,17 +24,13 @@ func New(
 	pg postgres.DBEngine,
 	uc auth.UseCase,
 	authGRPCServer gen.AuthServiceServer,
-	userCreatedEventPub auth.UserCreatedEventPublisher,
-	userDeletedEventPub auth.UserDeletedEventPublisher,
 	uploadDomainSvc domain.UploadDomainService) *App {
 	return &App{
-		Cfg:                 cfg,
-		CfgLdap:             cfgLdap,
-		UC:                  uc,
-		PG:                  pg,
-		AuthGRPCServer:      authGRPCServer,
-		UserCreatedEventPub: userCreatedEventPub,
-		UserDeletedEventPub: userDeletedEventPub,
-		UploadDomainSvc:     uploadDomainSvc,
+		Cfg:             cfg,
+		CfgLdap:         cfgLdap,
+		UC:              uc,
+		PG:              pg,
+		AuthGRPCServer:  authGRPCServer,
+		UploadDomainSvc: uploadDomainSvc,
 	}
 }

@@ -48,4 +48,26 @@ CREATE TABLE
         FOREIGN KEY (user_id) REFERENCES auth.users (id) ON DELETE CASCADE
 );
 CREATE INDEX ix_auth_key_token ON auth.keys (user_id);
+
+-- Trigger event INSERT and UPDATE
+CREATE OR REPLACE FUNCTION notify_user_change()
+RETURNS TRIGGER AS $$
+BEGIN
+    IF TG_OP = 'INSERT' THEN
+        PERFORM pg_notify('user_change_event', 'INSERT');
+    ELSIF TG_OP = 'UPDATE' THEN
+        PERFORM pg_notify('user_change_event', 'UPDATE');
+    ELSIF TG_OP = 'DELETE' THEN
+        PERFORM pg_notify('user_change_event','DELETE');
+    END IF;
+
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER user_change_trigger
+AFTER INSERT OR UPDATE ON auth.users
+FOR EACH ROW
+EXECUTE FUNCTION notify_user_change();
+
 COMMIT;

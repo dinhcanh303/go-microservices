@@ -6,8 +6,8 @@ package app
 import (
 	"github.com/dinhcanh303/go-microservices/cmd/auth/config"
 	"github.com/dinhcanh303/go-microservices/internal/auth/app/router"
-	"github.com/dinhcanh303/go-microservices/internal/auth/infras"
 	infrasGRPC "github.com/dinhcanh303/go-microservices/internal/auth/infras/grpc"
+	"github.com/dinhcanh303/go-microservices/internal/auth/infras/listen_trigger"
 	"github.com/dinhcanh303/go-microservices/internal/auth/infras/repo"
 	"github.com/dinhcanh303/go-microservices/internal/auth/usecases/auth"
 	"github.com/dinhcanh303/go-microservices/internal/auth/usecases/keys"
@@ -35,6 +35,7 @@ func InitApp(
 	panic(wire.Build(
 		New,
 		dbEngineFunc,
+		dbEngineListenTriggerFunc,
 		ldapClientFunc,
 		jwtFunc,
 		rabbitMQFunc,
@@ -44,8 +45,7 @@ func InitApp(
 		keys.UseCaseSet,
 		repo.KeyRepoSet,
 		repo.UserRepoSet,
-		infras.UserCreatedEventPublisherSet,
-		infras.UserDeletedEventPublisherSet,
+		listen_trigger.ListenTriggerSet,
 		infrasGRPC.UploadGRPCClientSet,
 		infrasGRPC.GroupGRPCClientSet,
 		publisher.EventPublisherSet,
@@ -57,6 +57,13 @@ func dbEngineFunc(url postgres.DBConnString, urlRead postgres.DBConnReadString) 
 		return nil, nil, err
 	}
 	return db, func() { db.Close() }, nil
+}
+func dbEngineListenTriggerFunc(url postgres.DBConnString, changeDBUserPub publisher.EventPublisher) (func(), error) {
+	err := listen_trigger.NewListenTrigger(url, changeDBUserPub).ChangeDBUser()
+	if err != nil {
+		return nil, err
+	}
+	return func() {}, nil
 }
 func ldapClientFunc(config *configs.Ldap) (ldap.LdapClient, func(), error) {
 	ldapClient := ldap.NewLdapClient(config, []string{""})
