@@ -58,7 +58,7 @@ func (s *service) GetCommentsByCommentID(ctx context.Context,
 		}
 	}
 	var commentsHasMetadata []*domain.CommentHasMetadata
-	for i, comment := range comments {
+	for _, comment := range comments {
 		likeInfo, err := s.likeDomainSvc.GetLikesInfoByCommentID(ctx, comment.ID, userId)
 		if err != nil {
 			likeInfo = nil
@@ -68,17 +68,17 @@ func (s *service) GetCommentsByCommentID(ctx context.Context,
 			attachments = make([]*domainUpload.Attachment, 0)
 		}
 		commentsHasMetadata = append(commentsHasMetadata, &domain.CommentHasMetadata{
-			ID:              comments[i].ID,
-			UserID:          comments[i].UserID,
-			ReplyID:         comments[i].ReplyID,
-			Content:         comments[i].Content,
-			PostID:          comments[i].PostID,
-			ParentCommentID: comments[i].ParentCommentID,
+			ID:              comment.ID,
+			UserID:          comment.UserID,
+			ReplyID:         comment.ReplyID,
+			Content:         comment.Content,
+			PostID:          comment.PostID,
+			ParentCommentID: comment.ParentCommentID,
 			Likes:           likeInfo,
-			TagIDs:          comments[i].TagIDs,
+			TagIDs:          comment.TagIDs,
 			Attachments:     attachments,
-			CreatedAt:       comments[i].CreatedAt,
-			UpdatedAt:       comments[i].UpdatedAt,
+			CreatedAt:       comment.CreatedAt,
+			UpdatedAt:       comment.UpdatedAt,
 		})
 	}
 	return commentsHasMetadata, nil
@@ -155,7 +155,7 @@ func (s *service) GetCommentsByPostID(ctx context.Context, postId, userId uuid.U
 	commentMap := make(map[uuid.UUID]*sharedkernel.CommentHasChildren)
 	var commentsHasChildren []*sharedkernel.CommentHasChildren
 	slog.Info("COMMENT::", comments)
-	for i, comment := range comments {
+	for _, comment := range comments {
 		likeInfo, err := s.likeDomainSvc.GetLikesInfoByCommentID(ctx, comment.ID, userId)
 		slog.Info("LIKE INFO::", likeInfo)
 		if err != nil {
@@ -166,30 +166,30 @@ func (s *service) GetCommentsByPostID(ctx context.Context, postId, userId uuid.U
 			attachments = make([]*domainUpload.Attachment, 0)
 		}
 		commentHasChildren := &sharedkernel.CommentHasChildren{
-			ID:              comments[i].ID,
-			UserID:          comments[i].UserID,
-			ReplyID:         comments[i].ReplyID,
-			TagIDs:          comments[i].TagIDs,
-			Content:         comments[i].Content,
-			PostID:          comments[i].PostID,
-			ParentCommentID: comments[i].ParentCommentID,
+			ID:              comment.ID,
+			UserID:          comment.UserID,
+			ReplyID:         comment.ReplyID,
+			TagIDs:          comment.TagIDs,
+			Content:         comment.Content,
+			PostID:          comment.PostID,
+			ParentCommentID: comment.ParentCommentID,
 			Likes:           likeInfo,
 			Attachments:     attachments,
-			CreatedAt:       comments[i].CreatedAt,
-			UpdatedAt:       comments[i].UpdatedAt,
+			CreatedAt:       comment.CreatedAt,
+			UpdatedAt:       comment.UpdatedAt,
 		}
 		results := &domain.CommentHasMetadata{
-			ID:              comments[i].ID,
-			UserID:          comments[i].UserID,
-			ReplyID:         comments[i].ReplyID,
-			TagIDs:          comments[i].TagIDs,
-			Content:         comments[i].Content,
-			PostID:          comments[i].PostID,
-			ParentCommentID: comments[i].ParentCommentID,
+			ID:              comment.ID,
+			UserID:          comment.UserID,
+			ReplyID:         comment.ReplyID,
+			TagIDs:          comment.TagIDs,
+			Content:         comment.Content,
+			PostID:          comment.PostID,
+			ParentCommentID: comment.ParentCommentID,
 			Likes:           likeInfo,
 			Attachments:     attachments,
-			CreatedAt:       comments[i].CreatedAt,
-			UpdatedAt:       comments[i].UpdatedAt,
+			CreatedAt:       comment.CreatedAt,
+			UpdatedAt:       comment.UpdatedAt,
 		}
 		commentMap[comment.ID] = commentHasChildren
 		if comment.ParentCommentID.UUID.String() != constant.NullUUID {

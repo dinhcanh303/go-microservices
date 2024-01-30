@@ -262,6 +262,7 @@ func (c *commentGRPCServer) GetCommentsByPostID(ctx context.Context, request *ge
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to get comments by post ID")
 	}
+	slog.Info("COMMENTS", comments)
 	for _, comment := range comments {
 		user, err := c.authDomainSvc.GetProfile(ctx, comment.UserID)
 		if err != nil {
