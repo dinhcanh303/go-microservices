@@ -14,7 +14,7 @@ type (
 		DeleteGroupMember(ctx context.Context, id uuid.UUID) (bool, error)
 		DeleteGroupMembersByGroupId(ctx context.Context, groupId uuid.UUID) error
 		GetGroupMembers(ctx context.Context, groupId uuid.UUID) ([]*domain.GroupMember, error)
-		CheckGroupMember(ctx context.Context, groupId, userId uuid.UUID) (bool, error)
+		GetRoleOfGroupMember(ctx context.Context, groupId, userId uuid.UUID) (int32, error)
 		CountGroupMembers(ctx context.Context, groupId uuid.UUID) (int64, error)
 	}
 	UseCase interface {
@@ -23,7 +23,7 @@ type (
 		DeleteGroupMember(ctx context.Context, id uuid.UUID) (bool, error)
 		DeleteGroupMembersByGroupId(ctx context.Context, groupId uuid.UUID) error
 		GetGroupMembers(ctx context.Context, groupId uuid.UUID) ([]*domain.GroupMember, error)
-		CheckGroupMember(ctx context.Context, groupId, userId uuid.UUID) (bool, error)
+		GetRoleOfGroupMember(ctx context.Context, groupId, userId uuid.UUID) (int32, error)
 		CountGroupMembers(ctx context.Context, groupId uuid.UUID) (int64, error)
 	}
 )

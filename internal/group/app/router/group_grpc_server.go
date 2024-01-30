@@ -255,10 +255,11 @@ func (g *groupGRPCServer) GetGroup(ctx context.Context, request *gen.GetGroupReq
 	if err != nil {
 		countMembers = 0
 	}
-	isMember, err := g.ucGroupMember.CheckGroupMember(ctx, group.ID, payloadUser.ID)
+	roleMember, err := g.ucGroupMember.GetRoleOfGroupMember(ctx, group.ID, payloadUser.ID)
 	if err != nil {
-		isMember = false
+		roleMember = 0
 	}
+	// isOwner , err := g
 	return &gen.GetGroupResponse{
 		Group: &gen.Group{
 			Id:          group.ID.String(),
@@ -271,7 +272,7 @@ func (g *groupGRPCServer) GetGroup(ctx context.Context, request *gen.GetGroupReq
 			UpdatedAt:   timestamppb.New(group.UpdatedAt),
 		},
 		CountGroupMembers: countMembers,
-		IsMember:          isMember,
+		RoleGroupMember:   sharedkernel.RoleGroupMember(roleMember).String(),
 	}, nil
 }
 

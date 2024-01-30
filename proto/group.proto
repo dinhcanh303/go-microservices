@@ -145,7 +145,7 @@ message DeleteGroupMemberResponse {
 message GetGroupResponse {
     Group group = 1;
     int64 count_group_members = 2;
-    bool is_member = 3;
+    string role_group_member = 3;
 }
 message UpdateGroupRequest {
     Group group = 1;

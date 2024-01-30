@@ -1,7 +1,5 @@
 package sharedkernel
 
-import "fmt"
-
 type StatusPost int32
 
 const (
@@ -11,30 +9,33 @@ const (
 	StatusFriends
 )
 
-func (s StatusPost) String() string {
-	return fmt.Sprintf("%d", int32(s))
+func (e StatusPost) String() string {
+	return []string{
+		"public",
+		"private",
+		"company",
+		"friends",
+	}[e]
 }
-
-// func (e StatusPost) String() string {
-// 	return []string{
-// 		"Public",
-// 		"Private",
-// 		"Company",
-// 		"Friends",
-// 	}[e]
-// }
 
 type RoleGroupMember int32
 
 const (
-	OWNER RoleGroupMember = iota + 1
+	NO_USER RoleGroupMember = iota
+	OWNER
 	ADMIN
 	MODERATOR
 	USER
 )
 
 func (r RoleGroupMember) String() string {
-	return fmt.Sprintf("%d", int32(r))
+	return []string{
+		"",
+		"owner",
+		"admin",
+		"moderator",
+		"user",
+	}[r]
 }
 
 type StatusGroupMember int32
@@ -45,6 +46,10 @@ const (
 	StatusBlocked
 )
 
-func (e StatusGroupMember) String() string {
-	return fmt.Sprintf("%d", int32(e))
+func (r StatusGroupMember) String() string {
+	return []string{
+		"pending",
+		"accepted",
+		"blocked",
+	}[r]
 }

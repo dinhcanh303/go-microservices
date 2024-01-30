@@ -2,6 +2,7 @@ package router
 
 import (
 	"context"
+	"sync"
 
 	"github.com/dinhcanh303/go-microservices/cmd/post/config"
 	domainLike "github.com/dinhcanh303/go-microservices/internal/like/domain"
@@ -239,68 +240,103 @@ func (p *postGRPCServer) UpdatePost(ctx context.Context, request *gen.UpdatePost
 // private function
 func manyPostResponse(posts []*domain.Post, p *postGRPCServer, ctx context.Context) []*gen.GetPostResponse {
 	results := make([]*gen.GetPostResponse, len(posts))
-	// var wg sync.WaitGroup
-	for _, post := range posts {
-		likeInfo, err := p.likeDomainService.GetLikesByPostID(ctx, post.ID)
-		if err != nil {
-			slog.Warn("likeDomainService.GetLikesByPostID failed", err)
-			likeInfo = &domainLike.LikesInfo{}
-		}
-		countComments, err := p.commentDomainService.CountCommentByPostID(ctx, post.ID)
-		if err != nil {
-			slog.Warn("commentDomainService.CountCommentByPostID failed", err)
-			countComments = 0
-		}
-		user, err := p.authDomainService.GetProfile(ctx, post.UserID)
-		if err != nil {
-			user = &gen.GetProfileResponse{}
-		}
-		group, err := p.groupDomainService.GetGroup(ctx, post.GroupID)
-		if err != nil {
-			group = &gen.GetGroupResponse{}
-		}
-		attachments, err := p.uploadDomainService.GetAttachmentsByType(ctx, constant.ATTACHMENT_POST, post.ID)
-		if err != nil {
-			slog.Warn("uploadDomainService.GetAttachmentsByType failed", err)
-			attachments = make([]*domainUpload.Attachment, 0)
-		}
-		results = append(results, &gen.GetPostResponse{
-			Post: &gen.Post{
-				Id:        post.ID.String(),
-				Content:   post.Content,
-				BgContent: post.BgContent,
-				UserId:    post.UserID.String(),
-				GroupId:   post.GroupID.UUID.String(),
-				Status:    post.Status,
-				CreatedAt: timestamppb.New(post.CreatedAt),
-				UpdatedAt: timestamppb.New(post.UpdatedAt),
-			},
-			Group:         group.Group,
-			User:          user.User,
-			CountComments: countComments,
-			Attachments: lo.Map(attachments, func(item *domainUpload.Attachment, _ int) *gen.Attachment {
-				return &gen.Attachment{
-					Id:             item.ID.String(),
-					AttachableType: item.AttachableType,
-					AttachableId:   item.AttachableID.String(),
-					Filename:       item.FileName,
-					Extension:      item.Extension,
-					MimeType:       item.MimeType,
-					Folder:         item.Folder,
-					Url:            item.URL,
-					UrlThumbnail:   item.URLThumbnail,
-					UserId:         item.UserID.String(),
-					CreatedAt:      timestamppb.New(item.CreatedAt),
-					UpdatedAt:      timestamppb.New(item.UpdatedAt),
+	slog.Info("RS::", results)
+	var wg sync.WaitGroup
+	mutex := sync.Mutex{}
+	for i, post := range posts {
+		wg.Add(1)
+		go func(index int, post *domain.Post) {
+			defer wg.Done()
+			likeInfoCh := make(chan *domainLike.LikesInfo, 1)
+			countCommentsCh := make(chan int64, 1)
+			userCh := make(chan *gen.GetProfileResponse, 1)
+			groupCh := make(chan *gen.GetGroupResponse, 1)
+			attachmentsCh := make(chan []*domainUpload.Attachment, 1)
+			go func() {
+				likeInfo, err := p.likeDomainService.GetLikesByPostID(ctx, post.ID)
+				if err != nil {
+					slog.Warn("likeDomainService.GetLikesByPostID failed", err)
+					likeInfo = &domainLike.LikesInfo{}
 				}
-			}),
-			Likes: &gen.LikeInfo{
-				YourLikedEmoji:    likeInfo.YourLikedEmoji,
-				YourLike:          likeInfo.YourLike,
-				OthersLikedEmojis: likeInfo.OthersLikedEmojis,
-				OthersLikes:       likeInfo.OthersLikes,
-			},
-		})
+				likeInfoCh <- likeInfo
+			}()
+			go func() {
+				countComments, err := p.commentDomainService.CountCommentByPostID(ctx, post.ID)
+				if err != nil {
+					slog.Warn("commentDomainService.CountCommentByPostID failed", err)
+					countComments = 0
+				}
+				countCommentsCh <- countComments
+			}()
+			go func() {
+				user, err := p.authDomainService.GetProfile(ctx, post.UserID)
+				if err != nil {
+					user = &gen.GetProfileResponse{}
+				}
+				userCh <- user
+			}()
+			go func() {
+				group, err := p.groupDomainService.GetGroup(ctx, post.GroupID)
+				if err != nil {
+					group = &gen.GetGroupResponse{}
+				}
+				groupCh <- group
+			}()
+			go func() {
+				attachments, err := p.uploadDomainService.GetAttachmentsByType(ctx, constant.ATTACHMENT_POST, post.ID)
+				if err != nil {
+					slog.Warn("uploadDomainService.GetAttachmentsByType failed", err)
+					attachments = make([]*domainUpload.Attachment, 0)
+				}
+				attachmentsCh <- attachments
+			}()
+			likeInfo := <-likeInfoCh
+			countComments := <-countCommentsCh
+			user := <-userCh
+			group := <-groupCh
+			attachments := <-attachmentsCh
+			result := &gen.GetPostResponse{
+				Post: &gen.Post{
+					Id:        post.ID.String(),
+					Content:   post.Content,
+					BgContent: post.BgContent,
+					UserId:    post.UserID.String(),
+					GroupId:   post.GroupID.UUID.String(),
+					Status:    post.Status,
+					CreatedAt: timestamppb.New(post.CreatedAt),
+					UpdatedAt: timestamppb.New(post.UpdatedAt),
+				},
+				Group:         group.Group,
+				User:          user.User,
+				CountComments: countComments,
+				Attachments: lo.Map(attachments, func(item *domainUpload.Attachment, _ int) *gen.Attachment {
+					return &gen.Attachment{
+						Id:             item.ID.String(),
+						AttachableType: item.AttachableType,
+						AttachableId:   item.AttachableID.String(),
+						Filename:       item.FileName,
+						Extension:      item.Extension,
+						MimeType:       item.MimeType,
+						Folder:         item.Folder,
+						Url:            item.URL,
+						UrlThumbnail:   item.URLThumbnail,
+						UserId:         item.UserID.String(),
+						CreatedAt:      timestamppb.New(item.CreatedAt),
+						UpdatedAt:      timestamppb.New(item.UpdatedAt),
+					}
+				}),
+				Likes: &gen.LikeInfo{
+					YourLikedEmoji:    likeInfo.YourLikedEmoji,
+					YourLike:          likeInfo.YourLike,
+					OthersLikedEmojis: likeInfo.OthersLikedEmojis,
+					OthersLikes:       likeInfo.OthersLikes,
+				},
+			}
+			mutex.Lock()
+			results[index] = result
+			mutex.Unlock()
+		}(i, post)
 	}
+	wg.Wait()
 	return results
 }

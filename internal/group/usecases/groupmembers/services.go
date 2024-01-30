@@ -30,10 +30,10 @@ func NewService(repo GroupMemberRepo, redis redis.RedisEngine) UseCase {
 }
 
 // CheckGroupMember implements UseCase.
-func (s *service) CheckGroupMember(ctx context.Context, groupId uuid.UUID, userId uuid.UUID) (bool, error) {
-	result, err := s.repo.CheckGroupMember(ctx, groupId, userId)
+func (s *service) GetRoleOfGroupMember(ctx context.Context, groupId uuid.UUID, userId uuid.UUID) (int32, error) {
+	result, err := s.repo.GetRoleOfGroupMember(ctx, groupId, userId)
 	if err != nil {
-		return false, errors.Wrap(err, "service.CheckGroupMember")
+		return 0, errors.Wrap(err, "service.CheckGroupMember")
 	}
 	return result, nil
 }

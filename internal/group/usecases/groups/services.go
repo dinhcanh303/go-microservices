@@ -183,7 +183,6 @@ func (s *service) GetGroup(ctx context.Context, id uuid.UUID) (*domain.Group, er
 	keyCache := constant.CacheGroup + id.String()
 	err := utils.HandleHitCache(group, s.redis, keyCache)
 	if err != nil {
-		slog.Info("MISS_CACHE", err)
 		group, err = s.repo.Get(ctx, id)
 		if err != nil {
 			return nil, errors.Wrap(err, "service.GetGroup")
