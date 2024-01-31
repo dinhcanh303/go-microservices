@@ -4,7 +4,6 @@ import (
 	"context"
 	"log/slog"
 
-	"github.com/dinhcanh303/go-microservices/internal/pkg/event"
 	"github.com/dinhcanh303/go-microservices/internal/search/domain"
 	"github.com/dinhcanh303/go-microservices/pkg/constant"
 	"github.com/dinhcanh303/go-microservices/pkg/meili"
@@ -12,24 +11,38 @@ import (
 )
 
 type eventhandlers struct {
-	meili meili.MeiliSearch
+	meili          meili.MeiliSearch
+	authDomainSvc  domain.AuthDomainService
+	groupDomainSvc domain.GroupDomainService
 }
 
 var _ EventHandlers = (*eventhandlers)(nil)
 
 var EventHandlersSet = wire.NewSet(NewEventHandlers)
 
-func NewEventHandlers(meili meili.MeiliSearch) EventHandlers {
+func NewEventHandlers(meili meili.MeiliSearch,
+	authDomainSvc domain.AuthDomainService,
+	groupDomainSvc domain.GroupDomainService,
+) EventHandlers {
 	return &eventhandlers{
-		meili: meili,
+		meili:          meili,
+		authDomainSvc:  authDomainSvc,
+		groupDomainSvc: groupDomainSvc,
 	}
 
 }
 
-// HandleGroupCreated implements EventHandlers.
-func (h *eventhandlers) HandleGroupCreated(ctx context.Context, e event.GroupCreated) error {
-	groupSearch := domain.NewGroupSearch(e)
-	_, err := h.meili.AddDocuments(constant.MEILI_SEARCH_INDEX, groupSearch)
+// HandleChangeDBGroup implements EventHandlers.
+func (e *eventhandlers) HandleChangeDBGroup(ctx context.Context) error {
+	_, err := e.meili.DeleteAllDocuments(constant.MeiliSearchDBGroupIndex)
+	if err != nil {
+		return err
+	}
+	result, err := e.groupDomainSvc.GetGroups(ctx)
+	if err != nil {
+		return err
+	}
+	_, err = e.meili.AddDocuments(constant.MeiliSearchDBUserIndex, result.Groups)
 	if err != nil {
 		slog.Error("insert-into-meili-search", err)
 		return err
@@ -38,33 +51,21 @@ func (h *eventhandlers) HandleGroupCreated(ctx context.Context, e event.GroupCre
 	return nil
 }
 
-// HandleGroupDeleted implements EventHandlers.
-func (h *eventhandlers) HandleGroupDeleted(ctx context.Context, e event.GroupDeleted) error {
-	_, err := h.meili.DeleteDocument(constant.MEILI_SEARCH_INDEX, e.ID.String())
+// HandleChangeDBUser implements EventHandlers.
+func (e *eventhandlers) HandleChangeDBUser(ctx context.Context) error {
+	_, err := e.meili.DeleteAllDocuments(constant.MeiliSearchDBUserIndex)
 	if err != nil {
-		slog.Error("remove-from-meili-search", err)
 		return err
 	}
-	return nil
-}
-
-// HandleUserCreated implements EventHandlers.
-func (h *eventhandlers) HandleUserCreated(ctx context.Context, e event.UserCreated) error {
-	userSearch := domain.NewUserSearch(e)
-	_, err := h.meili.AddDocuments(constant.MEILI_SEARCH_INDEX, userSearch)
+	result, err := e.authDomainSvc.GetUsers(ctx)
+	if err != nil {
+		return err
+	}
+	_, err = e.meili.AddDocuments(constant.MeiliSearchDBUserIndex, result.Users)
 	if err != nil {
 		slog.Error("insert-into-meili-search", err)
 		return err
 	}
-	return nil
-}
-
-// HandleUserDeleted implements EventHandlers.
-func (h *eventhandlers) HandleUserDeleted(ctx context.Context, e event.UserDeleted) error {
-	_, err := h.meili.DeleteDocument(constant.MEILI_SEARCH_INDEX, e.ID.String())
-	if err != nil {
-		slog.Error("remove-from-meili-search", err)
-		return err
-	}
+	slog.Info("Insert into meili-search")
 	return nil
 }

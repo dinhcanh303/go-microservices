@@ -17,6 +17,8 @@ type (
 		RabbitMQ      `yaml:"rabbitmq"`
 		ElasticSearch `yaml:"elasticsearch"`
 		MeiliSearch   `yaml:"meilisearch"`
+		GroupClient   `yaml:"group_client"`
+		AuthClient    `yaml:"auth_client"`
 	}
 	RabbitMQ struct {
 		URL string `env-required:"true" yaml:"url" env:"RABBITMQ_URL"`
@@ -29,6 +31,12 @@ type (
 	MeiliSearch struct {
 		Host   string `env-required:"true" yaml:"host" env:"ML_HOST"`
 		ApiKey string `env-required:"true" yaml:"api_key" env:"ML_API_KEY"`
+	}
+	GroupClient struct {
+		URL string `env-required:"true" yaml:"group_url" env:"GROUP_CLIENT_URL"`
+	}
+	AuthClient struct {
+		URL string `env-required:"true" yaml:"auth_url" env:"AUTH_CLIENT_URL"`
 	}
 )
 

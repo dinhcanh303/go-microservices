@@ -7,6 +7,8 @@ import (
 	"github.com/dinhcanh303/go-microservices/cmd/search/config"
 	"github.com/dinhcanh303/go-microservices/internal/search/app/router"
 	"github.com/dinhcanh303/go-microservices/internal/search/eventhandlers"
+	infrasGRPC "github.com/dinhcanh303/go-microservices/internal/search/infras/grpc"
+	"github.com/dinhcanh303/go-microservices/internal/search/usecases/searches"
 	"github.com/dinhcanh303/go-microservices/pkg/meili"
 	"github.com/dinhcanh303/go-microservices/pkg/rabbitmq"
 	consumer "github.com/dinhcanh303/go-microservices/pkg/rabbitmq/comsumer"
@@ -25,8 +27,11 @@ func InitApp(
 		New,
 		rabbitMQFunc,
 		meiliSearchFunc,
+		infrasGRPC.AuthGRPCClientSet,
+		infrasGRPC.GroupGRPCClientSet,
 		router.SearchGRPCServerSet,
 		consumer.EventConsumerSet,
+		searches.UseCaseSet,
 		eventhandlers.EventHandlersSet,
 	))
 }

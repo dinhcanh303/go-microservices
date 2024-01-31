@@ -10,6 +10,8 @@ import (
 	"github.com/dinhcanh303/go-microservices/cmd/search/config"
 	"github.com/dinhcanh303/go-microservices/internal/search/app/router"
 	"github.com/dinhcanh303/go-microservices/internal/search/eventhandlers"
+	grpc2 "github.com/dinhcanh303/go-microservices/internal/search/infras/grpc"
+	"github.com/dinhcanh303/go-microservices/internal/search/usecases/searches"
 	"github.com/dinhcanh303/go-microservices/pkg/meili"
 	"github.com/dinhcanh303/go-microservices/pkg/rabbitmq"
 	"github.com/dinhcanh303/go-microservices/pkg/rabbitmq/comsumer"
@@ -30,8 +32,19 @@ func InitApp(cfg *config.Config, rabbitMQConnStr rabbitmq.RabbitMQConnStr, meili
 		return nil, nil, err
 	}
 	meiliSearch := meiliSearchFunc(meiliSearchConn)
-	eventHandlers := eventhandlers.NewEventHandlers(meiliSearch)
-	searchServiceServer := router.NewSearchGRPCServer(grpcServer, meiliSearch)
+	authDomainService, err := grpc2.NewGRPCAuthClient(cfg)
+	if err != nil {
+		cleanup()
+		return nil, nil, err
+	}
+	groupDomainService, err := grpc2.NewGRPCGroupClient(cfg)
+	if err != nil {
+		cleanup()
+		return nil, nil, err
+	}
+	eventHandlers := eventhandlers.NewEventHandlers(meiliSearch, authDomainService, groupDomainService)
+	useCase := searches.NewService(meiliSearch)
+	searchServiceServer := router.NewSearchGRPCServer(grpcServer, useCase)
 	app := New(cfg, connection, eventConsumer, eventHandlers, searchServiceServer)
 	return app, func() {
 		cleanup()

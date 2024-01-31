@@ -4,13 +4,10 @@ import (
 	"context"
 	"errors"
 
-	"github.com/dinhcanh303/go-microservices/pkg/constant"
-	"github.com/dinhcanh303/go-microservices/pkg/meili"
-	"github.com/dinhcanh303/go-microservices/pkg/utils"
+	"github.com/dinhcanh303/go-microservices/internal/search/domain"
+	"github.com/dinhcanh303/go-microservices/internal/search/usecases/searches"
 	"github.com/dinhcanh303/go-microservices/proto/gen"
-	"github.com/google/uuid"
 	"github.com/google/wire"
-	"github.com/meilisearch/meilisearch-go"
 	"github.com/samber/lo"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
@@ -18,7 +15,7 @@ import (
 
 type searchGRPCServer struct {
 	gen.UnimplementedSearchServiceServer
-	meili meili.MeiliSearch
+	uc searches.UseCase
 }
 
 var _ gen.SearchServiceServer = (*searchGRPCServer)(nil)
@@ -27,63 +24,35 @@ var SearchGRPCServerSet = wire.NewSet(NewSearchGRPCServer)
 
 func NewSearchGRPCServer(
 	grpcServer *grpc.Server,
-	meili meili.MeiliSearch,
+	uc searches.UseCase,
 ) gen.SearchServiceServer {
 	svc := searchGRPCServer{
-		meili: meili,
+		uc: uc,
 	}
 	gen.RegisterSearchServiceServer(grpcServer, &svc)
 	reflection.Register(grpcServer)
 	return &svc
 }
-func (c *searchGRPCServer) Search(ctx context.Context, request *gen.SearchRequest) (*gen.SearchResponse, error) {
+func (s *searchGRPCServer) Search(ctx context.Context, request *gen.SearchRequest) (*gen.SearchResponse, error) {
 	searchText := request.Q
 	if searchText == "" {
 		return nil, errors.New("key word search empty")
 	}
-	hits, err := meiliSearch(c.meili, constant.MEILI_SEARCH_INDEX, searchText, []string{"name", "email"})
-	if err != nil {
-		return nil, err
-	}
-	if hits == nil {
-		return nil, nil
-	}
-	var results []searchRes
-	for _, hit := range hits {
-		var res = searchRes{}
-		utils.Mapping(hit, &res)
-		results = append(results, res)
-	}
+	results, _ := s.uc.Search(searchText)
 	return &gen.SearchResponse{
-		Search: lo.Map(results, func(item searchRes, _ int) *gen.Search {
+		Search: lo.Map(results, func(item *domain.Search, _ int) *gen.Search {
 			return &gen.Search{
-				Id:        item.ID.String(),
-				Name:      item.Name,
-				Email:     item.Email,
-				AvatarUrl: item.Email,
-				Type:      item.Type,
+				Id:         item.ID.String(),
+				Name:       item.Name,
+				Email:      item.Email,
+				AvatarUrl:  item.AvatarUrl,
+				ProfileUrl: item.ProfileUrl,
+				Phone:      item.Phone,
+				FullName:   item.FullName,
+				NickName:   item.NickName,
 			}
 		}),
 	}, nil
-}
-
-type searchRes struct {
-	ID     uuid.UUID `json:"id"`
-	Name   string    `json:"name"`
-	Email  string    `json:"email"`
-	Avatar string    `json:"avatar"`
-	Type   string    `json:"type"`
-}
-
-func meiliSearch(ml meili.MeiliSearch, indexName, keyWord string, fieldName []string) ([]interface{}, error) {
-	task, err := ml.Search(indexName, keyWord, &meilisearch.SearchRequest{
-		Limit:                20,
-		AttributesToSearchOn: fieldName,
-	})
-	if err != nil {
-		return nil, err
-	}
-	return task.Hits, nil
 }
 
 // func searchElastic(es elastic.ElasticSearch, indexName, fieldName, keyWord string) ([]domain.GroupSearch, error) {

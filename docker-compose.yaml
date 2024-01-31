@@ -170,6 +170,8 @@ services:
       APP_NAME: 'search-service in docker'
       IN_DOCKER: "true"
       RABBITMQ_URL: amqp://guest:guest@rabbitmq:5672/
+      GROUP_CLIENT_URL: group:5001
+      AUTH_CLIENT_URL: auth:5007
     ports:
       - 5008:5008
     networks:

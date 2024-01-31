@@ -16,9 +16,9 @@ const (
 	_publishMandatory = false
 	_publishImmediate = false
 
-	_exchangeName    = "orders-exchange"
-	_bindingKey      = "orders-routing-key"
-	_messageTypeName = "ordered"
+	_exchangeName    = "change-db-users-exchange"
+	_bindingKey      = "change-db-users-routing-key"
+	_messageTypeName = "users-changed"
 )
 
 type publisher struct {

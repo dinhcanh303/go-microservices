@@ -17,8 +17,10 @@ meilisearch:
   host: http://localhost:7700
   api_key: ms
 
-product_client:
-  url: 0.0.0.0:5001
+group_client:
+  group_url: 0.0.0.0:5001
+auth_client:
+  auth_url: 0.0.0.0:5007
 
 logger:
   log_level: 'debug'
