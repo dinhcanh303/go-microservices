@@ -19,7 +19,7 @@ type UserRepo interface {
 	GetUsersBirthDayByCurrentDay(ctx context.Context) ([]*domain.User, error)
 }
 type ListenTrigger interface {
-	ChangeDBUser() error
+	ChangeDBUser(ctx context.Context)
 }
 type UseCase interface {
 	SignIn(ctx context.Context, email, password string) (*domain.UserAuth, error)

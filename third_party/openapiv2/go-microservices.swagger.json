@@ -651,6 +651,27 @@
       }
     },
     "/api/v1/groups": {
+      "get": {
+        "summary": "Get all groups",
+        "operationId": "GroupService_GetGroups",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/groupapiGetGroupsResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          }
+        },
+        "tags": [
+          "GroupService"
+        ]
+      },
       "post": {
         "summary": "Create group",
         "operationId": "GroupService_CreateGroup",
@@ -2517,6 +2538,18 @@
         }
       }
     },
+    "groupapiGetGroupsResponse": {
+      "type": "object",
+      "properties": {
+        "groups": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/groupapiGroup"
+          }
+        }
+      }
+    },
     "groupapiGroup": {
       "type": "object",
       "properties": {
@@ -2962,13 +2995,19 @@
         "email": {
           "type": "string"
         },
+        "fullName": {
+          "type": "string"
+        },
+        "nickName": {
+          "type": "string"
+        },
+        "phone": {
+          "type": "string"
+        },
         "avatarUrl": {
           "type": "string"
         },
         "profileUrl": {
-          "type": "string"
-        },
-        "type": {
           "type": "string"
         }
       }

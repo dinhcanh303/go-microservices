@@ -10,7 +10,6 @@ import (
 	pkgPublisher "github.com/dinhcanh303/go-microservices/pkg/rabbitmq/publisher"
 	"github.com/google/wire"
 	"github.com/lib/pq"
-	"github.com/pkg/errors"
 )
 
 type changeDBUser struct {
@@ -32,40 +31,41 @@ func NewListenTrigger(
 }
 
 // ChangeDBUser implements auth.ListenTrigger.
-func (tg *changeDBUser) ChangeDBUser() error {
-	ctx := context.Background()
-	listener := pq.NewListener(string(tg.url),
-		10*time.Second,
-		time.Minute,
-		func(_ pq.ListenerEventType, err error) {
-			if err != nil {
-				slog.Warn("pq.Listener error:", err)
-			}
-		})
+func (tg *changeDBUser) ChangeDBUser(ctx context.Context) {
+	var connInfo string = "postgres://postgres:123456@postgres-master:5432/postgres?sslmode=disable"
+	reportProblem := func(_ pq.ListenerEventType, err error) {
+		if err != nil {
+			slog.Error("Report Listener::", err)
+		}
+	}
+	minReconnect := 10 * time.Second
+	maxReconnect := time.Minute
+	listener := pq.NewListener(connInfo, minReconnect, maxReconnect, reportProblem)
 	err := listener.Listen("user_change_event")
 	if err != nil {
-		return errors.Wrap(err, "failed to listen")
+		slog.Error("Listener::", err)
 	}
 	defer listener.Close()
-
-	go func() {
-		for {
-			select {
-			case <-listener.Notify:
-				// Handle the notification as needed
-				var data []byte
-				if err := tg.changeDBUserPub.Publish(ctx, data, "text/plain"); err != nil {
-					slog.Warn("failed to publish event change database user", err)
-				}
-			case <-time.After(90 * time.Second):
-				go func() {
-					err := listener.Ping()
-					if err != nil {
-						slog.Warn("failed to listener ping", err)
-					}
-				}()
-			}
-		}
-	}()
-	return err
+	slog.Info("entering main loop")
+	// var wg sync.WaitGroup
+	// wg.Add(1)
+	// go func() {
+	// 	defer wg.Done()
+	for {
+		waitForNotification(listener)
+	}
+	// }()
+	// wg.Wait()
+}
+func waitForNotification(l *pq.Listener) {
+	select {
+	case <-l.Notify:
+		slog.Info("received notification, new work available")
+	case <-time.After(90 * time.Second):
+		go l.Ping()
+		// Check if there's more work available, just in case it takes
+		// a while for the Listener to notice connection loss and
+		// reconnect.
+		slog.Info("received no work for 90 seconds, checking for new work")
+	}
 }

@@ -60,7 +60,6 @@ BEGIN
     ELSIF TG_OP = 'DELETE' THEN
         PERFORM pg_notify('user_change_event','DELETE');
     END IF;
-
     RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;

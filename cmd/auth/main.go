@@ -15,6 +15,7 @@ import (
 	"github.com/dinhcanh303/go-microservices/pkg/logger"
 	"github.com/dinhcanh303/go-microservices/pkg/postgres"
 	"github.com/dinhcanh303/go-microservices/pkg/rabbitmq"
+	"github.com/dinhcanh303/go-microservices/pkg/rabbitmq/publisher"
 	grpc_middleware "github.com/grpc-ecosystem/go-grpc-middleware"
 	grpc_zap "github.com/grpc-ecosystem/go-grpc-middleware/logging/zap"
 	grpc_recovery "github.com/grpc-ecosystem/go-grpc-middleware/recovery"
@@ -69,8 +70,10 @@ func main() {
 		defer server.GracefulStop()
 		<-ctx.Done()
 	}()
-	cleanup := prepareApp(ctx, cancel, cfg, cfgRedis, cfgLdap, server)
-
+	a, cleanup := prepareApp(ctx, cancel, cfg, cfgRedis, cfgLdap, server)
+	go func() {
+		a.ListenTrigger(ctx)
+	}()
 	//gRPC Server
 	address := fmt.Sprintf("%s:%d", cfg.HTTP.Host, cfg.HTTP.Port)
 	network := "tcp"
@@ -122,7 +125,7 @@ func main() {
 
 }
 
-func prepareApp(ctx context.Context, cancel context.CancelFunc, cfg *config.Config, cfgRedis *configs.Redis, cfgLdap *configs.Ldap, server *grpc.Server) func() {
+func prepareApp(ctx context.Context, cancel context.CancelFunc, cfg *config.Config, cfgRedis *configs.Redis, cfgLdap *configs.Ldap, server *grpc.Server) (*app.App, func()) {
 	a, cleanup, err := app.InitApp(cfg, cfgRedis, cfgLdap, postgres.DBConnString(cfg.PG.DbURL), postgres.DBConnReadString(cfg.PG.DbRepURL),
 		rabbitmq.RabbitMQConnStr(cfg.RabbitMQ.URL), server)
 	if err != nil {
@@ -130,12 +133,10 @@ func prepareApp(ctx context.Context, cancel context.CancelFunc, cfg *config.Conf
 		cancel()
 		<-ctx.Done()
 	}
-
-	// a.UserDeletedEventPub.Configure(
-	// 	publisher.ExChangeName("search-exchange"),
-	// 	publisher.BindingKey("search-routing-key"),
-	// 	publisher.MessageTypeName("auth-deleted"),
-	// )
-
-	return cleanup
+	a.ChangeDBUserPub.Configure(
+		publisher.ExChangeName("search-exchange"),
+		publisher.BindingKey("search-routing-key"),
+		publisher.MessageTypeName("users-changed"),
+	)
+	return a, cleanup
 }
