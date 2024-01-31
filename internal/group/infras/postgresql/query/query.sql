@@ -80,3 +80,6 @@ SELECT gm.group_id
 FROM "group".group_members as gm
 WHERE user_id = $1;
 
+-- name: GetGroups :many
+SELECT * FROM "group".groups;
+

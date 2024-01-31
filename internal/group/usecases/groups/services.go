@@ -45,6 +45,15 @@ func NewService(
 	}
 }
 
+// GetGroups implements UseCase.
+func (s *service) GetGroups(ctx context.Context) ([]*domain.Group, error) {
+	groups, err := s.repo.GetGroups(ctx)
+	if err != nil {
+		return nil, errors.Wrap(err, "service.GetGroups")
+	}
+	return groups, err
+}
+
 // GetGroupsByUserId implements UseCase.
 func (s *service) GetGroupsByUserId(ctx context.Context, userId uuid.UUID, limit, offset int32) ([]*domain.Group, error) {
 	var groups []*domain.Group

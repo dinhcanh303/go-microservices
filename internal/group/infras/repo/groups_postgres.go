@@ -26,6 +26,28 @@ func NewGroupRepo(pg postgres.DBEngine) groups.GroupRepo {
 	return &groupRepo{pg: pg}
 }
 
+// GetGroups implements groups.GroupRepo.
+func (rp *groupRepo) GetGroups(ctx context.Context) ([]*domain.Group, error) {
+	db := rp.pg.GetDBRead()
+	querier := postgresql.New(db)
+	results, err := querier.GetGroups(ctx)
+	if err != nil {
+		return nil, errors.Wrap(err, "qtx.GetGroups(ctx) failed")
+	}
+	return lo.Map(results, func(item postgresql.GroupGroup, _ int) *domain.Group {
+		return &domain.Group{
+			ID:          item.ID,
+			Name:        item.Name,
+			Description: item.Description,
+			Status:      item.Status,
+			UserID:      item.UserID,
+			ProfileUrl:  item.ProfileUrl.String,
+			CreatedAt:   item.CreatedAt,
+			UpdatedAt:   item.UpdatedAt,
+		}
+	}), nil
+}
+
 // GetAllGroupByUserId implements groups.GroupRepo.
 func (rp *groupRepo) GetGroupsByUserId(ctx context.Context, userId uuid.UUID, limit, offset int32) ([]*domain.Group, error) {
 	db := rp.pg.GetDBRead()

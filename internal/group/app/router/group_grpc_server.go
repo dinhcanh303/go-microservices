@@ -150,7 +150,28 @@ func (g *groupGRPCServer) UpdateGroupMember(ctx context.Context, request *gen.Up
 	}
 	return res, nil
 }
+func (g *groupGRPCServer) GetGroups(ctx context.Context, request *gen.GetGroupsRequest) (*gen.GetGroupsResponse, error) {
+	slog.Info("GET: GetGroupsByUserId")
 
+	groups, err := g.ucGroup.GetGroups(ctx)
+	if err != nil {
+		return nil, errors.Wrap(err, "userId.GetGroupsByUserId failed")
+	}
+	return &gen.GetGroupsResponse{
+		Groups: lo.Map(groups, func(group *domain.Group, _ int) *gen.Group {
+			return &gen.Group{
+				Id:          group.ID.String(),
+				Name:        group.Name,
+				Description: group.Description,
+				Status:      group.Status,
+				UserId:      group.UserID.String(),
+				ProfileUrl:  group.ProfileUrl,
+				CreatedAt:   timestamppb.New(group.CreatedAt),
+				UpdatedAt:   timestamppb.New(group.UpdatedAt),
+			}
+		}),
+	}, nil
+}
 func (g *groupGRPCServer) GetGroupsByUserId(ctx context.Context, request *gen.GetGroupsByUserIdRequest) (*gen.GetGroupsByUserIdResponse, error) {
 	slog.Info("GET: GetGroupsByUserId")
 	userId, err := uuid.Parse(request.UserId)

@@ -268,6 +268,42 @@ func (q *Queries) GetGroupMembers(ctx context.Context, groupID uuid.UUID) ([]Gro
 	return items, nil
 }
 
+const getGroups = `-- name: GetGroups :many
+SELECT id, user_id, name, description, status, profile_url, created_at, updated_at FROM "group".groups
+`
+
+func (q *Queries) GetGroups(ctx context.Context) ([]GroupGroup, error) {
+	rows, err := q.db.QueryContext(ctx, getGroups)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []GroupGroup
+	for rows.Next() {
+		var i GroupGroup
+		if err := rows.Scan(
+			&i.ID,
+			&i.UserID,
+			&i.Name,
+			&i.Description,
+			&i.Status,
+			&i.ProfileUrl,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const getGroupsByUserId = `-- name: GetGroupsByUserId :many
 SELECT g.id, g.user_id, g.name, g.description, g.status, g.profile_url, g.created_at, g.updated_at
 FROM "group".groups AS g

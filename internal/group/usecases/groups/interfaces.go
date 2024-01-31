@@ -10,6 +10,7 @@ import (
 
 type GroupRepo interface {
 	Get(ctx context.Context, id uuid.UUID) (*domain.Group, error)
+	GetGroups(context.Context) ([]*domain.Group, error)
 	Create(ctx context.Context, group *domain.Group) (*domain.Group, error)
 	Update(ctx context.Context, group *domain.Group) (*domain.Group, error)
 	Delete(ctx context.Context, id uuid.UUID) (bool, error)
@@ -19,6 +20,7 @@ type GroupRepo interface {
 
 type UseCase interface {
 	GetGroup(ctx context.Context, id uuid.UUID) (*domain.Group, error)
+	GetGroups(context.Context) ([]*domain.Group, error)
 	CreateGroup(ctx context.Context, group *domain.Group) (*domain.Group, error)
 	UpdateGroup(ctx context.Context, group *domain.Group) (*domain.Group, error)
 	DeleteGroup(ctx context.Context, id uuid.UUID) (bool, error)
