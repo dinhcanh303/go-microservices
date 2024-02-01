@@ -18,6 +18,20 @@ func (e StatusPost) String() string {
 	}[e]
 }
 
+type StatusGroup int32
+
+const (
+	StatusGroupPublic StatusGroup = iota + 1
+	StatusGroupPrivate
+)
+
+func (e StatusGroup) String() string {
+	return []string{
+		"public",
+		"private",
+	}[e]
+}
+
 type RoleGroupMember int32
 
 const (

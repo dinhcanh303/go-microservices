@@ -785,8 +785,7 @@
                       "type": "string"
                     },
                     "status": {
-                      "type": "integer",
-                      "format": "int32"
+                      "type": "string"
                     },
                     "userId": {
                       "type": "string"
@@ -2563,8 +2562,7 @@
           "type": "string"
         },
         "status": {
-          "type": "integer",
-          "format": "int32"
+          "type": "string"
         },
         "userId": {
           "type": "string"
@@ -3001,7 +2999,7 @@
         "nickName": {
           "type": "string"
         },
-        "phone": {
+        "position": {
           "type": "string"
         },
         "avatarUrl": {
@@ -3015,7 +3013,7 @@
     "searchapiSearchResponse": {
       "type": "object",
       "properties": {
-        "search": {
+        "searches": {
           "type": "array",
           "items": {
             "type": "object",
