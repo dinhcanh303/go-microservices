@@ -49,7 +49,7 @@ CREATE TABLE
 );
 CREATE INDEX ix_auth_key_token ON auth.keys (user_id);
 
--- Trigger event INSERT and UPDATE
+-- Trigger event INSERT and UPDATE and DELETE
 CREATE OR REPLACE FUNCTION notify_user_change()
 RETURNS TRIGGER AS $$
 BEGIN
@@ -65,7 +65,7 @@ END;
 $$ LANGUAGE plpgsql;
 
 CREATE TRIGGER user_change_trigger
-AFTER INSERT OR UPDATE ON auth.users
+AFTER INSERT OR UPDATE OR DELETE ON auth.users
 FOR EACH ROW
 EXECUTE FUNCTION notify_user_change();
 

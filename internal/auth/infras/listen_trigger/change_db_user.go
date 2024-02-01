@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/dinhcanh303/go-microservices/internal/auth/usecases/auth"
+	"github.com/dinhcanh303/go-microservices/pkg/constant"
 	"github.com/dinhcanh303/go-microservices/pkg/postgres"
 	pkgPublisher "github.com/dinhcanh303/go-microservices/pkg/rabbitmq/publisher"
 	"github.com/google/wire"
@@ -32,7 +33,6 @@ func NewListenTrigger(
 
 // ChangeDBUser implements auth.ListenTrigger.
 func (tg *changeDBUser) ChangeDBUser(ctx context.Context) {
-	var connInfo string = "postgres://postgres:123456@postgres-master:5432/postgres?sslmode=disable"
 	reportProblem := func(_ pq.ListenerEventType, err error) {
 		if err != nil {
 			slog.Error("Report Listener::", err)
@@ -40,27 +40,26 @@ func (tg *changeDBUser) ChangeDBUser(ctx context.Context) {
 	}
 	minReconnect := 10 * time.Second
 	maxReconnect := time.Minute
-	listener := pq.NewListener(connInfo, minReconnect, maxReconnect, reportProblem)
-	err := listener.Listen("user_change_event")
+	listener := pq.NewListener(string(tg.url), minReconnect, maxReconnect, reportProblem)
+	err := listener.Listen(constant.UserChangeEvent)
 	if err != nil {
 		slog.Error("Listener::", err)
 	}
 	defer listener.Close()
 	slog.Info("entering main loop")
-	// var wg sync.WaitGroup
-	// wg.Add(1)
-	// go func() {
-	// 	defer wg.Done()
 	for {
-		waitForNotification(listener)
+		waitForNotification(ctx, listener, tg.changeDBUserPub)
 	}
-	// }()
-	// wg.Wait()
 }
-func waitForNotification(l *pq.Listener) {
+func waitForNotification(ctx context.Context, l *pq.Listener, changeDBUserPub pkgPublisher.EventPublisher) {
 	select {
 	case <-l.Notify:
 		slog.Info("received notification, new work available")
+		var emptyMessage []byte
+		err := changeDBUserPub.Publish(ctx, emptyMessage, "text/plain")
+		if err != nil {
+			slog.Error("publish message failed", err)
+		}
 	case <-time.After(90 * time.Second):
 		go l.Ping()
 		// Check if there's more work available, just in case it takes
