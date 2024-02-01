@@ -24,7 +24,7 @@ message SearchRequest{
     string q = 1;
 }
 message SearchResponse {
-    repeated Search search = 1;
+    repeated Search searches = 1;
 }
 message Search{
     string id = 1;
@@ -32,7 +32,7 @@ message Search{
     string email = 3;
     string full_name = 4;
     string nick_name = 5;
-    string phone = 6;
+    string position = 6;
     string avatar_url = 7;
     string profile_url = 8;
 }

@@ -9,6 +9,8 @@ type MeiliSearch interface {
 	DeleteAllDocuments(index string) (*meilisearch.TaskInfo, error)
 	UpdateFilterableAttributes(index string, req *[]string) (*meilisearch.TaskInfo, error)
 	UpdateSearchableAttributes(index string, req *[]string) (*meilisearch.TaskInfo, error)
+	UpdateRankingRules(index string, rankingRules *[]string) (*meilisearch.TaskInfo, error)
+	UpdateTypoTolerance(index string, config meilisearch.MinWordSizeForTypos) (*meilisearch.TaskInfo, error)
 	Search(index, search string, configs *meilisearch.SearchRequest) (*meilisearch.SearchResponse, error)
 	CreateIndex(index string, primaryKey string) (*meilisearch.TaskInfo, error)
 	DeleteIndex(index string, primaryKey ...string) (*meilisearch.TaskInfo, error)

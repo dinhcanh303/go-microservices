@@ -10,6 +10,7 @@ type Search struct {
 	FullName    string    `json:"full_name"`
 	NickName    string    `json:"nick_name"`
 	Phone       string    `json:"phone"`
+	Position    string    `json:"position"`
 	AvatarUrl   string    `json:"avatar_url"`
 	ProfileUrl  string    `json:"profile_url"`
 }

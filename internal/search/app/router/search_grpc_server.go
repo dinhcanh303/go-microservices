@@ -40,16 +40,16 @@ func (s *searchGRPCServer) Search(ctx context.Context, request *gen.SearchReques
 	}
 	results, _ := s.uc.Search(searchText)
 	return &gen.SearchResponse{
-		Search: lo.Map(results, func(item *domain.Search, _ int) *gen.Search {
+		Searches: lo.Map(results, func(item *domain.Search, _ int) *gen.Search {
 			return &gen.Search{
 				Id:         item.ID.String(),
 				Name:       item.Name,
 				Email:      item.Email,
 				AvatarUrl:  item.AvatarUrl,
 				ProfileUrl: item.ProfileUrl,
-				Phone:      item.Phone,
 				FullName:   item.FullName,
 				NickName:   item.NickName,
+				Position:   item.Position,
 			}
 		}),
 	}, nil

@@ -1,6 +1,6 @@
 package constant
 
 const (
-	MeiliSearchDBUserIndex  = "social_users"
-	MeiliSearchDBGroupIndex = "social_groups"
+	MeiliSearchDBUserIndex  = "social_search_users"
+	MeiliSearchDBGroupIndex = "social_search_groups"
 )

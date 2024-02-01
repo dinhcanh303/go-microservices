@@ -8,6 +8,7 @@ import (
 	"github.com/dinhcanh303/go-microservices/pkg/constant"
 	"github.com/dinhcanh303/go-microservices/pkg/meili"
 	"github.com/google/wire"
+	"github.com/meilisearch/meilisearch-go"
 )
 
 type eventhandlers struct {
@@ -24,12 +25,23 @@ func NewEventHandlers(meili meili.MeiliSearch,
 	authDomainSvc domain.AuthDomainService,
 	groupDomainSvc domain.GroupDomainService,
 ) EventHandlers {
+	config := meilisearch.MinWordSizeForTypos{
+		OneTypo:  4,
+		TwoTypos: 10,
+	}
+	_, err := meili.UpdateTypoTolerance(constant.MeiliSearchDBGroupIndex, config)
+	if err != nil {
+		slog.Error("failed config typo tolerance", err)
+	}
+	_, err = meili.UpdateTypoTolerance(constant.MeiliSearchDBUserIndex, config)
+	if err != nil {
+		slog.Error("failed config typo tolerance", err)
+	}
 	return &eventhandlers{
 		meili:          meili,
 		authDomainSvc:  authDomainSvc,
 		groupDomainSvc: groupDomainSvc,
 	}
-
 }
 
 // HandleChangeDBGroup implements EventHandlers.
@@ -38,16 +50,16 @@ func (e *eventhandlers) HandleChangeDBGroup(ctx context.Context) error {
 	if err != nil {
 		return err
 	}
-	result, err := e.groupDomainSvc.GetGroups(ctx)
+	results, err := e.groupDomainSvc.GetGroups(ctx)
 	if err != nil {
 		return err
 	}
-	_, err = e.meili.AddDocuments(constant.MeiliSearchDBUserIndex, result.Groups)
+	_, err = e.meili.AddDocuments(constant.MeiliSearchDBGroupIndex, results.Groups)
 	if err != nil {
 		slog.Error("insert-into-meili-search", err)
 		return err
 	}
-	slog.Info("Insert into meili-search")
+	slog.Info("Insert data groups into meili-search")
 	return nil
 }
 
@@ -57,15 +69,15 @@ func (e *eventhandlers) HandleChangeDBUser(ctx context.Context) error {
 	if err != nil {
 		return err
 	}
-	result, err := e.authDomainSvc.GetUsers(ctx)
+	results, err := e.authDomainSvc.GetUsers(ctx)
 	if err != nil {
 		return err
 	}
-	_, err = e.meili.AddDocuments(constant.MeiliSearchDBUserIndex, result.Users)
+	_, err = e.meili.AddDocuments(constant.MeiliSearchDBUserIndex, results.Users)
 	if err != nil {
 		slog.Error("insert-into-meili-search", err)
 		return err
 	}
-	slog.Info("Insert into meili-search")
+	slog.Info("Insert data users into meili-search")
 	return nil
 }

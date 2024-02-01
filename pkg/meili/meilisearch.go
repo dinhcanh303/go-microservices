@@ -27,6 +27,25 @@ func NewMeiliSearch(meiliSearchConn MeiliSearchConn) MeiliSearch {
 		Client: client,
 	}
 }
+func (m *meiliSearch) UpdateTypoTolerance(index string, config meilisearch.MinWordSizeForTypos) (*meilisearch.TaskInfo, error) {
+	task, err := m.Client.Index(index).UpdateTypoTolerance(
+		&meilisearch.TypoTolerance{
+			MinWordSizeForTypos: config,
+		},
+	)
+	if err != nil {
+		return nil, err
+	}
+	return task, nil
+}
+
+func (m *meiliSearch) UpdateRankingRules(index string, rankingRules *[]string) (*meilisearch.TaskInfo, error) {
+	task, err := m.Client.Index(index).UpdateRankingRules(rankingRules)
+	if err != nil {
+		return nil, err
+	}
+	return task, nil
+}
 func (m *meiliSearch) DeleteIndex(index string, primaryKey ...string) (*meilisearch.TaskInfo, error) {
 	task, err := m.Client.DeleteIndex(index)
 	if err != nil {
