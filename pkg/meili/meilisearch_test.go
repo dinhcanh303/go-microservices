@@ -29,6 +29,13 @@ func TestCreateIndex(t *testing.T) {
 	require.NoError(t, err)
 	require.NotEmpty(t, task)
 }
+
+func TestDeleteIndex(t *testing.T) {
+	meiliSearch := connectMeiliSearch()
+	task, err := meiliSearch.DeleteIndex("user_group")
+	require.NoError(t, err)
+	require.NotEmpty(t, task)
+}
 func TestMeiliSearch(t *testing.T) {
 	meiliSearch := connectMeiliSearch()
 	task, err := meiliSearch.Search("test", "Car", nil)
@@ -41,9 +48,9 @@ func TestMeiliSearchDeleteDocument(t *testing.T) {
 	require.NoError(t, err)
 	require.NotEmpty(t, task)
 }
-func TestMeileSearchDeleteAllDocuments(t *testing.T) {
+func TestMeiliSearchDeleteAllDocuments(t *testing.T) {
 	meiliSearch := connectMeiliSearch()
-	task, err := meiliSearch.DeleteAllDocuments("test")
+	task, err := meiliSearch.DeleteAllDocuments("user-group")
 	require.NoError(t, err)
 	require.NotEmpty(t, task)
 }

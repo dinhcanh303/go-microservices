@@ -11,4 +11,5 @@ type MeiliSearch interface {
 	UpdateSearchableAttributes(index string, req *[]string) (*meilisearch.TaskInfo, error)
 	Search(index, search string, configs *meilisearch.SearchRequest) (*meilisearch.SearchResponse, error)
 	CreateIndex(index string, primaryKey string) (*meilisearch.TaskInfo, error)
+	DeleteIndex(index string, primaryKey ...string) (*meilisearch.TaskInfo, error)
 }

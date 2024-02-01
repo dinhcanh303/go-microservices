@@ -17,6 +17,24 @@ var _ MeiliSearch = (*meiliSearch)(nil)
 
 var MeiliSearchSet = wire.NewSet(NewMeiliSearch)
 
+func NewMeiliSearch(meiliSearchConn MeiliSearchConn) MeiliSearch {
+	cfg := meilisearch.ClientConfig{
+		Host:   meiliSearchConn.Host,
+		APIKey: meiliSearchConn.APIKey,
+	}
+	client := meilisearch.NewClient(cfg)
+	return &meiliSearch{
+		Client: client,
+	}
+}
+func (m *meiliSearch) DeleteIndex(index string, primaryKey ...string) (*meilisearch.TaskInfo, error) {
+	task, err := m.Client.DeleteIndex(index)
+	if err != nil {
+		return nil, err
+	}
+	return task, nil
+}
+
 func (m *meiliSearch) AddDocuments(index string, documents interface{}, primaryKey ...string) (*meilisearch.TaskInfo, error) {
 	task, err := m.Client.Index(index).AddDocuments(documents, primaryKey...)
 	if err != nil {
@@ -84,14 +102,4 @@ func (m *meiliSearch) CreateIndex(index string, primaryKey string) (*meilisearch
 		return nil, err
 	}
 	return task, err
-}
-func NewMeiliSearch(meiliSearchConn MeiliSearchConn) MeiliSearch {
-	cfg := meilisearch.ClientConfig{
-		Host:   meiliSearchConn.Host,
-		APIKey: meiliSearchConn.APIKey,
-	}
-	client := meilisearch.NewClient(cfg)
-	return &meiliSearch{
-		Client: client,
-	}
 }
