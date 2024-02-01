@@ -9,8 +9,8 @@ package app
 import (
 	"github.com/dinhcanh303/go-microservices/cmd/group/config"
 	"github.com/dinhcanh303/go-microservices/internal/group/app/router"
-	"github.com/dinhcanh303/go-microservices/internal/group/infras"
 	grpc2 "github.com/dinhcanh303/go-microservices/internal/group/infras/grpc"
+	"github.com/dinhcanh303/go-microservices/internal/group/infras/listen_trigger"
 	"github.com/dinhcanh303/go-microservices/internal/group/infras/repo"
 	"github.com/dinhcanh303/go-microservices/internal/group/usecases/groupmembers"
 	"github.com/dinhcanh303/go-microservices/internal/group/usecases/groups"
@@ -37,6 +37,15 @@ func InitApp(cfg *config.Config, cfg2 *configs.Redis, dbConnStr postgres.DBConnS
 		cleanup()
 		return nil, nil, err
 	}
+	useCase := groups.NewService(groupRepo, groupMemberRepo, redisEngine)
+	groupmembersUseCase := groupmembers.NewService(groupMemberRepo, redisEngine)
+	authDomainService, err := grpc2.NewGRPCAuthClient(cfg)
+	if err != nil {
+		cleanup2()
+		cleanup()
+		return nil, nil, err
+	}
+	groupServiceServer := router.NewGRPCGroupServer(grpcServer, cfg, useCase, groupmembersUseCase, authDomainService)
 	connection, cleanup3, err := rabbitMQFunc(rabbitMQConnStr)
 	if err != nil {
 		cleanup2()
@@ -50,19 +59,8 @@ func InitApp(cfg *config.Config, cfg2 *configs.Redis, dbConnStr postgres.DBConnS
 		cleanup()
 		return nil, nil, err
 	}
-	groupCreatedEventPublisher := infras.NewGroupCreatedEventPublisher(eventPublisher)
-	groupDeletedEventPublisher := infras.NewGroupDeletedEventPublisher(eventPublisher)
-	useCase := groups.NewService(groupRepo, groupMemberRepo, redisEngine, groupCreatedEventPublisher, groupDeletedEventPublisher)
-	groupmembersUseCase := groupmembers.NewService(groupMemberRepo, redisEngine)
-	authDomainService, err := grpc2.NewGRPCAuthClient(cfg)
-	if err != nil {
-		cleanup3()
-		cleanup2()
-		cleanup()
-		return nil, nil, err
-	}
-	groupServiceServer := router.NewGRPCGroupServer(grpcServer, cfg, useCase, groupmembersUseCase, authDomainService)
-	app := New(cfg, dbEngine, useCase, groupmembersUseCase, groupServiceServer, groupCreatedEventPublisher, groupDeletedEventPublisher)
+	listenTrigger := listen_trigger.NewListenTrigger(dbConnStr, eventPublisher)
+	app := New(cfg, dbEngine, useCase, groupmembersUseCase, groupServiceServer, listenTrigger, eventPublisher)
 	return app, func() {
 		cleanup3()
 		cleanup2()

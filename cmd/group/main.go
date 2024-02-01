@@ -53,8 +53,11 @@ func main() {
 		defer server.GracefulStop()
 		<-ctx.Done()
 	}()
-	cleanup := prepareApp(ctx, cancel, cfg, cfgRedis, server)
-
+	a, cleanup := prepareApp(ctx, cancel, cfg, cfgRedis, server)
+	// Listen change database
+	go func() {
+		a.ListenTrigger(ctx)
+	}()
 	//gRPC Server
 	address := fmt.Sprintf("%s:%d", cfg.HTTP.Host, cfg.HTTP.Port)
 	network := "tcp"
@@ -91,7 +94,7 @@ func main() {
 
 }
 
-func prepareApp(ctx context.Context, cancel context.CancelFunc, cfg *config.Config, cfg2 *configs.Redis, server *grpc.Server) func() {
+func prepareApp(ctx context.Context, cancel context.CancelFunc, cfg *config.Config, cfg2 *configs.Redis, server *grpc.Server) (*app.App, func()) {
 	a, cleanup, err := app.InitApp(cfg, cfg2, postgres.DBConnString(cfg.PG.DbURL), postgres.DBConnReadString(cfg.PG.DbRepURL),
 		rabbitmq.RabbitMQConnStr(cfg.RabbitMQ.URL), server)
 	if err != nil {
@@ -99,15 +102,10 @@ func prepareApp(ctx context.Context, cancel context.CancelFunc, cfg *config.Conf
 		cancel()
 		<-ctx.Done()
 	}
-	a.GroupDeletedEventPub.Configure(
+	a.ChangeDBGroupPub.Configure(
 		publisher.ExChangeName("search-exchange"),
 		publisher.BindingKey("search-routing-key"),
-		publisher.MessageTypeName("group-deleted"),
+		publisher.MessageTypeName("groups-changed"),
 	)
-	a.GroupCreatedEventPub.Configure(
-		publisher.ExChangeName("search-exchange"),
-		publisher.BindingKey("search-routing-key"),
-		publisher.MessageTypeName("group-created"),
-	)
-	return cleanup
+	return a, cleanup
 }

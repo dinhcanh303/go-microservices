@@ -2,11 +2,9 @@ package groups
 
 import (
 	"context"
-	"encoding/json"
 
 	"github.com/dinhcanh303/go-microservices/internal/group/domain"
 	groupmembers "github.com/dinhcanh303/go-microservices/internal/group/usecases/groupmembers"
-	"github.com/dinhcanh303/go-microservices/internal/pkg/event"
 	sharedkernel "github.com/dinhcanh303/go-microservices/internal/pkg/shared_kernel"
 	"github.com/dinhcanh303/go-microservices/pkg/constant"
 	"github.com/dinhcanh303/go-microservices/pkg/redis"
@@ -19,11 +17,9 @@ import (
 )
 
 type service struct {
-	repo                 GroupRepo
-	repoGroupMember      groupmembers.GroupMemberRepo
-	redis                redis.RedisEngine
-	groupCreatedEventPub GroupCreatedEventPublisher
-	groupDeletedEventPub GroupDeletedEventPublisher
+	repo            GroupRepo
+	repoGroupMember groupmembers.GroupMemberRepo
+	redis           redis.RedisEngine
 }
 
 var _ UseCase = (*service)(nil)
@@ -34,24 +30,31 @@ func NewService(
 	repo GroupRepo,
 	repoGroupMember groupmembers.GroupMemberRepo,
 	redis redis.RedisEngine,
-	groupCreatedEventPub GroupCreatedEventPublisher,
-	groupDeletedEventPub GroupDeletedEventPublisher) UseCase {
+) UseCase {
 	return &service{
-		repo:                 repo,
-		repoGroupMember:      repoGroupMember,
-		redis:                redis,
-		groupCreatedEventPub: groupCreatedEventPub,
-		groupDeletedEventPub: groupDeletedEventPub,
+		repo:            repo,
+		repoGroupMember: repoGroupMember,
+		redis:           redis,
 	}
 }
 
 // GetGroups implements UseCase.
 func (s *service) GetGroups(ctx context.Context) ([]*domain.Group, error) {
-	groups, err := s.repo.GetGroups(ctx)
+	slog.Info("Service.GetGroups")
+	var groups []*domain.Group
+	keyCache := constant.CacheGroups
+	err := utils.HandleHitCache(groups, s.redis, keyCache)
 	if err != nil {
-		return nil, errors.Wrap(err, "service.GetGroups")
+		groups, err = s.repo.GetGroups(ctx)
+		if err != nil {
+			return nil, errors.Wrap(err, "service.GetGroups")
+		}
+		err = s.redis.Set(keyCache, groups)
+		if err != nil {
+			slog.Warn("failed set value in cache", err)
+		}
 	}
-	return groups, err
+	return groups, nil
 }
 
 // GetGroupsByUserId implements UseCase.
@@ -109,6 +112,10 @@ func (s *service) CreateGroup(ctx context.Context, group *domain.Group) (*domain
 		return nil, errors.Wrap(err, "service.Create")
 	}
 	//Del cache
+	err = s.redis.Invalidate(constant.CacheGroups)
+	if err != nil {
+		slog.Error("Invalidate cache group failed")
+	}
 	err = s.redis.Invalidate(constant.CacheGroup + group.ID.String())
 	if err != nil {
 		slog.Error("Invalidate cache group failed : ID", group.ID.String())
@@ -121,18 +128,7 @@ func (s *service) CreateGroup(ctx context.Context, group *domain.Group) (*domain
 	if err != nil {
 		slog.Error("Invalidate cache group ids by user id failed : ID", user.ID.String())
 	}
-	if result != nil {
-		// Publish event created group
-		eventBytes, err := json.Marshal(event.GroupCreated{
-			ID:     result.ID,
-			Name:   result.Name,
-			Avatar: result.Description,
-		})
-		if err != nil {
-			slog.Error("json marshal error", err)
-		}
-		s.groupCreatedEventPub.Publish(ctx, eventBytes, "text/plain")
-	}
+
 	//Create the group member
 	_, err = s.repoGroupMember.CreateGroupMember(ctx, &domain.GroupMember{
 		ID:      uuid.New(),
@@ -161,6 +157,10 @@ func (s *service) DeleteGroup(ctx context.Context, id uuid.UUID) (bool, error) {
 		slog.Error("service.DeleteGroup can't DeleteAllGroupMembers please check", err)
 	}
 	//Del cache
+	err = s.redis.Invalidate(constant.CacheGroups)
+	if err != nil {
+		slog.Error("Invalidate cache group failed")
+	}
 	err = s.redis.Invalidate(constant.CacheGroup + id.String())
 	if err != nil {
 		slog.Error("Invalidate cache group failed : ID", id)
@@ -172,16 +172,6 @@ func (s *service) DeleteGroup(ctx context.Context, id uuid.UUID) (bool, error) {
 	err = s.redis.Invalidate(constant.CacheGroupIdsByUserId + group.UserID.String())
 	if err != nil {
 		slog.Error("Invalidate cache group ids by user id failed : ID", group.UserID.String())
-	}
-	if result {
-		// Publish event created group
-		eventBytes, err := json.Marshal(event.GroupDeleted{
-			ID: id,
-		})
-		if err != nil {
-			slog.Error("json marshal error", err)
-		}
-		s.groupDeletedEventPub.Publish(ctx, eventBytes, "text/plain")
 	}
 	return result, nil
 }
@@ -211,6 +201,10 @@ func (s *service) UpdateGroup(ctx context.Context, group *domain.Group) (*domain
 		return nil, errors.Wrap(err, "service.UpdateGroup")
 	}
 	//Del cache
+	err = s.redis.Invalidate(constant.CacheGroups)
+	if err != nil {
+		slog.Error("Invalidate cache group failed")
+	}
 	err = s.redis.Invalidate(constant.CacheGroup + group.ID.String())
 	if err != nil {
 		slog.Error("Invalidate cache group failed : ID", group.ID.String())

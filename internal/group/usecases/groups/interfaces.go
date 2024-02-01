@@ -4,7 +4,6 @@ import (
 	"context"
 
 	"github.com/dinhcanh303/go-microservices/internal/group/domain"
-	"github.com/dinhcanh303/go-microservices/pkg/rabbitmq/publisher"
 	"github.com/google/uuid"
 )
 
@@ -27,11 +26,7 @@ type UseCase interface {
 	GetGroupsByUserId(ctx context.Context, userId uuid.UUID, limit, offset int32) ([]*domain.Group, error)
 	GetGroupIdsByUserId(ctx context.Context, userId uuid.UUID) ([]string, error)
 }
-type GroupCreatedEventPublisher interface {
-	Configure(...publisher.Option)
-	Publish(context.Context, []byte, string) error
-}
-type GroupDeletedEventPublisher interface {
-	Configure(...publisher.Option)
-	Publish(context.Context, []byte, string) error
+
+type ListenTrigger interface {
+	ChangeDBUser(ctx context.Context)
 }

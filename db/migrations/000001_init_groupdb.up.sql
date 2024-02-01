@@ -34,7 +34,25 @@ CREATE INDEX ix_group_user_id ON "group".groups (user_id);
 CREATE INDEX ix_group_member_user_id ON "group".group_members (user_id);
 CREATE INDEX ix_group_member_group_id ON "group".group_members (group_id);
 CREATE INDEX ix_group_member ON "group".group_members (group_id,user_id);
+-- Trigger event INSERT and UPDATE and DELETE
+CREATE OR REPLACE FUNCTION notify_group_change()
+RETURNS TRIGGER AS $$
+BEGIN
+    IF TG_OP = 'INSERT' THEN
+        PERFORM pg_notify('group_change_event', 'INSERT');
+    ELSIF TG_OP = 'UPDATE' THEN
+        PERFORM pg_notify('group_change_event', 'UPDATE');
+    ELSIF TG_OP = 'DELETE' THEN
+        PERFORM pg_notify('group_change_event','DELETE');
+    END IF;
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
 
+CREATE TRIGGER group_change_trigger
+AFTER INSERT OR UPDATE OR DELETE ON "group".groups
+FOR EACH ROW
+EXECUTE FUNCTION notify_group_change();
 COMMIT;
 
 
