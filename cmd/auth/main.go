@@ -71,6 +71,7 @@ func main() {
 		<-ctx.Done()
 	}()
 	a, cleanup := prepareApp(ctx, cancel, cfg, cfgRedis, cfgLdap, server)
+	//Listen change database
 	go func() {
 		a.ListenTrigger(ctx)
 	}()

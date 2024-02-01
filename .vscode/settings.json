@@ -12,6 +12,7 @@
         "extendee",
         "fsys",
         "glog",
+        "gorm",
         "groupmembers",
         "Idxs",
         "Infoln",
@@ -42,6 +43,7 @@
         "sslmode",
         "stretchr",
         "timestamppb",
+        "Upsert",
         "usecase",
         "usecases"
     ]

@@ -33,6 +33,7 @@ const (
 	CacheComments              = CacheServiceComment + "comments:"
 )
 const (
+	CacheGroups           = CacheServiceGroup + "groups"
 	CacheGroup            = CacheServiceGroup + "group:"
 	CacheGroupsByUserId   = CacheServiceGroup + "groups:user_id:"
 	CacheGroupIdsByUserId = CacheServiceGroup + "group_ids:user_id:"
