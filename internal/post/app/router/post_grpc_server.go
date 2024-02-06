@@ -62,7 +62,6 @@ func NewGRPCPostServer(
 }
 
 func (p *postGRPCServer) CreatePost(ctx context.Context, request *gen.CreatePostRequest) (*gen.CreatePostResponse, error) {
-	slog.Info("POST: CreatePost")
 	user, err := utils.ExtractMetadataUser(ctx)
 	if err != nil {
 		return nil, errors.Wrap(err, "Extract Metadata User failed")
@@ -97,7 +96,6 @@ func (p *postGRPCServer) CreatePost(ctx context.Context, request *gen.CreatePost
 	return res, nil
 }
 func (p *postGRPCServer) GetPost(ctx context.Context, request *gen.GetPostRequest) (*gen.GetPostResponse, error) {
-	slog.Info("GET: GetPost")
 	id, err := uuid.Parse(request.Id)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to parse id")
@@ -113,7 +111,6 @@ func (p *postGRPCServer) GetPost(ctx context.Context, request *gen.GetPostReques
 }
 
 func (p *postGRPCServer) NewFeed(ctx context.Context, request *gen.NewFeedRequest) (*gen.NewFeedResponse, error) {
-	slog.Info("GET: NewFeed")
 	user, err := utils.ExtractMetadataUser(ctx)
 	if err != nil {
 		return nil, err
@@ -122,12 +119,10 @@ func (p *postGRPCServer) NewFeed(ctx context.Context, request *gen.NewFeedReques
 	if err != nil {
 		return nil, errors.Wrap(err, "failed get user id service auth")
 	}
-	slog.Info("U IDS::", userIds)
 	groupIds, err := p.groupDomainService.GetGroupIdsByUserId(ctx, user.ID)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed get user id service group")
 	}
-	slog.Info("G IDS::", groupIds)
 	posts, err := p.uc.GetPostsByFeed(ctx, userIds, groupIds, request.Limit, request.Offset)
 	if err != nil {
 		return nil, errors.Wrap(err, "uc.GetPostsByFeed failed")
@@ -139,7 +134,6 @@ func (p *postGRPCServer) NewFeed(ctx context.Context, request *gen.NewFeedReques
 }
 
 func (p *postGRPCServer) NewFeedGroups(ctx context.Context, request *gen.NewFeedGroupsRequest) (*gen.NewFeedGroupsResponse, error) {
-	slog.Info("GET: NewFeedGroups")
 	user, err := utils.ExtractMetadataUser(ctx)
 	if err != nil {
 		return nil, err
@@ -148,7 +142,6 @@ func (p *postGRPCServer) NewFeedGroups(ctx context.Context, request *gen.NewFeed
 	if err != nil {
 		return nil, errors.Wrap(err, "failed get user id service group")
 	}
-	slog.Info("G IDS::", groupIds)
 	posts, err := p.uc.GetPostsByFeedGroup(ctx, groupIds, request.Limit, request.Offset)
 	if err != nil {
 		return nil, errors.Wrap(err, "uc.GetPostsByFeed failed")
@@ -160,7 +153,6 @@ func (p *postGRPCServer) NewFeedGroups(ctx context.Context, request *gen.NewFeed
 }
 
 func (p *postGRPCServer) GetPostsByUserId(ctx context.Context, request *gen.GetPostsByUserIdRequest) (*gen.GetPostsByUserIdResponse, error) {
-	slog.Info("GET: GetPostsByUserId")
 	userId, err := uuid.Parse(request.UserId)
 	if err != nil {
 		return nil, errors.Wrap(err, "uuid.Parse failed")
@@ -176,7 +168,6 @@ func (p *postGRPCServer) GetPostsByUserId(ctx context.Context, request *gen.GetP
 }
 
 func (p *postGRPCServer) GetPostsByGroupId(ctx context.Context, request *gen.GetPostsByGroupIdRequest) (*gen.GetPostsByGroupIdResponse, error) {
-	slog.Info("GET: GetPostsByGroupId")
 	groupId, err := uuid.Parse(request.GroupId)
 	if err != nil {
 		return nil, errors.Wrap(err, "uuid.Parse failed")
@@ -192,7 +183,6 @@ func (p *postGRPCServer) GetPostsByGroupId(ctx context.Context, request *gen.Get
 }
 
 func (p *postGRPCServer) DeletePost(ctx context.Context, request *gen.DeletePostRequest) (*gen.DeletePostResponse, error) {
-	slog.Info("DELETE: DeletePost")
 	id, err := uuid.Parse(request.Id)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to parse id")
@@ -207,7 +197,6 @@ func (p *postGRPCServer) DeletePost(ctx context.Context, request *gen.DeletePost
 	}, nil
 }
 func (p *postGRPCServer) UpdatePost(ctx context.Context, request *gen.UpdatePostRequest) (*gen.UpdatePostResponse, error) {
-	slog.Info("PUT: UpdatePost")
 	id, err := uuid.Parse(request.Post.Id)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to parse")
@@ -240,7 +229,6 @@ func (p *postGRPCServer) UpdatePost(ctx context.Context, request *gen.UpdatePost
 // private function
 func manyPostResponse(posts []*domain.Post, p *postGRPCServer, ctx context.Context) []*gen.GetPostResponse {
 	results := make([]*gen.GetPostResponse, len(posts))
-	slog.Info("RS::", results)
 	var wg sync.WaitGroup
 	mutex := sync.Mutex{}
 	for i, post := range posts {

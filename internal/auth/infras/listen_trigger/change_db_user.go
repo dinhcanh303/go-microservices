@@ -54,7 +54,7 @@ func (tg *changeDBUser) ChangeDBUser(ctx context.Context) {
 func waitForNotification(ctx context.Context, l *pq.Listener, changeDBUserPub pkgPublisher.EventPublisher) {
 	select {
 	case <-l.Notify:
-		slog.Info("received notification, new work available")
+		// slog.Info("received notification, new work available")
 		var emptyMessage []byte
 		err := changeDBUserPub.Publish(ctx, emptyMessage, "text/plain")
 		if err != nil {
@@ -65,6 +65,6 @@ func waitForNotification(ctx context.Context, l *pq.Listener, changeDBUserPub pk
 		// Check if there's more work available, just in case it takes
 		// a while for the Listener to notice connection loss and
 		// reconnect.
-		slog.Info("received no work for 90 seconds, checking for new work")
+		// slog.Info("received no work for 90 seconds, checking for new work")
 	}
 }

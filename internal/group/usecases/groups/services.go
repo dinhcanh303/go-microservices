@@ -40,7 +40,6 @@ func NewService(
 
 // GetGroups implements UseCase.
 func (s *service) GetGroups(ctx context.Context) ([]*domain.Group, error) {
-	slog.Info("Service.GetGroups")
 	var groups []*domain.Group
 	keyCache := constant.CacheGroups
 	err := utils.HandleHitCache(groups, s.redis, keyCache)
@@ -97,7 +96,6 @@ func (s *service) GetGroupIdsByUserId(ctx context.Context, userId uuid.UUID) ([]
 
 // Create implements UseCase.
 func (s *service) CreateGroup(ctx context.Context, group *domain.Group) (*domain.Group, error) {
-	slog.Info("Create Group Service")
 	user, err := utils.ExtractMetadataUser(ctx)
 	if err != nil {
 		return nil, err

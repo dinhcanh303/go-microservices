@@ -151,13 +151,10 @@ func (s *service) GetCommentsByPostID(ctx context.Context, postId, userId uuid.U
 			slog.Error("set cached comments failed", err)
 		}
 	}
-
 	commentMap := make(map[uuid.UUID]*sharedkernel.CommentHasChildren)
 	var commentsHasChildren []*sharedkernel.CommentHasChildren
-	slog.Info("COMMENT::", comments)
 	for _, comment := range comments {
 		likeInfo, err := s.likeDomainSvc.GetLikesInfoByCommentID(ctx, comment.ID, userId)
-		slog.Info("LIKE INFO::", likeInfo)
 		if err != nil {
 			likeInfo = nil
 		}
@@ -243,6 +240,5 @@ func (s *service) CountCommentByPostID(ctx context.Context, postId uuid.UUID) (i
 			slog.Error("set cache count comment by post failed", err)
 		}
 	}
-
 	return count, nil
 }

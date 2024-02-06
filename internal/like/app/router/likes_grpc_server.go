@@ -13,7 +13,6 @@ import (
 	"github.com/google/wire"
 	"github.com/pkg/errors"
 	"golang.org/x/exp/slices"
-	"golang.org/x/exp/slog"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
 	"google.golang.org/protobuf/types/known/timestamppb"
@@ -43,7 +42,6 @@ func NewGRPCLikeServer(
 	return &svc
 }
 func (l *likeGRPCServer) GetLikesInfoByPostID(ctx context.Context, request *gen.GetLikesInfoByPostIDRequest) (*gen.GetLikesInfoByPostIDResponse, error) {
-	slog.Info("GET: GetLikesInfoByPostID")
 	postId, err := uuid.Parse(request.PostId)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to parse")
@@ -52,9 +50,7 @@ func (l *likeGRPCServer) GetLikesInfoByPostID(ctx context.Context, request *gen.
 	if err != nil {
 		return nil, err
 	}
-	slog.Info("userID::", user.ID)
 	likeInfo, err := l.uc.GetLikesInfoByPostID(ctx, postId, user.ID)
-	slog.Info("likeINFO::", likeInfo)
 	if err != nil {
 		return nil, errors.Wrap(err, "uc.GetLikesInfoByPostID failed")
 	}
@@ -69,7 +65,6 @@ func (l *likeGRPCServer) GetLikesInfoByPostID(ctx context.Context, request *gen.
 }
 
 func (l *likeGRPCServer) GetLikesInfoByCommentID(ctx context.Context, request *gen.GetLikesInfoByCommentIDRequest) (*gen.GetLikesInfoByCommentIDResponse, error) {
-	slog.Info("GET: GetLikesInfoByCommentID")
 	commentId, err := uuid.Parse(request.CommentId)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to parse")
@@ -120,7 +115,6 @@ func (l *likeGRPCServer) GetLikesInfoByCommentID(ctx context.Context, request *g
 
 // CreateLike implements gen.LikeServiceServer.
 func (l *likeGRPCServer) CreateLike(ctx context.Context, request *gen.CreateLikeRequest) (*gen.CreateLikeResponse, error) {
-	slog.Info("POST: CreateLike")
 	typeLike := []string{constant.LikeCommentType, constant.LikePostType}
 	emoji := request.Like.Emoji
 	user, err := utils.ExtractMetadataUser(ctx)
@@ -193,7 +187,6 @@ func (l *likeGRPCServer) CreateLike(ctx context.Context, request *gen.CreateLike
 
 // DeleteLike implements gen.LikeServiceServer.
 func (l *likeGRPCServer) DeleteLike(ctx context.Context, request *gen.DeleteLikeRequest) (*gen.DeleteLikeResponse, error) {
-	slog.Info("POST: UpdateLike")
 	id, err := uuid.Parse(request.Id)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to parse")
@@ -210,7 +203,6 @@ func (l *likeGRPCServer) DeleteLike(ctx context.Context, request *gen.DeleteLike
 
 // UpdateLike implements gen.LikeServiceServer.
 func (l *likeGRPCServer) UpdateLike(ctx context.Context, request *gen.UpdateLikeRequest) (*gen.UpdateLikeResponse, error) {
-	slog.Info("POST: UpdateLike")
 	id, err := uuid.Parse(request.Like.Id)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to parse")

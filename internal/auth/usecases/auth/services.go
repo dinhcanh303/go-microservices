@@ -164,7 +164,6 @@ func (s *service) Logout(ctx context.Context, key *domain.Key) error {
 
 // SignIn implements UseCase.
 func (s *service) SignIn(ctx context.Context, email string, password string) (*domain.UserAuth, error) {
-	slog.Info("Service Auth:: SignIn")
 	isEmailCompany := checkEmailCompany(email)
 	if isEmailCompany {
 		auth, _, err := s.ldapClient.Authenticate(email, password)
@@ -217,7 +216,6 @@ func (s *service) SignIn(ctx context.Context, email string, password string) (*d
 
 // SignUp implements UseCase.
 func (s *service) SignUp(ctx context.Context, email, password, fistName, lastName string) (*domain.UserAuth, error) {
-	slog.Info("Service Auth:: SignUp")
 	isEmailCompany := checkEmailCompany(email)
 	if isEmailCompany {
 		return nil, status.Error(codes.AlreadyExists, fmt.Sprintf("Email has suffix is %s does't created. Please use the login function for this type of email!", constant.SuffixEmailCompany))
@@ -240,20 +238,6 @@ func (s *service) SignUp(ctx context.Context, email, password, fistName, lastNam
 	if err != nil {
 		slog.Error("Invalidate cache list users failed")
 	}
-	// if err == nil {
-	// 	// Publish event created group
-	// 	eventBytes, err := json.Marshal(event.UserCreated{
-	// 		ID:     newUser.ID,
-	// 		Name:   newUser.FullName,
-	// 		Avatar: "",
-	// 		Email:  newUser.Email,
-	// 		Type:   "user",
-	// 	})
-	// 	if err != nil {
-	// 		slog.Error("json marshal error", err)
-	// 	}
-	// 	s.userCreatedEventPub.Publish(ctx, eventBytes, "text/plain")
-	// }
 	return createTokenPairAndResponse(ctx, s, newUser, true)
 }
 

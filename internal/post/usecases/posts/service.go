@@ -68,7 +68,6 @@ func (uc *usecase) GetPostsByFeed(ctx context.Context, userIds []uuid.UUID, grou
 	keyCache := constant.CachePostsFeed + key + constant.CacheLimit +
 		utils.String(limit) + constant.CacheOffset + utils.String(offset)
 	err := utils.HandleHitCache(posts, uc.redis, keyCache)
-	slog.Info("POST::", posts)
 	if err != nil {
 		posts, err = uc.postRepo.GetByFeed(ctx, userIds, groupIds, limit, offset)
 		if err != nil {
@@ -79,7 +78,6 @@ func (uc *usecase) GetPostsByFeed(ctx context.Context, userIds []uuid.UUID, grou
 			return nil, errors.Wrap(err, "failed set value in cache")
 		}
 	}
-	slog.Info("POST 2::", posts)
 	return posts, nil
 }
 
@@ -125,7 +123,6 @@ func (uc *usecase) GetPostsByUserId(ctx context.Context, userId uuid.UUID, limit
 
 // CreatePost implements UseCase.
 func (uc *usecase) CreatePost(ctx context.Context, post *domain.Post) (*domain.Post, error) {
-	slog.Info("Create Post")
 	post, err := uc.postRepo.Create(ctx, post)
 	if err != nil {
 		return nil, errors.Wrap(err, "postRepo.Create")

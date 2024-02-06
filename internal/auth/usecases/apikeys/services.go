@@ -20,6 +20,5 @@ func NewService(repo ApiKeyRepo) UseCase {
 
 // CreateApiKey implements UseCase.
 func (s *service) CreateApiKey(context.Context, *domain.ApiKey) (*domain.ApiKey, error) {
-
 	panic("unimplemented")
 }

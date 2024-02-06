@@ -262,7 +262,6 @@ func (c *commentGRPCServer) GetCommentsByPostID(ctx context.Context, request *ge
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to get comments by post ID")
 	}
-	slog.Info("COMMENTS", comments)
 	for _, comment := range comments {
 		user, err := c.authDomainSvc.GetProfile(ctx, comment.UserID)
 		if err != nil {
@@ -279,7 +278,6 @@ func (c *commentGRPCServer) GetCommentsByPostID(ctx context.Context, request *ge
 				}
 			}
 		}
-		slog.Info("Comment TagIDs", comment.TagIDs)
 		tagIds, tagNames := handleTags(ctx, comment.TagIDs, c.authDomainSvc)
 		res.Comments = append(res.Comments, &gen.CommentHasChildren{
 			Id:              comment.ID.String(),
@@ -408,7 +406,6 @@ func (c *commentGRPCServer) UpdateComment(ctx context.Context, request *gen.Upda
 	return res, nil
 }
 func handleTags(ctx context.Context, tagIds []uuid.UUID, authDomainSvc domain.AuthDomainService) ([]string, []string) {
-	slog.Info("Tag IDS", tagIds)
 	strTagIds := utils.ConvertArUUIDToArString(tagIds)
 	tagNames := make([]string, 0)
 	for _, tagId := range tagIds {

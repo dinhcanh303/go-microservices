@@ -155,7 +155,6 @@ func (a *authGRPCServer) GetUsers(ctx context.Context, request *gen.GetUsersRequ
 
 func (a *authGRPCServer) UpdateUser(ctx context.Context, request *gen.UpdateUserRequest) (*gen.UpdateUserResponse, error) {
 	slog.Info("GET:: UpdateUser")
-	slog.Info("REQUEST::", request)
 	userIdReq, err := uuid.Parse(request.User.Id)
 	if err != nil {
 		return nil, err
@@ -216,21 +215,17 @@ func (a *authGRPCServer) UpdateUserSettings(ctx context.Context, request *gen.Up
 	}
 	var settings domain.Settings
 	_ = json.Unmarshal(user.Settings, &settings)
-	slog.Info("REQUEST::", request)
-	slog.Info("SETTING::", settings)
 	// if request.Theme != nil {
 	// 	settings.Social.System.Theme = request.Theme
 	// }
 	// if request.StatusPost != nil {
 	// 	settings.Social.Post.StatusDefault = request.StatusPost
 	// }
-	settingJson, err := json.Marshal(settings)
-	slog.Info("SETTING JSON::", settingJson)
+	settingJson, _ := json.Marshal(settings)
 	model := &domain.User{
 		ID:       payloadUser.ID,
 		Settings: settingJson,
 	}
-	slog.Info("MODEL::", model)
 	userUpdated, err := a.uc.UpdateUser(ctx, model)
 	if err != nil {
 		return nil, err
@@ -383,7 +378,6 @@ func (a *authGRPCServer) GetProfile(ctx context.Context, request *gen.GetProfile
 	// avatarUrl, thumbnailUrl := getAvatarAndThumbnailAvatar(a, ctx, userId)
 	settingsAny := &anypb.Any{}
 	if user.Settings != nil {
-		slog.Info("JSONB", user.Settings)
 		settingsAny.Value = user.Settings
 		settingsAny.TypeUrl = "json.RawMessage"
 	}
@@ -412,7 +406,6 @@ func (a *authGRPCServer) GetProfile(ctx context.Context, request *gen.GetProfile
 func (a *authGRPCServer) Verify(ctx context.Context, request *gen.VerifyRequest) (*gen.VerifyResponse, error) {
 	slog.Info("GET:: Verify")
 	md, ok := metadata.FromIncomingContext(ctx)
-	slog.Info("Payload::", md)
 	if !ok {
 		return nil, errors.New("no headers found in the incoming context.")
 	}
@@ -420,7 +413,6 @@ func (a *authGRPCServer) Verify(ctx context.Context, request *gen.VerifyRequest)
 	if clientId == "" {
 		return nil, errors.New("Invalid Request")
 	}
-	slog.Info("clientId::", clientId)
 	userId, err := uuid.Parse(clientId)
 	if err != nil {
 		return nil, err
@@ -439,7 +431,6 @@ func (a *authGRPCServer) Verify(ctx context.Context, request *gen.VerifyRequest)
 		return &gen.VerifyResponse{}, nil
 	}
 	authorization := utils.GetKeyMetadata(md, constant.Authorization)
-	slog.Info("authorization::", authorization)
 	if authorization == "" {
 		return nil, errors.New("Unauthorized")
 	}
@@ -447,7 +438,6 @@ func (a *authGRPCServer) Verify(ctx context.Context, request *gen.VerifyRequest)
 	if err != nil {
 		return nil, errors.New("Unauthorized")
 	}
-	slog.Info("Payload::", payload)
 	grpc.SendHeader(ctx, addHeader(payload, keyStore, ""))
 	return &gen.VerifyResponse{}, nil
 }
@@ -483,7 +473,6 @@ func (a *authGRPCServer) Logout(ctx context.Context, request *gen.LogoutRequest)
 	if err != nil {
 		return nil, err
 	}
-	slog.Info("KeyStore::", keyStore)
 	err = a.ucKey.DeleteKeyByID(ctx, keyStore.ID)
 	if err != nil {
 		return nil, errors.Wrap(err, "Logout failed :")
@@ -515,8 +504,6 @@ func (a *authGRPCServer) HandleRefreshToken(ctx context.Context, request *gen.Ha
 		return nil, errors.New("User not registered")
 	}
 
-	slog.Info("User::", user)
-	slog.Info("KeyStore::", keyStore.RefreshTokensUsed)
 	res, err := a.uc.HandleRefreshToken(ctx, user.Email, refreshToken)
 	if err != nil {
 		return nil, err

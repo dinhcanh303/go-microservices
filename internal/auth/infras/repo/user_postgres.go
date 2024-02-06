@@ -3,7 +3,6 @@ package repo
 import (
 	"context"
 	"database/sql"
-	"log/slog"
 
 	"github.com/dinhcanh303/go-microservices/internal/auth/domain"
 	"github.com/dinhcanh303/go-microservices/internal/auth/infras/postgresql"
@@ -135,7 +134,6 @@ func (rp *userRepo) UpdateUser(ctx context.Context, user *domain.User) (*domain.
 		return nil, errors.Wrap(err, "userRepo.UpdateUser db failed")
 	}
 	qtx := querier.WithTx(tx)
-	slog.Info("INFO", user.ID, user.AvatarUrl, user.ProfileUrl)
 	result, err := qtx.UpdateUser(ctx, postgresql.UpdateUserParams{
 		ID: user.ID,
 		AvatarUrl: sql.NullString{
