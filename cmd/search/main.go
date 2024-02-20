@@ -13,7 +13,7 @@ import (
 	"github.com/dinhcanh303/go-microservices/pkg/logger"
 	"github.com/dinhcanh303/go-microservices/pkg/meili"
 	"github.com/dinhcanh303/go-microservices/pkg/rabbitmq"
-	consumer "github.com/dinhcanh303/go-microservices/pkg/rabbitmq/comsumer"
+	consumer "github.com/dinhcanh303/go-microservices/pkg/rabbitmq/consumer"
 	"github.com/sirupsen/logrus"
 	"go.uber.org/automaxprocs/maxprocs"
 	"golang.org/x/exp/slog"

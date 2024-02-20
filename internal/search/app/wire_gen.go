@@ -14,7 +14,7 @@ import (
 	"github.com/dinhcanh303/go-microservices/internal/search/usecases/searches"
 	"github.com/dinhcanh303/go-microservices/pkg/meili"
 	"github.com/dinhcanh303/go-microservices/pkg/rabbitmq"
-	"github.com/dinhcanh303/go-microservices/pkg/rabbitmq/comsumer"
+	"github.com/dinhcanh303/go-microservices/pkg/rabbitmq/consumer"
 	"github.com/rabbitmq/amqp091-go"
 	"google.golang.org/grpc"
 )

@@ -5,7 +5,7 @@ import (
 
 	"github.com/dinhcanh303/go-microservices/cmd/search/config"
 	"github.com/dinhcanh303/go-microservices/internal/search/eventhandlers"
-	consumer "github.com/dinhcanh303/go-microservices/pkg/rabbitmq/comsumer"
+	consumer "github.com/dinhcanh303/go-microservices/pkg/rabbitmq/consumer"
 	"github.com/dinhcanh303/go-microservices/proto/gen"
 	"github.com/rabbitmq/amqp091-go"
 	"golang.org/x/exp/slog"

@@ -7,7 +7,7 @@ import (
 	"os"
 	"testing"
 
-	consumer "github.com/dinhcanh303/go-microservices/pkg/rabbitmq/comsumer"
+	consumer "github.com/dinhcanh303/go-microservices/pkg/rabbitmq/consumer"
 	"github.com/dinhcanh303/go-microservices/pkg/rabbitmq/publisher"
 	"github.com/dinhcanh303/go-microservices/pkg/utils"
 	"github.com/rabbitmq/amqp091-go"
