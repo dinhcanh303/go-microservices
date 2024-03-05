@@ -3,6 +3,7 @@ version: "3"
 services:
   postgres-master:
     build: ./docker/pg-master
+    image: postgres-master
     container_name: mcs-postgres-master
     restart: unless-stopped
     environment:
@@ -24,6 +25,7 @@ services:
       - mcs-network
   postgres-slave:
     build: ./docker/pg-slave
+    image: postgres-slave
     container_name: mcs-postgres-slave
     restart: unless-stopped
     environment:
@@ -95,7 +97,7 @@ services:
   #     - mcs-network
   meilisearch:
     image: getmeili/meilisearch:latest
-    container_name: mcs_meilisearch
+    container_name: mcs-meilisearch
     restart: unless-stopped
     environment:
       - MEILI_MASTER_KEY=${MEILI_MASTER_KEY:-ms}

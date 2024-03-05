@@ -5,7 +5,8 @@ services:
     build:
       context: .
       dockerfile: ./docker/Dockerfile-proxy
-    image: mcs-proxy
+    image: sv-proxy
+    container_name: mcs-proxy
     restart: unless-stopped
     env_file:
       - .env
@@ -43,7 +44,8 @@ services:
     build:
       context: .
       dockerfile: ./docker/Dockerfile-group
-    image: mcs-group
+    image: sv-group
+    container_name: mcs-group
     restart: unless-stopped
     environment:
       APP_NAME: 'group-service in docker'
@@ -62,7 +64,8 @@ services:
     build:
       context: .
       dockerfile: ./docker/Dockerfile-post
-    image: mcs-post
+    image: sv-post
+    container_name: mcs-post
     restart: unless-stopped
     environment:
       APP_NAME: 'post-service in docker'
@@ -84,7 +87,8 @@ services:
     build:
       context: .
       dockerfile: ./docker/Dockerfile-comment
-    image: mcs-comment
+    image: sv-comment
+    container_name: mcs-comment
     restart: unless-stopped
     environment:
       APP_NAME: 'comment-service in docker'
@@ -104,7 +108,8 @@ services:
     build:
       context: .
       dockerfile: ./docker/Dockerfile-like
-    image: mcs-like
+    image: sv-like
+    container_name: mcs-like
     restart: unless-stopped
     environment:
       APP_NAME: 'like-service in docker'
@@ -121,7 +126,8 @@ services:
     build:
       context: .
       dockerfile: ./docker/Dockerfile-upload
-    image: mcs-upload
+    image: sv-upload
+    container_name: mcs-upload
     restart: unless-stopped
     env_file:
       - .env
@@ -141,7 +147,8 @@ services:
     build:
       context: .
       dockerfile: ./docker/Dockerfile-auth
-    image: mcs-auth
+    image: sv-auth
+    container_name: mcs-auth
     restart: unless-stopped
     env_file:
       - .env
@@ -162,7 +169,8 @@ services:
     build:
       context: .
       dockerfile: ./docker/Dockerfile-search
-    image: mcs-search
+    image: sv-search
+    container_name: mcs-search
     restart: unless-stopped
     env_file:
       - .env
