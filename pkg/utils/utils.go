@@ -125,3 +125,20 @@ func String(n int32) string {
 func FormatInt(n int32) string {
 	return strconv.FormatInt(int64(n), 10)
 }
+
+func UniqueSlice[T comparable](inputSlice []T) []T {
+	uniqueSlice := make([]T, 0, len(inputSlice))
+	seen := make(map[T]bool, len(inputSlice))
+	for _, ele := range inputSlice {
+		if !seen[ele] {
+			uniqueSlice = append(uniqueSlice, ele)
+			seen[ele] = true
+		}
+	}
+	return uniqueSlice
+}
+func RemoveSlice[T comparable](inputSlice *[]T, removeItems ...T) []T {
+	results := make([]T, 0, len(*inputSlice))
+	// var end bool
+	return results
+}

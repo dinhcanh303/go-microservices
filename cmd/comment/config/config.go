@@ -16,6 +16,7 @@ type (
 		configs.HTTP `yaml:"http"`
 		configs.Log  `yaml:"logger"`
 		PG           `yaml:"postgres"`
+		RabbitMQ     `yaml:"rabbitmq"`
 		LikeClient   `yaml:"like_client"`
 		UploadClient `yaml:"upload_client"`
 		AuthClient   `yaml:"auth_client"`
@@ -25,6 +26,9 @@ type (
 		PoolMax  int    `env-required:"true" yaml:"pool_max" env:"PG_POOL_MAX"`
 		DbURL    string `env-required:"true" yaml:"db_url" env:"PG_URL"`
 		DbRepURL string `env-required:"true" yaml:"db_rep_url" env:"PG_REP_URL"`
+	}
+	RabbitMQ struct {
+		URL string `env-required:"true" yaml:"url" env:"RABBITMQ_URL"`
 	}
 	LikeClient struct {
 		URL string `env-required:"true" yaml:"like_url" env:"LIKE_CLIENT_URL"`

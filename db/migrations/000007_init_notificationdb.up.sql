@@ -7,20 +7,15 @@ CREATE TABLE
     noti.notifications (
         id SERIAL PRIMARY KEY,
         actor_id uuid [] DEFAULT NULL,
-        receiver_id uuid [] DEFAULT NULL,
-        read_id uuid [] DEFAULT NULL,
-        object_type VARCHAR(255) NOT NULL,
-        object_id uuid NOT NULL,
-        entity_type_id integer DEFAULT NULL,
-        entity VARCHAR(255) DEFAULT NULL,
+        sender_id uuid [] DEFAULT NULL,
+        data json DEFAULT NULL,
+        type VARCHAR(255) DEFAULT NULL,
+        object_type VARCHAR(255) DEFAULT NULL,
+        object_id uuid DEFAULT NULL,
+        read_at timestamp DEFAULT NULL,
         created_at timestamp with time zone NOT NULL DEFAULT current_timestamp,
         updated_at timestamp with time zone NOT NULL DEFAULT (now())
     );
--- CREATE TABLE 
---     noti.entity_types (
---         id SERIAL PRIMARY KEY,
---         name VARCHAR(255) NOT NULL,
---         description TEXT DEFAULT NULL
---     );
-CREATE INDEX ix_receiver_id ON noti.notifications (receiver_id);
+
+CREATE INDEX ix_sender_id ON noti.notifications (sender_id);
 COMMIT;

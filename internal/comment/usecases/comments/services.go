@@ -2,8 +2,10 @@ package comments
 
 import (
 	"context"
+	"encoding/json"
 
 	"github.com/dinhcanh303/go-microservices/internal/comment/domain"
+	"github.com/dinhcanh303/go-microservices/internal/pkg/event"
 	sharedkernel "github.com/dinhcanh303/go-microservices/internal/pkg/shared_kernel"
 	domainUpload "github.com/dinhcanh303/go-microservices/internal/upload/domain"
 	"github.com/dinhcanh303/go-microservices/pkg/constant"
@@ -16,10 +18,11 @@ import (
 )
 
 type service struct {
-	commentRepo     CommentRepo
-	redis           redis.RedisEngine
-	likeDomainSvc   domain.LikeDomainService
-	uploadDomainSvc domain.UploadDomainService
+	commentRepo        CommentRepo
+	redis              redis.RedisEngine
+	likeDomainSvc      domain.LikeDomainService
+	uploadDomainSvc    domain.UploadDomainService
+	notiEventPublisher NotiEventPublisher
 }
 
 var _ UseCase = (*service)(nil)
@@ -29,12 +32,14 @@ var UseCaseSet = wire.NewSet(NewService)
 func NewService(commentRepo CommentRepo,
 	redis redis.RedisEngine,
 	likeDomainSvc domain.LikeDomainService,
-	uploadDomainSvc domain.UploadDomainService) UseCase {
+	uploadDomainSvc domain.UploadDomainService,
+	notiEventPublisher NotiEventPublisher) UseCase {
 	return &service{
-		commentRepo:     commentRepo,
-		redis:           redis,
-		likeDomainSvc:   likeDomainSvc,
-		uploadDomainSvc: uploadDomainSvc,
+		commentRepo:        commentRepo,
+		redis:              redis,
+		likeDomainSvc:      likeDomainSvc,
+		uploadDomainSvc:    uploadDomainSvc,
+		notiEventPublisher: notiEventPublisher,
 	}
 }
 
@@ -95,7 +100,28 @@ func (s *service) CreateComment(ctx context.Context, comment *domain.Comment) (*
 	if err != nil {
 		slog.Error("Invalidate cache comments failed", err)
 	}
+	eventPublish(ctx, s, comment)
 	return comment, nil
+}
+func eventPublish(ctx context.Context, uc *service, comment *domain.Comment) {
+	var senderIds []string
+	var typeNoti string
+	data := map[string]interface{}{
+		"content": comment.Content,
+	}
+	event := event.CommentNoti{
+		ActorID:    comment.UserID.String(),
+		SenderIDs:  senderIds,
+		Data:       data,
+		Type:       typeNoti,
+		ObjectType: "comment",
+		ObjectID:   comment.ID.String(),
+	}
+	eventBytes, err := json.Marshal(event)
+	if err != nil {
+		slog.Error("Marshal event failed")
+	}
+	uc.notiEventPublisher.Publish(ctx, eventBytes, "text/plain")
 }
 
 // DeleteComment implements UseCase.

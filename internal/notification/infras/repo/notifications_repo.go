@@ -5,6 +5,7 @@ import (
 
 	"github.com/dinhcanh303/go-microservices/internal/notification/domain"
 	"github.com/dinhcanh303/go-microservices/internal/notification/usecases/notifications"
+	sharedkernel "github.com/dinhcanh303/go-microservices/internal/pkg/shared_kernel"
 	"github.com/google/uuid"
 	"github.com/google/wire"
 	"github.com/pkg/errors"
@@ -16,12 +17,17 @@ type notificationRepo struct {
 }
 
 // GetNotiByUserId implements notifications.NotificationRepo.
-func (rp *notificationRepo) GetNotiByUserId(ctx context.Context, userId uuid.UUID, options string) ([]*domain.Notification, error) {
-	var results []*domain.Notification
-	db := rp.db.Table("noti.notifications").Where(
-		"receiver_id @> ? AND NOT ? <@read_id",
-		[]string{userId.String()}, []string{userId.String()})
-	if err := db.Select("*").Offset(0).Limit(20).Find(&results).Error; err != nil {
+func (rp *notificationRepo) GetNotificationsByUserId(ctx context.Context, userId uuid.UUID, options sharedkernel.GetNotiOptions) ([]domain.Notification, error) {
+	var results []domain.Notification
+	db := rp.db.Table(domain.Notification{}.TableName()).Where(
+		"sender_id =?", userId)
+	if options.Read {
+		db = db.Where("read_at IS NULL")
+	}
+	if options.Unread {
+		db = db.Where("read_at IS NOT NULL")
+	}
+	if err := db.Select("*").Offset(options.Offset).Limit(options.Limit).Find(&results).Error; err != nil {
 		return nil, errors.Wrap(err, "repo.GetNotiByUserId failed")
 	}
 	return results, nil
@@ -29,9 +35,16 @@ func (rp *notificationRepo) GetNotiByUserId(ctx context.Context, userId uuid.UUI
 }
 
 // UpsertNoti implements notifications.NotificationRepo.
-func (rp *notificationRepo) UpsertNoti(ctx context.Context, noti *domain.Notification) error {
-	if err := rp.db.Table("noti.notifications").Create(noti).Error; err != nil {
+func (rp *notificationRepo) CreateNotification(ctx context.Context, noti *domain.Notification) error {
+	if err := rp.db.Table(noti.TableName()).Create(noti).Error; err != nil {
 		return errors.Wrap(err, "create noti failed")
+	}
+	return nil
+}
+
+func (rp *notificationRepo) UpdateNotification(ctx context.Context, id int, noti *domain.Notification) error {
+	if err := rp.db.Table(noti.TableName()).Where("id = ?", id).Updates(noti).Error; err != nil {
+		return errors.Wrap(err, "update noti failed")
 	}
 	return nil
 }

@@ -48,15 +48,44 @@ func (e GroupDeleted) Identity() string {
 	return "GroupDeleted"
 }
 
-type Notification struct {
+type PostNoti struct {
 	sharedkernel.DomainEvent
-	Key      string               `bson:"key,omitempty,unique" json:"key"`
-	Subject  sharedkernel.Subject `bson:"subject" json:"subject"`
-	DiObject sharedkernel.Subject `bson:"di_object" json:"di_object"`
-	InObject sharedkernel.Subject `bson:"in_object" json:"in_object"`
-	PrObject sharedkernel.Subject `bson:"pr_object" json:"pr_object"`
+	ActorID    string                 `json:"actor_id"`
+	SenderIDs  []string               `json:"sender_ids"`
+	Type       string                 `json:"type"`
+	Data       map[string]interface{} `json:"data"`
+	ObjectType string                 `json:"object_type"`
+	ObjectID   string                 `json:"object_id"`
 }
 
-func (e *Notification) Identity() string {
-	return "Notification"
+func (e *PostNoti) Identity() string {
+	return "PostNoti"
+}
+
+type CommentNoti struct {
+	sharedkernel.DomainEvent
+	ActorID    string                 `json:"actor_id"`
+	SenderIDs  []string               `json:"sender_ids"`
+	Type       string                 `json:"type"`
+	Data       map[string]interface{} `json:"data"`
+	ObjectType string                 `json:"object_type"`
+	ObjectID   string                 `json:"object_id"`
+}
+
+func (e *CommentNoti) Identity() string {
+	return "CommentNoti"
+}
+
+type LikeNoti struct {
+	sharedkernel.DomainEvent
+	ActorID    string                 `json:"actor_id"`
+	SenderIDs  []string               `json:"sender_ids"`
+	Type       string                 `json:"type"`
+	Data       map[string]interface{} `json:"data"`
+	ObjectType string                 `json:"object_type"`
+	ObjectID   string                 `json:"object_id"`
+}
+
+func (e *LikeNoti) Identity() string {
+	return "LikeNoti"
 }

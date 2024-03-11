@@ -1,6 +1,8 @@
 package searches
 
 import (
+	"log/slog"
+
 	"github.com/dinhcanh303/go-microservices/internal/search/domain"
 	"github.com/dinhcanh303/go-microservices/pkg/constant"
 	"github.com/dinhcanh303/go-microservices/pkg/meili"
@@ -30,6 +32,7 @@ func (s *service) Search(search string) ([]*domain.Search, error) {
 		search, []string{"name", "email", "phone"})
 	searchGroupRes, _ := meiliSearch(s.meili, constant.MeiliSearchDBGroupIndex,
 		search, []string{"name"})
+	slog.Info("DATA::", searchGroupRes)
 	results = append(searchUserRes, searchGroupRes...)
 	return results, nil
 }

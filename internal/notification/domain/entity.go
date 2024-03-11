@@ -7,14 +7,18 @@ import (
 )
 
 type Notification struct {
-	ID         int64       `json:"id"`
-	ActorID    []uuid.UUID `json:"actor_id"`
-	ReceiverID []uuid.UUID `json:"receiver_id"`
-	ObjectID   uuid.UUID   `json:"object_id"`
-	ObjectType string      `json:"object_type"`
-	EntityType string      `json:"entity_type"`
-	Entity     string      `json:"entity"`
-	ReadID     []uuid.UUID `json:"read_id"`
-	CreatedAt  time.Time   `json:"created_at"`
-	UpdatedAt  time.Time   `json:"updated_at"`
+	ID         int64                  `json:"id" gorm:"column:id"`
+	ActorID    uuid.UUID              `json:"actor_id" gorm:"column:actor_id"`
+	SenderID   uuid.UUID              `json:"sender_id" gorm:"column:sender_id"`
+	Data       map[string]interface{} `json:"data" gorm:"serializer:json"`
+	Type       string                 `json:"type" gorm:"column:type"`
+	ObjectType string                 `json:"object_type" gorm:"column:object_type"`
+	ObjectID   uuid.UUID              `json:"object_id" gorm:"column:object_id"`
+	ReadAt     time.Time              `json:"read_at" gorm:"column:read_at"`
+	CreatedAt  time.Time              `json:"created_at" gorm:"column:created_at"`
+	UpdatedAt  time.Time              `json:"updated_at" gorm:"column:updated_at"`
+}
+
+func (Notification) TableName() string {
+	return "noti.notifications"
 }

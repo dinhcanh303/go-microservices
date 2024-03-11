@@ -13,6 +13,8 @@ import (
 	configs "github.com/dinhcanh303/go-microservices/pkg/config"
 	"github.com/dinhcanh303/go-microservices/pkg/logger"
 	"github.com/dinhcanh303/go-microservices/pkg/postgres"
+	"github.com/dinhcanh303/go-microservices/pkg/rabbitmq"
+	"github.com/dinhcanh303/go-microservices/pkg/rabbitmq/publisher"
 	"github.com/sirupsen/logrus"
 	"go.uber.org/automaxprocs/maxprocs"
 	"golang.org/x/exp/slog"
@@ -88,11 +90,16 @@ func main() {
 }
 
 func prepareApp(ctx context.Context, cancel context.CancelFunc, cfg *config.Config, cfgRedis *configs.Redis, server *grpc.Server) func() {
-	_, cleanup, err := app.InitApp(cfg, cfgRedis, postgres.DBConnString(cfg.PG.DbURL), postgres.DBConnReadString(cfg.PG.DbRepURL), server)
+	a, cleanup, err := app.InitApp(cfg, cfgRedis, postgres.DBConnString(cfg.PG.DbURL), postgres.DBConnReadString(cfg.PG.DbRepURL), rabbitmq.RabbitMQConnStr(cfg.RabbitMQ.URL), server)
 	if err != nil {
 		slog.Error("Failed init app", err)
 		cancel()
 		<-ctx.Done()
 	}
+	a.NotiPub.Configure(
+		publisher.ExChangeName("post-noti-exchange"),
+		publisher.BindingKey("post-noti-routing-key"),
+		publisher.MessageTypeName("post-noti"),
+	)
 	return cleanup
 }

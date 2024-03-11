@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/dinhcanh303/go-microservices/internal/post/domain"
+	"github.com/dinhcanh303/go-microservices/pkg/rabbitmq/publisher"
 	"github.com/google/uuid"
 )
 
@@ -26,5 +27,9 @@ type (
 		GetPostsByGroupId(ctx context.Context, groupId uuid.UUID, limit, offset int32) ([]*domain.Post, error)
 		GetPostsByFeed(ctx context.Context, userIds []uuid.UUID, groupIds []uuid.UUID, limit, offset int32) ([]*domain.Post, error)
 		GetPostsByFeedGroup(ctx context.Context, groupIds []uuid.UUID, limit, offset int32) ([]*domain.Post, error)
+	}
+	NotiEventPublisher interface {
+		Publish(ctx context.Context, body []byte, contentType string) error
+		Configure(...publisher.Option)
 	}
 )

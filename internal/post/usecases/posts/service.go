@@ -2,8 +2,10 @@ package posts
 
 import (
 	"context"
+	"encoding/json"
 	"log/slog"
 
+	"github.com/dinhcanh303/go-microservices/internal/pkg/event"
 	"github.com/dinhcanh303/go-microservices/internal/post/domain"
 	"github.com/dinhcanh303/go-microservices/pkg/constant"
 	"github.com/dinhcanh303/go-microservices/pkg/redis"
@@ -13,27 +15,33 @@ import (
 	"github.com/pkg/errors"
 )
 
-type usecase struct {
-	postRepo PostRepo
-	redis    redis.RedisEngine
+type service struct {
+	postRepo           PostRepo
+	redis              redis.RedisEngine
+	notiEventPublisher NotiEventPublisher
+	authDomainService  domain.AuthDomainService
 }
 
-var _ UseCase = (*usecase)(nil)
+var _ UseCase = (*service)(nil)
 
 var UseCaseSet = wire.NewSet(NewUseCase)
 
 func NewUseCase(
 	postRepo PostRepo,
 	redis redis.RedisEngine,
+	notiEventPublisher NotiEventPublisher,
+	authDomainService domain.AuthDomainService,
 ) UseCase {
-	return &usecase{
-		postRepo: postRepo,
-		redis:    redis,
+	return &service{
+		postRepo:           postRepo,
+		redis:              redis,
+		notiEventPublisher: notiEventPublisher,
+		authDomainService:  authDomainService,
 	}
 }
 
 // GetPostsByFeedGroup implements UseCase.
-func (uc *usecase) GetPostsByFeedGroup(ctx context.Context, groupIds []uuid.UUID, limit int32, offset int32) ([]*domain.Post, error) {
+func (uc *service) GetPostsByFeedGroup(ctx context.Context, groupIds []uuid.UUID, limit int32, offset int32) ([]*domain.Post, error) {
 	var posts []*domain.Post
 	key := ""
 	for _, groupId := range groupIds {
@@ -56,7 +64,7 @@ func (uc *usecase) GetPostsByFeedGroup(ctx context.Context, groupIds []uuid.UUID
 }
 
 // GetPostsByFeed implements UseCase.
-func (uc *usecase) GetPostsByFeed(ctx context.Context, userIds []uuid.UUID, groupIds []uuid.UUID, limit int32, offset int32) ([]*domain.Post, error) {
+func (uc *service) GetPostsByFeed(ctx context.Context, userIds []uuid.UUID, groupIds []uuid.UUID, limit int32, offset int32) ([]*domain.Post, error) {
 	var posts []*domain.Post
 	key := ""
 	for _, userId := range userIds {
@@ -82,7 +90,7 @@ func (uc *usecase) GetPostsByFeed(ctx context.Context, userIds []uuid.UUID, grou
 }
 
 // GetPostsByGroupId implements UseCase.
-func (uc *usecase) GetPostsByGroupId(ctx context.Context, groupId uuid.UUID, limit int32, offset int32) ([]*domain.Post, error) {
+func (uc *service) GetPostsByGroupId(ctx context.Context, groupId uuid.UUID, limit int32, offset int32) ([]*domain.Post, error) {
 	groupIds := make([]uuid.UUID, 0)
 	groupIds = append(groupIds, groupId)
 	var posts []*domain.Post
@@ -103,7 +111,7 @@ func (uc *usecase) GetPostsByGroupId(ctx context.Context, groupId uuid.UUID, lim
 }
 
 // GetPostsByUserId implements UseCase.
-func (uc *usecase) GetPostsByUserId(ctx context.Context, userId uuid.UUID, limit int32, offset int32) ([]*domain.Post, error) {
+func (uc *service) GetPostsByUserId(ctx context.Context, userId uuid.UUID, limit int32, offset int32) ([]*domain.Post, error) {
 	var posts []*domain.Post
 	keyCache := constant.CachePostsUserId + userId.String() + constant.CacheLimit +
 		utils.String(limit) + constant.CacheOffset + utils.String(offset)
@@ -122,7 +130,7 @@ func (uc *usecase) GetPostsByUserId(ctx context.Context, userId uuid.UUID, limit
 }
 
 // CreatePost implements UseCase.
-func (uc *usecase) CreatePost(ctx context.Context, post *domain.Post) (*domain.Post, error) {
+func (uc *service) CreatePost(ctx context.Context, post *domain.Post) (*domain.Post, error) {
 	post, err := uc.postRepo.Create(ctx, post)
 	if err != nil {
 		return nil, errors.Wrap(err, "postRepo.Create")
@@ -146,11 +154,43 @@ func (uc *usecase) CreatePost(ctx context.Context, post *domain.Post) (*domain.P
 			slog.Error("InvalidatePrefix cache key failed")
 		}
 	}
+	eventPublish(ctx, uc, post)
 	return post, nil
+}
+func eventPublish(ctx context.Context, uc *service, post *domain.Post) {
+	var senderIds []string
+	var typeNoti string
+	data := map[string]interface{}{
+		"content": post.Content,
+	}
+	if post.GroupID.UUID.String() != constant.NullUUID {
+		typeNoti = "group"
+	} else {
+		userIds, err := uc.authDomainService.GetUserIdsByUserId(ctx, post.UserID)
+		if err != nil {
+			errors.Wrap(err, "GetUserIdsByUserId failed")
+		}
+		for _, userId := range userIds {
+			senderIds = append(senderIds, userId.String())
+		}
+	}
+	event := event.PostNoti{
+		ActorID:    post.UserID.String(),
+		SenderIDs:  utils.UniqueSlice(senderIds),
+		Data:       data,
+		Type:       typeNoti,
+		ObjectType: "post",
+		ObjectID:   post.ID.String(),
+	}
+	eventBytes, err := json.Marshal(event)
+	if err != nil {
+		slog.Error("Marshal event failed")
+	}
+	uc.notiEventPublisher.Publish(ctx, eventBytes, "text/plain")
 }
 
 // DeletePost implements UseCase.
-func (uc *usecase) DeletePost(ctx context.Context, id uuid.UUID) (bool, error) {
+func (uc *service) DeletePost(ctx context.Context, id uuid.UUID) (bool, error) {
 	isDelete, err := uc.postRepo.Delete(ctx, id)
 	if err != nil {
 		return false, errors.Wrap(err, "postRepo.Delete")
@@ -163,7 +203,7 @@ func (uc *usecase) DeletePost(ctx context.Context, id uuid.UUID) (bool, error) {
 }
 
 // GetPost implements UseCase.
-func (uc *usecase) GetPost(ctx context.Context, id uuid.UUID) (*domain.Post, error) {
+func (uc *service) GetPost(ctx context.Context, id uuid.UUID) (*domain.Post, error) {
 	post, err := uc.postRepo.Get(ctx, id)
 	if err != nil {
 		return nil, errors.Wrap(err, "postRepo.Get")
@@ -172,7 +212,7 @@ func (uc *usecase) GetPost(ctx context.Context, id uuid.UUID) (*domain.Post, err
 }
 
 // UpdatePost implements UseCase.
-func (uc *usecase) UpdatePost(ctx context.Context, post *domain.Post) (*domain.Post, error) {
+func (uc *service) UpdatePost(ctx context.Context, post *domain.Post) (*domain.Post, error) {
 	post, err := uc.postRepo.Update(ctx, post)
 	if err != nil {
 		return nil, errors.Wrap(err, "postRepo.UpdatePost")

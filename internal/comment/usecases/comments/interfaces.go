@@ -5,6 +5,7 @@ import (
 
 	"github.com/dinhcanh303/go-microservices/internal/comment/domain"
 	sharedkernel "github.com/dinhcanh303/go-microservices/internal/pkg/shared_kernel"
+	"github.com/dinhcanh303/go-microservices/pkg/rabbitmq/publisher"
 	"github.com/google/uuid"
 )
 
@@ -30,5 +31,9 @@ type (
 		GetCommentsByCommentID(ctx context.Context, commentId, userId uuid.UUID, limit, offset int32) ([]*domain.CommentHasMetadata, error)
 		CountCommentByPostID(ctx context.Context, postId uuid.UUID) (int64, error)
 		CountCommentByCommentID(ctx context.Context, commentId uuid.UUID) (int64, error)
+	}
+	NotiEventPublisher interface {
+		Publish(ctx context.Context, body []byte, contentType string) error
+		Configure(...publisher.Option)
 	}
 )

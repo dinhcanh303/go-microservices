@@ -11,7 +11,17 @@ var _ NotificationEventHandler = (*notificationEventHandler)(nil)
 type notificationEventHandler struct {
 }
 
-// Handle implements NotificationEventHandler.
-func (*notificationEventHandler) Handle(context.Context, event.Notification) error {
+// HandlerCommentNoti implements NotificationEventHandler.
+func (*notificationEventHandler) HandlerCommentNoti(context.Context, *event.CommentNoti) error {
+	panic("unimplemented")
+}
+
+// HandlerLikeNoti implements NotificationEventHandler.
+func (*notificationEventHandler) HandlerLikeNoti(context.Context, *event.LikeNoti) error {
+	panic("unimplemented")
+}
+
+// HandlerPostNoti implements NotificationEventHandler.
+func (*notificationEventHandler) HandlerPostNoti(context.Context, *event.PostNoti) error {
 	panic("unimplemented")
 }

@@ -3,10 +3,11 @@ module github.com/dinhcanh303/go-microservices
 go 1.20
 
 require (
+	github.com/confluentinc/confluent-kafka-go/v2 v2.3.0
 	github.com/go-ldap/ldap/v3 v3.4.6
 	github.com/golang-migrate/migrate/v4 v4.16.2
-	github.com/golang/glog v1.1.2
-	github.com/google/uuid v1.3.1
+	github.com/golang/glog v1.2.0
+	github.com/google/uuid v1.6.0
 	github.com/google/wire v0.5.0
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.18.0
 	github.com/ilyakaznacheev/cleanenv v1.5.0
@@ -28,9 +29,9 @@ require (
 	go.uber.org/zap v1.19.1
 	golang.org/x/exp v0.0.0-20230905200255-921286631fa9
 	google.golang.org/appengine v1.6.8
-	google.golang.org/genproto/googleapis/api v0.0.0-20231002182017-d307bd883b97
+	google.golang.org/genproto/googleapis/api v0.0.0-20240304212257-790db918fca8
 	google.golang.org/grpc/cmd/protoc-gen-go-grpc v1.3.0
-	google.golang.org/protobuf v1.31.0
+	google.golang.org/protobuf v1.33.0
 )
 
 require (
@@ -62,13 +63,12 @@ require (
 	github.com/xdg-go/stringprep v1.0.4 // indirect
 	github.com/youmark/pkcs8 v0.0.0-20181117223130-1be2e3e5546d // indirect
 	go.uber.org/multierr v1.7.0 // indirect
-	golang.org/x/sync v0.4.0 // indirect
+	golang.org/x/sync v0.6.0 // indirect
 )
 
 require (
 	github.com/rogpeppe/go-internal v1.11.0 // indirect
-	google.golang.org/genproto v0.0.0-20231002182017-d307bd883b97 // indirect
-	google.golang.org/grpc v1.59.0
+	google.golang.org/grpc v1.62.1
 )
 
 require (
@@ -80,7 +80,7 @@ require (
 	github.com/elastic/go-elasticsearch/v8 v8.11.1
 	github.com/go-redis/redis/v8 v8.11.5
 	github.com/golang-jwt/jwt v3.2.2+incompatible
-	github.com/golang/protobuf v1.5.3 // indirect
+	github.com/golang/protobuf v1.5.4 // indirect
 	github.com/grpc-ecosystem/go-grpc-middleware v1.4.0
 	github.com/grpc-ecosystem/go-grpc-prometheus v1.2.0
 	github.com/hashicorp/errwrap v1.1.0 // indirect
@@ -106,14 +106,14 @@ require (
 	github.com/valyala/bytebufferpool v1.0.0 // indirect
 	github.com/valyala/fasttemplate v1.2.2 // indirect
 	go.uber.org/atomic v1.9.0 // indirect
-	golang.org/x/crypto v0.15.0
-	golang.org/x/net v0.18.0 // indirect
-	golang.org/x/oauth2 v0.14.0
-	golang.org/x/sys v0.15.0 // indirect
+	golang.org/x/crypto v0.19.0
+	golang.org/x/net v0.21.0 // indirect
+	golang.org/x/oauth2 v0.16.0
+	golang.org/x/sys v0.17.0 // indirect
 	golang.org/x/text v0.14.0 // indirect
 	golang.org/x/time v0.4.0
 	golang.org/x/tools v0.14.0 // indirect
-	google.golang.org/genproto/googleapis/rpc v0.0.0-20231002182017-d307bd883b97
+	google.golang.org/genproto/googleapis/rpc v0.0.0-20240228224816-df926f6c8641
 	gopkg.in/ini.v1 v1.67.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 	gorm.io/gorm v1.25.6

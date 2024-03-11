@@ -8,7 +8,6 @@ import (
 	"github.com/dinhcanh303/go-microservices/pkg/constant"
 	"github.com/dinhcanh303/go-microservices/pkg/meili"
 	"github.com/google/wire"
-	"github.com/meilisearch/meilisearch-go"
 )
 
 type eventhandlers struct {
@@ -25,18 +24,18 @@ func NewEventHandlers(meili meili.MeiliSearch,
 	authDomainSvc domain.AuthDomainService,
 	groupDomainSvc domain.GroupDomainService,
 ) EventHandlers {
-	config := meilisearch.MinWordSizeForTypos{
-		OneTypo:  4,
-		TwoTypos: 10,
-	}
-	_, err := meili.UpdateTypoTolerance(constant.MeiliSearchDBGroupIndex, config)
-	if err != nil {
-		slog.Error("failed config typo tolerance", err)
-	}
-	_, err = meili.UpdateTypoTolerance(constant.MeiliSearchDBUserIndex, config)
-	if err != nil {
-		slog.Error("failed config typo tolerance", err)
-	}
+	// config := meilisearch.MinWordSizeForTypos{
+	// 	OneTypo:  4,
+	// 	TwoTypos: 10,
+	// }
+	// _, err := meili.UpdateTypoTolerance(constant.MeiliSearchDBGroupIndex, config)
+	// if err != nil {
+	// 	slog.Error("failed config typo tolerance", err)
+	// }
+	// _, err = meili.UpdateTypoTolerance(constant.MeiliSearchDBUserIndex, config)
+	// if err != nil {
+	// 	slog.Error("failed config typo tolerance", err)
+	// }
 	return &eventhandlers{
 		meili:          meili,
 		authDomainSvc:  authDomainSvc,
@@ -54,6 +53,7 @@ func (e *eventhandlers) HandleChangeDBGroup(ctx context.Context) error {
 	if err != nil {
 		return err
 	}
+	slog.Info("GROUPS::", results)
 	_, err = e.meili.AddDocuments(constant.MeiliSearchDBGroupIndex, results.Groups)
 	if err != nil {
 		slog.Error("insert-into-meili-search", err)

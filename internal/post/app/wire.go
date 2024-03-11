@@ -6,13 +6,17 @@ package app
 import (
 	"github.com/dinhcanh303/go-microservices/cmd/post/config"
 	"github.com/dinhcanh303/go-microservices/internal/post/app/router"
+	"github.com/dinhcanh303/go-microservices/internal/post/infras"
 	infrasGRPC "github.com/dinhcanh303/go-microservices/internal/post/infras/grpc"
 	"github.com/dinhcanh303/go-microservices/internal/post/infras/repo"
 	postsUC "github.com/dinhcanh303/go-microservices/internal/post/usecases/posts"
 	configs "github.com/dinhcanh303/go-microservices/pkg/config"
 	"github.com/dinhcanh303/go-microservices/pkg/postgres"
+	"github.com/dinhcanh303/go-microservices/pkg/rabbitmq"
+	"github.com/dinhcanh303/go-microservices/pkg/rabbitmq/publisher"
 	"github.com/dinhcanh303/go-microservices/pkg/redis"
 	"github.com/google/wire"
+	"github.com/rabbitmq/amqp091-go"
 	"google.golang.org/grpc"
 )
 
@@ -21,12 +25,15 @@ func InitApp(
 	cfg2 *configs.Redis,
 	dbConnStr postgres.DBConnString,
 	dbReadConnStr postgres.DBConnReadString,
+	rabbitMQConnStr rabbitmq.RabbitMQConnStr,
 	grpcServer *grpc.Server,
 ) (*App, func(), error) {
 	panic(wire.Build(
 		New,
 		dbEngineFunc,
 		redisEngineFunc,
+		rabbitMQFunc,
+		publisher.EventPublisherSet,
 		router.PostGRPCServerSet,
 		repo.RepositoryPostSet,
 		postsUC.UseCaseSet,
@@ -35,6 +42,7 @@ func InitApp(
 		infrasGRPC.UploadGRPCClientSet,
 		infrasGRPC.GroupGRPCClientSet,
 		infrasGRPC.AuthGRPCClientSet,
+		infras.NotiEventPublisherSet,
 	))
 }
 func dbEngineFunc(url postgres.DBConnString, urlRead postgres.DBConnReadString) (postgres.DBEngine, func(), error) {
@@ -50,4 +58,11 @@ func redisEngineFunc(config *configs.Redis) (redis.RedisEngine, func(), error) {
 		return nil, nil, err
 	}
 	return redis, func() { redis.Close() }, nil
+}
+func rabbitMQFunc(url rabbitmq.RabbitMQConnStr) (*amqp091.Connection, func(), error) {
+	conn, err := rabbitmq.NewRabbitMQConn(url)
+	if err != nil {
+		return nil, nil, err
+	}
+	return conn, func() { conn.Close() }, nil
 }

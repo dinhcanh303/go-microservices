@@ -16,6 +16,7 @@ type (
 		configs.HTTP  `yaml:"http"`
 		configs.Log   `yaml:"logger"`
 		PG            `yaml:"postgres"`
+		RabbitMQ      `yaml:"rabbitmq"`
 		CommentClient `yaml:"comment_client"`
 		LikeClient    `yaml:"like_client"`
 		UploadClient  `yaml:"upload_client"`
@@ -28,7 +29,9 @@ type (
 		DbURL    string `env-required:"true" yaml:"db_url" env:"PG_URL"`
 		DbRepURL string `env-required:"true" yaml:"db_rep_url" env:"PG_REP_URL"`
 	}
-
+	RabbitMQ struct {
+		URL string `env-required:"true" yaml:"url" env:"RABBITMQ_URL"`
+	}
 	CommentClient struct {
 		URL string `env-required:"true" yaml:"comment_url" env:"COMMENT_CLIENT_URL"`
 	}

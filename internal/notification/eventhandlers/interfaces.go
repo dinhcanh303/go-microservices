@@ -7,5 +7,7 @@ import (
 )
 
 type NotificationEventHandler interface {
-	Handle(context.Context, event.Notification) error
+	HandlerCommentNoti(context.Context, *event.CommentNoti) error
+	HandlerLikeNoti(context.Context, *event.LikeNoti) error
+	HandlerPostNoti(context.Context, *event.PostNoti) error
 }

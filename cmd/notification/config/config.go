@@ -15,12 +15,16 @@ type (
 		configs.App  `yaml:"app"`
 		configs.HTTP `yaml:"http"`
 		configs.Log  `yaml:"logger"`
-		Mongo        `yaml:"mongodb"`
+		PG           `yaml:"postgres"`
 	}
 
-	Mongo struct {
-		MongoURL string `env-required:"true" yaml:"mongo_url" env:"MONGO_URL"`
-		DBName   string `env-required:"true" yaml:"db_name" env:"MONGO_DB_NAME"`
+	PG struct {
+		PoolMax  int    `env-required:"true" yaml:"pool_max" env:"PG_POOL_MAX"`
+		DbURL    string `env-required:"true" yaml:"db_url" env:"PG_URL"`
+		DbRepURL string `env-required:"true" yaml:"db_rep_url" env:"PG_REP_URL"`
+	}
+	RabbitMQ struct {
+		URL string `env-required:"true" yaml:"url" env:"RABBITMQ_URL"`
 	}
 )
 
