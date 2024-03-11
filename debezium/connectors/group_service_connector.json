@@ -1,0 +1,19 @@
+{
+    "name": "group_service_connector",
+    "config": {
+      "connector.class": "io.debezium.connector.postgresql.PostgresConnector",
+      "tasks.max": "1",
+      "database.hostname": "postgres",
+      "database.port": "5445",
+      "database.user": "postgres",
+      "database.password": "123456",
+      "database.dbname": "postgres",
+      "database.server.name": "postgres",
+      "table.include.list" : "group.groups",
+      "key.converter": "org.apache.kafka.connect.storage.StringConverter",
+      "key.converter.schemas.enable": "false",
+      "value.converter": "org.apache.kafka.connect.json.JsonConverter",
+      "value.converter.schemas.enable": "false",
+      "include.schema.changes": "false"
+    }
+  }
