@@ -1,4 +1,4 @@
-package event
+package events
 
 import (
 	sharedkernel "github.com/dinhcanh303/go-microservices/internal/pkg/shared_kernel"
@@ -48,7 +48,7 @@ func (e GroupDeleted) Identity() string {
 	return "GroupDeleted"
 }
 
-type PostNoti struct {
+type Noti struct {
 	sharedkernel.DomainEvent
 	ActorID    string                 `json:"actor_id"`
 	SenderIDs  []string               `json:"sender_ids"`
@@ -58,34 +58,6 @@ type PostNoti struct {
 	ObjectID   string                 `json:"object_id"`
 }
 
-func (e *PostNoti) Identity() string {
-	return "PostNoti"
-}
-
-type CommentNoti struct {
-	sharedkernel.DomainEvent
-	ActorID    string                 `json:"actor_id"`
-	SenderIDs  []string               `json:"sender_ids"`
-	Type       string                 `json:"type"`
-	Data       map[string]interface{} `json:"data"`
-	ObjectType string                 `json:"object_type"`
-	ObjectID   string                 `json:"object_id"`
-}
-
-func (e *CommentNoti) Identity() string {
-	return "CommentNoti"
-}
-
-type LikeNoti struct {
-	sharedkernel.DomainEvent
-	ActorID    string                 `json:"actor_id"`
-	SenderIDs  []string               `json:"sender_ids"`
-	Type       string                 `json:"type"`
-	Data       map[string]interface{} `json:"data"`
-	ObjectType string                 `json:"object_type"`
-	ObjectID   string                 `json:"object_id"`
-}
-
-func (e *LikeNoti) Identity() string {
-	return "LikeNoti"
+func (e *Noti) Identity() string {
+	return "Noti"
 }
