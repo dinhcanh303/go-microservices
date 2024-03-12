@@ -5,7 +5,6 @@ import (
 
 	"github.com/dinhcanh303/go-microservices/cmd/search/config"
 	"github.com/dinhcanh303/go-microservices/internal/search/eventhandlers"
-	"github.com/dinhcanh303/go-microservices/pkg/kafka"
 	consumer "github.com/dinhcanh303/go-microservices/pkg/rabbitmq/consumer"
 	"github.com/dinhcanh303/go-microservices/proto/gen"
 	"github.com/rabbitmq/amqp091-go"
@@ -13,10 +12,10 @@ import (
 )
 
 type App struct {
-	Cfg              *config.Config
-	AmqpConn         *amqp091.Connection
-	Consumer         consumer.EventConsumer
-	KafkaConsumer    kafka.KafkaConsumer
+	Cfg      *config.Config
+	AmqpConn *amqp091.Connection
+	Consumer consumer.EventConsumer
+	// KafkaConsumer    kafka.KafkaConsumer
 	handlers         eventhandlers.EventHandlers
 	SearchGRPCServer gen.SearchServiceServer
 }
@@ -27,7 +26,7 @@ func New(
 	consumer consumer.EventConsumer,
 	handlers eventhandlers.EventHandlers,
 	searchGRPCServer gen.SearchServiceServer,
-	kafkaConsumer kafka.KafkaConsumer,
+	// kafkaConsumer kafka.KafkaConsumer,
 ) *App {
 	return &App{
 		Cfg:              cfg,
@@ -35,17 +34,17 @@ func New(
 		Consumer:         consumer,
 		handlers:         handlers,
 		SearchGRPCServer: searchGRPCServer,
-		KafkaConsumer:    kafkaConsumer,
+		// KafkaConsumer:    kafkaConsumer,
 	}
 }
 
 func (a *App) WorkerKafka() {
-	kafka.CheckConnector(kafka.ConnectorConfig{
-		ServerUrl:       "http://localhost:8083",
-		DataType:        "application/json",
-		ConnectorConfig: "../debezium/connectors/group_service_connector.json",
-		Connector:       "group_service_connector",
-	})
+	// kafka.CheckConnector(kafka.ConnectorConfig{
+	// 	ServerUrl:       "http://localhost:8083",
+	// 	DataType:        "application/json",
+	// 	ConnectorConfig: "./debezium/connectors/group_service_connector.json",
+	// 	Connector:       "group_service_connector",
+	// })
 	// err := a.KafkaConsumer.Subscribe("postgres.group.groups", nil)
 	// if err != nil {
 	// 	slog.Error("Subscribe failed: ", err)

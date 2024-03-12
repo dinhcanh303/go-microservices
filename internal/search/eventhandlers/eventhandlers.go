@@ -24,18 +24,6 @@ func NewEventHandlers(meili meili.MeiliSearch,
 	authDomainSvc domain.AuthDomainService,
 	groupDomainSvc domain.GroupDomainService,
 ) EventHandlers {
-	// config := meilisearch.MinWordSizeForTypos{
-	// 	OneTypo:  4,
-	// 	TwoTypos: 10,
-	// }
-	// _, err := meili.UpdateTypoTolerance(constant.MeiliSearchDBGroupIndex, config)
-	// if err != nil {
-	// 	slog.Error("failed config typo tolerance", err)
-	// }
-	// _, err = meili.UpdateTypoTolerance(constant.MeiliSearchDBUserIndex, config)
-	// if err != nil {
-	// 	slog.Error("failed config typo tolerance", err)
-	// }
 	return &eventhandlers{
 		meili:          meili,
 		authDomainSvc:  authDomainSvc,

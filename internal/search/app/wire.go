@@ -9,7 +9,6 @@ import (
 	"github.com/dinhcanh303/go-microservices/internal/search/eventhandlers"
 	infrasGRPC "github.com/dinhcanh303/go-microservices/internal/search/infras/grpc"
 	"github.com/dinhcanh303/go-microservices/internal/search/usecases/searches"
-	"github.com/dinhcanh303/go-microservices/pkg/kafka"
 	"github.com/dinhcanh303/go-microservices/pkg/meili"
 	"github.com/dinhcanh303/go-microservices/pkg/rabbitmq"
 	consumer "github.com/dinhcanh303/go-microservices/pkg/rabbitmq/consumer"
@@ -33,7 +32,7 @@ func InitApp(
 		router.SearchGRPCServerSet,
 		consumer.EventConsumerSet,
 		searches.UseCaseSet,
-		kafka.KafkaConsumerSet,
+		// kafka.KafkaConsumerSet,
 		eventhandlers.EventHandlersSet,
 	))
 }

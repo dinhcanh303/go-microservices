@@ -12,7 +12,6 @@ import (
 	"github.com/dinhcanh303/go-microservices/internal/search/eventhandlers"
 	grpc2 "github.com/dinhcanh303/go-microservices/internal/search/infras/grpc"
 	"github.com/dinhcanh303/go-microservices/internal/search/usecases/searches"
-	"github.com/dinhcanh303/go-microservices/pkg/kafka"
 	"github.com/dinhcanh303/go-microservices/pkg/meili"
 	"github.com/dinhcanh303/go-microservices/pkg/rabbitmq"
 	"github.com/dinhcanh303/go-microservices/pkg/rabbitmq/consumer"
@@ -46,12 +45,7 @@ func InitApp(cfg *config.Config, rabbitMQConnStr rabbitmq.RabbitMQConnStr, meili
 	eventHandlers := eventhandlers.NewEventHandlers(meiliSearch, authDomainService, groupDomainService)
 	useCase := searches.NewService(meiliSearch)
 	searchServiceServer := router.NewSearchGRPCServer(grpcServer, useCase)
-	kafkaConsumer, err := kafka.NewKafkaConsumer()
-	if err != nil {
-		cleanup()
-		return nil, nil, err
-	}
-	app := New(cfg, connection, eventConsumer, eventHandlers, searchServiceServer, kafkaConsumer)
+	app := New(cfg, connection, eventConsumer, eventHandlers, searchServiceServer)
 	return app, func() {
 		cleanup()
 	}, nil

@@ -13,6 +13,7 @@ import (
 	"github.com/dinhcanh303/go-microservices/pkg/logger"
 	"github.com/dinhcanh303/go-microservices/pkg/meili"
 	"github.com/dinhcanh303/go-microservices/pkg/rabbitmq"
+	"github.com/dinhcanh303/go-microservices/pkg/rabbitmq/consumer"
 	"github.com/sirupsen/logrus"
 	"go.uber.org/automaxprocs/maxprocs"
 	"golang.org/x/exp/slog"
@@ -104,24 +105,20 @@ func prepareApp(ctx context.Context, cancel context.CancelFunc, cfg *config.Conf
 		cancel()
 		<-ctx.Done()
 	}
+	a.Consumer.Configure(
+		consumer.ExChangeName("search-exchange"),
+		consumer.QueueName("search-queue"),
+		consumer.BindingKey("search-routing-key"),
+		consumer.ConsumerTag("search-consumer"),
+	)
 
-	// a.Consumer.Configure(
-	// 	consumer.ExChangeName("search-exchange"),
-	// 	consumer.QueueName("search-queue"),
-	// 	consumer.BindingKey("search-routing-key"),
-	// 	consumer.ConsumerTag("search-consumer"),
-	// )
-
-	// go func() {
-	// 	err1 := a.Consumer.StartConsumer(a.Worker)
-	// 	if err1 != nil {
-	// 		slog.Error("failed to start Consumer", err1)
-	// 		cancel()
-	// 		<-ctx.Done()
-	// 	}
-	// }()
 	go func() {
-		a.WorkerKafka()
+		err1 := a.Consumer.StartConsumer(a.Worker)
+		if err1 != nil {
+			slog.Error("failed to start Consumer", err1)
+			cancel()
+			<-ctx.Done()
+		}
 	}()
 
 	return cleanup
