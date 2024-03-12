@@ -33,6 +33,7 @@ func New(
 	commentDomainSvc domain.CommentDomainService,
 	likeDomainSvc domain.LikeDomainService,
 	uploadDomainSvc domain.UploadDomainService,
+	notiPub posts.NotiEventPublisher,
 ) *App {
 	return &App{
 		Cfg:              cfg,
@@ -44,5 +45,6 @@ func New(
 		LikeDomainSvc:    likeDomainSvc,
 		UploadDomainSvc:  uploadDomainSvc,
 		Publisher:        publisher,
+		NotiPub:          notiPub,
 	}
 }

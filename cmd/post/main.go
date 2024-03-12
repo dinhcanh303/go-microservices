@@ -97,8 +97,8 @@ func prepareApp(ctx context.Context, cancel context.CancelFunc, cfg *config.Conf
 		<-ctx.Done()
 	}
 	a.NotiPub.Configure(
-		publisher.ExChangeName("post-noti-exchange"),
-		publisher.BindingKey("post-noti-routing-key"),
+		publisher.ExChangeName("noti-exchange"),
+		publisher.BindingKey("noti-routing-key"),
 		publisher.MessageTypeName("post-noti"),
 	)
 	return cleanup

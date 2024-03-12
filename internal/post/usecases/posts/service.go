@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"log/slog"
 
-	"github.com/dinhcanh303/go-microservices/internal/pkg/event"
+	"github.com/dinhcanh303/go-microservices/internal/pkg/events"
 	"github.com/dinhcanh303/go-microservices/internal/post/domain"
 	"github.com/dinhcanh303/go-microservices/pkg/constant"
 	"github.com/dinhcanh303/go-microservices/pkg/redis"
@@ -174,7 +174,7 @@ func eventPublish(ctx context.Context, uc *service, post *domain.Post) {
 			senderIds = append(senderIds, userId.String())
 		}
 	}
-	event := event.PostNoti{
+	event := events.Noti{
 		ActorID:    post.UserID.String(),
 		SenderIDs:  utils.UniqueSlice(senderIds),
 		Data:       data,
