@@ -31,6 +31,7 @@ func newGateway(
 	uploadEndpoint := fmt.Sprintf("%s:%d", cfg.UploadHost, cfg.UploadPort)
 	authEndpoint := fmt.Sprintf("%s:%d", cfg.AuthHost, cfg.AuthPort)
 	searchEndpoint := fmt.Sprintf("%s:%d", cfg.SearchHost, cfg.SearchPort)
+	notiEndpoint := fmt.Sprintf("%s:%d", cfg.NotiHost, cfg.NotiPort)
 	mux := gatewayRuntime.NewServeMux(opts...)
 	dialOpts := []grpc.DialOption{grpc.WithTransportCredentials(insecure.NewCredentials())}
 
@@ -59,6 +60,10 @@ func newGateway(
 		return nil, err
 	}
 	err = gen.RegisterSearchServiceHandlerFromEndpoint(ctx, mux, searchEndpoint, dialOpts)
+	if err != nil {
+		return nil, err
+	}
+	err = gen.RegisterNotiServiceHandlerFromEndpoint(ctx, mux, notiEndpoint, dialOpts)
 	if err != nil {
 		return nil, err
 	}

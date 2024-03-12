@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 
 	"github.com/dinhcanh303/go-microservices/internal/comment/domain"
-	"github.com/dinhcanh303/go-microservices/internal/pkg/event"
+	"github.com/dinhcanh303/go-microservices/internal/pkg/events"
 	sharedkernel "github.com/dinhcanh303/go-microservices/internal/pkg/shared_kernel"
 	domainUpload "github.com/dinhcanh303/go-microservices/internal/upload/domain"
 	"github.com/dinhcanh303/go-microservices/pkg/constant"
@@ -109,7 +109,7 @@ func eventPublish(ctx context.Context, uc *service, comment *domain.Comment) {
 	data := map[string]interface{}{
 		"content": comment.Content,
 	}
-	event := event.CommentNoti{
+	event := events.Noti{
 		ActorID:    comment.UserID.String(),
 		SenderIDs:  senderIds,
 		Data:       data,

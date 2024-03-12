@@ -33,6 +33,8 @@ type (
 		AuthPort    int    `env-required:"true" yaml:"auth_port" env:"GRPC_AUTH_PORT"`
 		SearchHost  string `env-required:"true" yaml:"search_host" env:"GRPC_SEARCH_HOST"`
 		SearchPort  int    `env-required:"true" yaml:"search_port" env:"GRPC_SEARCH_PORT"`
+		NotiHost    string `env-required:"true" yaml:"noti_host" env:"GRPC_NOTI_HOST"`
+		NotiPort    int    `env-required:"true" yaml:"noti_port" env:"GRPC_NOTI_PORT"`
 	}
 )
 
