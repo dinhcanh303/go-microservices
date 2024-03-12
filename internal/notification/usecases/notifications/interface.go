@@ -9,12 +9,13 @@ import (
 )
 
 type NotificationRepo interface {
-	GetNotificationsByUserId(ctx context.Context, userId uuid.UUID, options sharedkernel.GetNotiOptions) ([]domain.Notification, error)
+	GetNotificationsByUserId(ctx context.Context, userId uuid.UUID, limit, offset int, options sharedkernel.GetNotiOptions) ([]domain.Notification, error)
 	CreateNotification(ctx context.Context, noti *domain.Notification) error
-	UpdateNotification(ctx context.Context, id int, noti *domain.Notification) error
+	UpdateNotification(ctx context.Context, noti *domain.Notification) error
 }
 
 type UseCase interface {
-	GetNotificationsByUserId(ctx context.Context, userId uuid.UUID, options sharedkernel.GetNotiOptions) error
+	GetNotificationsByUserId(ctx context.Context, userId uuid.UUID, limit, offset int, options sharedkernel.GetNotiOptions) ([]domain.Notification, error)
 	ReadNotification(ctx context.Context, noti *domain.Notification) error
+	CreateNotification(ctx context.Context, noti *domain.Notification) error
 }

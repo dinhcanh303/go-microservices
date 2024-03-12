@@ -6,9 +6,13 @@ http:
   host: '0.0.0.0'
   port: 5009
 
-mongodb:
-  db_url: mongodb://localhost:27017
-  db_name: ''
+rabbitmq:
+  url: amqp://guest:guest@127.0.0.1:5672/
+
+postgres:
+  pool_max: 2
+  db_url: postgres://postgres:123456@127.0.0.1:5432/postgres?sslmode=disable
+  db_rep_url: postgres://postgres:123456@127.0.0.1:5433/postgres?sslmode=disable
 
 logger:
   log_level: 'debug'
@@ -16,4 +20,4 @@ logger:
   log_disable_caller: true
   log_disable_stacktrace: true
   log_encoding: 'console'
-  rollbar_env: 'notification-service'
+  rollbar_env: 'post-service'

@@ -10,8 +10,11 @@ import (
 
 	"github.com/dinhcanh303/go-microservices/cmd/notification/config"
 	"github.com/dinhcanh303/go-microservices/internal/notification/app"
+	configs "github.com/dinhcanh303/go-microservices/pkg/config"
 	"github.com/dinhcanh303/go-microservices/pkg/logger"
-	"github.com/dinhcanh303/go-microservices/pkg/mongodb"
+	"github.com/dinhcanh303/go-microservices/pkg/postgres"
+	"github.com/dinhcanh303/go-microservices/pkg/rabbitmq"
+	"github.com/dinhcanh303/go-microservices/pkg/rabbitmq/consumer"
 	"github.com/sirupsen/logrus"
 	"go.uber.org/automaxprocs/maxprocs"
 	"golang.org/x/exp/slog"
@@ -25,6 +28,10 @@ func main() {
 	}
 	ctx, cancel := context.WithCancel(context.Background())
 	cfg, err := config.NewConfig()
+	if err != nil {
+		slog.Error("Failed get config", err)
+	}
+	cfgRedis, err := configs.NewConfigRedis()
 	if err != nil {
 		slog.Error("Failed get config", err)
 	}
@@ -45,7 +52,7 @@ func main() {
 		defer server.GracefulStop()
 		<-ctx.Done()
 	}()
-	cleanup := prepareApp(ctx, cancel, cfg, server)
+	cleanup := prepareApp(ctx, cancel, cfg, cfgRedis, server)
 
 	//gRPC Server
 	address := fmt.Sprintf("%s:%d", cfg.HTTP.Host, cfg.HTTP.Port)
@@ -81,12 +88,29 @@ func main() {
 	}
 }
 
-func prepareApp(ctx context.Context, cancel context.CancelFunc, cfg *config.Config, server *grpc.Server) func() {
-	_, cleanup, err := app.InitApp(cfg, mongodb.MongoDBConnString(cfg.Mongo.MongoURL), server)
+func prepareApp(ctx context.Context, cancel context.CancelFunc, cfg *config.Config, cfg2 *configs.Redis, server *grpc.Server) func() {
+	a, cleanup, err := app.InitApp(cfg, cfg2, postgres.DBConnString(cfg.PG.DbURL), postgres.DBConnReadString(cfg.PG.DbRepURL),
+		rabbitmq.RabbitMQConnStr(cfg.RabbitMQ.URL), server)
 	if err != nil {
-		slog.Error("Failed init app", err)
+		slog.Error("failed init app", err)
 		cancel()
 		<-ctx.Done()
 	}
+	a.Consumer.Configure(
+		consumer.ExChangeName("noti-exchange"),
+		consumer.QueueName("noti-queue"),
+		consumer.BindingKey("noti-routing-key"),
+		consumer.ConsumerTag("noti-consumer"),
+	)
+
+	go func() {
+		err1 := a.Consumer.StartConsumer(a.Worker)
+		if err1 != nil {
+			slog.Error("failed to start Consumer", err1)
+			cancel()
+			<-ctx.Done()
+		}
+	}()
+
 	return cleanup
 }

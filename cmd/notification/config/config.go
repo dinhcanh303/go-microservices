@@ -16,6 +16,7 @@ type (
 		configs.HTTP `yaml:"http"`
 		configs.Log  `yaml:"logger"`
 		PG           `yaml:"postgres"`
+		RabbitMQ     `yaml:"rabbitmq"`
 	}
 
 	PG struct {

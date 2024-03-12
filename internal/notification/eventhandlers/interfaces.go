@@ -3,11 +3,11 @@ package eventhandlers
 import (
 	"context"
 
-	"github.com/dinhcanh303/go-microservices/internal/pkg/event"
+	"github.com/dinhcanh303/go-microservices/internal/pkg/events"
 )
 
 type NotificationEventHandler interface {
-	HandlerCommentNoti(context.Context, *event.CommentNoti) error
-	HandlerLikeNoti(context.Context, *event.LikeNoti) error
-	HandlerPostNoti(context.Context, *event.PostNoti) error
+	HandlerCommentNoti(context.Context, *events.Noti) error
+	HandlerLikeNoti(context.Context, *events.Noti) error
+	HandlerPostNoti(context.Context, *events.Noti) error
 }
