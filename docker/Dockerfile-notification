@@ -10,16 +10,15 @@ COPY --from=modules /go/pkg /go/pkg
 COPY . /app
 WORKDIR /app
 # RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 \
-RUN go build -tags migrate -o /bin/app ./cmd/auth
-# RUN go build -o /bin/app ./cmd/auth
+RUN go build -tags migrate -o /bin/app ./cmd/notification
 
 # Step 3: Final
 FROM scratch
 
-EXPOSE 5007
+EXPOSE 5008
 
 # GOPATH for scratch images is /
-COPY --from=builder /app/cmd/auth/config.yml /
+COPY --from=builder /app/cmd/notification/config.yml /
 COPY --from=builder /app/db/migrations /db/migrations
 COPY --from=builder /bin/app /app
 CMD ["/app"]
