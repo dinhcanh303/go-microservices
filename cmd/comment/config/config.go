@@ -20,6 +20,7 @@ type (
 		LikeClient   `yaml:"like_client"`
 		UploadClient `yaml:"upload_client"`
 		AuthClient   `yaml:"auth_client"`
+		PostClient   `yaml:"post_client"`
 	}
 
 	PG struct {
@@ -38,6 +39,9 @@ type (
 	}
 	AuthClient struct {
 		URL string `env-required:"true" yaml:"auth_url" env:"AUTH_CLIENT_URL"`
+	}
+	PostClient struct {
+		URL string `env-required:"true" yaml:"post_url" env:"POST_CLIENT_URL"`
 	}
 )
 

@@ -40,6 +40,7 @@ func InitApp(
 		infrasGRPC.LikeGRPCClientSet,
 		infrasGRPC.UploadGRPCClientSet,
 		infrasGRPC.AuthGRPCClientSet,
+		infrasGRPC.PostGRPCClientSet,
 		infras.NotiEventPublisherSet,
 	))
 }

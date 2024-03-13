@@ -22,6 +22,7 @@ type service struct {
 	redis              redis.RedisEngine
 	likeDomainSvc      domain.LikeDomainService
 	uploadDomainSvc    domain.UploadDomainService
+	postDomainSvc      domain.PostDomainService
 	notiEventPublisher NotiEventPublisher
 }
 
@@ -33,12 +34,14 @@ func NewService(commentRepo CommentRepo,
 	redis redis.RedisEngine,
 	likeDomainSvc domain.LikeDomainService,
 	uploadDomainSvc domain.UploadDomainService,
+	postDomainSvc domain.PostDomainService,
 	notiEventPublisher NotiEventPublisher) UseCase {
 	return &service{
 		commentRepo:        commentRepo,
 		redis:              redis,
 		likeDomainSvc:      likeDomainSvc,
 		uploadDomainSvc:    uploadDomainSvc,
+		postDomainSvc:      postDomainSvc,
 		notiEventPublisher: notiEventPublisher,
 	}
 }
@@ -107,7 +110,18 @@ func eventPublish(ctx context.Context, uc *service, comment *domain.Comment) {
 	var senderIds []string
 	var typeNoti string
 	data := map[string]interface{}{
-		"content": comment.Content,
+		"content":         comment.Content,
+		"postId":          comment.PostID,
+		"parentCommentId": comment.ParentCommentID.UUID.String(),
+		"replyId":         comment.ReplyID.UUID.String(),
+	}
+	if comment.ParentCommentID.UUID.String() != constant.NullUUID {
+		typeNoti = "comment"
+		parentComment, _ := uc.GetComment(ctx, comment.ParentCommentID.UUID)
+		senderIds = append(senderIds, parentComment.UserID.String())
+	} else {
+		genPost, _ := uc.postDomainSvc.GetPostNormal(ctx, comment.PostID)
+		senderIds = append(senderIds, genPost.Post.UserId)
 	}
 	event := events.Noti{
 		ActorID:    comment.UserID.String(),

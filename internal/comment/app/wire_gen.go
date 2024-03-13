@@ -47,6 +47,12 @@ func InitApp(cfg *config.Config, cfg2 *configs.Redis, dbConnStr postgres.DBConnS
 		cleanup()
 		return nil, nil, err
 	}
+	postDomainService, err := grpc2.NewGRPCPostClient(cfg)
+	if err != nil {
+		cleanup2()
+		cleanup()
+		return nil, nil, err
+	}
 	connection, cleanup3, err := rabbitMQFunc(rabbitMQConnStr)
 	if err != nil {
 		cleanup2()
@@ -61,7 +67,7 @@ func InitApp(cfg *config.Config, cfg2 *configs.Redis, dbConnStr postgres.DBConnS
 		return nil, nil, err
 	}
 	notiEventPublisher := infras.NewNotiEventPublisher(eventPublisher)
-	useCase := comments.NewService(commentRepo, redisEngine, likeDomainService, uploadDomainService, notiEventPublisher)
+	useCase := comments.NewService(commentRepo, redisEngine, likeDomainService, uploadDomainService, postDomainService, notiEventPublisher)
 	authDomainService, err := grpc2.NewGRPCAuthClient(cfg)
 	if err != nil {
 		cleanup3()
@@ -70,7 +76,7 @@ func InitApp(cfg *config.Config, cfg2 *configs.Redis, dbConnStr postgres.DBConnS
 		return nil, nil, err
 	}
 	commentServiceServer := router.NewGRPCCommentServer(grpcServer, cfg, useCase, authDomainService)
-	app := New(cfg, dbEngine, useCase, connection, commentServiceServer, likeDomainService, uploadDomainService, notiEventPublisher, eventPublisher)
+	app := New(cfg, dbEngine, useCase, connection, commentServiceServer, likeDomainService, uploadDomainService, postDomainService, notiEventPublisher, eventPublisher)
 	return app, func() {
 		cleanup3()
 		cleanup2()

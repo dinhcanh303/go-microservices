@@ -18,6 +18,7 @@ type App struct {
 	CommentGRPCServer gen.CommentServiceServer
 	LikeDomainSvc     domain.LikeDomainService
 	UploadDomainSvc   domain.UploadDomainService
+	PostDomainSvc     domain.PostDomainService
 	NotiPub           comments.NotiEventPublisher
 	Publisher         publisher.EventPublisher
 }
@@ -30,6 +31,7 @@ func New(
 	commentGRPCServer gen.CommentServiceServer,
 	likeDomainSvc domain.LikeDomainService,
 	uploadDomainSvc domain.UploadDomainService,
+	postDomainSvc domain.PostDomainService,
 	notiPub comments.NotiEventPublisher,
 	publisher publisher.EventPublisher,
 ) *App {
@@ -40,6 +42,7 @@ func New(
 		CommentGRPCServer: commentGRPCServer,
 		LikeDomainSvc:     likeDomainSvc,
 		UploadDomainSvc:   uploadDomainSvc,
+		PostDomainSvc:     postDomainSvc,
 		AmqpConn:          amqpConn,
 		NotiPub:           notiPub,
 		Publisher:         publisher,

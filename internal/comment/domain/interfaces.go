@@ -19,4 +19,7 @@ type (
 	AuthDomainService interface {
 		GetProfile(ctx context.Context, id uuid.UUID) (*gen.GetProfileResponse, error)
 	}
+	PostDomainService interface {
+		GetPostNormal(ctx context.Context, id uuid.UUID) (*gen.GetPostNormalResponse, error)
+	}
 )
