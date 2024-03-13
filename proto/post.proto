@@ -33,6 +33,15 @@ service PostService {
             description: ""
         };
     }
+    rpc GetPostNormal(GetPostNormalRequest) returns (GetPostNormalResponse){
+        option (google.api.http) = {
+            get: "/api/v1/posts/{id}/normal"
+        };
+        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+            summary: "Get Post Normal"
+            description: ""
+        };
+    }
     rpc NewFeed(NewFeedRequest) returns (NewFeedResponse){
         option (google.api.http) = {
             get: "/api/v1/feed"
@@ -95,8 +104,23 @@ message CreatePostRequest {
 message CreatePostResponse {
     Post post = 1;
 }
+message GetPostNormalRequest {
+    string id = 1;
+}
+message GetPostNormalResponse {
+    Post post = 1;
+}
 message GetPostRequest {
     string id = 1;
+}
+message GetPostResponse {
+    Post post = 1;
+    authapi.User user = 2;
+    groupapi.Group group = 3;
+    repeated uploadapi.Attachment attachments = 4;
+    likeapi.LikeInfo likes = 5;
+    int64 count_comments = 6;
+    // repeated comment.CommentHasChildren comments = 5;
 }
 message NewFeedRequest {
     int32 limit = 3;
@@ -135,15 +159,7 @@ message DeletePostRequest {
 message DeletePostResponse {
     bool deleted = 1;
 }
-message GetPostResponse {
-    Post post = 1;
-    authapi.User user = 2;
-    groupapi.Group group = 3;
-    repeated uploadapi.Attachment attachments = 4;
-    likeapi.LikeInfo likes = 5;
-    int64 count_comments = 6;
-    // repeated comment.CommentHasChildren comments = 5;
-}
+
 message UpdatePostRequest {
     Post post = 1;
 }

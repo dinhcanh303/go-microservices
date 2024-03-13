@@ -109,6 +109,28 @@ func (p *postGRPCServer) GetPost(ctx context.Context, request *gen.GetPostReques
 	results := manyPostResponse(posts, p, ctx)
 	return results[0], nil
 }
+func (p *postGRPCServer) GetPostNormal(ctx context.Context, request *gen.GetPostNormalRequest) (*gen.GetPostNormalResponse, error) {
+	id, err := uuid.Parse(request.Id)
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to parse id")
+	}
+	post, err := p.uc.GetPost(ctx, id)
+	if err != nil {
+		return nil, errors.Wrap(err, "uc.GetPost failed")
+	}
+	return &gen.GetPostNormalResponse{
+		Post: &gen.Post{
+			Id:        post.ID.String(),
+			Content:   post.Content,
+			BgContent: post.BgContent,
+			Status:    post.Status,
+			UserId:    post.UserID.String(),
+			GroupId:   post.GroupID.UUID.String(),
+			CreatedAt: timestamppb.New(post.CreatedAt),
+			UpdatedAt: timestamppb.New(post.UpdatedAt),
+		},
+	}, nil
+}
 
 func (p *postGRPCServer) NewFeed(ctx context.Context, request *gen.NewFeedRequest) (*gen.NewFeedResponse, error) {
 	user, err := utils.ExtractMetadataUser(ctx)

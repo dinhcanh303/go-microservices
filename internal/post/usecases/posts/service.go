@@ -162,6 +162,8 @@ func eventPublish(ctx context.Context, uc *service, post *domain.Post) {
 	var typeNoti string
 	data := map[string]interface{}{
 		"content": post.Content,
+		"userId":  post.UserID.String(),
+		"groupId": post.GroupID.UUID.String(),
 	}
 	if post.GroupID.UUID.String() != constant.NullUUID {
 		typeNoti = "group"

@@ -21,6 +21,7 @@ const _ = grpc.SupportPackageIsVersion7
 const (
 	PostService_CreatePost_FullMethodName        = "/postapi.PostService/CreatePost"
 	PostService_GetPost_FullMethodName           = "/postapi.PostService/GetPost"
+	PostService_GetPostNormal_FullMethodName     = "/postapi.PostService/GetPostNormal"
 	PostService_NewFeed_FullMethodName           = "/postapi.PostService/NewFeed"
 	PostService_NewFeedGroups_FullMethodName     = "/postapi.PostService/NewFeedGroups"
 	PostService_GetPostsByGroupId_FullMethodName = "/postapi.PostService/GetPostsByGroupId"
@@ -35,6 +36,7 @@ const (
 type PostServiceClient interface {
 	CreatePost(ctx context.Context, in *CreatePostRequest, opts ...grpc.CallOption) (*CreatePostResponse, error)
 	GetPost(ctx context.Context, in *GetPostRequest, opts ...grpc.CallOption) (*GetPostResponse, error)
+	GetPostNormal(ctx context.Context, in *GetPostNormalRequest, opts ...grpc.CallOption) (*GetPostNormalResponse, error)
 	NewFeed(ctx context.Context, in *NewFeedRequest, opts ...grpc.CallOption) (*NewFeedResponse, error)
 	NewFeedGroups(ctx context.Context, in *NewFeedGroupsRequest, opts ...grpc.CallOption) (*NewFeedGroupsResponse, error)
 	GetPostsByGroupId(ctx context.Context, in *GetPostsByGroupIdRequest, opts ...grpc.CallOption) (*GetPostsByGroupIdResponse, error)
@@ -63,6 +65,15 @@ func (c *postServiceClient) CreatePost(ctx context.Context, in *CreatePostReques
 func (c *postServiceClient) GetPost(ctx context.Context, in *GetPostRequest, opts ...grpc.CallOption) (*GetPostResponse, error) {
 	out := new(GetPostResponse)
 	err := c.cc.Invoke(ctx, PostService_GetPost_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *postServiceClient) GetPostNormal(ctx context.Context, in *GetPostNormalRequest, opts ...grpc.CallOption) (*GetPostNormalResponse, error) {
+	out := new(GetPostNormalResponse)
+	err := c.cc.Invoke(ctx, PostService_GetPostNormal_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -129,6 +140,7 @@ func (c *postServiceClient) DeletePost(ctx context.Context, in *DeletePostReques
 type PostServiceServer interface {
 	CreatePost(context.Context, *CreatePostRequest) (*CreatePostResponse, error)
 	GetPost(context.Context, *GetPostRequest) (*GetPostResponse, error)
+	GetPostNormal(context.Context, *GetPostNormalRequest) (*GetPostNormalResponse, error)
 	NewFeed(context.Context, *NewFeedRequest) (*NewFeedResponse, error)
 	NewFeedGroups(context.Context, *NewFeedGroupsRequest) (*NewFeedGroupsResponse, error)
 	GetPostsByGroupId(context.Context, *GetPostsByGroupIdRequest) (*GetPostsByGroupIdResponse, error)
@@ -147,6 +159,9 @@ func (UnimplementedPostServiceServer) CreatePost(context.Context, *CreatePostReq
 }
 func (UnimplementedPostServiceServer) GetPost(context.Context, *GetPostRequest) (*GetPostResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetPost not implemented")
+}
+func (UnimplementedPostServiceServer) GetPostNormal(context.Context, *GetPostNormalRequest) (*GetPostNormalResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetPostNormal not implemented")
 }
 func (UnimplementedPostServiceServer) NewFeed(context.Context, *NewFeedRequest) (*NewFeedResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method NewFeed not implemented")
@@ -211,6 +226,24 @@ func _PostService_GetPost_Handler(srv interface{}, ctx context.Context, dec func
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(PostServiceServer).GetPost(ctx, req.(*GetPostRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _PostService_GetPostNormal_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetPostNormalRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PostServiceServer).GetPostNormal(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: PostService_GetPostNormal_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PostServiceServer).GetPostNormal(ctx, req.(*GetPostNormalRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -337,6 +370,10 @@ var PostService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetPost",
 			Handler:    _PostService_GetPost_Handler,
+		},
+		{
+			MethodName: "GetPostNormal",
+			Handler:    _PostService_GetPostNormal_Handler,
 		},
 		{
 			MethodName: "NewFeed",
