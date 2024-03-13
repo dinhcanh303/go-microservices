@@ -1283,6 +1283,37 @@
         ]
       }
     },
+    "/api/v1/posts/{id}/normal": {
+      "get": {
+        "summary": "Get Post Normal",
+        "operationId": "PostService_GetPostNormal",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/postapiGetPostNormalResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "PostService"
+        ]
+      }
+    },
     "/api/v1/posts/{post.id}": {
       "put": {
         "summary": "Update Post",
@@ -2924,6 +2955,9 @@
         "senderId": {
           "type": "string"
         },
+        "actor": {
+          "$ref": "#/definitions/authapiUser"
+        },
         "data": {
           "type": "object"
         },
@@ -2971,6 +3005,14 @@
       "properties": {
         "deleted": {
           "type": "boolean"
+        }
+      }
+    },
+    "postapiGetPostNormalResponse": {
+      "type": "object",
+      "properties": {
+        "post": {
+          "$ref": "#/definitions/postapiPost"
         }
       }
     },

@@ -17,6 +17,7 @@ type (
 		configs.Log  `yaml:"logger"`
 		PG           `yaml:"postgres"`
 		RabbitMQ     `yaml:"rabbitmq"`
+		AuthClient   `yaml:"auth_client"`
 	}
 
 	PG struct {
@@ -26,6 +27,9 @@ type (
 	}
 	RabbitMQ struct {
 		URL string `env-required:"true" yaml:"url" env:"RABBITMQ_URL"`
+	}
+	AuthClient struct {
+		URL string `env-required:"true" yaml:"auth_url" env:"AUTH_CLIENT_URL"`
 	}
 )
 

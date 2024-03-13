@@ -6,6 +6,7 @@ import "google/api/annotations.proto";
 import "protoc-gen-openapiv2/options/annotations.proto";
 import "google/protobuf/timestamp.proto";
 import "google/protobuf/struct.proto";
+import "auth.proto";
 
 option go_package = "github.com/dinhcanh303/go-microsevices/proto/gen";
 
@@ -48,10 +49,11 @@ message Notification{
     int64 id = 1;
     string actor_id = 2;
     string sender_id = 3;
-    google.protobuf.Struct data = 4;
-    string object_type = 5;
-    string object_id = 6;
-    google.protobuf.Timestamp read_at = 7;
-    google.protobuf.Timestamp created_at = 8;
-    google.protobuf.Timestamp updated_at = 9;
+    authapi.User actor = 4;
+    google.protobuf.Struct data = 5;
+    string object_type = 6;
+    string object_id = 7;
+    google.protobuf.Timestamp read_at = 8;
+    google.protobuf.Timestamp created_at = 9;
+    google.protobuf.Timestamp updated_at = 10;
 }

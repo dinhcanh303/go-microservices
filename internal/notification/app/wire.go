@@ -7,6 +7,7 @@ import (
 	"github.com/dinhcanh303/go-microservices/cmd/notification/config"
 	"github.com/dinhcanh303/go-microservices/internal/notification/app/router"
 	"github.com/dinhcanh303/go-microservices/internal/notification/eventhandlers"
+	infrasGRPC "github.com/dinhcanh303/go-microservices/internal/notification/infras/grpc"
 	"github.com/dinhcanh303/go-microservices/internal/notification/infras/repo"
 	"github.com/dinhcanh303/go-microservices/internal/notification/usecases/notifications"
 	configs "github.com/dinhcanh303/go-microservices/pkg/config"
@@ -39,6 +40,7 @@ func InitApp(
 		eventhandlers.EventHandlersSet,
 		repo.RepositoryNotiSet,
 		consumer.EventConsumerSet,
+		infrasGRPC.AuthGRPCClientSet,
 	))
 }
 func dbEngineFunc(url pkgPostgres.DBConnString, urlRead pkgPostgres.DBConnReadString) (*gorm.DB, error) {

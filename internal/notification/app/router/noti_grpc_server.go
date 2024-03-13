@@ -19,7 +19,8 @@ import (
 
 type notiGRPCServer struct {
 	gen.UnimplementedNotiServiceServer
-	uc notifications.UseCase
+	uc            notifications.UseCase
+	authDomainSvc domain.AuthDomainService
 }
 
 var _ gen.NotiServiceServer = (*notiGRPCServer)(nil)
@@ -29,9 +30,11 @@ var NotiGRPCServerSet = wire.NewSet(NewNotiGRPCServer)
 func NewNotiGRPCServer(
 	grpcServer *grpc.Server,
 	uc notifications.UseCase,
+	authDomainSvc domain.AuthDomainService,
 ) gen.NotiServiceServer {
 	svc := notiGRPCServer{
-		uc: uc,
+		uc:            uc,
+		authDomainSvc: authDomainSvc,
 	}
 	gen.RegisterNotiServiceServer(grpcServer, &svc)
 	reflection.Register(grpcServer)
@@ -56,10 +59,12 @@ func (n *notiGRPCServer) GetNotifications(ctx context.Context, request *gen.GetN
 			if item.ReadAt != nil {
 				readAt = timestamppb.New(item.CreatedAt)
 			}
+			actorProfile, _ := n.authDomainSvc.GetProfile(ctx, item.ActorID)
 			return &gen.Notification{
 				Id:         item.ID,
 				ActorId:    item.ActorID,
 				SenderId:   item.SenderID,
+				Actor:      actorProfile.User,
 				Data:       str,
 				ObjectType: item.ObjectType,
 				ObjectId:   item.ObjectID,

@@ -21,6 +21,7 @@ const (
 	CacheServiceGroup   = CachePrefix + "sv_group:"
 	CacheServiceUpload  = CachePrefix + "sv_upload:"
 	CacheServiceSearch  = CachePrefix + "sv_search:"
+	CacheServiceNoti    = CachePrefix + "sv_noti:"
 )
 const (
 	CacheUsers        = CacheServiceAuth + "users"
@@ -48,6 +49,9 @@ const (
 	CachePostsFeedGroup = CacheServicePost + "posts:feed:group:"
 	CachePostsGroupId   = CacheServicePost + "posts:group_id:"
 	CachePostsUserId    = CacheServicePost + "posts:user_id:"
+)
+const (
+	CacheNotifications = CacheServiceNoti + "notifications:"
 )
 const (
 	CacheAttachments = CacheServiceUpload + "attachments:"

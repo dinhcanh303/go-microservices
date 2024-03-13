@@ -10,6 +10,7 @@ import (
 	"github.com/dinhcanh303/go-microservices/cmd/notification/config"
 	"github.com/dinhcanh303/go-microservices/internal/notification/app/router"
 	"github.com/dinhcanh303/go-microservices/internal/notification/eventhandlers"
+	grpc2 "github.com/dinhcanh303/go-microservices/internal/notification/infras/grpc"
 	"github.com/dinhcanh303/go-microservices/internal/notification/infras/repo"
 	"github.com/dinhcanh303/go-microservices/internal/notification/usecases/notifications"
 	"github.com/dinhcanh303/go-microservices/pkg/config"
@@ -41,7 +42,13 @@ func InitApp(cfg *config.Config, cfg2 *configs.Redis, dbConnStr postgres.DBConnS
 		return nil, nil, err
 	}
 	useCase := notifications.NewService(notificationRepo, redisEngine)
-	notiServiceServer := router.NewNotiGRPCServer(grpcServer, useCase)
+	authDomainService, err := grpc2.NewGRPCAuthClient(cfg)
+	if err != nil {
+		cleanup2()
+		cleanup()
+		return nil, nil, err
+	}
+	notiServiceServer := router.NewNotiGRPCServer(grpcServer, useCase, authDomainService)
 	eventConsumer, err := consumer.NewConsumer(connection)
 	if err != nil {
 		cleanup2()
@@ -49,7 +56,7 @@ func InitApp(cfg *config.Config, cfg2 *configs.Redis, dbConnStr postgres.DBConnS
 		return nil, nil, err
 	}
 	notificationEventHandler := eventhandlers.NewEventHandlers(useCase)
-	app := New(cfg, db, connection, notiServiceServer, eventConsumer, notificationEventHandler)
+	app := New(cfg, db, connection, notiServiceServer, eventConsumer, notificationEventHandler, authDomainService)
 	return app, func() {
 		cleanup2()
 		cleanup()

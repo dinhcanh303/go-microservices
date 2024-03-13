@@ -76,7 +76,7 @@ services:
     networks:
       - mcs-network
   redisinsight:
-    image: redislabs/redisinsight
+    image: redislabs/redisinsight:latest
     container_name: mcs-redisinsight
     restart: unless-stopped
     volumes:

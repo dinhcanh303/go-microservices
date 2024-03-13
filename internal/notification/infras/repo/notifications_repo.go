@@ -36,7 +36,7 @@ func (rp *notificationRepo) GetNotificationsByUserId(ctx context.Context, userId
 	} else {
 		db = db.Where("read_at IS NOT NULL")
 	}
-	if err := db.Select("*").Offset(offset).Limit(limit).Find(&results).Error; err != nil {
+	if err := db.Select("*").Offset(offset).Limit(limit).Order("created_at DESC").Find(&results).Error; err != nil {
 		return nil, errors.Wrap(err, "repo.GetNotiByUserId failed")
 	}
 	return results, nil

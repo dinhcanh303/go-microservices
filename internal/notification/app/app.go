@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 
 	"github.com/dinhcanh303/go-microservices/cmd/notification/config"
+	"github.com/dinhcanh303/go-microservices/internal/notification/domain"
 	"github.com/dinhcanh303/go-microservices/internal/notification/eventhandlers"
 	"github.com/dinhcanh303/go-microservices/internal/pkg/events"
 	consumer "github.com/dinhcanh303/go-microservices/pkg/rabbitmq/consumer"
@@ -15,12 +16,13 @@ import (
 )
 
 type App struct {
-	Cfg            *config.Config
-	PG             *gorm.DB
-	NotiGRPCServer gen.NotiServiceServer
-	AmqpConn       *amqp091.Connection
-	Handlers       eventhandlers.NotificationEventHandler
-	Consumer       consumer.EventConsumer
+	Cfg               *config.Config
+	PG                *gorm.DB
+	NotiGRPCServer    gen.NotiServiceServer
+	AmqpConn          *amqp091.Connection
+	Handlers          eventhandlers.NotificationEventHandler
+	Consumer          consumer.EventConsumer
+	AuthDomainService domain.AuthDomainService
 }
 
 func New(
@@ -30,14 +32,16 @@ func New(
 	notiGRPCServer gen.NotiServiceServer,
 	consumer consumer.EventConsumer,
 	handlers eventhandlers.NotificationEventHandler,
+	authDomainService domain.AuthDomainService,
 ) *App {
 	return &App{
-		Cfg:            cfg,
-		PG:             pg,
-		AmqpConn:       amqpConn,
-		Consumer:       consumer,
-		Handlers:       handlers,
-		NotiGRPCServer: notiGRPCServer,
+		Cfg:               cfg,
+		PG:                pg,
+		AmqpConn:          amqpConn,
+		Consumer:          consumer,
+		Handlers:          handlers,
+		NotiGRPCServer:    notiGRPCServer,
+		AuthDomainService: authDomainService,
 	}
 }
 
