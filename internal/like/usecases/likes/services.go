@@ -2,9 +2,11 @@ package likes
 
 import (
 	"context"
+	"encoding/json"
 	"log/slog"
 
 	"github.com/dinhcanh303/go-microservices/internal/like/domain"
+	"github.com/dinhcanh303/go-microservices/internal/pkg/events"
 	"github.com/dinhcanh303/go-microservices/pkg/constant"
 	"github.com/dinhcanh303/go-microservices/pkg/redis"
 	"github.com/dinhcanh303/go-microservices/pkg/utils"
@@ -14,8 +16,11 @@ import (
 )
 
 type service struct {
-	likeRepo LikeRepo
-	redis    redis.RedisEngine
+	likeRepo           LikeRepo
+	redis              redis.RedisEngine
+	notiEventPublisher NotiEventPublisher
+	postDomainSvc      domain.PostDomainService
+	commentDomainSvc   domain.CommentDomainService
 }
 
 var _ UseCase = (*service)(nil)
@@ -24,10 +29,17 @@ var UseCaseSet = wire.NewSet(NewService)
 
 func NewService(
 	likeRepo LikeRepo,
-	redis redis.RedisEngine) UseCase {
+	redis redis.RedisEngine,
+	notiEventPublisher NotiEventPublisher,
+	postDomainSvc domain.PostDomainService,
+	commentDomainSvc domain.CommentDomainService,
+) UseCase {
 	return &service{
-		likeRepo: likeRepo,
-		redis:    redis,
+		likeRepo:           likeRepo,
+		redis:              redis,
+		notiEventPublisher: notiEventPublisher,
+		postDomainSvc:      postDomainSvc,
+		commentDomainSvc:   commentDomainSvc,
 	}
 }
 
@@ -90,7 +102,45 @@ func (s *service) CreateLike(ctx context.Context, like *domain.Like) (*domain.Li
 	if err != nil {
 		slog.Error("Invalidate cache like info failed", err)
 	}
+	eventPublish(ctx, s, like)
 	return like, nil
+}
+func eventPublish(ctx context.Context, uc *service, like *domain.Like) {
+	var senderIds []string
+	var typeNoti string
+	data := map[string]interface{}{
+		"content":      like.Emoji,
+		"userId":       like.UserID.String(),
+		"likeableType": like.LikeableType,
+		"likeableId":   like.LikeableID.String(),
+	}
+	if like.LikeableType == constant.LikePostType {
+		res, _ := uc.postDomainSvc.GetPostNormal(ctx, like.LikeableID)
+		if res.Post.GroupId != constant.NullUUID {
+			typeNoti = "group"
+		}
+		data["postId"] = res.Post.Id
+		data["groupId"] = res.Post.GroupId
+		senderIds = append(senderIds, res.Post.UserId)
+	} else {
+		res, _ := uc.commentDomainSvc.GetComment(ctx, like.LikeableID)
+		data["postId"] = res.Comment.PostId
+		data["parentCommentId"] = res.Comment.ParentCommentId
+		senderIds = append(senderIds, res.Comment.UserId)
+	}
+	event := events.Noti{
+		ActorID:    like.UserID.String(),
+		SenderIDs:  utils.UniqueSlice(senderIds),
+		Data:       data,
+		Type:       typeNoti,
+		ObjectType: "like",
+		ObjectID:   like.ID.String(),
+	}
+	eventBytes, err := json.Marshal(event)
+	if err != nil {
+		slog.Error("Marshal event failed")
+	}
+	uc.notiEventPublisher.Publish(ctx, eventBytes, "text/plain")
 }
 
 // DeleteLike implements UseCase.

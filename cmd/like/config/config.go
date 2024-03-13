@@ -12,16 +12,28 @@ import (
 
 type (
 	Config struct {
-		configs.App  `yaml:"app"`
-		configs.HTTP `yaml:"http"`
-		configs.Log  `yaml:"logger"`
-		PG           `yaml:"postgres"`
+		configs.App   `yaml:"app"`
+		configs.HTTP  `yaml:"http"`
+		configs.Log   `yaml:"logger"`
+		PG            `yaml:"postgres"`
+		RabbitMQ      `yaml:"rabbitmq"`
+		CommentClient `yaml:"comment_client"`
+		PostClient    `yaml:"post_client"`
 	}
 
 	PG struct {
 		PoolMax  int    `env-required:"true" yaml:"pool_max" env:"PG_POOL_MAX"`
 		DbURL    string `env-required:"true" yaml:"db_url" env:"PG_URL"`
 		DbRepURL string `env-required:"true" yaml:"db_rep_url" env:"PG_REP_URL"`
+	}
+	RabbitMQ struct {
+		URL string `env-required:"true" yaml:"url" env:"RABBITMQ_URL"`
+	}
+	CommentClient struct {
+		URL string `env-required:"true" yaml:"comment_url" env:"COMMENT_CLIENT_URL"`
+	}
+	PostClient struct {
+		URL string `env-required:"true" yaml:"post_url" env:"POST_CLIENT_URL"`
 	}
 )
 
