@@ -110,15 +110,19 @@ func eventPublish(ctx context.Context, uc *service, comment *domain.Comment) {
 	var senderIds []string
 	var typeNoti string
 	data := map[string]interface{}{
-		"content":         comment.Content,
-		"postId":          comment.PostID,
-		"parentCommentId": comment.ParentCommentID.UUID.String(),
-		"replyId":         comment.ReplyID.UUID.String(),
+		"content": comment.Content,
+		"postId":  comment.PostID,
 	}
 	if comment.ParentCommentID.UUID.String() != constant.NullUUID {
 		typeNoti = "comment"
 		parentComment, _ := uc.GetComment(ctx, comment.ParentCommentID.UUID)
 		senderIds = append(senderIds, parentComment.UserID.String())
+		data["parentCommentId"] = comment.ParentCommentID.UUID.String()
+	} else if comment.ReplyID.UUID.String() != constant.NullUUID {
+		typeNoti = "reply_comment"
+		replyComment, _ := uc.GetComment(ctx, comment.ReplyID.UUID)
+		senderIds = append(senderIds, replyComment.UserID.String())
+		data["replyCommentId"] = comment.ReplyID.UUID.String()
 	} else {
 		genPost, _ := uc.postDomainSvc.GetPostNormal(ctx, comment.PostID)
 		senderIds = append(senderIds, genPost.Post.UserId)

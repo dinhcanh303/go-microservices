@@ -121,11 +121,13 @@ func eventPublish(ctx context.Context, uc *service, like *domain.Like) {
 		}
 		data["postId"] = res.Post.Id
 		data["groupId"] = res.Post.GroupId
+		data["postContent"] = res.Post.Content
 		senderIds = append(senderIds, res.Post.UserId)
 	} else {
 		res, _ := uc.commentDomainSvc.GetComment(ctx, like.LikeableID)
 		data["postId"] = res.Comment.PostId
 		data["parentCommentId"] = res.Comment.ParentCommentId
+		data["commentContent"] = res.Comment.Content
 		senderIds = append(senderIds, res.Comment.UserId)
 	}
 	event := events.Noti{

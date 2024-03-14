@@ -20,6 +20,7 @@ type service struct {
 	redis              redis.RedisEngine
 	notiEventPublisher NotiEventPublisher
 	authDomainService  domain.AuthDomainService
+	groupDomainService domain.GroupDomainService
 }
 
 var _ UseCase = (*service)(nil)
@@ -31,12 +32,14 @@ func NewUseCase(
 	redis redis.RedisEngine,
 	notiEventPublisher NotiEventPublisher,
 	authDomainService domain.AuthDomainService,
+	groupDomainService domain.GroupDomainService,
 ) UseCase {
 	return &service{
 		postRepo:           postRepo,
 		redis:              redis,
 		notiEventPublisher: notiEventPublisher,
 		authDomainService:  authDomainService,
+		groupDomainService: groupDomainService,
 	}
 }
 
@@ -167,6 +170,18 @@ func eventPublish(ctx context.Context, uc *service, post *domain.Post) {
 	}
 	if post.GroupID.UUID.String() != constant.NullUUID {
 		typeNoti = "group"
+		res, err := uc.groupDomainService.GetGroupMembers(ctx, post.GroupID)
+		if err != nil {
+			errors.Wrap(err, "GetGroupMembers failed")
+		}
+		for _, member := range res.GroupMembers {
+			senderIds = append(senderIds, member.UserId)
+		}
+		resGroup, err := uc.groupDomainService.GetGroup(ctx, post.GroupID)
+		if err != nil {
+			errors.Wrap(err, "GetGroup failed")
+		}
+		data["groupName"] = resGroup.Group.Name
 	} else {
 		userIds, err := uc.authDomainService.GetUserIdsByUserId(ctx, post.UserID)
 		if err != nil {
