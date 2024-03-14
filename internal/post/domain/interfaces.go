@@ -24,6 +24,7 @@ type (
 	GroupDomainService interface {
 		GetGroupIdsByUserId(ctx context.Context, userId uuid.UUID) ([]uuid.UUID, error)
 		GetGroup(ctx context.Context, id uuid.NullUUID) (*gen.GetGroupResponse, error)
+		GetGroupMembers(ctx context.Context, groupId uuid.NullUUID) (*gen.GetGroupMembersResponse, error)
 	}
 	AuthDomainService interface {
 		GetUserIdsByUserId(ctx context.Context, userId uuid.UUID) ([]uuid.UUID, error)

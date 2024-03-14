@@ -56,7 +56,14 @@ func InitApp(cfg *config.Config, cfg2 *configs.Redis, dbConnStr postgres.DBConnS
 		cleanup()
 		return nil, nil, err
 	}
-	useCase := posts.NewUseCase(postRepo, redisEngine, notiEventPublisher, authDomainService)
+	groupDomainService, err := grpc2.NewGRPCGroupClient(cfg)
+	if err != nil {
+		cleanup3()
+		cleanup2()
+		cleanup()
+		return nil, nil, err
+	}
+	useCase := posts.NewUseCase(postRepo, redisEngine, notiEventPublisher, authDomainService, groupDomainService)
 	uploadDomainService, err := grpc2.NewGRPCUploadClient(cfg)
 	if err != nil {
 		cleanup3()
@@ -72,13 +79,6 @@ func InitApp(cfg *config.Config, cfg2 *configs.Redis, dbConnStr postgres.DBConnS
 		return nil, nil, err
 	}
 	likeDomainService, err := grpc2.NewGRPCLikeClient(cfg)
-	if err != nil {
-		cleanup3()
-		cleanup2()
-		cleanup()
-		return nil, nil, err
-	}
-	groupDomainService, err := grpc2.NewGRPCGroupClient(cfg)
 	if err != nil {
 		cleanup3()
 		cleanup2()

@@ -32,6 +32,23 @@ func NewGRPCGroupClient(cfg *config.Config) (domain.GroupDomainService, error) {
 	}, nil
 }
 
+// GetGroupMembers implements domain.GroupDomainService.
+func (g *groupGRPCClient) GetGroupMembers(ctx context.Context, groupId uuid.NullUUID) (*gen.GetGroupMembersResponse, error) {
+	client := gen.NewGroupServiceClient(g.conn)
+	ctxBackground, err := utils.OutgoingContext(ctx)
+	if err != nil {
+		return nil, err
+	}
+	res, err := client.GetGroupMembers(ctxBackground, &gen.GetGroupMembersRequest{
+		GroupId: groupId.UUID.String(),
+	})
+	if err != nil {
+		slog.Warn("groupGRPCClient.GetGroup failed", err)
+		return nil, err
+	}
+	return res, nil
+}
+
 // GetGroup implements domain.GroupDomainService.
 func (g *groupGRPCClient) GetGroup(ctx context.Context, groupId uuid.NullUUID) (*gen.GetGroupResponse, error) {
 	client := gen.NewGroupServiceClient(g.conn)
