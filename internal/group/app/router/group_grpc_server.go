@@ -2,7 +2,6 @@ package router
 
 import (
 	"context"
-	"strconv"
 
 	"github.com/dinhcanh303/go-microservices/cmd/group/config"
 	"github.com/dinhcanh303/go-microservices/internal/group/domain"
@@ -164,7 +163,7 @@ func (g *groupGRPCServer) GetGroups(ctx context.Context, request *gen.GetGroupsR
 				Id:          group.ID.String(),
 				Name:        group.Name,
 				Description: group.Description,
-				Status:      string(group.Status),
+				Status:      group.Status,
 				UserId:      group.UserID.String(),
 				ProfileUrl:  group.ProfileUrl,
 				CreatedAt:   timestamppb.New(group.CreatedAt),
@@ -189,7 +188,7 @@ func (g *groupGRPCServer) GetGroupsByUserId(ctx context.Context, request *gen.Ge
 				Id:          group.ID.String(),
 				Name:        group.Name,
 				Description: group.Description,
-				Status:      string(group.Status),
+				Status:      group.Status,
 				UserId:      group.UserID.String(),
 				ProfileUrl:  group.ProfileUrl,
 				CreatedAt:   timestamppb.New(group.CreatedAt),
@@ -250,7 +249,7 @@ func (g *groupGRPCServer) CreateGroup(ctx context.Context, request *gen.CreateGr
 			Name:        group.Name,
 			Description: group.Description,
 			UserId:      group.UserID.String(),
-			Status:      string(group.Status),
+			Status:      group.Status,
 			ProfileUrl:  group.ProfileUrl,
 			CreatedAt:   timestamppb.New(group.CreatedAt),
 			UpdatedAt:   timestamppb.New(group.UpdatedAt),
@@ -288,7 +287,7 @@ func (g *groupGRPCServer) GetGroup(ctx context.Context, request *gen.GetGroupReq
 			Name:        group.Name,
 			Description: group.Description,
 			UserId:      group.UserID.String(),
-			Status:      string(group.Status),
+			Status:      group.Status,
 			ProfileUrl:  group.ProfileUrl,
 			CreatedAt:   timestamppb.New(group.CreatedAt),
 			UpdatedAt:   timestamppb.New(group.UpdatedAt),
@@ -319,15 +318,11 @@ func (g *groupGRPCServer) UpdateGroup(ctx context.Context, request *gen.UpdateGr
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to parse")
 	}
-	status, err := strconv.ParseInt(request.Group.Status, 10, 64)
-	if err != nil {
-		return nil, errors.Wrap(err, "failed to parse status")
-	}
 	model := domain.Group{
 		ID:          id,
 		Name:        request.Group.Name,
 		Description: request.Group.Description,
-		Status:      int32(status),
+		Status:      request.Group.Status,
 		ProfileUrl:  request.Group.ProfileUrl,
 	}
 
@@ -341,7 +336,7 @@ func (g *groupGRPCServer) UpdateGroup(ctx context.Context, request *gen.UpdateGr
 			Name:        group.Name,
 			Description: group.Description,
 			UserId:      group.UserID.String(),
-			Status:      string(group.Status),
+			Status:      group.Status,
 			ProfileUrl:  group.ProfileUrl,
 			CreatedAt:   timestamppb.New(group.CreatedAt),
 			UpdatedAt:   timestamppb.New(group.UpdatedAt),

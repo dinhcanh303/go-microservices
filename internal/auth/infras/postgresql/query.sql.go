@@ -274,7 +274,7 @@ func (q *Queries) GetUserIdsOfCompany(ctx context.Context, dollar_1 sql.NullStri
 
 const getUsers = `-- name: GetUsers :many
 SELECT id, email, first_name, last_name, full_name, nick_name, avatar_url, profile_url, role, resigned, gender, phone, address, position, date_of_birth, password, settings, created_at, updated_at FROM auth.users 
-WHERE resigned = FALSE AND nick_name LIKE COALESCE('%'||$1||'%','%%')
+WHERE resigned = FALSE AND full_name LIKE COALESCE('%'||$1||'%','%%')
 LIMIT $2
 OFFSET $3
 `

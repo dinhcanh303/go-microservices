@@ -22,7 +22,7 @@ SELECT u.id FROM auth.users AS u WHERE email LIKE '%' || $1 || '%';
 
 -- name: GetUsers :many
 SELECT * FROM auth.users 
-WHERE resigned = FALSE AND nick_name LIKE COALESCE('%'||$1||'%','%%')
+WHERE resigned = FALSE AND full_name LIKE COALESCE('%'||$1||'%','%%')
 LIMIT $2
 OFFSET $3;
 
