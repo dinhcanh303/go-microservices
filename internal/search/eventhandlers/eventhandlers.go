@@ -33,7 +33,7 @@ func NewEventHandlers(meili meili.MeiliSearch,
 
 // HandleChangeDBGroup implements EventHandlers.
 func (e *eventhandlers) HandleChangeDBGroup(ctx context.Context) error {
-	_, err := e.meili.DeleteAllDocuments(constant.MeiliSearchDBGroupIndex)
+	_, err := e.meili.DeleteAllDocuments(constant.MeiliSearchGroupIndex)
 	if err != nil {
 		return err
 	}
@@ -42,7 +42,7 @@ func (e *eventhandlers) HandleChangeDBGroup(ctx context.Context) error {
 		return err
 	}
 	slog.Info("GROUPS::", results)
-	_, err = e.meili.AddDocuments(constant.MeiliSearchDBGroupIndex, results.Groups)
+	_, err = e.meili.AddDocuments(constant.MeiliSearchGroupIndex, results.GetGroups())
 	if err != nil {
 		slog.Error("insert-into-meili-search", err)
 		return err
@@ -53,7 +53,7 @@ func (e *eventhandlers) HandleChangeDBGroup(ctx context.Context) error {
 
 // HandleChangeDBUser implements EventHandlers.
 func (e *eventhandlers) HandleChangeDBUser(ctx context.Context) error {
-	_, err := e.meili.DeleteAllDocuments(constant.MeiliSearchDBUserIndex)
+	_, err := e.meili.DeleteAllDocuments(constant.MeiliSearchUserIndex)
 	if err != nil {
 		return err
 	}
@@ -61,7 +61,8 @@ func (e *eventhandlers) HandleChangeDBUser(ctx context.Context) error {
 	if err != nil {
 		return err
 	}
-	_, err = e.meili.AddDocuments(constant.MeiliSearchDBUserIndex, results.Users)
+	slog.Info("USERS::", results)
+	_, err = e.meili.AddDocuments(constant.MeiliSearchUserIndex, results.GetUsers())
 	if err != nil {
 		slog.Error("insert-into-meili-search", err)
 		return err

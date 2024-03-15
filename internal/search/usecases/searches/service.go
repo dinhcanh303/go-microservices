@@ -28,9 +28,9 @@ func NewService(meili meili.MeiliSearch) UseCase {
 // Search implements UseCase.
 func (s *service) Search(search string) ([]*domain.Search, error) {
 	var results = make([]*domain.Search, 0)
-	searchUserRes, _ := meiliSearch(s.meili, constant.MeiliSearchDBUserIndex,
+	searchUserRes, _ := meiliSearch(s.meili, constant.MeiliSearchUserIndex,
 		search, []string{"name", "email", "phone"})
-	searchGroupRes, _ := meiliSearch(s.meili, constant.MeiliSearchDBGroupIndex,
+	searchGroupRes, _ := meiliSearch(s.meili, constant.MeiliSearchGroupIndex,
 		search, []string{"name"})
 	slog.Info("DATA::", searchGroupRes)
 	results = append(searchUserRes, searchGroupRes...)

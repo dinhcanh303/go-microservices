@@ -3,6 +3,7 @@ package meili
 import (
 	"testing"
 
+	"github.com/dinhcanh303/go-microservices/pkg/constant"
 	"github.com/stretchr/testify/require"
 )
 
@@ -19,7 +20,7 @@ func TestMeiliSearchAddDocuments(t *testing.T) {
 		{"uuid": "abdf-123396j", "title": "Kaka", "genres": []string{"Drama"}},
 		{"uuid": "abdf-123398j", "title": "Messi", "genres": []string{"Drama"}},
 	}
-	task, err := meiliSearch.AddDocuments("test1", documents)
+	task, err := meiliSearch.AddDocuments(constant.MeiliSearchGroupIndex, documents)
 	require.NoError(t, err)
 	require.NotEmpty(t, task)
 }
@@ -32,7 +33,7 @@ func TestCreateIndex(t *testing.T) {
 
 func TestDeleteIndex(t *testing.T) {
 	meiliSearch := connectMeiliSearch()
-	task, err := meiliSearch.DeleteIndex("user_group")
+	task, err := meiliSearch.DeleteIndex("groups")
 	require.NoError(t, err)
 	require.NotEmpty(t, task)
 }
