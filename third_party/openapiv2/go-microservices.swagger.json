@@ -788,7 +788,8 @@
                       "type": "string"
                     },
                     "status": {
-                      "type": "string"
+                      "type": "integer",
+                      "format": "int32"
                     },
                     "userId": {
                       "type": "string"
@@ -2681,7 +2682,8 @@
           "type": "string"
         },
         "status": {
-          "type": "string"
+          "type": "integer",
+          "format": "int32"
         },
         "userId": {
           "type": "string"
