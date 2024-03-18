@@ -12,6 +12,7 @@ CREATE TABLE
         tag_ids uuid [] DEFAULT NULL,
         post_id uuid NOT NULL,
         parent_comment_id uuid DEFAULT NULL,
+        edited boolean DEFAULT NULL,
         created_at timestamp with time zone NOT NULL DEFAULT current_timestamp,
         updated_at timestamp with time zone NOT NULL DEFAULT (now()),
         -- deleted_at timestamp with time zone NULL,
