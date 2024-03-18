@@ -26,6 +26,18 @@ func NewNotificationRepo(db *gorm.DB) notifications.NotificationRepo {
 	}
 }
 
+// CountNotificationsUnreadByUserId implements notifications.NotificationRepo.
+func (rp *notificationRepo) CountNotificationsUnreadByUserId(ctx context.Context, userId uuid.UUID) (int64, error) {
+	var count int64
+	db := rp.db.Table(domain.Notification{}.TableName()).Where(
+		"sender_id =?", userId.String()).Where("read_at IS NULL")
+	if err := db.Count(&count).Error; err != nil {
+		return 0, errors.Wrap(err, "repo.CountNotificationsUnreadByUserId failed")
+	}
+	return count, nil
+
+}
+
 // GetNotiByUserId implements notifications.NotificationRepo.
 func (rp *notificationRepo) GetNotificationsByUserId(ctx context.Context, userId uuid.UUID, limit, offset int, options sharedkernel.GetNotiOptions) ([]domain.Notification, error) {
 	var results []domain.Notification

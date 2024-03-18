@@ -19,8 +19,9 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	NotiService_GetNotifications_FullMethodName = "/notiapi.NotiService/GetNotifications"
-	NotiService_ReadNotification_FullMethodName = "/notiapi.NotiService/ReadNotification"
+	NotiService_GetNotifications_FullMethodName         = "/notiapi.NotiService/GetNotifications"
+	NotiService_CountNotificationsUnread_FullMethodName = "/notiapi.NotiService/CountNotificationsUnread"
+	NotiService_ReadNotification_FullMethodName         = "/notiapi.NotiService/ReadNotification"
 )
 
 // NotiServiceClient is the client API for NotiService service.
@@ -28,6 +29,7 @@ const (
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type NotiServiceClient interface {
 	GetNotifications(ctx context.Context, in *GetNotificationsRequest, opts ...grpc.CallOption) (*GetNotificationsResponse, error)
+	CountNotificationsUnread(ctx context.Context, in *CountNotificationsUnreadRequest, opts ...grpc.CallOption) (*CountNotificationsUnreadResponse, error)
 	ReadNotification(ctx context.Context, in *ReadNotificationRequest, opts ...grpc.CallOption) (*ReadNotificationResponse, error)
 }
 
@@ -48,6 +50,15 @@ func (c *notiServiceClient) GetNotifications(ctx context.Context, in *GetNotific
 	return out, nil
 }
 
+func (c *notiServiceClient) CountNotificationsUnread(ctx context.Context, in *CountNotificationsUnreadRequest, opts ...grpc.CallOption) (*CountNotificationsUnreadResponse, error) {
+	out := new(CountNotificationsUnreadResponse)
+	err := c.cc.Invoke(ctx, NotiService_CountNotificationsUnread_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *notiServiceClient) ReadNotification(ctx context.Context, in *ReadNotificationRequest, opts ...grpc.CallOption) (*ReadNotificationResponse, error) {
 	out := new(ReadNotificationResponse)
 	err := c.cc.Invoke(ctx, NotiService_ReadNotification_FullMethodName, in, out, opts...)
@@ -62,6 +73,7 @@ func (c *notiServiceClient) ReadNotification(ctx context.Context, in *ReadNotifi
 // for forward compatibility
 type NotiServiceServer interface {
 	GetNotifications(context.Context, *GetNotificationsRequest) (*GetNotificationsResponse, error)
+	CountNotificationsUnread(context.Context, *CountNotificationsUnreadRequest) (*CountNotificationsUnreadResponse, error)
 	ReadNotification(context.Context, *ReadNotificationRequest) (*ReadNotificationResponse, error)
 	mustEmbedUnimplementedNotiServiceServer()
 }
@@ -72,6 +84,9 @@ type UnimplementedNotiServiceServer struct {
 
 func (UnimplementedNotiServiceServer) GetNotifications(context.Context, *GetNotificationsRequest) (*GetNotificationsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetNotifications not implemented")
+}
+func (UnimplementedNotiServiceServer) CountNotificationsUnread(context.Context, *CountNotificationsUnreadRequest) (*CountNotificationsUnreadResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CountNotificationsUnread not implemented")
 }
 func (UnimplementedNotiServiceServer) ReadNotification(context.Context, *ReadNotificationRequest) (*ReadNotificationResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ReadNotification not implemented")
@@ -107,6 +122,24 @@ func _NotiService_GetNotifications_Handler(srv interface{}, ctx context.Context,
 	return interceptor(ctx, in, info, handler)
 }
 
+func _NotiService_CountNotificationsUnread_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CountNotificationsUnreadRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(NotiServiceServer).CountNotificationsUnread(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: NotiService_CountNotificationsUnread_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(NotiServiceServer).CountNotificationsUnread(ctx, req.(*CountNotificationsUnreadRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _NotiService_ReadNotification_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(ReadNotificationRequest)
 	if err := dec(in); err != nil {
@@ -135,6 +168,10 @@ var NotiService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetNotifications",
 			Handler:    _NotiService_GetNotifications_Handler,
+		},
+		{
+			MethodName: "CountNotificationsUnread",
+			Handler:    _NotiService_CountNotificationsUnread_Handler,
 		},
 		{
 			MethodName: "ReadNotification",

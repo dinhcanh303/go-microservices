@@ -3,6 +3,7 @@ package notifications
 import (
 	"context"
 	"log/slog"
+	"strconv"
 
 	"github.com/dinhcanh303/go-microservices/internal/notification/domain"
 	sharedkernel "github.com/dinhcanh303/go-microservices/internal/pkg/shared_kernel"
@@ -33,10 +34,34 @@ func NewService(
 	}
 }
 
+// CountNotificationsUnreadByUserId implements UseCase.
+func (s *service) CountNotificationsUnreadByUserId(ctx context.Context, userId uuid.UUID) (int64, error) {
+	var count int64
+	keyCache := constant.CacheNotifications + userId.String() + ":count"
+	err := utils.HandleHitCache(count, s.redis, keyCache)
+	if err != nil {
+		count, err = s.repo.CountNotificationsUnreadByUserId(ctx, userId)
+		if err != nil {
+			return 0, errors.Wrap(err, "service.CountNotificationsUnreadByUserId")
+		}
+		err = s.redis.Set(keyCache, count)
+		if err != nil {
+			return 0, errors.Wrap(err, "service.CountNotificationsUnreadByUserId")
+		}
+	}
+	return count, nil
+}
+
 // GetNotificationsByUserId implements UseCase.
 func (s *service) GetNotificationsByUserId(ctx context.Context, userId uuid.UUID, limit, offset int, options sharedkernel.GetNotiOptions) ([]domain.Notification, error) {
 	var notifications []domain.Notification
-	keyCache := constant.CacheNotifications + userId.String() + constant.CacheLimit +
+	var unread bool
+	if options.Unread {
+		unread = true
+	} else {
+		unread = false
+	}
+	keyCache := constant.CacheNotifications + userId.String() + ":unread:" + strconv.FormatBool(unread) + constant.CacheLimit +
 		utils.String(int32(limit)) + constant.CacheOffset + utils.String(int32(offset))
 	err := utils.HandleHitCache(notifications, s.redis, keyCache)
 	if err != nil {

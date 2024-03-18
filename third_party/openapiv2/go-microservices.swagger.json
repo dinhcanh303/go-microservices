@@ -1102,6 +1102,29 @@
         ]
       }
     },
+    "/api/v1/notifications/count": {
+      "get": {
+        "summary": "Get count of notifications unread",
+        "operationId": "NotiService_CountNotificationsUnread",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/notiapiCountNotificationsUnreadResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          }
+        },
+        "tags": [
+          "NotiService"
+        ]
+      }
+    },
     "/api/v1/notifications/{id}": {
       "put": {
         "summary": "Read a notification",
@@ -2929,6 +2952,15 @@
       "properties": {
         "like": {
           "$ref": "#/definitions/likeapiLike"
+        }
+      }
+    },
+    "notiapiCountNotificationsUnreadResponse": {
+      "type": "object",
+      "properties": {
+        "count": {
+          "type": "string",
+          "format": "int64"
         }
       }
     },

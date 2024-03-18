@@ -41,6 +41,21 @@ func NewNotiGRPCServer(
 	return &svc
 }
 
+func (n *notiGRPCServer) CountNotificationsUnread(ctx context.Context, request *gen.CountNotificationsUnreadRequest) (*gen.CountNotificationsUnreadResponse, error) {
+	user, err := utils.ExtractMetadataUser(ctx)
+	if err != nil {
+		return nil, errors.Wrap(err, "Extract Metadata User failed")
+	}
+	count, err := n.uc.CountNotificationsUnreadByUserId(ctx, user.ID)
+	if err != nil {
+		return nil, errors.Wrap(err, "uc.CountNotificationsUnread failed")
+	}
+	return &gen.CountNotificationsUnreadResponse{
+		Count: count,
+	}, nil
+
+}
+
 func (n *notiGRPCServer) GetNotifications(ctx context.Context, request *gen.GetNotificationsRequest) (*gen.GetNotificationsResponse, error) {
 	user, err := utils.ExtractMetadataUser(ctx)
 	if err != nil {
