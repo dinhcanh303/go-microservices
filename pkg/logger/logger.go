@@ -1,6 +1,9 @@
 package logger
 
 import (
+	"context"
+
+	grpcLogging "github.com/grpc-ecosystem/go-grpc-middleware/v2/interceptors/logging"
 	"go.uber.org/zap"
 )
 
@@ -41,7 +44,18 @@ func New() Logger {
 		zapSugaredLogger: l.Sugar(),
 	}
 }
-
+func (l logger) Log(ctx context.Context, level grpcLogging.Level, msg string, fields ...any) {
+	switch level {
+	case grpcLogging.LevelDebug:
+		l.Debugw(msg, fields)
+	case grpcLogging.LevelInfo:
+		l.Infow(msg, fields)
+	case grpcLogging.LevelWarn:
+		l.Warnw(msg, fields)
+	case grpcLogging.LevelError:
+		l.Errorw(msg, fields)
+	}
+}
 func (l logger) GetZapLogger() *zap.Logger {
 	return l.zapLogger
 }
