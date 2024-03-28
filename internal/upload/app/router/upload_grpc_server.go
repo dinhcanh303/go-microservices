@@ -4,11 +4,11 @@ import (
 	"context"
 	"log/slog"
 
+	v1 "github.com/dinhcanh303/go-microservices/api/upload/v1"
 	"github.com/dinhcanh303/go-microservices/cmd/upload/config"
 	"github.com/dinhcanh303/go-microservices/internal/upload/domain"
 	"github.com/dinhcanh303/go-microservices/internal/upload/usecases/uploads"
 	"github.com/dinhcanh303/go-microservices/pkg/constant"
-	"github.com/dinhcanh303/go-microservices/proto/gen"
 	"github.com/google/uuid"
 	"github.com/google/wire"
 	"github.com/pkg/errors"
@@ -19,32 +19,32 @@ import (
 )
 
 type uploadGRPCServer struct {
-	gen.UnimplementedUploadServiceServer
+	v1.UnimplementedUploadServiceServer
 	cfg *config.Config
 	uc  uploads.UseCaseGRPC
 }
 
-var _ gen.UploadServiceServer = (*uploadGRPCServer)(nil)
+var _ v1.UploadServiceServer = (*uploadGRPCServer)(nil)
 
 var UploadServiceServer = wire.NewSet(NewGRPCUploadServer)
 
 func NewGRPCUploadServer(
 	grpcServer *grpc.Server,
 	cfg *config.Config,
-	uc uploads.UseCaseGRPC) gen.UploadServiceServer {
+	uc uploads.UseCaseGRPC) v1.UploadServiceServer {
 	svc := uploadGRPCServer{
 		cfg: cfg,
 		uc:  uc,
 	}
-	gen.RegisterUploadServiceServer(grpcServer, &svc)
+	v1.RegisterUploadServiceServer(grpcServer, &svc)
 	reflection.Register(grpcServer)
 	return &svc
 }
 
 func (g *uploadGRPCServer) GetAttachmentsByType(
 	ctx context.Context,
-	request *gen.GetAttachmentsByTypeRequest,
-) (*gen.GetAttachmentsByTypeResponse, error) {
+	request *v1.GetAttachmentsByTypeRequest,
+) (*v1.GetAttachmentsByTypeResponse, error) {
 	slog.Info("GET: GetAttachmentsByType")
 	attachableId, err := uuid.Parse(request.AttachableId)
 	if err != nil {
@@ -54,9 +54,9 @@ func (g *uploadGRPCServer) GetAttachmentsByType(
 	if err != nil {
 		return nil, errors.Wrap(err, "uploadGRPCServer.GetAttachmentsByType failed")
 	}
-	return &gen.GetAttachmentsByTypeResponse{
-		Attachments: lo.Map(attachments, func(item *domain.Attachment, _ int) *gen.Attachment {
-			return &gen.Attachment{
+	return &v1.GetAttachmentsByTypeResponse{
+		Attachments: lo.Map(attachments, func(item *domain.Attachment, _ int) *v1.Attachment {
+			return &v1.Attachment{
 				Id:             item.ID.String(),
 				AttachableType: item.AttachableType,
 				AttachableId:   item.AttachableID.String(),
@@ -77,8 +77,8 @@ func (g *uploadGRPCServer) GetAttachmentsByType(
 
 func (g *uploadGRPCServer) GetAttachmentsByOptional(
 	ctx context.Context,
-	request *gen.GetAttachmentsByOptionalRequest,
-) (*gen.GetAttachmentsByOptionalResponse, error) {
+	request *v1.GetAttachmentsByOptionalRequest,
+) (*v1.GetAttachmentsByOptionalResponse, error) {
 	slog.Info("GET: GetAttachmentsByOptional")
 	var err error
 	var userId uuid.UUID
@@ -98,9 +98,9 @@ func (g *uploadGRPCServer) GetAttachmentsByOptional(
 	if err != nil {
 		return nil, errors.Wrap(err, "uploadGRPCServer.GetAttachmentsByOptional failed")
 	}
-	return &gen.GetAttachmentsByOptionalResponse{
-		Attachments: lo.Map(attachments, func(item *domain.Attachment, _ int) *gen.Attachment {
-			return &gen.Attachment{
+	return &v1.GetAttachmentsByOptionalResponse{
+		Attachments: lo.Map(attachments, func(item *domain.Attachment, _ int) *v1.Attachment {
+			return &v1.Attachment{
 				Id:             item.ID.String(),
 				AttachableType: item.AttachableType,
 				AttachableId:   item.AttachableID.String(),
@@ -121,8 +121,8 @@ func (g *uploadGRPCServer) GetAttachmentsByOptional(
 
 func (g *uploadGRPCServer) GetAvatarUser(
 	ctx context.Context,
-	request *gen.GetAvatarUserRequest,
-) (*gen.GetAvatarUserResponse, error) {
+	request *v1.GetAvatarUserRequest,
+) (*v1.GetAvatarUserResponse, error) {
 	slog.Info("GET: GetAvatarUser")
 	attachableId, err := uuid.Parse(request.Id)
 	if err != nil {
@@ -133,8 +133,8 @@ func (g *uploadGRPCServer) GetAvatarUser(
 		return nil, errors.Wrap(err, "uploadGRPCServer.GetAvatarUser failed")
 	}
 
-	return &gen.GetAvatarUserResponse{
-		Attachment: &gen.Attachment{
+	return &v1.GetAvatarUserResponse{
+		Attachment: &v1.Attachment{
 			Id:             attachment.ID.String(),
 			AttachableType: attachment.AttachableType,
 			AttachableId:   attachment.AttachableID.String(),

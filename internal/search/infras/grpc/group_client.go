@@ -4,9 +4,9 @@ import (
 	"context"
 	"log/slog"
 
+	v1 "github.com/dinhcanh303/go-microservices/api/group/v1"
 	"github.com/dinhcanh303/go-microservices/cmd/search/config"
 	"github.com/dinhcanh303/go-microservices/internal/search/domain"
-	"github.com/dinhcanh303/go-microservices/proto/gen"
 	"github.com/google/wire"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
@@ -31,9 +31,9 @@ func NewGRPCGroupClient(cfg *config.Config) (domain.GroupDomainService, error) {
 }
 
 // GetAllGroupIdByUserId implements domain.GroupDomainService.
-func (g *groupGRPCClient) GetGroups(ctx context.Context) (*gen.GetGroupsResponse, error) {
-	client := gen.NewGroupServiceClient(g.conn)
-	res, err := client.GetGroups(ctx, &gen.GetGroupsRequest{})
+func (g *groupGRPCClient) GetGroups(ctx context.Context) (*v1.GetGroupsResponse, error) {
+	client := v1.NewGroupServiceClient(g.conn)
+	res, err := client.GetGroups(ctx, &v1.GetGroupsRequest{})
 	if err != nil {
 		slog.Warn("groupGRPCClient.GetGroupIdsByUserId failed", err)
 		return nil, err

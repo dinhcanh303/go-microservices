@@ -1,12 +1,12 @@
 package app
 
 import (
+	v1 "github.com/dinhcanh303/go-microservices/api/upload/v1"
 	"github.com/dinhcanh303/go-microservices/cmd/upload/config"
 	"github.com/dinhcanh303/go-microservices/internal/upload/app/handlers"
 	"github.com/dinhcanh303/go-microservices/internal/upload/usecases/uploads"
 	configs "github.com/dinhcanh303/go-microservices/pkg/config"
 	"github.com/dinhcanh303/go-microservices/pkg/postgres"
-	"github.com/dinhcanh303/go-microservices/proto/gen"
 )
 
 type App struct {
@@ -16,7 +16,7 @@ type App struct {
 	UC               uploads.UseCase
 	UcGRPC           uploads.UseCaseGRPC
 	Handler          *handlers.UploadHandler
-	UploadGRPCServer gen.UploadServiceServer
+	UploadGRPCServer v1.UploadServiceServer
 }
 
 func New(
@@ -26,7 +26,7 @@ func New(
 	uc uploads.UseCase,
 	UcGRPC uploads.UseCaseGRPC,
 	handler *handlers.UploadHandler,
-	uploadGRPCServer gen.UploadServiceServer,
+	uploadGRPCServer v1.UploadServiceServer,
 ) *App {
 	return &App{
 		Cfg:              cfg,

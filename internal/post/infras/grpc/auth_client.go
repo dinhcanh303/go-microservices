@@ -4,9 +4,9 @@ import (
 	"context"
 	"log/slog"
 
+	v1 "github.com/dinhcanh303/go-microservices/api/auth/v1"
 	"github.com/dinhcanh303/go-microservices/cmd/post/config"
 	"github.com/dinhcanh303/go-microservices/internal/post/domain"
-	"github.com/dinhcanh303/go-microservices/proto/gen"
 	"github.com/google/uuid"
 	"github.com/google/wire"
 	"google.golang.org/grpc"
@@ -32,24 +32,24 @@ func NewGRPCAuthClient(cfg *config.Config) (domain.AuthDomainService, error) {
 }
 
 // GetProfile implements domain.AuthDomainService.
-func (a *authGRPCClient) GetProfile(ctx context.Context, id uuid.UUID) (*gen.GetProfileResponse, error) {
-	client := gen.NewAuthServiceClient(a.conn)
+func (a *authGRPCClient) GetProfile(ctx context.Context, id uuid.UUID) (*v1.GetProfileResponse, error) {
+	client := v1.NewAuthServiceClient(a.conn)
 
-	res, err := client.GetProfile(ctx, &gen.GetProfileRequest{
+	res, err := client.GetProfile(ctx, &v1.GetProfileRequest{
 		Id: id.String(),
 	})
 	if err != nil {
 		slog.Warn("authGRPCClient.GetProfile failed", err)
-		return &gen.GetProfileResponse{}, err
+		return &v1.GetProfileResponse{}, err
 	}
 	return res, nil
 }
 
 // GetAllUserIdByUserId implements domain.AuthDomainService.
 func (a *authGRPCClient) GetUserIdsByUserId(ctx context.Context, userId uuid.UUID) ([]uuid.UUID, error) {
-	client := gen.NewAuthServiceClient(a.conn)
+	client := v1.NewAuthServiceClient(a.conn)
 
-	res, err := client.GetUserIdsOfCompanyByUserId(ctx, &gen.GetUserIdsOfCompanyByUserIdRequest{
+	res, err := client.GetUserIdsOfCompanyByUserId(ctx, &v1.GetUserIdsOfCompanyByUserIdRequest{
 		UserId: userId.String(),
 	})
 	results := make([]uuid.UUID, 0)

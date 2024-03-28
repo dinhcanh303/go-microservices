@@ -7,6 +7,8 @@ import (
 	"log/slog"
 	"strconv"
 
+	v1 "github.com/dinhcanh303/go-microservices/api/auth/v1"
+	v1g "github.com/dinhcanh303/go-microservices/api/group/v1"
 	"github.com/dinhcanh303/go-microservices/cmd/auth/config"
 	"github.com/dinhcanh303/go-microservices/internal/auth/app/validation"
 	"github.com/dinhcanh303/go-microservices/internal/auth/domain"
@@ -17,7 +19,6 @@ import (
 	"github.com/dinhcanh303/go-microservices/pkg/redis"
 	"github.com/dinhcanh303/go-microservices/pkg/token"
 	"github.com/dinhcanh303/go-microservices/pkg/utils"
-	"github.com/dinhcanh303/go-microservices/proto/gen"
 	"github.com/google/uuid"
 	"github.com/google/wire"
 	"github.com/pkg/errors"
@@ -30,7 +31,7 @@ import (
 )
 
 type authGRPCServer struct {
-	gen.UnimplementedAuthServiceServer
+	v1.UnimplementedAuthServiceServer
 	cfg                 *config.Config
 	uc                  auth.UseCase
 	ucKey               keys.UseCase
@@ -39,7 +40,7 @@ type authGRPCServer struct {
 	redis               redis.RedisEngine
 }
 
-var _ gen.AuthServiceServer = (*authGRPCServer)(nil)
+var _ v1.AuthServiceServer = (*authGRPCServer)(nil)
 
 var AuthGRPCServerSet = wire.NewSet(NewAuthGRPCServer)
 
@@ -50,7 +51,7 @@ func NewAuthGRPCServer(
 	ucKey keys.UseCase,
 	uploadDomainService domain.UploadDomainService,
 	groupDomainService domain.GroupDomainService,
-	redis redis.RedisEngine) gen.AuthServiceServer {
+	redis redis.RedisEngine) v1.AuthServiceServer {
 	svc := authGRPCServer{
 		cfg:                 cfg,
 		uc:                  uc,
@@ -59,12 +60,12 @@ func NewAuthGRPCServer(
 		groupDomainService:  groupDomainService,
 		redis:               redis,
 	}
-	gen.RegisterAuthServiceServer(grpcServer, &svc)
+	v1.RegisterAuthServiceServer(grpcServer, &svc)
 	reflection.Register(grpcServer)
 	return &svc
 }
 
-func (a *authGRPCServer) SignUp(ctx context.Context, request *gen.SignUpRequest) (*gen.SignUpResponse, error) {
+func (a *authGRPCServer) SignUp(ctx context.Context, request *v1.SignUpRequest) (*v1.SignUpResponse, error) {
 	slog.Info("POST:: SignUp")
 	// violations := validation.ValidateSignUp(request)
 	// if violations != nil {
@@ -74,8 +75,8 @@ func (a *authGRPCServer) SignUp(ctx context.Context, request *gen.SignUpRequest)
 	if err != nil {
 		return nil, err
 	}
-	return &gen.SignUpResponse{
-		User: &gen.User{
+	return &v1.SignUpResponse{
+		User: &v1.User{
 			Id:         signUpRes.User.ID.String(),
 			Email:      signUpRes.User.Email,
 			FirstName:  signUpRes.User.FirstName,
@@ -92,7 +93,7 @@ func (a *authGRPCServer) SignUp(ctx context.Context, request *gen.SignUpRequest)
 		RefreshToken: signUpRes.RefreshToken,
 	}, nil
 }
-func (a *authGRPCServer) SignIn(ctx context.Context, request *gen.SignInRequest) (*gen.SignInResponse, error) {
+func (a *authGRPCServer) SignIn(ctx context.Context, request *v1.SignInRequest) (*v1.SignInResponse, error) {
 	slog.Info("POST:: SignIn")
 	violations := validation.ValidateSignIn(request)
 	if violations != nil {
@@ -103,8 +104,8 @@ func (a *authGRPCServer) SignIn(ctx context.Context, request *gen.SignInRequest)
 		return nil, err
 	}
 	// avatarUrl, thumbnailUrl := getAvatarAndThumbnailAvatar(a, ctx, signInRes.User.ID)
-	return &gen.SignInResponse{
-		User: &gen.User{
+	return &v1.SignInResponse{
+		User: &v1.User{
 			Id:         signInRes.User.ID.String(),
 			Email:      signInRes.User.Email,
 			FirstName:  signInRes.User.FirstName,
@@ -121,16 +122,16 @@ func (a *authGRPCServer) SignIn(ctx context.Context, request *gen.SignInRequest)
 		RefreshToken: signInRes.RefreshToken,
 	}, nil
 }
-func (a *authGRPCServer) GetUsers(ctx context.Context, request *gen.GetUsersRequest) (*gen.GetUsersResponse, error) {
+func (a *authGRPCServer) GetUsers(ctx context.Context, request *v1.GetUsersRequest) (*v1.GetUsersResponse, error) {
 	slog.Info("GET:: GetUsers")
 	users, err := a.uc.GetUsers(ctx, request.GetSearch(), request.GetLimit(), request.GetOffset())
 	if err != nil {
 		return nil, errors.Wrap(err, "uc.GetUsers failed")
 	}
-	return &gen.GetUsersResponse{
-		Users: lo.Map(users, func(user *domain.User, _ int) *gen.User {
+	return &v1.GetUsersResponse{
+		Users: lo.Map(users, func(user *domain.User, _ int) *v1.User {
 			// avatarUrl, thumbnailUrl := getAvatarAndThumbnailAvatar(a, ctx, user.ID)
-			return &gen.User{
+			return &v1.User{
 				Id:          user.ID.String(),
 				Email:       user.Email,
 				FirstName:   user.FirstName,
@@ -153,7 +154,7 @@ func (a *authGRPCServer) GetUsers(ctx context.Context, request *gen.GetUsersRequ
 
 }
 
-func (a *authGRPCServer) UpdateUser(ctx context.Context, request *gen.UpdateUserRequest) (*gen.UpdateUserResponse, error) {
+func (a *authGRPCServer) UpdateUser(ctx context.Context, request *v1.UpdateUserRequest) (*v1.UpdateUserResponse, error) {
 	slog.Info("GET:: UpdateUser")
 	userIdReq, err := uuid.Parse(request.User.Id)
 	if err != nil {
@@ -181,8 +182,8 @@ func (a *authGRPCServer) UpdateUser(ctx context.Context, request *gen.UpdateUser
 		return nil, err
 	}
 
-	return &gen.UpdateUserResponse{
-		User: &gen.User{
+	return &v1.UpdateUserResponse{
+		User: &v1.User{
 			Id:          user.ID.String(),
 			Email:       user.Email,
 			FirstName:   user.FirstName,
@@ -203,7 +204,7 @@ func (a *authGRPCServer) UpdateUser(ctx context.Context, request *gen.UpdateUser
 	}, nil
 }
 
-func (a *authGRPCServer) UpdateUserSettings(ctx context.Context, request *gen.UpdateUserSettingsRequest) (*gen.UpdateUserSettingsResponse, error) {
+func (a *authGRPCServer) UpdateUserSettings(ctx context.Context, request *v1.UpdateUserSettingsRequest) (*v1.UpdateUserSettingsResponse, error) {
 	slog.Info("GET:: UpdateUserSettings")
 	payloadUser, err := utils.ExtractMetadataUser(ctx)
 	if err != nil {
@@ -230,8 +231,8 @@ func (a *authGRPCServer) UpdateUserSettings(ctx context.Context, request *gen.Up
 	if err != nil {
 		return nil, err
 	}
-	return &gen.UpdateUserSettingsResponse{
-		User: &gen.User{
+	return &v1.UpdateUserSettingsResponse{
+		User: &v1.User{
 			Id:          userUpdated.ID.String(),
 			Email:       userUpdated.Email,
 			FirstName:   userUpdated.FirstName,
@@ -251,14 +252,14 @@ func (a *authGRPCServer) UpdateUserSettings(ctx context.Context, request *gen.Up
 		},
 	}, nil
 }
-func (a *authGRPCServer) GetUsersBirthDayByCurrentDay(ctx context.Context, request *gen.GetUsersBirthDayByCurrentDayRequest) (*gen.GetUsersBirthDayByCurrentDayResponse, error) {
+func (a *authGRPCServer) GetUsersBirthDayByCurrentDay(ctx context.Context, request *v1.GetUsersBirthDayByCurrentDayRequest) (*v1.GetUsersBirthDayByCurrentDayResponse, error) {
 	users, err := a.uc.GetUsersBirthDayByCurrentDay(ctx)
 	if err != nil {
 		return nil, err
 	}
-	return &gen.GetUsersBirthDayByCurrentDayResponse{
-		Users: lo.Map(users, func(user *domain.User, _ int) *gen.User {
-			return &gen.User{
+	return &v1.GetUsersBirthDayByCurrentDayResponse{
+		Users: lo.Map(users, func(user *domain.User, _ int) *v1.User {
+			return &v1.User{
 				Id:          user.ID.String(),
 				Email:       user.Email,
 				FirstName:   user.FirstName,
@@ -280,14 +281,14 @@ func (a *authGRPCServer) GetUsersBirthDayByCurrentDay(ctx context.Context, reque
 	}, nil
 }
 
-func (a *authGRPCServer) GetUsersBirthDayByCurrentMonth(ctx context.Context, request *gen.GetUsersBirthDayByCurrentMonthRequest) (*gen.GetUsersBirthDayByCurrentMonthResponse, error) {
+func (a *authGRPCServer) GetUsersBirthDayByCurrentMonth(ctx context.Context, request *v1.GetUsersBirthDayByCurrentMonthRequest) (*v1.GetUsersBirthDayByCurrentMonthResponse, error) {
 	users, err := a.uc.GetUsersBirthDayByCurrentMonth(ctx)
 	if err != nil {
 		return nil, err
 	}
-	return &gen.GetUsersBirthDayByCurrentMonthResponse{
-		Users: lo.Map(users, func(user *domain.User, _ int) *gen.User {
-			return &gen.User{
+	return &v1.GetUsersBirthDayByCurrentMonthResponse{
+		Users: lo.Map(users, func(user *domain.User, _ int) *v1.User {
+			return &v1.User{
 				Id:          user.ID.String(),
 				Email:       user.Email,
 				FirstName:   user.FirstName,
@@ -308,12 +309,12 @@ func (a *authGRPCServer) GetUsersBirthDayByCurrentMonth(ctx context.Context, req
 		}),
 	}, nil
 }
-func (a *authGRPCServer) GetUsersInviteByGroupId(ctx context.Context, request *gen.GetUsersInviteGroupIdRequest) (*gen.GetUsersInviteGroupIdResponse, error) {
+func (a *authGRPCServer) GetUsersInviteByGroupId(ctx context.Context, request *v1.GetUsersInviteGroupIdRequest) (*v1.GetUsersInviteGroupIdResponse, error) {
 	groupMembers, err := a.groupDomainService.GetGroupMembers(ctx, request.GroupId)
 	if err != nil {
-		return &gen.GetUsersInviteGroupIdResponse{}, nil
+		return &v1.GetUsersInviteGroupIdResponse{}, nil
 	}
-	groupMemberIdsString := lo.Map(groupMembers.GroupMembers, func(groupMember *gen.GroupMemberMetadata, index int) string {
+	groupMemberIdsString := lo.Map(groupMembers.GroupMembers, func(groupMember *v1g.GroupMemberMetadata, index int) string {
 		return groupMember.UserId
 	})
 	groupMemberIds, err := utils.ConvertArStringToArUUID(groupMemberIdsString)
@@ -324,9 +325,9 @@ func (a *authGRPCServer) GetUsersInviteByGroupId(ctx context.Context, request *g
 	if err != nil {
 		return nil, err
 	}
-	return &gen.GetUsersInviteGroupIdResponse{
-		Users: lo.Map(inviteMembers, func(user *domain.User, _ int) *gen.User {
-			return &gen.User{
+	return &v1.GetUsersInviteGroupIdResponse{
+		Users: lo.Map(inviteMembers, func(user *domain.User, _ int) *v1.User {
+			return &v1.User{
 				Id:          user.ID.String(),
 				Email:       user.Email,
 				FirstName:   user.FirstName,
@@ -347,7 +348,7 @@ func (a *authGRPCServer) GetUsersInviteByGroupId(ctx context.Context, request *g
 		}),
 	}, nil
 }
-func (a *authGRPCServer) GetProfile(ctx context.Context, request *gen.GetProfileRequest) (*gen.GetProfileResponse, error) {
+func (a *authGRPCServer) GetProfile(ctx context.Context, request *v1.GetProfileRequest) (*v1.GetProfileResponse, error) {
 	slog.Info("GET:: Profile")
 	var userId uuid.UUID
 	var err error
@@ -381,8 +382,8 @@ func (a *authGRPCServer) GetProfile(ctx context.Context, request *gen.GetProfile
 		settingsAny.Value = user.Settings
 		settingsAny.TypeUrl = "json.RawMessage"
 	}
-	return &gen.GetProfileResponse{
-		User: &gen.User{
+	return &v1.GetProfileResponse{
+		User: &v1.User{
 			Id:          user.ID.String(),
 			Email:       user.Email,
 			FirstName:   user.FirstName,
@@ -403,7 +404,7 @@ func (a *authGRPCServer) GetProfile(ctx context.Context, request *gen.GetProfile
 		},
 	}, nil
 }
-func (a *authGRPCServer) Verify(ctx context.Context, request *gen.VerifyRequest) (*gen.VerifyResponse, error) {
+func (a *authGRPCServer) Verify(ctx context.Context, request *v1.VerifyRequest) (*v1.VerifyResponse, error) {
 	slog.Info("GET:: Verify")
 	md, ok := metadata.FromIncomingContext(ctx)
 	if !ok {
@@ -428,7 +429,7 @@ func (a *authGRPCServer) Verify(ctx context.Context, request *gen.VerifyRequest)
 			return nil, errors.New("Unauthorized")
 		}
 		grpc.SendHeader(ctx, addHeader(payload, keyStore, refreshToken))
-		return &gen.VerifyResponse{}, nil
+		return &v1.VerifyResponse{}, nil
 	}
 	authorization := utils.GetKeyMetadata(md, constant.Authorization)
 	if authorization == "" {
@@ -439,7 +440,7 @@ func (a *authGRPCServer) Verify(ctx context.Context, request *gen.VerifyRequest)
 		return nil, errors.New("Unauthorized")
 	}
 	grpc.SendHeader(ctx, addHeader(payload, keyStore, ""))
-	return &gen.VerifyResponse{}, nil
+	return &v1.VerifyResponse{}, nil
 }
 func verifyToken(refreshToken, secretKey string) (*token.Payload, error) {
 	jwt := token.NewJWTMaker()
@@ -467,7 +468,7 @@ func addHeader(payload *token.Payload, keyStore *domain.Key, refreshToken string
 	)
 	return header
 }
-func (a *authGRPCServer) Logout(ctx context.Context, request *gen.LogoutRequest) (*gen.LogoutResponse, error) {
+func (a *authGRPCServer) Logout(ctx context.Context, request *v1.LogoutRequest) (*v1.LogoutResponse, error) {
 	slog.Info("GET:: Logout")
 	keyStore, err := utils.ExtractMetadataKeyStore(ctx)
 	if err != nil {
@@ -477,9 +478,9 @@ func (a *authGRPCServer) Logout(ctx context.Context, request *gen.LogoutRequest)
 	if err != nil {
 		return nil, errors.Wrap(err, "Logout failed :")
 	}
-	return &gen.LogoutResponse{}, nil
+	return &v1.LogoutResponse{}, nil
 }
-func (a *authGRPCServer) HandleRefreshToken(ctx context.Context, request *gen.HandleRefreshTokenRequest) (*gen.HandleRefreshTokenResponse, error) {
+func (a *authGRPCServer) HandleRefreshToken(ctx context.Context, request *v1.HandleRefreshTokenRequest) (*v1.HandleRefreshTokenResponse, error) {
 	slog.Info("GET:: HandleRefreshToken")
 	user, err := utils.ExtractMetadataUser(ctx)
 	if err != nil {
@@ -508,8 +509,8 @@ func (a *authGRPCServer) HandleRefreshToken(ctx context.Context, request *gen.Ha
 	if err != nil {
 		return nil, err
 	}
-	return &gen.HandleRefreshTokenResponse{
-		User: &gen.User{
+	return &v1.HandleRefreshTokenResponse{
+		User: &v1.User{
 			Id:          res.User.ID.String(),
 			Email:       res.User.Email,
 			FirstName:   res.User.FirstName,
@@ -531,7 +532,7 @@ func (a *authGRPCServer) HandleRefreshToken(ctx context.Context, request *gen.Ha
 		RefreshToken: res.RefreshToken,
 	}, nil
 }
-func (a *authGRPCServer) GetUserIdsOfCompanyByUserId(ctx context.Context, request *gen.GetUserIdsOfCompanyByUserIdRequest) (*gen.GetUserIdsOfCompanyByUserIdResponse, error) {
+func (a *authGRPCServer) GetUserIdsOfCompanyByUserId(ctx context.Context, request *v1.GetUserIdsOfCompanyByUserIdRequest) (*v1.GetUserIdsOfCompanyByUserIdResponse, error) {
 	slog.Info("GET:: GetUserIdsOfCompanyByUserId")
 	userId, err := uuid.Parse(request.UserId)
 	if err != nil {
@@ -541,7 +542,7 @@ func (a *authGRPCServer) GetUserIdsOfCompanyByUserId(ctx context.Context, reques
 	if err != nil {
 		return nil, err
 	}
-	return &gen.GetUserIdsOfCompanyByUserIdResponse{
+	return &v1.GetUserIdsOfCompanyByUserIdResponse{
 		UserIds: lo.Map(userIds, func(item uuid.UUID, _ int) string {
 			return item.String()
 		}),

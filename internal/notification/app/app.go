@@ -4,12 +4,12 @@ import (
 	"context"
 	"encoding/json"
 
+	v1 "github.com/dinhcanh303/go-microservices/api/noti/v1"
 	"github.com/dinhcanh303/go-microservices/cmd/notification/config"
 	"github.com/dinhcanh303/go-microservices/internal/notification/domain"
 	"github.com/dinhcanh303/go-microservices/internal/notification/eventhandlers"
 	"github.com/dinhcanh303/go-microservices/internal/pkg/events"
 	consumer "github.com/dinhcanh303/go-microservices/pkg/rabbitmq/consumer"
-	"github.com/dinhcanh303/go-microservices/proto/gen"
 	"github.com/rabbitmq/amqp091-go"
 	"golang.org/x/exp/slog"
 	"gorm.io/gorm"
@@ -18,7 +18,7 @@ import (
 type App struct {
 	Cfg               *config.Config
 	PG                *gorm.DB
-	NotiGRPCServer    gen.NotiServiceServer
+	NotiGRPCServer    v1.NotiServiceServer
 	AmqpConn          *amqp091.Connection
 	Handlers          eventhandlers.NotificationEventHandler
 	Consumer          consumer.EventConsumer
@@ -29,7 +29,7 @@ func New(
 	cfg *config.Config,
 	pg *gorm.DB,
 	amqpConn *amqp091.Connection,
-	notiGRPCServer gen.NotiServiceServer,
+	notiGRPCServer v1.NotiServiceServer,
 	consumer consumer.EventConsumer,
 	handlers eventhandlers.NotificationEventHandler,
 	authDomainService domain.AuthDomainService,

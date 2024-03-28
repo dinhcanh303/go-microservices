@@ -4,9 +4,9 @@ import (
 	"context"
 	"log/slog"
 
+	v1 "github.com/dinhcanh303/go-microservices/api/auth/v1"
 	"github.com/dinhcanh303/go-microservices/cmd/search/config"
 	"github.com/dinhcanh303/go-microservices/internal/search/domain"
-	"github.com/dinhcanh303/go-microservices/proto/gen"
 	"github.com/google/wire"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
@@ -31,9 +31,9 @@ func NewGRPCAuthClient(cfg *config.Config) (domain.AuthDomainService, error) {
 }
 
 // GetAllUserIdByUserId implements domain.AuthDomainService.
-func (a *authGRPCClient) GetUsers(ctx context.Context) (*gen.GetUsersResponse, error) {
-	client := gen.NewAuthServiceClient(a.conn)
-	res, err := client.GetUsers(ctx, &gen.GetUsersRequest{})
+func (a *authGRPCClient) GetUsers(ctx context.Context) (*v1.GetUsersResponse, error) {
+	client := v1.NewAuthServiceClient(a.conn)
+	res, err := client.GetUsers(ctx, &v1.GetUsersRequest{})
 	if err != nil {
 		slog.Warn("authGRPCClient.GetUsers failed", err)
 		return nil, err

@@ -3,13 +3,14 @@ package router
 import (
 	"context"
 
+	v1a "github.com/dinhcanh303/go-microservices/api/auth/v1"
+	v1 "github.com/dinhcanh303/go-microservices/api/comment/v1"
 	"github.com/dinhcanh303/go-microservices/cmd/comment/config"
 	"github.com/dinhcanh303/go-microservices/internal/comment/domain"
 	"github.com/dinhcanh303/go-microservices/internal/comment/usecases/comments"
-	domainUpload "github.com/dinhcanh303/go-microservices/internal/upload/domain"
+	sharedkernel "github.com/dinhcanh303/go-microservices/internal/pkg/shared_kernel"
 	"github.com/dinhcanh303/go-microservices/pkg/constant"
 	"github.com/dinhcanh303/go-microservices/pkg/utils"
-	"github.com/dinhcanh303/go-microservices/proto/gen"
 	"github.com/google/uuid"
 	"github.com/google/wire"
 	"github.com/pkg/errors"
@@ -21,13 +22,13 @@ import (
 )
 
 type commentGRPCServer struct {
-	gen.UnimplementedCommentServiceServer
+	v1.UnimplementedCommentServiceServer
 	cfg           *config.Config
 	uc            comments.UseCase
 	authDomainSvc domain.AuthDomainService
 }
 
-var _ gen.CommentServiceServer = (*commentGRPCServer)(nil)
+var _ v1.CommentServiceServer = (*commentGRPCServer)(nil)
 
 var CommentGRPCServerSet = wire.NewSet(NewGRPCCommentServer)
 
@@ -36,19 +37,19 @@ func NewGRPCCommentServer(
 	cfg *config.Config,
 	uc comments.UseCase,
 	authDomainSvc domain.AuthDomainService,
-) gen.CommentServiceServer {
+) v1.CommentServiceServer {
 	svc := commentGRPCServer{
 		cfg:           cfg,
 		uc:            uc,
 		authDomainSvc: authDomainSvc,
 	}
-	gen.RegisterCommentServiceServer(grpcServer, &svc)
+	v1.RegisterCommentServiceServer(grpcServer, &svc)
 	reflection.Register(grpcServer)
 	return &svc
 }
 
-// CountCommentByCommentID implements gen.CommentServiceServer.
-func (c *commentGRPCServer) CountCommentByCommentID(ctx context.Context, request *gen.CountCommentByCommentIDRequest) (*gen.CountCommentByCommentIDResponse, error) {
+// CountCommentByCommentID implements v1.CommentServiceServer.
+func (c *commentGRPCServer) CountCommentByCommentID(ctx context.Context, request *v1.CountCommentByCommentIDRequest) (*v1.CountCommentByCommentIDResponse, error) {
 	slog.Info("POST: CountCommentByCommentID")
 	commentId, err := uuid.Parse(request.CommentId)
 	if err != nil {
@@ -58,13 +59,13 @@ func (c *commentGRPCServer) CountCommentByCommentID(ctx context.Context, request
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to count")
 	}
-	return &gen.CountCommentByCommentIDResponse{
+	return &v1.CountCommentByCommentIDResponse{
 		Count: count,
 	}, nil
 }
 
-// CountCommentByPostID implements gen.CommentServiceServer.
-func (c *commentGRPCServer) CountCommentByPostID(ctx context.Context, request *gen.CountCommentByPostIDRequest) (*gen.CountCommentByPostIDResponse, error) {
+// CountCommentByPostID implements v1.CommentServiceServer.
+func (c *commentGRPCServer) CountCommentByPostID(ctx context.Context, request *v1.CountCommentByPostIDRequest) (*v1.CountCommentByPostIDResponse, error) {
 	slog.Info("POST: CountCommentByPostID")
 	postId, err := uuid.Parse(request.PostId)
 	if err != nil {
@@ -74,13 +75,13 @@ func (c *commentGRPCServer) CountCommentByPostID(ctx context.Context, request *g
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to count")
 	}
-	return &gen.CountCommentByPostIDResponse{
+	return &v1.CountCommentByPostIDResponse{
 		Count: count,
 	}, nil
 }
 
-// CreateComment implements gen.CommentServiceServer.
-func (c *commentGRPCServer) CreateComment(ctx context.Context, request *gen.CreateCommentRequest) (*gen.CreateCommentResponse, error) {
+// CreateComment implements v1.CommentServiceServer.
+func (c *commentGRPCServer) CreateComment(ctx context.Context, request *v1.CreateCommentRequest) (*v1.CreateCommentResponse, error) {
 	slog.Info("POST: CreateComment")
 	user, err := utils.ExtractMetadataUser(ctx)
 	if err != nil {
@@ -112,23 +113,13 @@ func (c *commentGRPCServer) CreateComment(ctx context.Context, request *gen.Crea
 	if err != nil {
 		return nil, errors.Wrap(err, "uc.CreateComment failed")
 	}
-	return &gen.CreateCommentResponse{
-		Comment: &gen.Comment{
-			Id:              comment.ID.String(),
-			PostId:          comment.PostID.String(),
-			ReplyId:         comment.ReplyID.UUID.String(),
-			TagIds:          utils.ConvertArUUIDToArString(comment.TagIDs),
-			Content:         comment.Content,
-			ParentCommentId: comment.ParentCommentID.UUID.String(),
-			UserId:          comment.UserID.String(),
-			CreatedAt:       timestamppb.New(comment.CreatedAt),
-			UpdatedAt:       timestamppb.New(comment.UpdatedAt),
-		},
+	return &v1.CreateCommentResponse{
+		Comment: entityToProtobuf(comment),
 	}, nil
 }
 
-// DeleteComment implements gen.CommentServiceServer.
-func (c *commentGRPCServer) DeleteComment(ctx context.Context, request *gen.DeleteCommentRequest) (*gen.DeleteCommentResponse, error) {
+// DeleteComment implements v1.CommentServiceServer.
+func (c *commentGRPCServer) DeleteComment(ctx context.Context, request *v1.DeleteCommentRequest) (*v1.DeleteCommentResponse, error) {
 	slog.Info("DELETE: DeleteComment")
 	id, err := uuid.Parse(request.Id)
 	if err != nil {
@@ -138,13 +129,13 @@ func (c *commentGRPCServer) DeleteComment(ctx context.Context, request *gen.Dele
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to delete")
 	}
-	return &gen.DeleteCommentResponse{
+	return &v1.DeleteCommentResponse{
 		Deleted: result,
 	}, nil
 }
 
-// GetComment implements gen.CommentServiceServer.
-func (c *commentGRPCServer) GetComment(ctx context.Context, request *gen.GetCommentRequest) (*gen.GetCommentResponse, error) {
+// GetComment implements v1.CommentServiceServer.
+func (c *commentGRPCServer) GetComment(ctx context.Context, request *v1.GetCommentRequest) (*v1.GetCommentResponse, error) {
 	slog.Info("GET: GetComment")
 	id, err := uuid.Parse(request.Id)
 	if err != nil {
@@ -154,21 +145,11 @@ func (c *commentGRPCServer) GetComment(ctx context.Context, request *gen.GetComm
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to get comment")
 	}
-	return &gen.GetCommentResponse{
-		Comment: &gen.Comment{
-			Id:              comment.ID.String(),
-			PostId:          comment.PostID.String(),
-			ReplyId:         comment.ReplyID.UUID.String(),
-			TagIds:          utils.ConvertArUUIDToArString(comment.TagIDs),
-			ParentCommentId: comment.ParentCommentID.UUID.String(),
-			Content:         comment.Content,
-			UserId:          comment.UserID.String(),
-			CreatedAt:       timestamppb.New(comment.CreatedAt),
-			UpdatedAt:       timestamppb.New(comment.UpdatedAt),
-		},
+	return &v1.GetCommentResponse{
+		Comment: entityToProtobuf(comment),
 	}, nil
 }
-func (c *commentGRPCServer) GetCommentsByCommentID(ctx context.Context, request *gen.GetCommentsByCommentIDRequest) (*gen.GetCommentsByCommentIDResponse, error) {
+func (c *commentGRPCServer) GetCommentsByCommentID(ctx context.Context, request *v1.GetCommentsByCommentIDRequest) (*v1.GetCommentsByCommentIDResponse, error) {
 	slog.Info("GET: GetCommentsByCommentID")
 	commentId, err := uuid.Parse(request.CommentId)
 	if err != nil {
@@ -178,7 +159,7 @@ func (c *commentGRPCServer) GetCommentsByCommentID(ctx context.Context, request 
 	if err != nil {
 		return nil, err
 	}
-	res := gen.GetCommentsByCommentIDResponse{}
+	res := v1.GetCommentsByCommentIDResponse{}
 	if request.Limit == 0 {
 		request.Limit = 10
 	}
@@ -189,7 +170,7 @@ func (c *commentGRPCServer) GetCommentsByCommentID(ctx context.Context, request 
 	for _, comment := range comments {
 		user, err := c.authDomainSvc.GetProfile(ctx, comment.UserID)
 		if err != nil {
-			user = &gen.GetProfileResponse{}
+			user = &v1a.GetProfileResponse{}
 		}
 		replyName := ""
 		if comment.UserID == comment.ReplyID.UUID {
@@ -203,48 +184,13 @@ func (c *commentGRPCServer) GetCommentsByCommentID(ctx context.Context, request 
 			}
 		}
 		tagIds, tagNames := handleTags(ctx, comment.TagIDs, c.authDomainSvc)
-		res.Comments = append(res.Comments, &gen.CommentHasMetadata{
-			Id:              comment.ID.String(),
-			PostId:          comment.PostID.String(),
-			UserId:          comment.UserID.String(),
-			ReplyId:         comment.ReplyID.UUID.String(),
-			ReplyName:       replyName,
-			TagIds:          tagIds,
-			TagNames:        tagNames,
-			Content:         comment.Content,
-			ParentCommentId: comment.ParentCommentID.UUID.String(),
-			CreatedAt:       timestamppb.New(comment.CreatedAt),
-			UpdatedAt:       timestamppb.New(comment.UpdatedAt),
-			User:            user.User,
-			Likes: &gen.LikeInfo{
-				YourLikedEmoji:    comment.Likes.YourLikedEmoji,
-				YourLike:          comment.Likes.YourLike,
-				OthersLikedEmojis: comment.Likes.OthersLikedEmojis,
-				OthersLikes:       comment.Likes.OthersLikes,
-			},
-			Attachments: lo.Map(comment.Attachments, func(item *domainUpload.Attachment, _ int) *gen.Attachment {
-				return &gen.Attachment{
-					Id:             item.ID.String(),
-					UserId:         item.UserID.String(),
-					AttachableType: item.AttachableType,
-					AttachableId:   item.AttachableID.String(),
-					Filename:       item.FileName,
-					Url:            item.URL,
-					UrlThumbnail:   item.URLThumbnail,
-					Extension:      item.Extension,
-					MimeType:       item.MimeType,
-					Folder:         item.Folder,
-					CreatedAt:      timestamppb.New(item.CreatedAt),
-					UpdatedAt:      timestamppb.New(item.UpdatedAt),
-				}
-			}),
-		})
+		res.Comments = append(res.Comments, entityCommentToProtobuf(comment, replyName, tagIds, tagNames, user.User))
 	}
 	return &res, nil
 }
 
-// ListCommentByPostID implements gen.CommentServiceServer.
-func (c *commentGRPCServer) GetCommentsByPostID(ctx context.Context, request *gen.GetCommentsByPostIDRequest) (*gen.GetCommentsByPostIDResponse, error) {
+// ListCommentByPostID implements v1.CommentServiceServer.
+func (c *commentGRPCServer) GetCommentsByPostID(ctx context.Context, request *v1.GetCommentsByPostIDRequest) (*v1.GetCommentsByPostIDResponse, error) {
 	slog.Info("GET: GetCommentsByPostID")
 	postId, err := uuid.Parse(request.PostId)
 	if err != nil {
@@ -254,7 +200,7 @@ func (c *commentGRPCServer) GetCommentsByPostID(ctx context.Context, request *ge
 	if err != nil {
 		return nil, err
 	}
-	res := gen.GetCommentsByPostIDResponse{}
+	res := v1.GetCommentsByPostIDResponse{}
 	if request.Limit == 0 {
 		request.Limit = 10
 	}
@@ -265,7 +211,7 @@ func (c *commentGRPCServer) GetCommentsByPostID(ctx context.Context, request *ge
 	for _, comment := range comments {
 		user, err := c.authDomainSvc.GetProfile(ctx, comment.UserID)
 		if err != nil {
-			user = &gen.GetProfileResponse{}
+			user = &v1a.GetProfileResponse{}
 		}
 		replyName := ""
 		if comment.UserID == comment.ReplyID.UUID {
@@ -279,7 +225,7 @@ func (c *commentGRPCServer) GetCommentsByPostID(ctx context.Context, request *ge
 			}
 		}
 		tagIds, tagNames := handleTags(ctx, comment.TagIDs, c.authDomainSvc)
-		res.Comments = append(res.Comments, &gen.CommentHasChildren{
+		res.Comments = append(res.Comments, &v1.CommentHasChildren{
 			Id:              comment.ID.String(),
 			PostId:          comment.PostID.String(),
 			UserId:          comment.UserID.String(),
@@ -292,32 +238,12 @@ func (c *commentGRPCServer) GetCommentsByPostID(ctx context.Context, request *ge
 			CreatedAt:       timestamppb.New(comment.CreatedAt),
 			UpdatedAt:       timestamppb.New(comment.UpdatedAt),
 			User:            user.User,
-			Likes: &gen.LikeInfo{
-				YourLikedEmoji:    comment.Likes.YourLikedEmoji,
-				YourLike:          comment.Likes.YourLike,
-				OthersLikedEmojis: comment.Likes.OthersLikedEmojis,
-				OthersLikes:       comment.Likes.OthersLikes,
-			},
-			Attachments: lo.Map(comment.Attachments, func(attachment *domainUpload.Attachment, _ int) *gen.Attachment {
-				return &gen.Attachment{
-					Id:             attachment.ID.String(),
-					UserId:         attachment.UserID.String(),
-					AttachableType: attachment.AttachableType,
-					AttachableId:   attachment.AttachableID.String(),
-					Filename:       attachment.FileName,
-					Url:            attachment.URL,
-					UrlThumbnail:   attachment.URLThumbnail,
-					Extension:      attachment.Extension,
-					MimeType:       attachment.MimeType,
-					Folder:         attachment.Folder,
-					CreatedAt:      timestamppb.New(attachment.CreatedAt),
-					UpdatedAt:      timestamppb.New(attachment.UpdatedAt),
-				}
-			}),
-			Children: lo.Map(comment.Children, func(item *domain.CommentHasMetadata, _ int) *gen.CommentHasMetadata {
+			Likes:           sharedkernel.EntityLikeToProtobuf(comment.Likes),
+			Attachments:     sharedkernel.EntityAttachmentToProtobuf(comment.Attachments),
+			Children: lo.Map(comment.Children, func(item *domain.CommentHasMetadata, _ int) *v1.CommentHasMetadata {
 				user, err := c.authDomainSvc.GetProfile(ctx, item.UserID)
 				if err != nil {
-					user = &gen.GetProfileResponse{}
+					user = &v1a.GetProfileResponse{}
 				}
 				replyName := ""
 				if item.UserID == item.ReplyID.UUID {
@@ -331,50 +257,15 @@ func (c *commentGRPCServer) GetCommentsByPostID(ctx context.Context, request *ge
 					}
 				}
 				tagIds, tagNames := handleTags(ctx, item.TagIDs, c.authDomainSvc)
-				return &gen.CommentHasMetadata{
-					Id:        item.ID.String(),
-					PostId:    item.PostID.String(),
-					UserId:    item.UserID.String(),
-					ReplyId:   item.ReplyID.UUID.String(),
-					ReplyName: replyName,
-					TagIds:    tagIds,
-					TagNames:  tagNames,
-					Content:   item.Content,
-					User:      user.User,
-					Likes: &gen.LikeInfo{
-						YourLikedEmoji:    item.Likes.YourLikedEmoji,
-						YourLike:          item.Likes.YourLike,
-						OthersLikedEmojis: item.Likes.OthersLikedEmojis,
-						OthersLikes:       item.Likes.OthersLikes,
-					},
-					Attachments: lo.Map(item.Attachments, func(attachment *domainUpload.Attachment, _ int) *gen.Attachment {
-						return &gen.Attachment{
-							Id:             attachment.ID.String(),
-							UserId:         attachment.UserID.String(),
-							AttachableType: attachment.AttachableType,
-							AttachableId:   attachment.AttachableID.String(),
-							Filename:       attachment.FileName,
-							Url:            attachment.URL,
-							UrlThumbnail:   attachment.URLThumbnail,
-							Extension:      attachment.Extension,
-							MimeType:       attachment.MimeType,
-							Folder:         attachment.Folder,
-							CreatedAt:      timestamppb.New(attachment.CreatedAt),
-							UpdatedAt:      timestamppb.New(attachment.UpdatedAt),
-						}
-					}),
-					ParentCommentId: item.ParentCommentID.UUID.String(),
-					CreatedAt:       timestamppb.New(item.CreatedAt),
-					UpdatedAt:       timestamppb.New(item.UpdatedAt),
-				}
+				return entityCommentToProtobuf(item, replyName, tagIds, tagNames, user.User)
 			}),
 		})
 	}
 	return &res, nil
 }
 
-// UpdateComment implements gen.CommentServiceServer.
-func (c *commentGRPCServer) UpdateComment(ctx context.Context, request *gen.UpdateCommentRequest) (*gen.UpdateCommentResponse, error) {
+// UpdateComment implements v1.CommentServiceServer.
+func (c *commentGRPCServer) UpdateComment(ctx context.Context, request *v1.UpdateCommentRequest) (*v1.UpdateCommentResponse, error) {
 	slog.Info("PUT: UpdateComment")
 	replyToId, _ := uuid.Parse(request.Comment.ReplyId)
 	tagIds, _ := utils.ConvertArStringToArUUID(request.Comment.TagIds)
@@ -390,18 +281,8 @@ func (c *commentGRPCServer) UpdateComment(ctx context.Context, request *gen.Upda
 	if err != nil {
 		return nil, errors.Wrap(err, "uc.UpdateComment failed")
 	}
-	res := &gen.UpdateCommentResponse{
-		Comment: &gen.Comment{
-			Id:              comment.ID.String(),
-			PostId:          comment.PostID.String(),
-			ReplyId:         comment.ReplyID.UUID.String(),
-			TagIds:          utils.ConvertArUUIDToArString(comment.TagIDs),
-			Content:         comment.Content,
-			ParentCommentId: comment.ParentCommentID.UUID.String(),
-			UserId:          comment.UserID.String(),
-			CreatedAt:       timestamppb.New(comment.CreatedAt),
-			UpdatedAt:       timestamppb.New(comment.UpdatedAt),
-		},
+	res := &v1.UpdateCommentResponse{
+		Comment: entityToProtobuf(comment),
 	}
 	return res, nil
 }
@@ -413,4 +294,36 @@ func handleTags(ctx context.Context, tagIds []uuid.UUID, authDomainSvc domain.Au
 		tagNames = append(tagNames, user.User.FullName)
 	}
 	return strTagIds, tagNames
+}
+func entityToProtobuf(comment *domain.Comment) *v1.Comment {
+	return &v1.Comment{
+		Id:              comment.ID.String(),
+		PostId:          comment.PostID.String(),
+		ReplyId:         comment.ReplyID.UUID.String(),
+		TagIds:          utils.ConvertArUUIDToArString(comment.TagIDs),
+		Content:         comment.Content,
+		ParentCommentId: comment.ParentCommentID.UUID.String(),
+		UserId:          comment.UserID.String(),
+		CreatedAt:       timestamppb.New(comment.CreatedAt),
+		UpdatedAt:       timestamppb.New(comment.UpdatedAt),
+	}
+}
+
+func entityCommentToProtobuf(comment *domain.CommentHasMetadata, replyName string, tagIds []string, tagNames []string, user *v1a.User) *v1.CommentHasMetadata {
+	return &v1.CommentHasMetadata{
+		Id:              comment.ID.String(),
+		PostId:          comment.PostID.String(),
+		UserId:          comment.UserID.String(),
+		ReplyId:         comment.ReplyID.UUID.String(),
+		ReplyName:       replyName,
+		TagIds:          tagIds,
+		TagNames:        tagNames,
+		Content:         comment.Content,
+		User:            user,
+		Likes:           sharedkernel.EntityLikeToProtobuf(comment.Likes),
+		Attachments:     sharedkernel.EntityAttachmentToProtobuf(comment.Attachments),
+		ParentCommentId: comment.ParentCommentID.UUID.String(),
+		CreatedAt:       timestamppb.New(comment.CreatedAt),
+		UpdatedAt:       timestamppb.New(comment.UpdatedAt),
+	}
 }

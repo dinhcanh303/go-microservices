@@ -4,9 +4,9 @@ import (
 	"context"
 	"errors"
 
+	v1 "github.com/dinhcanh303/go-microservices/api/search/v1"
 	"github.com/dinhcanh303/go-microservices/internal/search/domain"
 	"github.com/dinhcanh303/go-microservices/internal/search/usecases/searches"
-	"github.com/dinhcanh303/go-microservices/proto/gen"
 	"github.com/google/wire"
 	"github.com/samber/lo"
 	"google.golang.org/grpc"
@@ -14,34 +14,34 @@ import (
 )
 
 type searchGRPCServer struct {
-	gen.UnimplementedSearchServiceServer
+	v1.UnimplementedSearchServiceServer
 	uc searches.UseCase
 }
 
-var _ gen.SearchServiceServer = (*searchGRPCServer)(nil)
+var _ v1.SearchServiceServer = (*searchGRPCServer)(nil)
 
 var SearchGRPCServerSet = wire.NewSet(NewSearchGRPCServer)
 
 func NewSearchGRPCServer(
 	grpcServer *grpc.Server,
 	uc searches.UseCase,
-) gen.SearchServiceServer {
+) v1.SearchServiceServer {
 	svc := searchGRPCServer{
 		uc: uc,
 	}
-	gen.RegisterSearchServiceServer(grpcServer, &svc)
+	v1.RegisterSearchServiceServer(grpcServer, &svc)
 	reflection.Register(grpcServer)
 	return &svc
 }
-func (s *searchGRPCServer) Search(ctx context.Context, request *gen.SearchRequest) (*gen.SearchResponse, error) {
+func (s *searchGRPCServer) Search(ctx context.Context, request *v1.SearchRequest) (*v1.SearchResponse, error) {
 	searchText := request.Q
 	if searchText == "" {
 		return nil, errors.New("key word search empty")
 	}
 	results, _ := s.uc.Search(searchText)
-	return &gen.SearchResponse{
-		Searches: lo.Map(results, func(item *domain.Search, _ int) *gen.Search {
-			return &gen.Search{
+	return &v1.SearchResponse{
+		Searches: lo.Map(results, func(item *domain.Search, _ int) *v1.Search {
+			return &v1.Search{
 				Id:         item.ID.String(),
 				Name:       item.Name,
 				Email:      item.Email,

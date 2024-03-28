@@ -3,10 +3,10 @@ package grpc
 import (
 	"context"
 
+	v1 "github.com/dinhcanh303/go-microservices/api/comment/v1"
 	"github.com/dinhcanh303/go-microservices/cmd/like/config"
 	"github.com/dinhcanh303/go-microservices/internal/like/domain"
 	"github.com/dinhcanh303/go-microservices/pkg/utils"
-	"github.com/dinhcanh303/go-microservices/proto/gen"
 	"github.com/google/uuid"
 	"github.com/google/wire"
 	"github.com/pkg/errors"
@@ -33,13 +33,13 @@ func NewGRPCCommentClient(cfg *config.Config) (domain.CommentDomainService, erro
 }
 
 // GetComment implements domain.CommentDomainService.
-func (c *commentGRPCClient) GetComment(ctx context.Context, id uuid.UUID) (*gen.GetCommentResponse, error) {
-	client := gen.NewCommentServiceClient(c.conn)
+func (c *commentGRPCClient) GetComment(ctx context.Context, id uuid.UUID) (*v1.GetCommentResponse, error) {
+	client := v1.NewCommentServiceClient(c.conn)
 	ctxBackground, err := utils.OutgoingContext(ctx)
 	if err != nil {
 		return nil, err
 	}
-	res, err := client.GetComment(ctxBackground, &gen.GetCommentRequest{
+	res, err := client.GetComment(ctxBackground, &v1.GetCommentRequest{
 		Id: id.String(),
 	})
 	if err != nil {

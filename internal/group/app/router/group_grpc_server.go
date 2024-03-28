@@ -3,13 +3,14 @@ package router
 import (
 	"context"
 
+	v1a "github.com/dinhcanh303/go-microservices/api/auth/v1"
+	v1 "github.com/dinhcanh303/go-microservices/api/group/v1"
 	"github.com/dinhcanh303/go-microservices/cmd/group/config"
 	"github.com/dinhcanh303/go-microservices/internal/group/domain"
 	"github.com/dinhcanh303/go-microservices/internal/group/usecases/groupmembers"
 	"github.com/dinhcanh303/go-microservices/internal/group/usecases/groups"
 	sharedkernel "github.com/dinhcanh303/go-microservices/internal/pkg/shared_kernel"
 	"github.com/dinhcanh303/go-microservices/pkg/utils"
-	"github.com/dinhcanh303/go-microservices/proto/gen"
 	"github.com/google/uuid"
 	"github.com/google/wire"
 	"github.com/pkg/errors"
@@ -21,14 +22,14 @@ import (
 )
 
 type groupGRPCServer struct {
-	gen.UnimplementedGroupServiceServer
+	v1.UnimplementedGroupServiceServer
 	cfg               *config.Config
 	ucGroup           groups.UseCase
 	ucGroupMember     groupmembers.UseCase
 	authDomainService domain.AuthDomainService
 }
 
-var _ gen.GroupServiceServer = (*groupGRPCServer)(nil)
+var _ v1.GroupServiceServer = (*groupGRPCServer)(nil)
 
 var GroupGRPCServerSet = wire.NewSet(NewGRPCGroupServer)
 
@@ -38,19 +39,19 @@ func NewGRPCGroupServer(
 	ucGroup groups.UseCase,
 	ucGroupMember groupmembers.UseCase,
 	authDomainService domain.AuthDomainService,
-) gen.GroupServiceServer {
+) v1.GroupServiceServer {
 	svc := groupGRPCServer{
 		cfg:               cfg,
 		ucGroup:           ucGroup,
 		ucGroupMember:     ucGroupMember,
 		authDomainService: authDomainService,
 	}
-	gen.RegisterGroupServiceServer(grpcServer, &svc)
+	v1.RegisterGroupServiceServer(grpcServer, &svc)
 	reflection.Register(grpcServer)
 	return &svc
 }
 
-func (g *groupGRPCServer) GetGroupMembers(ctx context.Context, request *gen.GetGroupMembersRequest) (*gen.GetGroupMembersResponse, error) {
+func (g *groupGRPCServer) GetGroupMembers(ctx context.Context, request *v1.GetGroupMembersRequest) (*v1.GetGroupMembersResponse, error) {
 	slog.Info("GET: GetAllGroupMembers")
 	groupId, err := uuid.Parse(request.GroupId)
 	if err != nil {
@@ -60,13 +61,13 @@ func (g *groupGRPCServer) GetGroupMembers(ctx context.Context, request *gen.GetG
 	if err != nil {
 		return nil, errors.Wrap(err, "ucGroupMember.GetAllGroupMembers failed")
 	}
-	return &gen.GetGroupMembersResponse{
-		GroupMembers: lo.Map(groupMembers, func(groupMember *domain.GroupMember, _ int) *gen.GroupMemberMetadata {
+	return &v1.GetGroupMembersResponse{
+		GroupMembers: lo.Map(groupMembers, func(groupMember *domain.GroupMember, _ int) *v1.GroupMemberMetadata {
 			user, err := g.authDomainService.GetProfile(ctx, groupMember.UserID)
 			if err != nil {
-				user = &gen.GetProfileResponse{}
+				user = &v1a.GetProfileResponse{}
 			}
-			return &gen.GroupMemberMetadata{
+			return &v1.GroupMemberMetadata{
 				Id:        groupMember.ID.String(),
 				GroupId:   groupMember.GroupID.String(),
 				UserId:    groupMember.UserID.String(),
@@ -78,7 +79,7 @@ func (g *groupGRPCServer) GetGroupMembers(ctx context.Context, request *gen.GetG
 		}),
 	}, nil
 }
-func (g *groupGRPCServer) CreateGroupMember(ctx context.Context, request *gen.CreateGroupMemberRequest) (*gen.CreateGroupMemberResponse, error) {
+func (g *groupGRPCServer) CreateGroupMember(ctx context.Context, request *v1.CreateGroupMemberRequest) (*v1.CreateGroupMemberResponse, error) {
 	slog.Info("POST: CreateGroupMember")
 	user, err := utils.ExtractMetadataUser(ctx)
 	if err != nil {
@@ -98,8 +99,8 @@ func (g *groupGRPCServer) CreateGroupMember(ctx context.Context, request *gen.Cr
 	if err != nil {
 		return nil, errors.Wrap(err, "ucGroupMember.CreateGroupMember failed")
 	}
-	return &gen.CreateGroupMemberResponse{
-		GroupMember: &gen.GroupMember{
+	return &v1.CreateGroupMemberResponse{
+		GroupMember: &v1.GroupMember{
 			Id:        groupMember.ID.String(),
 			GroupId:   groupMember.GroupID.String(),
 			UserId:    groupMember.UserID.String(),
@@ -110,7 +111,7 @@ func (g *groupGRPCServer) CreateGroupMember(ctx context.Context, request *gen.Cr
 	}, nil
 
 }
-func (g *groupGRPCServer) DeleteGroupMember(ctx context.Context, request *gen.DeleteGroupMemberRequest) (*gen.DeleteGroupMemberResponse, error) {
+func (g *groupGRPCServer) DeleteGroupMember(ctx context.Context, request *v1.DeleteGroupMemberRequest) (*v1.DeleteGroupMemberResponse, error) {
 	slog.Info("DELETE: DeleteGroupMember")
 	id, err := uuid.Parse(request.Id)
 	if err != nil {
@@ -120,11 +121,11 @@ func (g *groupGRPCServer) DeleteGroupMember(ctx context.Context, request *gen.De
 	if err != nil {
 		return nil, errors.Wrap(err, "ucGroup.GetGroup failed")
 	}
-	return &gen.DeleteGroupMemberResponse{
+	return &v1.DeleteGroupMemberResponse{
 		Deleted: deleted,
 	}, nil
 }
-func (g *groupGRPCServer) UpdateGroupMember(ctx context.Context, request *gen.UpdateGroupMemberRequest) (*gen.UpdateGroupMemberResponse, error) {
+func (g *groupGRPCServer) UpdateGroupMember(ctx context.Context, request *v1.UpdateGroupMemberRequest) (*v1.UpdateGroupMemberResponse, error) {
 	slog.Info("PUT: UpdateGroupMember")
 	id, err := uuid.Parse(request.GroupMember.Id)
 	if err != nil {
@@ -138,8 +139,8 @@ func (g *groupGRPCServer) UpdateGroupMember(ctx context.Context, request *gen.Up
 	if err != nil {
 		return nil, errors.Wrap(err, "ucGroup.UpdateGroupMember failed")
 	}
-	res := &gen.UpdateGroupMemberResponse{
-		GroupMember: &gen.GroupMember{
+	res := &v1.UpdateGroupMemberResponse{
+		GroupMember: &v1.GroupMember{
 			Id:        groupMember.ID.String(),
 			GroupId:   groupMember.GroupID.String(),
 			UserId:    groupMember.UserID.String(),
@@ -150,29 +151,20 @@ func (g *groupGRPCServer) UpdateGroupMember(ctx context.Context, request *gen.Up
 	}
 	return res, nil
 }
-func (g *groupGRPCServer) GetGroups(ctx context.Context, request *gen.GetGroupsRequest) (*gen.GetGroupsResponse, error) {
+func (g *groupGRPCServer) GetGroups(ctx context.Context, request *v1.GetGroupsRequest) (*v1.GetGroupsResponse, error) {
 	slog.Info("GET: GetGroupsByUserId")
 
 	groups, err := g.ucGroup.GetGroups(ctx)
 	if err != nil {
 		return nil, errors.Wrap(err, "userId.GetGroupsByUserId failed")
 	}
-	return &gen.GetGroupsResponse{
-		Groups: lo.Map(groups, func(group *domain.Group, _ int) *gen.Group {
-			return &gen.Group{
-				Id:          group.ID.String(),
-				Name:        group.Name,
-				Description: group.Description,
-				Status:      group.Status,
-				UserId:      group.UserID.String(),
-				ProfileUrl:  group.ProfileUrl,
-				CreatedAt:   timestamppb.New(group.CreatedAt),
-				UpdatedAt:   timestamppb.New(group.UpdatedAt),
-			}
+	return &v1.GetGroupsResponse{
+		Groups: lo.Map(groups, func(group *domain.Group, _ int) *v1.Group {
+			return entityToProtobuf(group)
 		}),
 	}, nil
 }
-func (g *groupGRPCServer) GetGroupsByUserId(ctx context.Context, request *gen.GetGroupsByUserIdRequest) (*gen.GetGroupsByUserIdResponse, error) {
+func (g *groupGRPCServer) GetGroupsByUserId(ctx context.Context, request *v1.GetGroupsByUserIdRequest) (*v1.GetGroupsByUserIdResponse, error) {
 	slog.Info("GET: GetGroupsByUserId")
 	userId, err := uuid.Parse(request.UserId)
 	if err != nil {
@@ -182,23 +174,14 @@ func (g *groupGRPCServer) GetGroupsByUserId(ctx context.Context, request *gen.Ge
 	if err != nil {
 		return nil, errors.Wrap(err, "userId.GetGroupsByUserId failed")
 	}
-	return &gen.GetGroupsByUserIdResponse{
-		Groups: lo.Map(groups, func(group *domain.Group, _ int) *gen.Group {
-			return &gen.Group{
-				Id:          group.ID.String(),
-				Name:        group.Name,
-				Description: group.Description,
-				Status:      group.Status,
-				UserId:      group.UserID.String(),
-				ProfileUrl:  group.ProfileUrl,
-				CreatedAt:   timestamppb.New(group.CreatedAt),
-				UpdatedAt:   timestamppb.New(group.UpdatedAt),
-			}
+	return &v1.GetGroupsByUserIdResponse{
+		Groups: lo.Map(groups, func(group *domain.Group, _ int) *v1.Group {
+			return entityToProtobuf(group)
 		}),
 	}, nil
 }
 
-func (g *groupGRPCServer) GetGroupIdsByUserId(ctx context.Context, request *gen.GetGroupIdsByUserIdRequest) (*gen.GetGroupIdsByUserIdResponse, error) {
+func (g *groupGRPCServer) GetGroupIdsByUserId(ctx context.Context, request *v1.GetGroupIdsByUserIdRequest) (*v1.GetGroupIdsByUserIdResponse, error) {
 	slog.Info("GET: GetAllGroupByUserId")
 	userId, err := uuid.Parse(request.UserId)
 	if err != nil {
@@ -208,12 +191,12 @@ func (g *groupGRPCServer) GetGroupIdsByUserId(ctx context.Context, request *gen.
 	if err != nil {
 		return nil, errors.Wrap(err, "userId.GetGroupIdsByUserId failed")
 	}
-	return &gen.GetGroupIdsByUserIdResponse{
+	return &v1.GetGroupIdsByUserIdResponse{
 		GroupIds: groupIds,
 	}, nil
 }
 
-func (g *groupGRPCServer) CreateGroup(ctx context.Context, request *gen.CreateGroupRequest) (*gen.CreateGroupResponse, error) {
+func (g *groupGRPCServer) CreateGroup(ctx context.Context, request *v1.CreateGroupRequest) (*v1.CreateGroupResponse, error) {
 	slog.Info("POST: CreateGroup")
 	payloadUser, err := utils.ExtractMetadataUser(ctx)
 	if err != nil {
@@ -243,22 +226,13 @@ func (g *groupGRPCServer) CreateGroup(ctx context.Context, request *gen.CreateGr
 			})
 		}
 	}
-	res := &gen.CreateGroupResponse{
-		Group: &gen.Group{
-			Id:          group.ID.String(),
-			Name:        group.Name,
-			Description: group.Description,
-			UserId:      group.UserID.String(),
-			Status:      group.Status,
-			ProfileUrl:  group.ProfileUrl,
-			CreatedAt:   timestamppb.New(group.CreatedAt),
-			UpdatedAt:   timestamppb.New(group.UpdatedAt),
-		},
+	res := &v1.CreateGroupResponse{
+		Group: entityToProtobuf(group),
 	}
 	return res, nil
 }
 
-func (g *groupGRPCServer) GetGroup(ctx context.Context, request *gen.GetGroupRequest) (*gen.GetGroupResponse, error) {
+func (g *groupGRPCServer) GetGroup(ctx context.Context, request *v1.GetGroupRequest) (*v1.GetGroupResponse, error) {
 	slog.Info("GET: GetGroup")
 	id, err := uuid.Parse(request.Id)
 	if err != nil {
@@ -281,23 +255,14 @@ func (g *groupGRPCServer) GetGroup(ctx context.Context, request *gen.GetGroupReq
 		roleMember = 0
 	}
 	// isOwner , err := g
-	return &gen.GetGroupResponse{
-		Group: &gen.Group{
-			Id:          group.ID.String(),
-			Name:        group.Name,
-			Description: group.Description,
-			UserId:      group.UserID.String(),
-			Status:      group.Status,
-			ProfileUrl:  group.ProfileUrl,
-			CreatedAt:   timestamppb.New(group.CreatedAt),
-			UpdatedAt:   timestamppb.New(group.UpdatedAt),
-		},
+	return &v1.GetGroupResponse{
+		Group:             entityToProtobuf(group),
 		CountGroupMembers: countMembers,
 		RoleGroupMember:   sharedkernel.RoleGroupMember(roleMember).String(),
 	}, nil
 }
 
-func (g *groupGRPCServer) DeleteGroup(ctx context.Context, request *gen.DeleteGroupRequest) (*gen.DeleteGroupResponse, error) {
+func (g *groupGRPCServer) DeleteGroup(ctx context.Context, request *v1.DeleteGroupRequest) (*v1.DeleteGroupResponse, error) {
 	slog.Info("DELETE: DeleteGroup")
 	id, err := uuid.Parse(request.Id)
 	if err != nil {
@@ -307,12 +272,12 @@ func (g *groupGRPCServer) DeleteGroup(ctx context.Context, request *gen.DeleteGr
 	if err != nil {
 		return nil, errors.Wrap(err, "ucGroup.DeleteGroup failed")
 	}
-	return &gen.DeleteGroupResponse{
+	return &v1.DeleteGroupResponse{
 		Deleted: deleted,
 	}, nil
 }
 
-func (g *groupGRPCServer) UpdateGroup(ctx context.Context, request *gen.UpdateGroupRequest) (*gen.UpdateGroupResponse, error) {
+func (g *groupGRPCServer) UpdateGroup(ctx context.Context, request *v1.UpdateGroupRequest) (*v1.UpdateGroupResponse, error) {
 	slog.Info("PUT: UpdateGroup")
 	id, err := uuid.Parse(request.Group.Id)
 	if err != nil {
@@ -330,17 +295,21 @@ func (g *groupGRPCServer) UpdateGroup(ctx context.Context, request *gen.UpdateGr
 	if err != nil {
 		return nil, errors.Wrap(err, "ucGroup.UpdateGroup failed")
 	}
-	res := &gen.UpdateGroupResponse{
-		Group: &gen.Group{
-			Id:          group.ID.String(),
-			Name:        group.Name,
-			Description: group.Description,
-			UserId:      group.UserID.String(),
-			Status:      group.Status,
-			ProfileUrl:  group.ProfileUrl,
-			CreatedAt:   timestamppb.New(group.CreatedAt),
-			UpdatedAt:   timestamppb.New(group.UpdatedAt),
-		},
+	res := &v1.UpdateGroupResponse{
+		Group: entityToProtobuf(group),
 	}
 	return res, nil
+}
+
+func entityToProtobuf(group *domain.Group) *v1.Group {
+	return &v1.Group{
+		Id:          group.ID.String(),
+		Name:        group.Name,
+		Description: group.Description,
+		UserId:      group.UserID.String(),
+		Status:      group.Status,
+		ProfileUrl:  group.ProfileUrl,
+		CreatedAt:   timestamppb.New(group.CreatedAt),
+		UpdatedAt:   timestamppb.New(group.UpdatedAt),
+	}
 }

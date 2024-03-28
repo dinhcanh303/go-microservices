@@ -4,11 +4,11 @@ import (
 	"context"
 	"time"
 
+	v1 "github.com/dinhcanh303/go-microservices/api/noti/v1"
 	"github.com/dinhcanh303/go-microservices/internal/notification/domain"
 	"github.com/dinhcanh303/go-microservices/internal/notification/usecases/notifications"
 	sharedkernel "github.com/dinhcanh303/go-microservices/internal/pkg/shared_kernel"
 	"github.com/dinhcanh303/go-microservices/pkg/utils"
-	"github.com/dinhcanh303/go-microservices/proto/gen"
 	"github.com/google/wire"
 	"github.com/pkg/errors"
 	"github.com/samber/lo"
@@ -18,12 +18,12 @@ import (
 )
 
 type notiGRPCServer struct {
-	gen.UnimplementedNotiServiceServer
+	v1.UnimplementedNotiServiceServer
 	uc            notifications.UseCase
 	authDomainSvc domain.AuthDomainService
 }
 
-var _ gen.NotiServiceServer = (*notiGRPCServer)(nil)
+var _ v1.NotiServiceServer = (*notiGRPCServer)(nil)
 
 var NotiGRPCServerSet = wire.NewSet(NewNotiGRPCServer)
 
@@ -31,17 +31,17 @@ func NewNotiGRPCServer(
 	grpcServer *grpc.Server,
 	uc notifications.UseCase,
 	authDomainSvc domain.AuthDomainService,
-) gen.NotiServiceServer {
+) v1.NotiServiceServer {
 	svc := notiGRPCServer{
 		uc:            uc,
 		authDomainSvc: authDomainSvc,
 	}
-	gen.RegisterNotiServiceServer(grpcServer, &svc)
+	v1.RegisterNotiServiceServer(grpcServer, &svc)
 	reflection.Register(grpcServer)
 	return &svc
 }
 
-func (n *notiGRPCServer) CountNotificationsUnread(ctx context.Context, request *gen.CountNotificationsUnreadRequest) (*gen.CountNotificationsUnreadResponse, error) {
+func (n *notiGRPCServer) CountNotificationsUnread(ctx context.Context, request *v1.CountNotificationsUnreadRequest) (*v1.CountNotificationsUnreadResponse, error) {
 	user, err := utils.ExtractMetadataUser(ctx)
 	if err != nil {
 		return nil, errors.Wrap(err, "Extract Metadata User failed")
@@ -50,13 +50,13 @@ func (n *notiGRPCServer) CountNotificationsUnread(ctx context.Context, request *
 	if err != nil {
 		return nil, errors.Wrap(err, "uc.CountNotificationsUnread failed")
 	}
-	return &gen.CountNotificationsUnreadResponse{
+	return &v1.CountNotificationsUnreadResponse{
 		Count: count,
 	}, nil
 
 }
 
-func (n *notiGRPCServer) GetNotifications(ctx context.Context, request *gen.GetNotificationsRequest) (*gen.GetNotificationsResponse, error) {
+func (n *notiGRPCServer) GetNotifications(ctx context.Context, request *v1.GetNotificationsRequest) (*v1.GetNotificationsResponse, error) {
 	user, err := utils.ExtractMetadataUser(ctx)
 	if err != nil {
 		return nil, errors.Wrap(err, "Extract Metadata User failed")
@@ -67,15 +67,15 @@ func (n *notiGRPCServer) GetNotifications(ctx context.Context, request *gen.GetN
 	if err != nil {
 		return nil, errors.Wrap(err, "uc.GetNotificationsByUserId failed")
 	}
-	return &gen.GetNotificationsResponse{
-		Notifications: lo.Map(notifications, func(item domain.Notification, _ int) *gen.Notification {
+	return &v1.GetNotificationsResponse{
+		Notifications: lo.Map(notifications, func(item domain.Notification, _ int) *v1.Notification {
 			str, _ := utils.MapToProtobufStruct(item.Data)
 			var readAt *timestamppb.Timestamp
 			if item.ReadAt != nil {
 				readAt = timestamppb.New(item.CreatedAt)
 			}
 			actorProfile, _ := n.authDomainSvc.GetProfile(ctx, item.ActorID)
-			return &gen.Notification{
+			return &v1.Notification{
 				Id:         item.ID,
 				ActorId:    item.ActorID,
 				SenderId:   item.SenderID,
@@ -91,7 +91,7 @@ func (n *notiGRPCServer) GetNotifications(ctx context.Context, request *gen.GetN
 	}, err
 }
 
-func (n *notiGRPCServer) ReadNotification(ctx context.Context, request *gen.ReadNotificationRequest) (*gen.ReadNotificationResponse, error) {
+func (n *notiGRPCServer) ReadNotification(ctx context.Context, request *v1.ReadNotificationRequest) (*v1.ReadNotificationResponse, error) {
 	_, err := utils.ExtractMetadataUser(ctx)
 	if err != nil {
 		return nil, errors.Wrap(err, "Extract Metadata User failed")

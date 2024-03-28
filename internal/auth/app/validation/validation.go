@@ -1,13 +1,13 @@
 package validation
 
 import (
+	v1 "github.com/dinhcanh303/go-microservices/api/auth/v1"
 	"github.com/dinhcanh303/go-microservices/pkg/error"
 	"github.com/dinhcanh303/go-microservices/pkg/val"
-	"github.com/dinhcanh303/go-microservices/proto/gen"
 	"google.golang.org/genproto/googleapis/rpc/errdetails"
 )
 
-func ValidateSignIn(req *gen.SignInRequest) (violations []*errdetails.BadRequest_FieldViolation) {
+func ValidateSignIn(req *v1.SignInRequest) (violations []*errdetails.BadRequest_FieldViolation) {
 	if err := val.ValidateEmail(req.GetEmail()); err != nil {
 		violations = append(violations, error.FieldViolation("email", err))
 	}
@@ -18,7 +18,7 @@ func ValidateSignIn(req *gen.SignInRequest) (violations []*errdetails.BadRequest
 	return violations
 }
 
-func ValidateSignUp(req *gen.SignUpRequest) (violations []*errdetails.BadRequest_FieldViolation) {
+func ValidateSignUp(req *v1.SignUpRequest) (violations []*errdetails.BadRequest_FieldViolation) {
 	if err := val.ValidateEmail(req.GetEmail()); err != nil {
 		violations = append(violations, error.FieldViolation("email", err))
 	}

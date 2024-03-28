@@ -1,12 +1,12 @@
 package app
 
 import (
+	v1 "github.com/dinhcanh303/go-microservices/api/comment/v1"
 	"github.com/dinhcanh303/go-microservices/cmd/comment/config"
 	"github.com/dinhcanh303/go-microservices/internal/comment/domain"
 	"github.com/dinhcanh303/go-microservices/internal/comment/usecases/comments"
 	"github.com/dinhcanh303/go-microservices/pkg/postgres"
 	"github.com/dinhcanh303/go-microservices/pkg/rabbitmq/publisher"
-	"github.com/dinhcanh303/go-microservices/proto/gen"
 	"github.com/rabbitmq/amqp091-go"
 )
 
@@ -15,7 +15,7 @@ type App struct {
 	PG                postgres.DBEngine
 	UC                comments.UseCase
 	AmqpConn          *amqp091.Connection
-	CommentGRPCServer gen.CommentServiceServer
+	CommentGRPCServer v1.CommentServiceServer
 	LikeDomainSvc     domain.LikeDomainService
 	UploadDomainSvc   domain.UploadDomainService
 	PostDomainSvc     domain.PostDomainService
@@ -28,7 +28,7 @@ func New(
 	pg postgres.DBEngine,
 	uc comments.UseCase,
 	amqpConn *amqp091.Connection,
-	commentGRPCServer gen.CommentServiceServer,
+	commentGRPCServer v1.CommentServiceServer,
 	likeDomainSvc domain.LikeDomainService,
 	uploadDomainSvc domain.UploadDomainService,
 	postDomainSvc domain.PostDomainService,

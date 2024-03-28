@@ -4,10 +4,10 @@ import (
 	"context"
 	"log/slog"
 
+	v1 "github.com/dinhcanh303/go-microservices/api/upload/v1"
 	"github.com/dinhcanh303/go-microservices/cmd/comment/config"
 	"github.com/dinhcanh303/go-microservices/internal/comment/domain"
 	domainUpload "github.com/dinhcanh303/go-microservices/internal/upload/domain"
-	"github.com/dinhcanh303/go-microservices/proto/gen"
 	"github.com/google/uuid"
 	"github.com/google/wire"
 	"google.golang.org/grpc"
@@ -34,8 +34,8 @@ func NewGRPCUploadClient(cfg *config.Config) (domain.UploadDomainService, error)
 
 // GetAttachmentsByType implements domain.UploadDomainService.
 func (u *uploadGRPCClient) GetAttachmentsByType(ctx context.Context, attachableType string, attachableId uuid.UUID) ([]*domainUpload.Attachment, error) {
-	client := gen.NewUploadServiceClient(u.conn)
-	res, err := client.GetAttachmentsByType(ctx, &gen.GetAttachmentsByTypeRequest{
+	client := v1.NewUploadServiceClient(u.conn)
+	res, err := client.GetAttachmentsByType(ctx, &v1.GetAttachmentsByTypeRequest{
 		AttachableType: attachableType,
 		AttachableId:   attachableId.String(),
 	})

@@ -3,12 +3,13 @@ package router
 import (
 	"context"
 
+	v1 "github.com/dinhcanh303/go-microservices/api/like/v1"
 	"github.com/dinhcanh303/go-microservices/cmd/like/config"
 	"github.com/dinhcanh303/go-microservices/internal/like/domain"
 	"github.com/dinhcanh303/go-microservices/internal/like/usecases/likes"
+	sharedkernel "github.com/dinhcanh303/go-microservices/internal/pkg/shared_kernel"
 	"github.com/dinhcanh303/go-microservices/pkg/constant"
 	"github.com/dinhcanh303/go-microservices/pkg/utils"
-	"github.com/dinhcanh303/go-microservices/proto/gen"
 	"github.com/google/uuid"
 	"github.com/google/wire"
 	"github.com/pkg/errors"
@@ -19,12 +20,12 @@ import (
 )
 
 type likeGRPCServer struct {
-	gen.UnimplementedLikeServiceServer
+	v1.UnimplementedLikeServiceServer
 	cfg *config.Config
 	uc  likes.UseCase
 }
 
-var _ gen.LikeServiceServer = (*likeGRPCServer)(nil)
+var _ v1.LikeServiceServer = (*likeGRPCServer)(nil)
 
 var LikeGRPCServerSet = wire.NewSet(NewGRPCLikeServer)
 
@@ -32,16 +33,16 @@ func NewGRPCLikeServer(
 	grpcServer *grpc.Server,
 	cfg *config.Config,
 	uc likes.UseCase,
-) gen.LikeServiceServer {
+) v1.LikeServiceServer {
 	svc := likeGRPCServer{
 		cfg: cfg,
 		uc:  uc,
 	}
-	gen.RegisterLikeServiceServer(grpcServer, &svc)
+	v1.RegisterLikeServiceServer(grpcServer, &svc)
 	reflection.Register(grpcServer)
 	return &svc
 }
-func (l *likeGRPCServer) GetLikesInfoByPostID(ctx context.Context, request *gen.GetLikesInfoByPostIDRequest) (*gen.GetLikesInfoByPostIDResponse, error) {
+func (l *likeGRPCServer) GetLikesInfoByPostID(ctx context.Context, request *v1.GetLikesInfoByPostIDRequest) (*v1.GetLikesInfoByPostIDResponse, error) {
 	postId, err := uuid.Parse(request.PostId)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to parse")
@@ -54,17 +55,12 @@ func (l *likeGRPCServer) GetLikesInfoByPostID(ctx context.Context, request *gen.
 	if err != nil {
 		return nil, errors.Wrap(err, "uc.GetLikesInfoByPostID failed")
 	}
-	return &gen.GetLikesInfoByPostIDResponse{
-		Likes: &gen.LikeInfo{
-			YourLikedEmoji:    likeInfo.YourLikedEmoji,
-			YourLike:          likeInfo.YourLike,
-			OthersLikedEmojis: likeInfo.OthersLikedEmojis,
-			OthersLikes:       likeInfo.OthersLikes,
-		},
+	return &v1.GetLikesInfoByPostIDResponse{
+		Likes: sharedkernel.EntityLikeToProtobuf(likeInfo),
 	}, nil
 }
 
-func (l *likeGRPCServer) GetLikesInfoByCommentID(ctx context.Context, request *gen.GetLikesInfoByCommentIDRequest) (*gen.GetLikesInfoByCommentIDResponse, error) {
+func (l *likeGRPCServer) GetLikesInfoByCommentID(ctx context.Context, request *v1.GetLikesInfoByCommentIDRequest) (*v1.GetLikesInfoByCommentIDResponse, error) {
 	commentId, err := uuid.Parse(request.CommentId)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to parse")
@@ -77,17 +73,12 @@ func (l *likeGRPCServer) GetLikesInfoByCommentID(ctx context.Context, request *g
 	if err != nil {
 		return nil, errors.Wrap(err, "uc.GetLikesInfoByCommentID failed")
 	}
-	return &gen.GetLikesInfoByCommentIDResponse{
-		Likes: &gen.LikeInfo{
-			YourLikedEmoji:    likeInfo.YourLikedEmoji,
-			YourLike:          likeInfo.YourLike,
-			OthersLikedEmojis: likeInfo.OthersLikedEmojis,
-			OthersLikes:       likeInfo.OthersLikes,
-		},
+	return &v1.GetLikesInfoByCommentIDResponse{
+		Likes: sharedkernel.EntityLikeToProtobuf(likeInfo),
 	}, nil
 }
 
-// func (l *likeGRPCServer) GetLikesByCommentID(ctx context.Context, request *gen.GetLikesByCommentIDRequest) (*gen.GetLikesByCommentIDResponse, error) {
+// func (l *likeGRPCServer) GetLikesByCommentID(ctx context.Context, request *v1.GetLikesByCommentIDRequest) (*v1.GetLikesByCommentIDResponse, error) {
 // 	slog.Info("GET: GetLikesByCommentID")
 // 	commentId, err := uuid.Parse(request.CommentId)
 // 	if err != nil {
@@ -97,9 +88,9 @@ func (l *likeGRPCServer) GetLikesInfoByCommentID(ctx context.Context, request *g
 // 	if err != nil {
 // 		return nil, errors.Wrap(err, "uc.GetLikesByCommentID failed")
 // 	}
-// 	res := &gen.GetLikesByCommentIDResponse{
-// 		Likes: lo.Map(likes, func(item *domain.Like, _ int) *gen.Like {
-// 			return &gen.Like{
+// 	res := &v1.GetLikesByCommentIDResponse{
+// 		Likes: lo.Map(likes, func(item *domain.Like, _ int) *v1.Like {
+// 			return &v1.Like{
 // 				Id:           item.ID.String(),
 // 				UserId:       item.UserID.String(),
 // 				Emoji:        item.Emoji,
@@ -113,8 +104,8 @@ func (l *likeGRPCServer) GetLikesInfoByCommentID(ctx context.Context, request *g
 // 	return res, nil
 // }
 
-// CreateLike implements gen.LikeServiceServer.
-func (l *likeGRPCServer) CreateLike(ctx context.Context, request *gen.CreateLikeRequest) (*gen.CreateLikeResponse, error) {
+// CreateLike implements v1.LikeServiceServer.
+func (l *likeGRPCServer) CreateLike(ctx context.Context, request *v1.CreateLikeRequest) (*v1.CreateLikeResponse, error) {
 	typeLike := []string{constant.LikeCommentType, constant.LikePostType}
 	emoji := request.Like.Emoji
 	user, err := utils.ExtractMetadataUser(ctx)
@@ -138,7 +129,7 @@ func (l *likeGRPCServer) CreateLike(ctx context.Context, request *gen.CreateLike
 			if err != nil {
 				return nil, err
 			}
-			return &gen.CreateLikeResponse{}, nil
+			return &v1.CreateLikeResponse{}, nil
 		} else {
 			like, err := l.uc.UpdateLike(ctx, &domain.Like{
 				ID:    like.ID,
@@ -147,16 +138,8 @@ func (l *likeGRPCServer) CreateLike(ctx context.Context, request *gen.CreateLike
 			if err != nil {
 				return nil, errors.Wrap(err, "uc.UpdateLike failed")
 			}
-			return &gen.CreateLikeResponse{
-				Like: &gen.Like{
-					Id:           like.ID.String(),
-					Emoji:        like.Emoji,
-					LikeableType: like.LikeableType,
-					LikeableId:   like.LikeableID.String(),
-					UserId:       like.UserID.String(),
-					CreatedAt:    timestamppb.New(like.CreatedAt),
-					UpdatedAt:    timestamppb.New(like.UpdatedAt),
-				},
+			return &v1.CreateLikeResponse{
+				Like: entityToProtobuf(like),
 			}, nil
 		}
 	}
@@ -171,22 +154,14 @@ func (l *likeGRPCServer) CreateLike(ctx context.Context, request *gen.CreateLike
 	if err != nil {
 		return nil, errors.Wrap(err, "uc.CreateLike failed")
 	}
-	res := &gen.CreateLikeResponse{
-		Like: &gen.Like{
-			Id:           like.ID.String(),
-			Emoji:        like.Emoji,
-			LikeableType: like.LikeableType,
-			LikeableId:   like.LikeableID.String(),
-			UserId:       like.UserID.String(),
-			CreatedAt:    timestamppb.New(like.CreatedAt),
-			UpdatedAt:    timestamppb.New(like.UpdatedAt),
-		},
+	res := &v1.CreateLikeResponse{
+		Like: entityToProtobuf(like),
 	}
 	return res, nil
 }
 
-// DeleteLike implements gen.LikeServiceServer.
-func (l *likeGRPCServer) DeleteLike(ctx context.Context, request *gen.DeleteLikeRequest) (*gen.DeleteLikeResponse, error) {
+// DeleteLike implements v1.LikeServiceServer.
+func (l *likeGRPCServer) DeleteLike(ctx context.Context, request *v1.DeleteLikeRequest) (*v1.DeleteLikeResponse, error) {
 	id, err := uuid.Parse(request.Id)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to parse")
@@ -195,14 +170,14 @@ func (l *likeGRPCServer) DeleteLike(ctx context.Context, request *gen.DeleteLike
 	if err != nil {
 		return nil, errors.Wrap(err, "uc.DeleteLike failed")
 	}
-	res := &gen.DeleteLikeResponse{
+	res := &v1.DeleteLikeResponse{
 		Deleted: like,
 	}
 	return res, nil
 }
 
-// UpdateLike implements gen.LikeServiceServer.
-func (l *likeGRPCServer) UpdateLike(ctx context.Context, request *gen.UpdateLikeRequest) (*gen.UpdateLikeResponse, error) {
+// UpdateLike implements v1.LikeServiceServer.
+func (l *likeGRPCServer) UpdateLike(ctx context.Context, request *v1.UpdateLikeRequest) (*v1.UpdateLikeResponse, error) {
 	id, err := uuid.Parse(request.Like.Id)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to parse")
@@ -215,16 +190,20 @@ func (l *likeGRPCServer) UpdateLike(ctx context.Context, request *gen.UpdateLike
 	if err != nil {
 		return nil, errors.Wrap(err, "uc.UpdateLike failed")
 	}
-	res := &gen.UpdateLikeResponse{
-		Like: &gen.Like{
-			Id:           like.ID.String(),
-			Emoji:        like.Emoji,
-			LikeableType: like.LikeableType,
-			LikeableId:   like.LikeableID.String(),
-			UserId:       like.UserID.String(),
-			CreatedAt:    timestamppb.New(like.CreatedAt),
-			UpdatedAt:    timestamppb.New(like.UpdatedAt),
-		},
+	res := &v1.UpdateLikeResponse{
+		Like: entityToProtobuf(like),
 	}
 	return res, nil
+}
+
+func entityToProtobuf(like *domain.Like) *v1.Like {
+	return &v1.Like{
+		Id:           like.ID.String(),
+		Emoji:        like.Emoji,
+		LikeableType: like.LikeableType,
+		LikeableId:   like.LikeableID.String(),
+		UserId:       like.UserID.String(),
+		CreatedAt:    timestamppb.New(like.CreatedAt),
+		UpdatedAt:    timestamppb.New(like.UpdatedAt),
+	}
 }

@@ -4,10 +4,10 @@ import (
 	"context"
 	"log/slog"
 
+	v1 "github.com/dinhcanh303/go-microservices/api/upload/v1"
 	"github.com/dinhcanh303/go-microservices/cmd/auth/config"
 	"github.com/dinhcanh303/go-microservices/internal/auth/domain"
 	domainUpload "github.com/dinhcanh303/go-microservices/internal/upload/domain"
-	"github.com/dinhcanh303/go-microservices/proto/gen"
 	"github.com/google/uuid"
 	"github.com/google/wire"
 	"google.golang.org/grpc"
@@ -20,8 +20,8 @@ type uploadGRPCClient struct {
 
 // GetAvatarUser implements domain.UploadDomainService.
 func (u *uploadGRPCClient) GetAvatarUser(ctx context.Context, userId uuid.UUID) (*domainUpload.Attachment, error) {
-	client := gen.NewUploadServiceClient(u.conn)
-	res, err := client.GetAvatarUser(ctx, &gen.GetAvatarUserRequest{
+	client := v1.NewUploadServiceClient(u.conn)
+	res, err := client.GetAvatarUser(ctx, &v1.GetAvatarUserRequest{
 		Id: userId.String(),
 	})
 	if err != nil {

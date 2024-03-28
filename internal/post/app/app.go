@@ -1,12 +1,12 @@
 package app
 
 import (
+	v1 "github.com/dinhcanh303/go-microservices/api/post/v1"
 	"github.com/dinhcanh303/go-microservices/cmd/post/config"
 	"github.com/dinhcanh303/go-microservices/internal/post/domain"
 	"github.com/dinhcanh303/go-microservices/internal/post/usecases/posts"
 	"github.com/dinhcanh303/go-microservices/pkg/postgres"
 	"github.com/dinhcanh303/go-microservices/pkg/rabbitmq/publisher"
-	"github.com/dinhcanh303/go-microservices/proto/gen"
 	"github.com/rabbitmq/amqp091-go"
 )
 
@@ -16,7 +16,7 @@ type App struct {
 	AMQPConn         *amqp091.Connection
 	UC               posts.UseCase
 	Publisher        publisher.EventPublisher
-	PostGRPCServer   gen.PostServiceServer
+	PostGRPCServer   v1.PostServiceServer
 	CommentDomainSvc domain.CommentDomainService
 	LikeDomainSvc    domain.LikeDomainService
 	UploadDomainSvc  domain.UploadDomainService
@@ -29,7 +29,7 @@ func New(
 	amqpConn *amqp091.Connection,
 	uc posts.UseCase,
 	publisher publisher.EventPublisher,
-	postGRPCServer gen.PostServiceServer,
+	postGRPCServer v1.PostServiceServer,
 	commentDomainSvc domain.CommentDomainService,
 	likeDomainSvc domain.LikeDomainService,
 	uploadDomainSvc domain.UploadDomainService,

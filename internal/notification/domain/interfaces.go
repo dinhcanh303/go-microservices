@@ -3,11 +3,11 @@ package domain
 import (
 	"context"
 
-	"github.com/dinhcanh303/go-microservices/proto/gen"
+	v1 "github.com/dinhcanh303/go-microservices/api/auth/v1"
 )
 
 type (
 	AuthDomainService interface {
-		GetProfile(ctx context.Context, id string) (*gen.GetProfileResponse, error)
+		GetProfile(ctx context.Context, id string) (*v1.GetProfileResponse, error)
 	}
 )

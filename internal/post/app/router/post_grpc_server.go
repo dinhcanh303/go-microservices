@@ -4,18 +4,20 @@ import (
 	"context"
 	"sync"
 
+	v1a "github.com/dinhcanh303/go-microservices/api/auth/v1"
+	v1g "github.com/dinhcanh303/go-microservices/api/group/v1"
+	v1 "github.com/dinhcanh303/go-microservices/api/post/v1"
 	"github.com/dinhcanh303/go-microservices/cmd/post/config"
 	domainLike "github.com/dinhcanh303/go-microservices/internal/like/domain"
+	sharedkernel "github.com/dinhcanh303/go-microservices/internal/pkg/shared_kernel"
 	"github.com/dinhcanh303/go-microservices/internal/post/domain"
 	"github.com/dinhcanh303/go-microservices/internal/post/usecases/posts"
 	domainUpload "github.com/dinhcanh303/go-microservices/internal/upload/domain"
 	"github.com/dinhcanh303/go-microservices/pkg/constant"
 	"github.com/dinhcanh303/go-microservices/pkg/utils"
-	"github.com/dinhcanh303/go-microservices/proto/gen"
 	"github.com/google/uuid"
 	"github.com/google/wire"
 	"github.com/pkg/errors"
-	"github.com/samber/lo"
 	"golang.org/x/exp/slog"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
@@ -23,7 +25,7 @@ import (
 )
 
 type postGRPCServer struct {
-	gen.UnimplementedPostServiceServer
+	v1.UnimplementedPostServiceServer
 	cfg                  *config.Config
 	uc                   posts.UseCase
 	uploadDomainService  domain.UploadDomainService
@@ -33,7 +35,7 @@ type postGRPCServer struct {
 	authDomainService    domain.AuthDomainService
 }
 
-var _ gen.PostServiceServer = (*postGRPCServer)(nil)
+var _ v1.PostServiceServer = (*postGRPCServer)(nil)
 
 var PostGRPCServerSet = wire.NewSet(NewGRPCPostServer)
 
@@ -46,7 +48,7 @@ func NewGRPCPostServer(
 	likeDomainService domain.LikeDomainService,
 	groupDomainService domain.GroupDomainService,
 	authDomainService domain.AuthDomainService,
-) gen.PostServiceServer {
+) v1.PostServiceServer {
 	svc := postGRPCServer{
 		cfg:                  cfg,
 		uc:                   uc,
@@ -56,12 +58,12 @@ func NewGRPCPostServer(
 		groupDomainService:   groupDomainService,
 		authDomainService:    authDomainService,
 	}
-	gen.RegisterPostServiceServer(grpcServer, &svc)
+	v1.RegisterPostServiceServer(grpcServer, &svc)
 	reflection.Register(grpcServer)
 	return &svc
 }
 
-func (p *postGRPCServer) CreatePost(ctx context.Context, request *gen.CreatePostRequest) (*gen.CreatePostResponse, error) {
+func (p *postGRPCServer) CreatePost(ctx context.Context, request *v1.CreatePostRequest) (*v1.CreatePostResponse, error) {
 	user, err := utils.ExtractMetadataUser(ctx)
 	if err != nil {
 		return nil, errors.Wrap(err, "Extract Metadata User failed")
@@ -81,21 +83,12 @@ func (p *postGRPCServer) CreatePost(ctx context.Context, request *gen.CreatePost
 	if err != nil {
 		return nil, errors.Wrap(err, "uc.CreatePost failed")
 	}
-	res := &gen.CreatePostResponse{
-		Post: &gen.Post{
-			Id:        post.ID.String(),
-			Content:   post.Content,
-			BgContent: post.BgContent,
-			UserId:    post.UserID.String(),
-			GroupId:   post.GroupID.UUID.String(),
-			Status:    post.Status,
-			CreatedAt: timestamppb.New(post.CreatedAt),
-			UpdatedAt: timestamppb.New(post.UpdatedAt),
-		},
+	res := &v1.CreatePostResponse{
+		Post: entityToProtobuf(post),
 	}
 	return res, nil
 }
-func (p *postGRPCServer) GetPost(ctx context.Context, request *gen.GetPostRequest) (*gen.GetPostResponse, error) {
+func (p *postGRPCServer) GetPost(ctx context.Context, request *v1.GetPostRequest) (*v1.GetPostResponse, error) {
 	id, err := uuid.Parse(request.Id)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to parse id")
@@ -109,7 +102,7 @@ func (p *postGRPCServer) GetPost(ctx context.Context, request *gen.GetPostReques
 	results := manyPostResponse(posts, p, ctx)
 	return results[0], nil
 }
-func (p *postGRPCServer) GetPostNormal(ctx context.Context, request *gen.GetPostNormalRequest) (*gen.GetPostNormalResponse, error) {
+func (p *postGRPCServer) GetPostNormal(ctx context.Context, request *v1.GetPostNormalRequest) (*v1.GetPostNormalResponse, error) {
 	id, err := uuid.Parse(request.Id)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to parse id")
@@ -118,21 +111,12 @@ func (p *postGRPCServer) GetPostNormal(ctx context.Context, request *gen.GetPost
 	if err != nil {
 		return nil, errors.Wrap(err, "uc.GetPost failed")
 	}
-	return &gen.GetPostNormalResponse{
-		Post: &gen.Post{
-			Id:        post.ID.String(),
-			Content:   post.Content,
-			BgContent: post.BgContent,
-			Status:    post.Status,
-			UserId:    post.UserID.String(),
-			GroupId:   post.GroupID.UUID.String(),
-			CreatedAt: timestamppb.New(post.CreatedAt),
-			UpdatedAt: timestamppb.New(post.UpdatedAt),
-		},
+	return &v1.GetPostNormalResponse{
+		Post: entityToProtobuf(post),
 	}, nil
 }
 
-func (p *postGRPCServer) NewFeed(ctx context.Context, request *gen.NewFeedRequest) (*gen.NewFeedResponse, error) {
+func (p *postGRPCServer) NewFeed(ctx context.Context, request *v1.NewFeedRequest) (*v1.NewFeedResponse, error) {
 	user, err := utils.ExtractMetadataUser(ctx)
 	if err != nil {
 		return nil, err
@@ -150,12 +134,12 @@ func (p *postGRPCServer) NewFeed(ctx context.Context, request *gen.NewFeedReques
 		return nil, errors.Wrap(err, "uc.GetPostsByFeed failed")
 	}
 	results := manyPostResponse(posts, p, ctx)
-	return &gen.NewFeedResponse{
+	return &v1.NewFeedResponse{
 		Posts: results,
 	}, nil
 }
 
-func (p *postGRPCServer) NewFeedGroups(ctx context.Context, request *gen.NewFeedGroupsRequest) (*gen.NewFeedGroupsResponse, error) {
+func (p *postGRPCServer) NewFeedGroups(ctx context.Context, request *v1.NewFeedGroupsRequest) (*v1.NewFeedGroupsResponse, error) {
 	user, err := utils.ExtractMetadataUser(ctx)
 	if err != nil {
 		return nil, err
@@ -169,12 +153,12 @@ func (p *postGRPCServer) NewFeedGroups(ctx context.Context, request *gen.NewFeed
 		return nil, errors.Wrap(err, "uc.GetPostsByFeed failed")
 	}
 	results := manyPostResponse(posts, p, ctx)
-	return &gen.NewFeedGroupsResponse{
+	return &v1.NewFeedGroupsResponse{
 		Posts: results,
 	}, nil
 }
 
-func (p *postGRPCServer) GetPostsByUserId(ctx context.Context, request *gen.GetPostsByUserIdRequest) (*gen.GetPostsByUserIdResponse, error) {
+func (p *postGRPCServer) GetPostsByUserId(ctx context.Context, request *v1.GetPostsByUserIdRequest) (*v1.GetPostsByUserIdResponse, error) {
 	userId, err := uuid.Parse(request.UserId)
 	if err != nil {
 		return nil, errors.Wrap(err, "uuid.Parse failed")
@@ -184,12 +168,12 @@ func (p *postGRPCServer) GetPostsByUserId(ctx context.Context, request *gen.GetP
 		return nil, errors.Wrap(err, "uc.GetPostsByUserId failed")
 	}
 	results := manyPostResponse(posts, p, ctx)
-	return &gen.GetPostsByUserIdResponse{
+	return &v1.GetPostsByUserIdResponse{
 		Posts: results,
 	}, nil
 }
 
-func (p *postGRPCServer) GetPostsByGroupId(ctx context.Context, request *gen.GetPostsByGroupIdRequest) (*gen.GetPostsByGroupIdResponse, error) {
+func (p *postGRPCServer) GetPostsByGroupId(ctx context.Context, request *v1.GetPostsByGroupIdRequest) (*v1.GetPostsByGroupIdResponse, error) {
 	groupId, err := uuid.Parse(request.GroupId)
 	if err != nil {
 		return nil, errors.Wrap(err, "uuid.Parse failed")
@@ -199,12 +183,12 @@ func (p *postGRPCServer) GetPostsByGroupId(ctx context.Context, request *gen.Get
 		return nil, errors.Wrap(err, "uc.GetPostsByGroupId failed")
 	}
 	results := manyPostResponse(posts, p, ctx)
-	return &gen.GetPostsByGroupIdResponse{
+	return &v1.GetPostsByGroupIdResponse{
 		Posts: results,
 	}, nil
 }
 
-func (p *postGRPCServer) DeletePost(ctx context.Context, request *gen.DeletePostRequest) (*gen.DeletePostResponse, error) {
+func (p *postGRPCServer) DeletePost(ctx context.Context, request *v1.DeletePostRequest) (*v1.DeletePostResponse, error) {
 	id, err := uuid.Parse(request.Id)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to parse id")
@@ -214,11 +198,11 @@ func (p *postGRPCServer) DeletePost(ctx context.Context, request *gen.DeletePost
 		return nil, errors.Wrap(err, "uc.GetPost failed")
 	}
 
-	return &gen.DeletePostResponse{
+	return &v1.DeletePostResponse{
 		Deleted: deleted,
 	}, nil
 }
-func (p *postGRPCServer) UpdatePost(ctx context.Context, request *gen.UpdatePostRequest) (*gen.UpdatePostResponse, error) {
+func (p *postGRPCServer) UpdatePost(ctx context.Context, request *v1.UpdatePostRequest) (*v1.UpdatePostResponse, error) {
 	id, err := uuid.Parse(request.Post.Id)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to parse")
@@ -233,24 +217,15 @@ func (p *postGRPCServer) UpdatePost(ctx context.Context, request *gen.UpdatePost
 	if err != nil {
 		return nil, errors.Wrap(err, "uc.CreatePost failed")
 	}
-	res := &gen.UpdatePostResponse{
-		Post: &gen.Post{
-			Id:        post.ID.String(),
-			Content:   post.Content,
-			BgContent: post.BgContent,
-			UserId:    post.UserID.String(),
-			GroupId:   post.GroupID.UUID.String(),
-			Status:    post.Status,
-			CreatedAt: timestamppb.New(post.CreatedAt),
-			UpdatedAt: timestamppb.New(post.UpdatedAt),
-		},
+	res := &v1.UpdatePostResponse{
+		Post: entityToProtobuf(post),
 	}
 	return res, nil
 }
 
 // private function
-func manyPostResponse(posts []*domain.Post, p *postGRPCServer, ctx context.Context) []*gen.GetPostResponse {
-	results := make([]*gen.GetPostResponse, len(posts))
+func manyPostResponse(posts []*domain.Post, p *postGRPCServer, ctx context.Context) []*v1.GetPostResponse {
+	results := make([]*v1.GetPostResponse, len(posts))
 	var wg sync.WaitGroup
 	mutex := sync.Mutex{}
 	for i, post := range posts {
@@ -259,8 +234,8 @@ func manyPostResponse(posts []*domain.Post, p *postGRPCServer, ctx context.Conte
 			defer wg.Done()
 			likeInfoCh := make(chan *domainLike.LikesInfo, 1)
 			countCommentsCh := make(chan int64, 1)
-			userCh := make(chan *gen.GetProfileResponse, 1)
-			groupCh := make(chan *gen.GetGroupResponse, 1)
+			userCh := make(chan *v1a.GetProfileResponse, 1)
+			groupCh := make(chan *v1g.GetGroupResponse, 1)
 			attachmentsCh := make(chan []*domainUpload.Attachment, 1)
 			go func() {
 				likeInfo, err := p.likeDomainService.GetLikesByPostID(ctx, post.ID)
@@ -281,14 +256,14 @@ func manyPostResponse(posts []*domain.Post, p *postGRPCServer, ctx context.Conte
 			go func() {
 				user, err := p.authDomainService.GetProfile(ctx, post.UserID)
 				if err != nil {
-					user = &gen.GetProfileResponse{}
+					user = &v1a.GetProfileResponse{}
 				}
 				userCh <- user
 			}()
 			go func() {
 				group, err := p.groupDomainService.GetGroup(ctx, post.GroupID)
 				if err != nil {
-					group = &gen.GetGroupResponse{}
+					group = &v1g.GetGroupResponse{}
 				}
 				groupCh <- group
 			}()
@@ -305,8 +280,8 @@ func manyPostResponse(posts []*domain.Post, p *postGRPCServer, ctx context.Conte
 			user := <-userCh
 			group := <-groupCh
 			attachments := <-attachmentsCh
-			result := &gen.GetPostResponse{
-				Post: &gen.Post{
+			result := &v1.GetPostResponse{
+				Post: &v1.Post{
 					Id:        post.ID.String(),
 					Content:   post.Content,
 					BgContent: post.BgContent,
@@ -319,28 +294,8 @@ func manyPostResponse(posts []*domain.Post, p *postGRPCServer, ctx context.Conte
 				Group:         group.Group,
 				User:          user.User,
 				CountComments: countComments,
-				Attachments: lo.Map(attachments, func(item *domainUpload.Attachment, _ int) *gen.Attachment {
-					return &gen.Attachment{
-						Id:             item.ID.String(),
-						AttachableType: item.AttachableType,
-						AttachableId:   item.AttachableID.String(),
-						Filename:       item.FileName,
-						Extension:      item.Extension,
-						MimeType:       item.MimeType,
-						Folder:         item.Folder,
-						Url:            item.URL,
-						UrlThumbnail:   item.URLThumbnail,
-						UserId:         item.UserID.String(),
-						CreatedAt:      timestamppb.New(item.CreatedAt),
-						UpdatedAt:      timestamppb.New(item.UpdatedAt),
-					}
-				}),
-				Likes: &gen.LikeInfo{
-					YourLikedEmoji:    likeInfo.YourLikedEmoji,
-					YourLike:          likeInfo.YourLike,
-					OthersLikedEmojis: likeInfo.OthersLikedEmojis,
-					OthersLikes:       likeInfo.OthersLikes,
-				},
+				Attachments:   sharedkernel.EntityAttachmentToProtobuf(attachments),
+				Likes:         sharedkernel.EntityLikeToProtobuf(likeInfo),
 			}
 			mutex.Lock()
 			results[index] = result
@@ -349,4 +304,17 @@ func manyPostResponse(posts []*domain.Post, p *postGRPCServer, ctx context.Conte
 	}
 	wg.Wait()
 	return results
+}
+
+func entityToProtobuf(post *domain.Post) *v1.Post {
+	return &v1.Post{
+		Id:        post.ID.String(),
+		Content:   post.Content,
+		BgContent: post.BgContent,
+		UserId:    post.UserID.String(),
+		GroupId:   post.GroupID.UUID.String(),
+		Status:    post.Status,
+		CreatedAt: timestamppb.New(post.CreatedAt),
+		UpdatedAt: timestamppb.New(post.UpdatedAt),
+	}
 }

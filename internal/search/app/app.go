@@ -3,10 +3,10 @@ package app
 import (
 	"context"
 
+	v1 "github.com/dinhcanh303/go-microservices/api/search/v1"
 	"github.com/dinhcanh303/go-microservices/cmd/search/config"
 	"github.com/dinhcanh303/go-microservices/internal/search/eventhandlers"
 	consumer "github.com/dinhcanh303/go-microservices/pkg/rabbitmq/consumer"
-	"github.com/dinhcanh303/go-microservices/proto/gen"
 	"github.com/rabbitmq/amqp091-go"
 	"golang.org/x/exp/slog"
 )
@@ -17,7 +17,7 @@ type App struct {
 	Consumer consumer.EventConsumer
 	// KafkaConsumer    kafka.KafkaConsumer
 	handlers         eventhandlers.EventHandlers
-	SearchGRPCServer gen.SearchServiceServer
+	SearchGRPCServer v1.SearchServiceServer
 }
 
 func New(
@@ -25,7 +25,7 @@ func New(
 	amqpConn *amqp091.Connection,
 	consumer consumer.EventConsumer,
 	handlers eventhandlers.EventHandlers,
-	searchGRPCServer gen.SearchServiceServer,
+	searchGRPCServer v1.SearchServiceServer,
 	// kafkaConsumer kafka.KafkaConsumer,
 ) *App {
 	return &App{

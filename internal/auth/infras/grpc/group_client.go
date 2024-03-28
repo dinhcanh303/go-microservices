@@ -3,9 +3,9 @@ package grpc
 import (
 	"context"
 
+	v1 "github.com/dinhcanh303/go-microservices/api/group/v1"
 	"github.com/dinhcanh303/go-microservices/cmd/auth/config"
 	"github.com/dinhcanh303/go-microservices/internal/auth/domain"
-	"github.com/dinhcanh303/go-microservices/proto/gen"
 	"github.com/google/wire"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
@@ -16,9 +16,9 @@ type groupGRPCClient struct {
 }
 
 // GetGroupMembers implements domain.GroupDomainService.
-func (g *groupGRPCClient) GetGroupMembers(ctx context.Context, groupId string) (*gen.GetGroupMembersResponse, error) {
-	client := gen.NewGroupServiceClient(g.conn)
-	res, err := client.GetGroupMembers(ctx, &gen.GetGroupMembersRequest{
+func (g *groupGRPCClient) GetGroupMembers(ctx context.Context, groupId string) (*v1.GetGroupMembersResponse, error) {
+	client := v1.NewGroupServiceClient(g.conn)
+	res, err := client.GetGroupMembers(ctx, &v1.GetGroupMembersRequest{
 		GroupId: groupId,
 	})
 	if err != nil {

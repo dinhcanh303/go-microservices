@@ -3,10 +3,10 @@ package grpc
 import (
 	"context"
 
+	v1 "github.com/dinhcanh303/go-microservices/api/post/v1"
 	"github.com/dinhcanh303/go-microservices/cmd/like/config"
 	"github.com/dinhcanh303/go-microservices/internal/like/domain"
 	"github.com/dinhcanh303/go-microservices/pkg/utils"
-	"github.com/dinhcanh303/go-microservices/proto/gen"
 	"github.com/google/uuid"
 	"github.com/google/wire"
 	"github.com/pkg/errors"
@@ -33,13 +33,13 @@ func NewGRPCPostClient(cfg *config.Config) (domain.PostDomainService, error) {
 }
 
 // GetLikesByPostID implements domain.LikeDomainService.
-func (l *postGRPCClient) GetPostNormal(ctx context.Context, id uuid.UUID) (*gen.GetPostNormalResponse, error) {
-	client := gen.NewPostServiceClient(l.conn)
+func (l *postGRPCClient) GetPostNormal(ctx context.Context, id uuid.UUID) (*v1.GetPostNormalResponse, error) {
+	client := v1.NewPostServiceClient(l.conn)
 	ctxBackground, err := utils.OutgoingContext(ctx)
 	if err != nil {
 		return nil, err
 	}
-	res, err := client.GetPostNormal(ctxBackground, &gen.GetPostNormalRequest{
+	res, err := client.GetPostNormal(ctxBackground, &v1.GetPostNormalRequest{
 		Id: id.String(),
 	})
 	if err != nil {

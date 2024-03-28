@@ -4,13 +4,13 @@ import (
 	"context"
 	"log/slog"
 
+	v1 "github.com/dinhcanh303/go-microservices/api/comment/v1"
 	"github.com/dinhcanh303/go-microservices/cmd/post/config"
 	domainComment "github.com/dinhcanh303/go-microservices/internal/comment/domain"
 	domainLike "github.com/dinhcanh303/go-microservices/internal/like/domain"
 	sharedkernel "github.com/dinhcanh303/go-microservices/internal/pkg/shared_kernel"
 	"github.com/dinhcanh303/go-microservices/internal/post/domain"
 	"github.com/dinhcanh303/go-microservices/pkg/utils"
-	"github.com/dinhcanh303/go-microservices/proto/gen"
 	"github.com/google/uuid"
 	"github.com/google/wire"
 	"github.com/samber/lo"
@@ -38,12 +38,12 @@ func NewGRPCCommentClient(cfg *config.Config) (domain.CommentDomainService, erro
 
 // CountCommentByPostID implements domain.CommentDomainService.
 func (c *commentGRPCClient) CountCommentByPostID(ctx context.Context, postId uuid.UUID) (int64, error) {
-	client := gen.NewCommentServiceClient(c.conn)
+	client := v1.NewCommentServiceClient(c.conn)
 	ctxBackground, err := utils.OutgoingContext(ctx)
 	if err != nil {
 		return 0, err
 	}
-	res, err := client.CountCommentByPostID(ctxBackground, &gen.CountCommentByPostIDRequest{
+	res, err := client.CountCommentByPostID(ctxBackground, &v1.CountCommentByPostIDRequest{
 		PostId: postId.String(),
 	})
 	if err != nil {
@@ -55,12 +55,12 @@ func (c *commentGRPCClient) CountCommentByPostID(ctx context.Context, postId uui
 
 // GetCommentsByPostID implements domain.CommentDomainService.
 func (c *commentGRPCClient) GetCommentsByPostID(ctx context.Context, postId uuid.UUID) ([]*sharedkernel.CommentHasChildren, error) {
-	client := gen.NewCommentServiceClient(c.conn)
+	client := v1.NewCommentServiceClient(c.conn)
 	ctxBackground, err := utils.OutgoingContext(ctx)
 	if err != nil {
 		return nil, err
 	}
-	res, err := client.GetCommentsByPostID(ctxBackground, &gen.GetCommentsByPostIDRequest{
+	res, err := client.GetCommentsByPostID(ctxBackground, &v1.GetCommentsByPostIDRequest{
 		PostId: postId.String(),
 	})
 	results := make([]*sharedkernel.CommentHasChildren, 0)
@@ -78,7 +78,7 @@ func (c *commentGRPCClient) GetCommentsByPostID(ctx context.Context, postId uuid
 			ReplyID:         utils.StringToNullUUIDNormal(item.ReplyId),
 			TagIDs:          tagIds,
 			ParentCommentID: utils.StringToNullUUIDNormal(item.ParentCommentId),
-			Children: lo.Map(item.Children, func(value *gen.CommentHasMetadata, _ int) *domainComment.CommentHasMetadata {
+			Children: lo.Map(item.Children, func(value *v1.CommentHasMetadata, _ int) *domainComment.CommentHasMetadata {
 				tagIds, _ := utils.ConvertArStringToArUUID(value.TagIds)
 				return &domainComment.CommentHasMetadata{
 					ID:      uuid.MustParse(value.Id),

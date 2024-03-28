@@ -8,9 +8,16 @@ import (
 	"os"
 	"strings"
 
+	v1a "github.com/dinhcanh303/go-microservices/api/auth/v1"
+	v1c "github.com/dinhcanh303/go-microservices/api/comment/v1"
+	v1g "github.com/dinhcanh303/go-microservices/api/group/v1"
+	v1l "github.com/dinhcanh303/go-microservices/api/like/v1"
+	v1n "github.com/dinhcanh303/go-microservices/api/noti/v1"
+	v1p "github.com/dinhcanh303/go-microservices/api/post/v1"
+	v1s "github.com/dinhcanh303/go-microservices/api/search/v1"
+	v1u "github.com/dinhcanh303/go-microservices/api/upload/v1"
 	"github.com/dinhcanh303/go-microservices/cmd/proxy/config"
 	"github.com/dinhcanh303/go-microservices/pkg/logger"
-	"github.com/dinhcanh303/go-microservices/proto/gen"
 	"github.com/golang/glog"
 	gatewayRuntime "github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"github.com/rs/cors"
@@ -35,35 +42,35 @@ func newGateway(
 	mux := gatewayRuntime.NewServeMux(opts...)
 	dialOpts := []grpc.DialOption{grpc.WithTransportCredentials(insecure.NewCredentials())}
 
-	err := gen.RegisterGroupServiceHandlerFromEndpoint(ctx, mux, groupEndpoint, dialOpts)
+	err := v1g.RegisterGroupServiceHandlerFromEndpoint(ctx, mux, groupEndpoint, dialOpts)
 	if err != nil {
 		return nil, err
 	}
-	err = gen.RegisterPostServiceHandlerFromEndpoint(ctx, mux, postEndpoint, dialOpts)
+	err = v1p.RegisterPostServiceHandlerFromEndpoint(ctx, mux, postEndpoint, dialOpts)
 	if err != nil {
 		return nil, err
 	}
-	err = gen.RegisterCommentServiceHandlerFromEndpoint(ctx, mux, commentEndpoint, dialOpts)
+	err = v1c.RegisterCommentServiceHandlerFromEndpoint(ctx, mux, commentEndpoint, dialOpts)
 	if err != nil {
 		return nil, err
 	}
-	err = gen.RegisterLikeServiceHandlerFromEndpoint(ctx, mux, likeEndpoint, dialOpts)
+	err = v1l.RegisterLikeServiceHandlerFromEndpoint(ctx, mux, likeEndpoint, dialOpts)
 	if err != nil {
 		return nil, err
 	}
-	err = gen.RegisterUploadServiceHandlerFromEndpoint(ctx, mux, uploadEndpoint, dialOpts)
+	err = v1u.RegisterUploadServiceHandlerFromEndpoint(ctx, mux, uploadEndpoint, dialOpts)
 	if err != nil {
 		return nil, err
 	}
-	err = gen.RegisterAuthServiceHandlerFromEndpoint(ctx, mux, authEndpoint, dialOpts)
+	err = v1a.RegisterAuthServiceHandlerFromEndpoint(ctx, mux, authEndpoint, dialOpts)
 	if err != nil {
 		return nil, err
 	}
-	err = gen.RegisterSearchServiceHandlerFromEndpoint(ctx, mux, searchEndpoint, dialOpts)
+	err = v1s.RegisterSearchServiceHandlerFromEndpoint(ctx, mux, searchEndpoint, dialOpts)
 	if err != nil {
 		return nil, err
 	}
-	err = gen.RegisterNotiServiceHandlerFromEndpoint(ctx, mux, notiEndpoint, dialOpts)
+	err = v1n.RegisterNotiServiceHandlerFromEndpoint(ctx, mux, notiEndpoint, dialOpts)
 	if err != nil {
 		return nil, err
 	}

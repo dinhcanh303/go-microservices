@@ -4,10 +4,10 @@ import (
 	"context"
 	"log/slog"
 
+	v1 "github.com/dinhcanh303/go-microservices/api/group/v1"
 	"github.com/dinhcanh303/go-microservices/cmd/post/config"
 	"github.com/dinhcanh303/go-microservices/internal/post/domain"
 	"github.com/dinhcanh303/go-microservices/pkg/utils"
-	"github.com/dinhcanh303/go-microservices/proto/gen"
 	"github.com/google/uuid"
 	"github.com/google/wire"
 	"google.golang.org/grpc"
@@ -33,13 +33,13 @@ func NewGRPCGroupClient(cfg *config.Config) (domain.GroupDomainService, error) {
 }
 
 // GetGroupMembers implements domain.GroupDomainService.
-func (g *groupGRPCClient) GetGroupMembers(ctx context.Context, groupId uuid.NullUUID) (*gen.GetGroupMembersResponse, error) {
-	client := gen.NewGroupServiceClient(g.conn)
+func (g *groupGRPCClient) GetGroupMembers(ctx context.Context, groupId uuid.NullUUID) (*v1.GetGroupMembersResponse, error) {
+	client := v1.NewGroupServiceClient(g.conn)
 	ctxBackground, err := utils.OutgoingContext(ctx)
 	if err != nil {
 		return nil, err
 	}
-	res, err := client.GetGroupMembers(ctxBackground, &gen.GetGroupMembersRequest{
+	res, err := client.GetGroupMembers(ctxBackground, &v1.GetGroupMembersRequest{
 		GroupId: groupId.UUID.String(),
 	})
 	if err != nil {
@@ -50,13 +50,13 @@ func (g *groupGRPCClient) GetGroupMembers(ctx context.Context, groupId uuid.Null
 }
 
 // GetGroup implements domain.GroupDomainService.
-func (g *groupGRPCClient) GetGroup(ctx context.Context, groupId uuid.NullUUID) (*gen.GetGroupResponse, error) {
-	client := gen.NewGroupServiceClient(g.conn)
+func (g *groupGRPCClient) GetGroup(ctx context.Context, groupId uuid.NullUUID) (*v1.GetGroupResponse, error) {
+	client := v1.NewGroupServiceClient(g.conn)
 	ctxBackground, err := utils.OutgoingContext(ctx)
 	if err != nil {
 		return nil, err
 	}
-	res, err := client.GetGroup(ctxBackground, &gen.GetGroupRequest{
+	res, err := client.GetGroup(ctxBackground, &v1.GetGroupRequest{
 		Id: groupId.UUID.String(),
 	})
 	if err != nil {
@@ -68,8 +68,8 @@ func (g *groupGRPCClient) GetGroup(ctx context.Context, groupId uuid.NullUUID) (
 
 // GetAllGroupIdByUserId implements domain.GroupDomainService.
 func (g *groupGRPCClient) GetGroupIdsByUserId(ctx context.Context, userId uuid.UUID) ([]uuid.UUID, error) {
-	client := gen.NewGroupServiceClient(g.conn)
-	res, err := client.GetGroupIdsByUserId(ctx, &gen.GetGroupIdsByUserIdRequest{
+	client := v1.NewGroupServiceClient(g.conn)
+	res, err := client.GetGroupIdsByUserId(ctx, &v1.GetGroupIdsByUserIdRequest{
 		UserId: userId.String(),
 	})
 	results := make([]uuid.UUID, 0)
