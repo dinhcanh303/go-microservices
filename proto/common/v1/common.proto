@@ -1,0 +1,41 @@
+syntax="proto3";
+
+package common.v1;
+
+import "protoc-gen-openapiv2/options/annotations.proto";
+import "google/protobuf/timestamp.proto";
+
+option go_package = "github.com/dinhcanh303/go-microservices/api/common/v1";
+
+option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_swagger) = {
+    info: {
+        title: "Go Microservices";
+        version: "1.0.0";
+        contact: {
+            name: "Dinh Canh"
+            url: "https://github.com/dinhcanh303"
+            email: "dinhcanhng303@gmail.com"
+        }
+    };
+    external_docs: {
+        url: "https://github.com/dinhcanh303/go-microservices";
+        description: "go-microservices repository";
+    }
+    schemes: HTTPS;
+};
+
+
+enum Role {
+    USER = 0;
+    ADMIN = 1;
+}
+
+enum Status {
+    PUBLIC = 0;
+    PRIVATE = 1;
+    COMPANY = 2;
+    FRIENDS = 3;
+}
+
+
+

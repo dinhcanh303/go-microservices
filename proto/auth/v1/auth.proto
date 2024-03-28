@@ -1,0 +1,245 @@
+syntax="proto3";
+
+package auth.v1;
+
+import "google/api/annotations.proto";
+import "protoc-gen-openapiv2/options/annotations.proto";
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/any.proto";
+
+option go_package = "github.com/dinhcanh303/go-microsevices/api/auth/v1";
+
+service AuthService {
+    rpc SignIn(SignInRequest) returns (SignInResponse){
+        option (google.api.http) = {
+            post: "/api/v1/auth/signin",
+            body: "*"
+        };
+        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+            summary: "SignIn application"
+            description: ""
+        };
+    }
+    rpc SignUp(SignUpRequest) returns (SignUpResponse){
+        option (google.api.http) = {
+            post: "/api/v1/auth/signup",
+            body: "*"
+        };
+        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+            summary: "SignUp application"
+            description: ""
+        };
+    }
+    rpc Verify(VerifyRequest) returns (VerifyResponse){
+        option (google.api.http) = {
+            get: "/api/v1/auth/verify",
+        };
+        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+            summary: "Verify token"
+            description: ""
+        };
+    }
+    rpc Logout(LogoutRequest) returns (LogoutResponse){
+        option (google.api.http) = {
+            get: "/api/v1/logout",
+        };
+        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+            summary: "Logout"
+            description: ""
+        };
+    }
+    rpc HandleRefreshToken(HandleRefreshTokenRequest) returns (HandleRefreshTokenResponse){
+        option (google.api.http) = {
+            get: "/api/v1/refresh-token",
+        };
+        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+            summary: "Handle Refresh Token"
+            description: ""
+        };
+    }
+    rpc GetUserIdsOfCompanyByUserId(GetUserIdsOfCompanyByUserIdRequest) returns (GetUserIdsOfCompanyByUserIdResponse){
+        option (google.api.http) = {
+            get: "/api/v1/users/{user_id}/user-ids",
+        };
+        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+            summary: "Get All User Id By User Id"
+            description: ""
+        };
+    }
+    rpc GetProfile(GetProfileRequest) returns (GetProfileResponse){
+        option (google.api.http) = {
+            get: "/api/v1/profile",
+        };
+        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+            summary: "Get Profile of User"
+            description: ""
+        };
+    }
+    rpc GetUsers(GetUsersRequest) returns (GetUsersResponse){
+        option (google.api.http) = {
+            get: "/api/v1/users",
+        };
+        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+            summary: "Get All User"
+            description: ""
+        };
+    }
+    rpc GetUsersInviteByGroupId(GetUsersInviteGroupIdRequest) returns (GetUsersInviteGroupIdResponse){
+        option (google.api.http) = {
+            get: "/api/v1/users/{group_id}/invite",
+        };
+        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+            summary: "Get All User can invite Group"
+            description: ""
+        };
+    }
+    rpc GetUsersBirthDayByCurrentMonth(GetUsersBirthDayByCurrentMonthRequest) returns (GetUsersBirthDayByCurrentMonthResponse){
+        option (google.api.http) = {
+            get: "/api/v1/users/current-month/birthdays",
+        };
+        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+            summary: "Get Users Birth Day by Current Month"
+            description: ""
+        };
+    }
+    rpc GetUsersBirthDayByCurrentDay(GetUsersBirthDayByCurrentDayRequest) returns (GetUsersBirthDayByCurrentDayResponse){
+        option (google.api.http) = {
+            get: "/api/v1/users/current-day/birthdays",
+        };
+        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+            summary: "Get Users Birth Day by Current Day"
+            description: ""
+        };
+    }
+    rpc UpdateUser(UpdateUserRequest) returns (UpdateUserResponse){
+        option (google.api.http) = {
+            put: "/api/v1/users/{user.id}",
+            body: "*"
+        };
+        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+            summary: "Set Avatar User"
+            description: ""
+        };
+    }
+    rpc UpdateUserSettings(UpdateUserSettingsRequest) returns (UpdateUserSettingsResponse){
+        option (google.api.http) = {
+            put: "/api/v1/users/settings",
+            body: "*"
+        };
+        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+            summary: "Set Avatar User"
+            description: ""
+        };
+    }
+}
+message UpdateUserSettingsRequest{
+    int32 post_status = 1;
+    string system_theme = 2;
+}
+message UpdateUserSettingsResponse {
+    User user = 1;
+}
+message GetUsersBirthDayByCurrentMonthRequest{}
+message GetUsersBirthDayByCurrentMonthResponse{
+    repeated User users=1;
+}
+message GetUsersBirthDayByCurrentDayRequest{}
+message GetUsersBirthDayByCurrentDayResponse{
+    repeated User users=1;
+}
+message GetUsersInviteGroupIdRequest {
+    string group_id = 1;
+    int32 limit = 2;
+    int32 offset = 3;
+}
+message GetUsersInviteGroupIdResponse {
+    repeated User users=1;
+}
+message UpdateUserRequest {
+    User user = 1;
+}
+message UpdateUserResponse {
+    User user = 1;
+}
+message GetUsersRequest{
+    string search = 1;
+    int32 limit = 2;
+    int32 offset = 3;
+}
+message GetUsersResponse{
+    repeated User users=1;
+}
+message GetProfileRequest{
+    string id = 1;
+}
+message GetProfileResponse{
+    User user= 1;
+}
+message GetUserIdsOfCompanyByUserIdRequest{
+    string user_id = 1;
+}
+message GetUserIdsOfCompanyByUserIdResponse{
+    repeated string user_ids = 1;
+}
+message LogoutRequest{}
+
+message LogoutResponse{}
+
+message HandleRefreshTokenRequest {
+}
+message HandleRefreshTokenResponse {
+    User user = 1;
+    string access_token = 2;
+    string refresh_token = 3;
+}
+message Payload {
+    string id = 1;
+    string email = 2;
+    string fullname = 3;
+    string role = 4;
+    string avatar_url = 5;
+}
+message SignInRequest{
+    string email = 1;
+    string password = 2;
+}
+
+message SignInResponse{
+    User user =1;
+    string access_token = 2;
+    string refresh_token = 3;
+}
+message SignUpRequest{
+    string email = 1;
+    string password = 2;
+    string first_name = 3;
+    string last_name = 4;
+}
+
+message SignUpResponse{
+    User user =1;
+    string access_token = 2;
+    string refresh_token = 3;
+}
+message User {
+    string id = 1;
+    string email = 2;
+    string first_name = 3;
+    string last_name = 4;
+    string full_name = 5;
+    string nick_name = 6;
+    string avatar_url = 7;
+    string profile_url = 8;
+    string role = 9;
+    bool resigned = 10;
+    bool gender = 11;
+    string phone = 12;
+    string address = 13;
+    string position = 14;
+    google.protobuf.Timestamp date_of_birth = 15;
+    google.protobuf.Any settings = 16;
+    google.protobuf.Timestamp created_at = 17;
+    google.protobuf.Timestamp updated_at = 18;
+}
+message VerifyRequest{}
+message VerifyResponse{}

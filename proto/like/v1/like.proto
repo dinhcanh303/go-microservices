@@ -1,0 +1,117 @@
+syntax="proto3";
+
+package like.v1;
+
+import "google/api/annotations.proto";
+import "protoc-gen-openapiv2/options/annotations.proto";
+import "google/protobuf/timestamp.proto";
+
+option go_package = "github.com/dinhcanh303/go-microsevices/api/like/v1";
+
+service LikeService {
+    rpc CreateLike(CreateLikeRequest) returns (CreateLikeResponse){
+        option (google.api.http) = {
+            post: "/api/v1/likes"
+            body: "*"
+        };
+        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+            summary: "Create Like"
+            description: ""
+        };
+    }
+    rpc UpdateLike(UpdateLikeRequest) returns (UpdateLikeResponse){
+        option (google.api.http) = {
+            put: "/api/v1/likes/{like.id}"
+            body: "*"
+        };
+        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+            summary: "Update Like"
+            description: ""
+        };
+    }
+    rpc DeleteLike(DeleteLikeRequest) returns (DeleteLikeResponse){
+        option (google.api.http) = {
+            delete: "/api/v1/likes/{id}"
+        };
+        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+            summary: "Delete Like"
+            description: ""
+        };
+    }
+    rpc GetLikesInfoByPostID(GetLikesInfoByPostIDRequest) returns (GetLikesInfoByPostIDResponse){
+        option (google.api.http) = {
+            get: "/api/v1/posts/{post_id}/likes"
+        };
+        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+            summary: "Get Info Likes by Post ID"
+            description: ""
+        };
+    }
+    rpc GetLikesInfoByCommentID(GetLikesInfoByCommentIDRequest) returns (GetLikesInfoByCommentIDResponse){
+        option (google.api.http) = {
+            get: "/api/v1/comments/{comment_id}/likes"
+        };
+        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+            summary: "Get Info Likes by Comment ID"
+            description: ""
+        };
+    }
+}
+
+
+message CreateLikeRequest {
+    LikeRequest like =1;
+}
+message CreateLikeResponse {
+    Like like = 1;
+}
+message UpdateLikeRequest {
+    LikeUpdateRequest like = 1;
+}
+message UpdateLikeResponse {
+    Like like = 1;
+}
+message DeleteLikeRequest {
+    string id = 1;
+}
+message DeleteLikeResponse {
+    bool deleted = 1;
+}
+
+message LikeRequest {
+    string emoji =1;
+    string likeable_type =2;
+    string likeable_id =3;
+}
+message LikeUpdateRequest {
+    string id = 1;
+    string emoji = 2;
+}
+
+message GetLikesInfoByPostIDRequest {
+    string post_id = 1;
+}
+message GetLikesInfoByCommentIDRequest {
+    string comment_id = 1;
+}
+message GetLikesInfoByPostIDResponse {
+    LikeInfo likes = 1;
+}
+message GetLikesInfoByCommentIDResponse {
+    LikeInfo likes = 1;
+}
+message LikeInfo {
+    string your_liked_emoji = 1;
+    int64 your_like = 2;
+    repeated string others_liked_emojis = 3;
+    int64 others_likes = 4;
+}
+message Like {
+    string id =1;
+    string emoji =2;
+    string likeable_type =3;
+    string likeable_id =4;
+    string user_id = 5;
+    google.protobuf.Timestamp created_at = 6;
+    google.protobuf.Timestamp updated_at = 7;
+}

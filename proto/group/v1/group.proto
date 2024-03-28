@@ -1,0 +1,225 @@
+syntax="proto3";
+
+package groupa.v1; //Because if using package name is "group" proto gen import notworking 
+
+import "google/api/annotations.proto";
+import "protoc-gen-openapiv2/options/annotations.proto";
+import "google/protobuf/timestamp.proto";
+import "auth/v1/auth.proto";
+
+option go_package = "github.com/dinhcanh303/go-microsevices/api/group/v1";
+
+service GroupService {
+    rpc CreateGroup(CreateGroupRequest) returns (CreateGroupResponse){
+        option (google.api.http) = {
+            post: "/api/v1/groups"
+            body: "*"
+        };
+        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+            summary: "Create group"
+            description: ""
+        };
+    }
+    rpc GetGroup(GetGroupRequest) returns (GetGroupResponse){
+        option (google.api.http) = {
+            get: "/api/v1/groups/{id}"
+        };
+        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+            summary: "Get group"
+            description: ""
+        };
+    }
+    rpc UpdateGroup(UpdateGroupRequest) returns (UpdateGroupResponse){
+        option (google.api.http) = {
+            put: "/api/v1/groups/{group.id}"
+            body: "*"
+        };
+        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+            summary: "Update group"
+            description: ""
+        };
+    }
+    rpc DeleteGroup(DeleteGroupRequest) returns (DeleteGroupResponse){
+        option (google.api.http) = {
+            delete: "/api/v1/groups/{id}"
+        };
+        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+            summary: "Delete group"
+            description: ""
+        };
+    }
+    rpc GetGroups(GetGroupsRequest) returns (GetGroupsResponse){
+        option (google.api.http) = {
+            get: "/api/v1/groups"
+        };
+        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+            summary: "Get all groups"
+            description: ""
+        };
+    }
+    rpc GetGroupsByUserId(GetGroupsByUserIdRequest) returns (GetGroupsByUserIdResponse){
+        option (google.api.http) = {
+            get: "/api/v1/users/{user_id}/groups"
+        };
+        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+            summary: "Get all group member"
+            description: ""
+        };
+    }
+    rpc GetGroupIdsByUserId(GetGroupIdsByUserIdRequest) returns (GetGroupIdsByUserIdResponse){
+        option (google.api.http) = {
+            get: "/api/v1/users/{user_id}/group-ids"
+        };
+        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+            summary: "Get all group id by user id",
+            description: ""
+        };
+    }
+    // GroupMember
+    rpc CreateGroupMember(CreateGroupMemberRequest) returns (CreateGroupMemberResponse){
+        option (google.api.http) = {
+            post: "/api/v1/group-members"
+            body: "*"
+        };
+        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+            summary: "Create group member"
+            description: ""
+        };
+    }
+    rpc UpdateGroupMember(UpdateGroupMemberRequest) returns (UpdateGroupMemberResponse){
+        option (google.api.http) = {
+            put: "/api/v1/group-members/{group_member.id}"
+            body: "*"
+        };
+        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+            summary: "Update group member"
+            description: ""
+        };
+    }
+    rpc DeleteGroupMember(DeleteGroupMemberRequest) returns (DeleteGroupMemberResponse){
+        option (google.api.http) = {
+            delete: "/api/v1/group-members/{id}"
+        };
+        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+            summary: "Delete group member"
+            description: ""
+        };
+    }
+    rpc GetGroupMembers(GetGroupMembersRequest) returns (GetGroupMembersResponse){
+        option (google.api.http) = {
+            get: "/api/v1/group-members/{groupId}"
+        };
+        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+            summary: "Get all group member"
+            description: ""
+        };
+    }
+    
+
+}
+message GetGroupsRequest{}
+message GetGroupsResponse{
+    repeated Group groups = 1;
+}
+message CreateGroupRequest {
+    GroupRequest group = 1;
+}
+message CreateGroupResponse {
+    Group group = 1;
+}
+message CreateGroupMemberRequest {
+    GroupMemberRequest group_member = 1;
+}
+message CreateGroupMemberResponse {
+    GroupMember group_member = 1;
+}
+message GetGroupRequest {
+    string id = 1;
+}
+message GetGroupMembersRequest {
+    string groupId = 1;
+}
+message GetGroupMembersResponse {
+    repeated GroupMemberMetadata group_members = 1;
+}
+message DeleteGroupRequest {
+    string id = 1;
+}
+message DeleteGroupResponse {
+    bool deleted = 1;
+}
+message DeleteGroupMemberRequest {
+    string id = 1;
+}
+message DeleteGroupMemberResponse {
+    bool deleted = 1;
+}
+message GetGroupResponse {
+    Group group = 1;
+    int64 count_group_members = 2;
+    string role_group_member = 3;
+}
+message UpdateGroupRequest {
+    Group group = 1;
+}
+message UpdateGroupResponse {
+    Group group = 1;
+}
+message UpdateGroupMemberRequest {
+    GroupMember group_member = 1;
+}
+message UpdateGroupMemberResponse {
+    GroupMember group_member = 1;
+}
+message GetGroupsByUserIdRequest {
+    string user_id = 1;
+    int32 limit = 2;
+    int32 offset = 3;
+}
+message GetGroupsByUserIdResponse {
+    repeated Group groups = 1;
+}
+message GetGroupIdsByUserIdRequest {
+    string user_id = 1;
+}
+message GetGroupIdsByUserIdResponse {
+    repeated string group_ids = 1;
+}
+message GroupRequest {
+    string name = 1;
+    string description = 2;
+    int32 status = 3;
+    int32 profile_url = 4;
+    repeated string user_ids = 5;
+}
+message Group {
+    string id = 1;
+    string name = 2;
+    string description = 3;
+    int32 status = 4;
+    string user_id = 5;
+    string profile_url = 6;
+    google.protobuf.Timestamp created_at = 7;
+    google.protobuf.Timestamp updated_at = 8;
+}
+message GroupMemberRequest {
+    string group_id = 1;
+    int32 role = 2;
+}
+message GroupMember {
+    string id = 1;
+    string group_id = 2;
+    string user_id = 3;
+    int32 role = 4;
+    google.protobuf.Timestamp created_at = 5;
+    google.protobuf.Timestamp updated_at = 6;
+}
+message GroupMemberMetadata {
+    string id = 1;
+    string group_id = 2;
+    string user_id = 3;
+    auth.v1.User user = 4;
+    int32 role = 5;
+    google.protobuf.Timestamp created_at = 6;
+    google.protobuf.Timestamp updated_at = 7;
+}
