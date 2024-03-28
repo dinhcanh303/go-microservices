@@ -8,7 +8,7 @@ import "google/protobuf/timestamp.proto";
 import "google/protobuf/struct.proto";
 import "auth/v1/auth.proto";
 
-option go_package = "github.com/dinhcanh303/go-microsevices/api/noti/v1";
+option go_package = "github.com/dinhcanh303/go-microservices/api/noti/v1";
 
 service NotiService {
     rpc GetNotifications(GetNotificationsRequest) returns (GetNotificationsResponse) {

@@ -6,7 +6,7 @@ import "google/api/annotations.proto";
 import "protoc-gen-openapiv2/options/annotations.proto";
 import "google/protobuf/timestamp.proto";
 
-option go_package = "github.com/dinhcanh303/go-microsevices/api/upload/v1";
+option go_package = "github.com/dinhcanh303/go-microservices/api/upload/v1";
 
 service UploadService {
     rpc GetAttachmentsByType(GetAttachmentsByTypeRequest) returns (GetAttachmentsByTypeResponse) {

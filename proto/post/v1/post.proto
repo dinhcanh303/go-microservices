@@ -11,7 +11,7 @@ import "upload/v1/upload.proto";
 import "like/v1/like.proto";
 import "comment/v1/comment.proto";
 
-option go_package = "github.com/dinhcanh303/go-microsevices/api/post/v1";
+option go_package = "github.com/dinhcanh303/go-microservices/api/post/v1";
 
 service PostService {
     rpc CreatePost(CreatePostRequest) returns (CreatePostResponse){

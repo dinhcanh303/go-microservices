@@ -9,7 +9,7 @@ import "like/v1/like.proto";
 import "upload/v1/upload.proto";
 import "auth/v1/auth.proto";
 
-option go_package = "github.com/dinhcanh303/go-microsevices/api/comment/v1";
+option go_package = "github.com/dinhcanh303/go-microservices/api/comment/v1";
 
 service CommentService {
     rpc CreateComment(CreateCommentRequest) returns (CreateCommentResponse){
