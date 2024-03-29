@@ -37,8 +37,8 @@ CREATE TABLE
         created_at timestamp with time zone NOT NULL DEFAULT current_timestamp,
         updated_at timestamp with time zone NOT NULL DEFAULT (now())
 );
-CREATE INDEX ix_relationship_follower_id ON auth.relationships (follower_id)
-CREATE INDEX ix_relationship_followed_id ON auth.relationships (followed_id)
+CREATE INDEX ix_relationship_follower_id ON auth.relationships (follower_id);
+CREATE INDEX ix_relationship_followed_id ON auth.relationships (followed_id);
 
 CREATE TABLE 
     auth.api_keys (

@@ -32,6 +32,15 @@ type AuthKey struct {
 	UpdatedAt         time.Time      `json:"updated_at"`
 }
 
+type AuthRelationship struct {
+	ID         int64     `json:"id"`
+	FollowerID uuid.UUID `json:"follower_id"`
+	FollowedID uuid.UUID `json:"followed_id"`
+	Status     int32     `json:"status"`
+	CreatedAt  time.Time `json:"created_at"`
+	UpdatedAt  time.Time `json:"updated_at"`
+}
+
 type AuthUser struct {
 	ID          uuid.UUID       `json:"id"`
 	Email       string          `json:"email"`
