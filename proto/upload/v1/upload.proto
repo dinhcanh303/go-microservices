@@ -50,6 +50,8 @@ message GetAttachmentsByOptionalRequest{
     string user_id = 2;
     string mime_type = 3;
     string entity_upload_id = 4;
+    int32 limit = 5;
+    int32 offset = 6;
 }
 
 message GetAttachmentsByOptionalResponse{
