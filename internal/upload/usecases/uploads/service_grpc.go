@@ -34,14 +34,14 @@ func NewUploadGRPCService(
 }
 
 // GetAttachmentsByOptional implements UseCaseGRPC.
-func (s *uploadGRPCService) GetAttachmentsByOptional(ctx context.Context, attachment *domain.Attachment) ([]*domain.Attachment, error) {
+func (s *uploadGRPCService) GetAttachmentsByOptional(ctx context.Context, attachment *domain.Attachment, limit, offset int32) ([]*domain.Attachment, error) {
 	var attachments []*domain.Attachment
 	keyCache := constant.CacheAttachments +
 		attachment.UserID.String() + ":" + strings.ToLower(attachment.AttachableType) +
 		":" + attachment.EntityUploadID + ":" + attachment.MimeType
 	err := utils.HandleHitCache(attachments, s.redis, keyCache)
 	if err != nil {
-		attachments, err = s.repo.GetAttachmentsByOptional(ctx, attachment)
+		attachments, err = s.repo.GetAttachmentsByOptional(ctx, attachment, limit, offset)
 		if err != nil {
 			return nil, errors.Wrap(err, "uploadService.GetAttachmentsByOptional failed")
 		}
@@ -55,24 +55,21 @@ func (s *uploadGRPCService) GetAttachmentsByOptional(ctx context.Context, attach
 
 // GetLastAttachmentByType implements UseCaseGRPC.
 func (s *uploadGRPCService) GetLastAttachmentByType(ctx context.Context, attachableType string, attachableId uuid.UUID) (*domain.Attachment, error) {
-	var attachments []*domain.Attachment
+	var attachment *domain.Attachment
 	keyCache := constant.CacheAttachments + strings.ToLower(attachableType) +
 		":" + attachableId.String()
-	err := utils.HandleHitCache(attachments, s.redis, keyCache)
+	err := utils.HandleHitCache(attachment, s.redis, keyCache)
 	if err != nil {
-		attachments, err = s.repo.GetAttachmentsByType(ctx, attachableType, attachableId)
+		attachment, err = s.repo.GetLastAttachmentByType(ctx, attachableType, attachableId)
 		if err != nil {
-			return nil, errors.Wrap(err, "uploadService.GetAttachmentsByType failed")
+			return nil, errors.Wrap(err, "uploadService.GetLastAttachmentByType failed")
 		}
-		err = s.redis.Set(keyCache, attachments)
+		err = s.redis.Set(keyCache, attachment)
 		if err != nil {
 			slog.Error("set cache attachments failed")
 		}
 	}
-	if len(attachments) > 0 {
-		return attachments[len(attachments)-1], nil
-	}
-	return nil, nil
+	return attachment, nil
 }
 
 // GetAttachmentsByType implements UseCaseGRPC.

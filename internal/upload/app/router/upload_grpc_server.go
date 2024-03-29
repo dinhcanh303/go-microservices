@@ -94,7 +94,7 @@ func (g *uploadGRPCServer) GetAttachmentsByOptional(
 		UserID:         userId,
 		EntityUploadID: request.EntityUploadId,
 	}
-	attachments, err := g.uc.GetAttachmentsByOptional(ctx, attachment)
+	attachments, err := g.uc.GetAttachmentsByOptional(ctx, attachment, request.Limit, request.Offset)
 	if err != nil {
 		return nil, errors.Wrap(err, "uploadGRPCServer.GetAttachmentsByOptional failed")
 	}

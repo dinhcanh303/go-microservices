@@ -28,7 +28,7 @@ func NewAttachmentRepo(pg postgres.DBEngine) uploads.AttachmentRepo {
 }
 
 // GetAttachmentsByOptional implements uploads.AttachmentRepo.
-func (rp *attachmentRepo) GetAttachmentsByOptional(ctx context.Context, attachment *domain.Attachment) ([]*domain.Attachment, error) {
+func (rp *attachmentRepo) GetAttachmentsByOptional(ctx context.Context, attachment *domain.Attachment, limit, offset int32) ([]*domain.Attachment, error) {
 	db := rp.pg.GetDBRead()
 	querier := postgresql.New(db)
 	var results []postgresql.UploadAttachment
@@ -48,6 +48,8 @@ func (rp *attachmentRepo) GetAttachmentsByOptional(ctx context.Context, attachme
 				String: attachment.MimeType,
 				Valid:  attachment.MimeType != "",
 			},
+			Limit:  limit,
+			Offset: offset,
 		})
 		if err != nil {
 			return nil, errors.Wrap(err, "qtx.GetAttachments(...) failed")
@@ -66,6 +68,8 @@ func (rp *attachmentRepo) GetAttachmentsByOptional(ctx context.Context, attachme
 				String: attachment.MimeType,
 				Valid:  attachment.MimeType != "",
 			},
+			Limit:  limit,
+			Offset: offset,
 		})
 		if err != nil {
 			return nil, errors.Wrap(err, "qtx.GetAttachments(...) failed")

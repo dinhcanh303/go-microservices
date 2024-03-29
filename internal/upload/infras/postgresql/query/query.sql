@@ -15,7 +15,7 @@ SELECT * FROM upload.attachments
 WHERE attachable_type = $1 
 AND mime_type LIKE '%' || $2 ||'%'
 AND (entity_upload_id = $3 OR $3 IS NULL)
-ORDER BY created_at DESC;
+ORDER BY created_at DESC LIMIT $4 OFFSET $5;
 
 -- name: GetAttachmentsByUserId :many
 SELECT * FROM upload.attachments 
@@ -23,7 +23,7 @@ WHERE attachable_type = $1
 AND mime_type LIKE '%' || $2 ||'%'
 AND user_id = $3
 AND (entity_upload_id = sqlc.narg('entity_upload_id') OR entity_upload_id IS NULL)
-ORDER BY created_at DESC;
+ORDER BY created_at DESC LIMIT $4 OFFSET $5;
 
 -- name: Create :one
 INSERT INTO upload.attachments 

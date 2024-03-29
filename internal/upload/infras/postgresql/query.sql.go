@@ -119,17 +119,25 @@ SELECT id, attachable_type, attachable_id, user_id, entity_upload_id, filename, 
 WHERE attachable_type = $1 
 AND mime_type LIKE '%' || $2 ||'%'
 AND (entity_upload_id = $3 OR $3 IS NULL)
-ORDER BY created_at DESC
+ORDER BY created_at DESC LIMIT $4 OFFSET $5
 `
 
 type GetAttachmentsByOptionalParams struct {
 	AttachableType sql.NullString `json:"attachable_type"`
 	Column2        sql.NullString `json:"column_2"`
 	EntityUploadID sql.NullString `json:"entity_upload_id"`
+	Limit          int32          `json:"limit"`
+	Offset         int32          `json:"offset"`
 }
 
 func (q *Queries) GetAttachmentsByOptional(ctx context.Context, arg GetAttachmentsByOptionalParams) ([]UploadAttachment, error) {
-	rows, err := q.db.QueryContext(ctx, getAttachmentsByOptional, arg.AttachableType, arg.Column2, arg.EntityUploadID)
+	rows, err := q.db.QueryContext(ctx, getAttachmentsByOptional,
+		arg.AttachableType,
+		arg.Column2,
+		arg.EntityUploadID,
+		arg.Limit,
+		arg.Offset,
+	)
 	if err != nil {
 		return nil, err
 	}
@@ -216,14 +224,16 @@ SELECT id, attachable_type, attachable_id, user_id, entity_upload_id, filename, 
 WHERE attachable_type = $1 
 AND mime_type LIKE '%' || $2 ||'%'
 AND user_id = $3
-AND (entity_upload_id = $4 OR entity_upload_id IS NULL)
-ORDER BY created_at DESC
+AND (entity_upload_id = $6 OR entity_upload_id IS NULL)
+ORDER BY created_at DESC LIMIT $4 OFFSET $5
 `
 
 type GetAttachmentsByUserIdParams struct {
 	AttachableType sql.NullString `json:"attachable_type"`
 	Column2        sql.NullString `json:"column_2"`
 	UserID         uuid.UUID      `json:"user_id"`
+	Limit          int32          `json:"limit"`
+	Offset         int32          `json:"offset"`
 	EntityUploadID sql.NullString `json:"entity_upload_id"`
 }
 
@@ -232,6 +242,8 @@ func (q *Queries) GetAttachmentsByUserId(ctx context.Context, arg GetAttachments
 		arg.AttachableType,
 		arg.Column2,
 		arg.UserID,
+		arg.Limit,
+		arg.Offset,
 		arg.EntityUploadID,
 	)
 	if err != nil {
