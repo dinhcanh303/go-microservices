@@ -186,7 +186,7 @@ func (rp *commentRepo) GetCommentsByPostID(ctx context.Context, postId uuid.UUID
 		return nil, errors.Wrap(err, "commentRepo.GetCommentsByPostID failed")
 	}
 	slog.Info("Repo::", results)
-	return lo.Map(results, func(item postgresql.CommentComment, _ int) *domain.Comment {
+	return lo.Map(results, func(item postgresql.GetCommentsByPostIDRow, _ int) *domain.Comment {
 		return &domain.Comment{
 			ID:              item.ID,
 			UserID:          item.UserID,

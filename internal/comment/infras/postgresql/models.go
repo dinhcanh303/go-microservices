@@ -5,6 +5,7 @@
 package postgresql
 
 import (
+	"database/sql"
 	"time"
 
 	"github.com/google/uuid"
@@ -18,6 +19,7 @@ type CommentComment struct {
 	TagIds          []uuid.UUID   `json:"tag_ids"`
 	PostID          uuid.UUID     `json:"post_id"`
 	ParentCommentID uuid.NullUUID `json:"parent_comment_id"`
+	Edited          sql.NullBool  `json:"edited"`
 	CreatedAt       time.Time     `json:"created_at"`
 	UpdatedAt       time.Time     `json:"updated_at"`
 }
