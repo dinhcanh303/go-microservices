@@ -26,6 +26,20 @@ CREATE TABLE
         updated_at timestamp with time zone NOT NULL DEFAULT (now()),
         CONSTRAINT pk_users PRIMARY KEY (id)
     );
+CREATE INDEX ix_auth_user_email ON auth.users (email);
+
+CREATE TABLE 
+    auth.relationships (
+        id BIGSERIAL PRIMARY KEY,
+        follower_id uuid NOT NULL,
+        followed_id uuid NOT NULL,
+        status integer NOT NULL DEFAULT 1,
+        created_at timestamp with time zone NOT NULL DEFAULT current_timestamp,
+        updated_at timestamp with time zone NOT NULL DEFAULT (now())
+);
+CREATE INDEX ix_relationship_follower_id ON auth.relationships (follower_id)
+CREATE INDEX ix_relationship_followed_id ON auth.relationships (followed_id)
+
 CREATE TABLE 
     auth.api_keys (
         id BIGSERIAL PRIMARY KEY,

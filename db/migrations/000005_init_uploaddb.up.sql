@@ -22,4 +22,8 @@ CREATE TABLE
     );
 
 CREATE INDEX ix_user_id ON upload.attachments (user_id);
+CREATE INDEX ix_attachable_type ON upload.attachments (attachable_type);
+CREATE INDEX ix_attachable_id ON upload.attachments (attachable_id);
+CREATE INDEX ix_entity_upload_id ON upload.attachments (entity_upload_id);
+CREATE INDEX ix_mime_type ON upload.attachments (mime_type);
 COMMIT;

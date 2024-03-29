@@ -17,4 +17,6 @@ CREATE TABLE
     );
 
 CREATE INDEX ix_user_id ON "like".likes (user_id);
+CREATE INDEX ix_likeable_type ON "like".likes (likeable_type);
+CREATE INDEX ix_likeable_id ON "like".likes (likeable_id);
 COMMIT;

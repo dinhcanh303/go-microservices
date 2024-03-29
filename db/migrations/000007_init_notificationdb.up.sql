@@ -17,5 +17,5 @@ CREATE TABLE
         updated_at timestamp with time zone NOT NULL DEFAULT (now())
     );
 
-CREATE INDEX ix_sender_id ON noti.notifications (sender_id);
+CREATE INDEX ix_noti_sender_read ON noti.notifications (sender_id,read_at);
 COMMIT;
