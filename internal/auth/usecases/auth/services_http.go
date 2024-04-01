@@ -48,13 +48,15 @@ var (
 
 // GoogleCallback implements UseCaseHttp.
 func (s *serviceHttp) GoogleCallback(w http.ResponseWriter, r *http.Request) {
-	slog.Info("Form", r.Form)
-	if r.FormValue("stage") != randomState {
+	queryValues := r.URL.Query()
+	state := queryValues.Get("state")
+	if state != randomState {
 		slog.Error("failed state:...")
 		http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
 		return
 	}
-	token, err := oauth2.OAuthProviders.GoogleConfig.Exchange(context.Background(), r.FormValue("code"))
+	code := queryValues.Get("code")
+	token, err := oauth2.OAuthProviders.GoogleConfig.Exchange(context.Background(), code)
 	if err != nil {
 		slog.Error("create token failed: %s", err)
 		http.Redirect(w, r, "/", http.StatusTemporaryRedirect)

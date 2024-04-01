@@ -74,8 +74,8 @@ func main() {
 	//
 	//Start Http2 server
 	httpMux := http.NewServeMux()
-	httpMux.Handle("/api/v1/oauth/google", http.HandlerFunc(a.Handler.GoogleLogin))
-	httpMux.Handle("/api/v1/oauth_callback/google", http.HandlerFunc(a.Handler.GoogleCallback))
+	httpMux.HandleFunc("/api/v1/oauth/google", a.Handler.GoogleLogin)
+	httpMux.HandleFunc("/api/v1/oauth_callback/google", a.Handler.GoogleCallback)
 	http2Server := &http.Server{
 		Addr:    fmt.Sprintf("%s:%d", cfg.HTTP2.Host, cfg.HTTP2.Port),
 		Handler: httpMux,
