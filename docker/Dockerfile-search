@@ -19,7 +19,7 @@ RUN go build -o /bin/app ./cmd/search
 # Step 3: Final
 FROM scratch
 
-EXPOSE 5008
+EXPOSE 5009
 
 # GOPATH for scratch images is /
 COPY --from=builder /app/cmd/search/config.yml /

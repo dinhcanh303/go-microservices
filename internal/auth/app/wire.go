@@ -5,6 +5,7 @@ package app
 
 import (
 	"github.com/dinhcanh303/go-microservices/cmd/auth/config"
+	"github.com/dinhcanh303/go-microservices/internal/auth/app/handlers"
 	"github.com/dinhcanh303/go-microservices/internal/auth/app/router"
 	infrasGRPC "github.com/dinhcanh303/go-microservices/internal/auth/infras/grpc"
 	"github.com/dinhcanh303/go-microservices/internal/auth/infras/listen_trigger"
@@ -41,12 +42,14 @@ func InitApp(
 		redisEngineFunc,
 		router.AuthGRPCServerSet,
 		auth.UseCaseSet,
-		listen_trigger.ListenTriggerSet,
 		keys.UseCaseSet,
+		auth.UseCaseHttpSet,
 		repo.KeyRepoSet,
 		repo.UserRepoSet,
+		handlers.AuthHandlerSet,
 		infrasGRPC.UploadGRPCClientSet,
 		infrasGRPC.GroupGRPCClientSet,
+		listen_trigger.ListenTriggerSet,
 		publisher.EventPublisherSet,
 	))
 }

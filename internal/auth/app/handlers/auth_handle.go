@@ -13,22 +13,20 @@ type AuthHandler struct {
 
 var _ auth.UseCaseHttp = (*AuthHandler)(nil)
 
-var UploadHandlerSet = wire.NewSet(NewAuthHandler)
+var AuthHandlerSet = wire.NewSet(NewAuthHandler)
 
-func NewAuthHandler(uc auth.UseCaseHttp) auth.UseCaseHttp {
+func NewAuthHandler(uc auth.UseCaseHttp) *AuthHandler {
 	return &AuthHandler{
 		uc: uc,
 	}
 }
 
 // GoogleCallback implements auth.UseCaseHttp.
-func (a *AuthHandler) GoogleCallback(res http.ResponseWriter, req *http.Request) {
-	panic("unimplemented")
+func (a *AuthHandler) GoogleCallback(w http.ResponseWriter, r *http.Request) {
+	a.uc.GoogleCallback(w, r)
 }
 
 // GoogleLogin implements auth.UseCaseHttp.
-func (a *AuthHandler) GoogleLogin(res http.ResponseWriter, req *http.Request) {
-
-	panic("unimplemented")
-	// http.Redirect(res, req, url, http.StatusSeeOther)
+func (a *AuthHandler) GoogleLogin(w http.ResponseWriter, r *http.Request) {
+	a.uc.GoogleLogin(w, r)
 }

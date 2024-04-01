@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"net"
 	"net/http"
@@ -21,7 +22,6 @@ import (
 	grpc_recovery "github.com/grpc-ecosystem/go-grpc-middleware/recovery"
 	grpc_validator "github.com/grpc-ecosystem/go-grpc-middleware/validator"
 	grpc_prometheus "github.com/grpc-ecosystem/go-grpc-prometheus"
-	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/sirupsen/logrus"
 	"go.uber.org/automaxprocs/maxprocs"
 	"golang.org/x/exp/slog"
@@ -71,6 +71,19 @@ func main() {
 		<-ctx.Done()
 	}()
 	a, cleanup := prepareApp(ctx, cancel, cfg, cfgRedis, cfgLdap, server)
+	//
+	//Start Http2 server
+	httpMux := http.NewServeMux()
+	httpMux.Handle("/api/v1/oauth/google", http.HandlerFunc(a.Handler.GoogleLogin))
+	httpMux.Handle("/api/v1/oauth_callback/google", http.HandlerFunc(a.Handler.GoogleCallback))
+	http2Server := &http.Server{
+		Addr:    fmt.Sprintf("%s:%d", cfg.HTTP2.Host, cfg.HTTP2.Port),
+		Handler: httpMux,
+	}
+	slog.Info("🌏 start listening http_2...", "address", fmt.Sprintf("%s:%d", cfg.HTTP2.Host, cfg.HTTP2.Port))
+	if err := http2Server.ListenAndServe(); errors.Is(err, http.ErrServerClosed) {
+		slog.Error("failed to listen and serve", err)
+	}
 	//Listen change database
 	go func() {
 		a.ListenTrigger(ctx)
@@ -97,21 +110,7 @@ func main() {
 		cancel()
 		<-ctx.Done()
 	}
-	// Start Metrics server
-	metricsMux := http.NewServeMux()
-	metricsMux.Handle("/metrics", promhttp.Handler())
-	metricsServer := &http.Server{
-		Addr:    fmt.Sprintf("%s:%d", cfg.Metrics.HostMetric, cfg.Metrics.PortMetric),
-		Handler: metricsMux,
-	}
-	go func() {
-		if err = metricsServer.ListenAndServe(); err != nil && err != http.ErrServerClosed {
-			log.Fatal(err)
-		}
-	}()
-	if err = metricsServer.Shutdown(ctx); err != nil {
-		log.Fatal(err)
-	}
+
 	//
 	quit := make(chan os.Signal, 1)
 	signal.Notify(quit, os.Interrupt, syscall.SIGTERM)
@@ -131,6 +130,12 @@ func prepareApp(ctx context.Context, cancel context.CancelFunc, cfg *config.Conf
 		rabbitmq.RabbitMQConnStr(cfg.RabbitMQ.URL), server)
 	if err != nil {
 		slog.Error("Failed init app", err)
+		cancel()
+		<-ctx.Done()
+	}
+	err = a.InitOauth2Func()
+	if err != nil {
+		slog.Error("Failed init oauth2", err)
 		cancel()
 		<-ctx.Done()
 	}

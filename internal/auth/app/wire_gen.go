@@ -8,6 +8,7 @@ package app
 
 import (
 	"github.com/dinhcanh303/go-microservices/cmd/auth/config"
+	"github.com/dinhcanh303/go-microservices/internal/auth/app/handlers"
 	"github.com/dinhcanh303/go-microservices/internal/auth/app/router"
 	grpc2 "github.com/dinhcanh303/go-microservices/internal/auth/infras/grpc"
 	"github.com/dinhcanh303/go-microservices/internal/auth/infras/listen_trigger"
@@ -81,7 +82,9 @@ func InitApp(cfg *config.Config, cfg2 *configs.Redis, cfgLdap *configs.Ldap, dbC
 		return nil, nil, err
 	}
 	authServiceServer := router.NewAuthGRPCServer(grpcServer, cfg, authUseCase, useCase, uploadDomainService, groupDomainService, redisEngine)
-	app := New(cfg, cfgLdap, dbEngine, authUseCase, listenTrigger, authServiceServer, uploadDomainService, eventPublisher)
+	useCaseHttp := auth.NewUseCaseHttp(userRepo, useCase, ldapClient, jwt, redisEngine)
+	authHandler := handlers.NewAuthHandler(useCaseHttp)
+	app := New(cfg, cfgLdap, dbEngine, authUseCase, listenTrigger, authServiceServer, authHandler, uploadDomainService, eventPublisher)
 	return app, func() {
 		cleanup4()
 		cleanup3()

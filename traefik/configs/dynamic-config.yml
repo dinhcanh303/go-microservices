@@ -1,13 +1,13 @@
 http:
   routers:
-    # font-end:
-    #   rule: "Host(`{{env "APP_DOMAIN"}}`)"
-    #   service: font-end
-    #   tls:
-    #     certResolver: certificates
     auth:
       rule: "Host(`{{env "APP_DOMAIN"}}`) && PathPrefix(`/api/v1/auth`)"
       service: auth
+      tls:
+        certResolver: certificates
+    auth2:
+      rule: "Host(`{{env "APP_DOMAIN"}}`) && PathPrefix(`/api/v1/oauth`)"
+      service: auth2
       tls:
         certResolver: certificates
     proxy:
@@ -43,6 +43,10 @@ http:
       loadBalancer:
         servers:
           - url: http://{{env "HOST_UPLOAD"}}:5005
+    auth2:
+      loadBalancer:
+        servers:
+          - url: http://{{env "HOST_AUTH"}}:5008
   middlewares:
     auth:
       forwardAuth:

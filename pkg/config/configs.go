@@ -11,6 +11,11 @@ type (
 		Port int    `env-required:"true" yaml:"port" env:"HTTP_PORT"`
 	}
 
+	HTTP2 struct {
+		Host string `env-required:"true" yaml:"host" env:"HTTP_HOST_2"`
+		Port int    `env-required:"true" yaml:"port" env:"HTTP_PORT_2"`
+	}
+
 	Log struct {
 		Level             string `env-required:"true" yaml:"log_level" env:"LOG_LEVEL"`
 		Dev               bool   `env-required:"true" yaml:"log_dev" env:"LOG_DEV"`

@@ -17,9 +17,11 @@ RUN go build -tags migrate -o /bin/app ./cmd/auth
 FROM scratch
 
 EXPOSE 5007
+EXPOSE 5008
 
 # GOPATH for scratch images is /
 COPY --from=builder /app/cmd/auth/config.yml /
 COPY --from=builder /app/db/migrations /db/migrations
 COPY --from=builder /bin/app /app
+COPY --from=builder /usr/local/share/ca-certificates/ /usr/local/share/ca-certificates/
 CMD ["/app"]

@@ -28,9 +28,9 @@ services:
       GRPC_AUTH_HOST: 'auth'
       GRPC_AUTH_PORT: 5007
       GRPC_SEARCH_HOST: 'search'
-      GRPC_SEARCH_PORT: 5008
+      GRPC_SEARCH_PORT: 5009
       GRPC_NOTI_HOST: 'notification'
-      GRPC_NOTI_PORT: 5009
+      GRPC_NOTI_PORT: 5010
     ports:
       - 5000:5000
     depends_on:
@@ -172,6 +172,7 @@ services:
       - search
     ports:
       - 5007:5007
+      - 5008:5008
     networks:
       - mcs-network
   search:
@@ -192,7 +193,7 @@ services:
     depends_on:
       - notification
     ports:
-      - 5008:5008
+      - 5009:5009
     networks:
       - mcs-network
   notification:
@@ -212,7 +213,7 @@ services:
       RABBITMQ_URL: amqp://guest:guest@rabbitmq:5672/
       AUTH_CLIENT_URL: auth:5007
     ports:
-      - 5009:5009
+      - 5010:5010
     networks:
       - mcs-network
   # fontend:

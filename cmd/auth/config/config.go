@@ -14,6 +14,7 @@ type (
 	Config struct {
 		configs.App     `yaml:"app"`
 		configs.HTTP    `yaml:"http"`
+		configs.HTTP2   `yaml:"http_2"`
 		configs.Log     `yaml:"logger"`
 		configs.Metrics `yaml:"metrics"`
 		PG              `yaml:"postgres"`

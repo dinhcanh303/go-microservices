@@ -35,6 +35,8 @@ require (
 )
 
 require (
+	cloud.google.com/go/compute v1.23.4 // indirect
+	cloud.google.com/go/compute/metadata v0.2.3 // indirect
 	github.com/Azure/go-ntlmssp v0.0.0-20221128193559-754e69321358 // indirect
 	github.com/HdrHistogram/hdrhistogram-go v1.1.2 // indirect
 	github.com/andybalholm/brotli v1.0.4 // indirect
@@ -116,8 +118,8 @@ require (
 	github.com/valyala/fasttemplate v1.2.2 // indirect
 	go.uber.org/atomic v1.9.0 // indirect
 	golang.org/x/crypto v0.21.0
-	golang.org/x/net v0.21.0 // indirect
-	golang.org/x/oauth2 v0.16.0
+	golang.org/x/net v0.22.0 // indirect
+	golang.org/x/oauth2 v0.18.0
 	golang.org/x/sys v0.18.0 // indirect
 	golang.org/x/text v0.14.0 // indirect
 	golang.org/x/time v0.4.0

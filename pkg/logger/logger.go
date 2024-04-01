@@ -37,10 +37,8 @@ type logger struct {
 	zapSugaredLogger *zap.SugaredLogger
 }
 
-func New(env string) Logger {
-	if env == "" {
-		env = "dev"
-	}
+func New() Logger {
+	env := "dev"
 	var l *zap.Logger
 	switch env {
 	case "production":
@@ -48,7 +46,8 @@ func New(env string) Logger {
 		l, _ = zap.NewProduction()
 	case "development":
 	case "dev":
-		l, _ = zap.NewDevelopment()
+		// l, _ = zap.NewDevelopment()
+		l, _ = zap.NewProduction()
 	default:
 		l = zap.NewNop()
 	}
