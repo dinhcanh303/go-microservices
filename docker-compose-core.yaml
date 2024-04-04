@@ -85,16 +85,6 @@ services:
       - 8002:8001
     networks:
       - mcs-network
-  # elasticsearch:
-  #   image: docker.elastic.co/elasticsearch/elasticsearch:8.4.3
-  #   container_name: mcs-elasticsearch
-  #   environment:
-  #     - xpack.security.enabled=false
-  #     - "discovery.type=single-node"
-  #   ports:
-  #     - "9200:9200"
-  #   networks:
-  #     - mcs-network
   meilisearch:
     image: getmeili/meilisearch:latest
     container_name: mcs-meilisearch
@@ -122,6 +112,109 @@ services:
     
   #   networks:
   #     - mcs-network
+
+  zookeeper:
+    container_name: mcs-zookeeper
+    image: debezium/zookeeper
+    ports:
+      - 2181:2181
+      - 2888:2888
+      - 3888:3888
+    networks:
+      - mcs-network
+  kafka:
+    container_name: mcs-kafka
+    image: debezium/kafka
+    ports:
+      - 9092:9092
+    depends_on:
+      - zookeeper
+    environment:
+      - ZOOKEEPER_CONNECT=zookeeper:2181
+    networks:
+      - mcs-network
+  elasticsearch:
+    container_name: mcs-elasticsearch
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.13.1
+    restart: always
+    ports:
+      - "9200:9200"
+    environment:
+      - http.host=0.0.0.0
+      - ELASTIC_PASSWORD=123456
+      - transport.host=127.0.0.1
+      - xpack.security.enabled=false
+      - "discovery.type=single-node"
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+      - http.cors.enabled=true
+      - http.cors.allow-origin="http://localhost:8080"
+    networks:
+      - mcs-network
+  schema_registry:
+    image: confluentinc/cp-schema-registry
+    container_name: mcs-schema-registry
+    hostname: schema-registry
+    restart: always
+    depends_on:
+      - zookeeper
+      - kafka
+    ports:
+      - 8181:8181
+      - 8081:8081
+    environment:
+      - SCHEMA_REGISTRY_KAFKASTORE_CONNECTION_URL=zookeeper:2181
+      - SCHEMA_REGISTRY_HOST_NAME=schema-registry
+      - SCHEMA_REGISTRY_LISTENERS=http://schema-registry:8081
+      - SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS=//kafka:9092
+    networks:
+      - mcs-network
+  connect:
+    image: debezium/connect:2.5
+    ports:
+      - "8083:8083"
+    environment:
+      - BOOTSTRAP_SERVERS=kafka:9092
+      - GROUP_ID=1
+      - CONFIG_STORAGE_TOPIC=my_connect_configs
+      - OFFSET_STORAGE_TOPIC=my_connect_offsets
+      - STATUS_STORAGE_TOPIC=my_connect_statuses
+      - KEY_CONVERTER=io.confluent.connect.avro.AvroConverter
+      - VALUE_CONVERTER=io.confluent.connect.avro.AvroConverter
+      - CONNECT_KEY_CONVERTER_SCHEMA_REGISTRY_URL=http://schema-registry:8081
+      - CONNECT_VALUE_CONVERTER_SCHEMA_REGISTRY_URL=http://schema-registry:8081
+      - INTERNAL_KEY_CONVERTER=org.apache.kafka.connect.json.JsonConverter
+      - INTERNAL_VALUE_CONVERTER=org.apache.kafka.connect.json.JsonConverter
+    networks:
+      - mcs-network
+  kibana:
+    container_name: kibana
+    image: docker.elastic.co/kibana/kibana:8.13.1
+    ports:
+      - 5601:5601
+    depends_on:
+      - elasticsearch
+    environment:
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+      - ELASTICSEARCH_PASSWORD=123456
+    networks:
+      - mcs-network
+  control-center:
+    container_name: control-center
+    image: confluentinc/cp-enterprise-control-center
+    depends_on:
+      - connect
+    ports:
+      - 9021:9021
+    environment:
+      - CONTROL_CENTER_BOOTSTRAP_SERVERS='kafka:9092'
+      - CONTROL_CENTER_CONNECT_CONNECT-DEFAULT_CLUSTER='connect:8083'
+      - CONTROL_CENTER_REPLICATION_FACTOR=1
+      - CONTROL_CENTER_INTERNAL_TOPICS_PARTITIONS=1
+      - CONTROL_CENTER_MONITORING_INTERCEPTOR_TOPIC_PARTITIONS=1
+      - CONFLUENT_METRICS_TOPIC_REPLICATION=1
+      - PORT=9021
+    networks:
+      - mcs-network
 
 volumes:
   pgm-data: {}
