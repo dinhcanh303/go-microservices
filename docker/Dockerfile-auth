@@ -1,5 +1,6 @@
 # Step 1: Modules caching
 FROM golang:1.21-alpine3.18 as modules
+
 COPY go.mod go.sum /modules/
 WORKDIR /modules
 RUN go mod download
@@ -23,5 +24,5 @@ EXPOSE 5008
 COPY --from=builder /app/cmd/auth/config.yml /
 COPY --from=builder /app/db/migrations /db/migrations
 COPY --from=builder /bin/app /app
-COPY --from=builder /usr/local/share/ca-certificates/ /usr/local/share/ca-certificates/
+COPY --from=builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
 CMD ["/app"]

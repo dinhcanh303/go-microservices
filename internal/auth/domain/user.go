@@ -50,7 +50,7 @@ type UserAuth struct {
 	RefreshToken string `json:"refresh_token"`
 }
 
-func NewUser(email string, password string, firstName string, lastName string) *User {
+func NewUser(email string, password string, firstName string, lastName string, avatarUrl string) *User {
 
 	return &User{
 		ID:        uuid.New(),
@@ -59,5 +59,6 @@ func NewUser(email string, password string, firstName string, lastName string) *
 		LastName:  lastName,
 		FullName:  firstName + " " + lastName,
 		Password:  password,
+		AvatarUrl: avatarUrl,
 	}
 }

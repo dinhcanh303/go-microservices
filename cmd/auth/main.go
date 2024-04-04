@@ -22,6 +22,7 @@ import (
 	grpc_recovery "github.com/grpc-ecosystem/go-grpc-middleware/recovery"
 	grpc_validator "github.com/grpc-ecosystem/go-grpc-middleware/validator"
 	grpc_prometheus "github.com/grpc-ecosystem/go-grpc-prometheus"
+	"github.com/rs/cors"
 	"github.com/sirupsen/logrus"
 	"go.uber.org/automaxprocs/maxprocs"
 	"golang.org/x/exp/slog"
@@ -76,14 +77,12 @@ func main() {
 	httpMux := http.NewServeMux()
 	httpMux.HandleFunc("/api/v1/oauth/google", a.Handler.GoogleLogin)
 	httpMux.HandleFunc("/api/v1/oauth_callback/google", a.Handler.GoogleCallback)
+	crosMiddleware := cors.AllowAll().Handler(httpMux)
 	http2Server := &http.Server{
 		Addr:    fmt.Sprintf("%s:%d", cfg.HTTP2.Host, cfg.HTTP2.Port),
-		Handler: httpMux,
+		Handler: crosMiddleware,
 	}
-	slog.Info("🌏 start listening http_2...", "address", fmt.Sprintf("%s:%d", cfg.HTTP2.Host, cfg.HTTP2.Port))
-	if err := http2Server.ListenAndServe(); errors.Is(err, http.ErrServerClosed) {
-		slog.Error("failed to listen and serve", err)
-	}
+
 	//Listen change database
 	go func() {
 		a.ListenTrigger(ctx)
@@ -110,7 +109,10 @@ func main() {
 		cancel()
 		<-ctx.Done()
 	}
-
+	slog.Info("🌏 start listening http_2...", "address", fmt.Sprintf("%s:%d", cfg.HTTP2.Host, cfg.HTTP2.Port))
+	if err := http2Server.ListenAndServe(); errors.Is(err, http.ErrServerClosed) {
+		slog.Error("failed to listen and serve", err)
+	}
 	//
 	quit := make(chan os.Signal, 1)
 	signal.Notify(quit, os.Interrupt, syscall.SIGTERM)

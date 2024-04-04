@@ -228,7 +228,7 @@ func (s *service) SignUp(ctx context.Context, email, password, fistName, lastNam
 	if err != nil {
 		return nil, status.Error(codes.FailedPrecondition, err.Error())
 	}
-	model := domain.NewUser(email, passwordHash, fistName, lastName)
+	model := domain.NewUser(email, passwordHash, fistName, lastName, "")
 	newUser, err := s.repo.CreateUser(ctx, model)
 	if err != nil {
 		return nil, status.Error(codes.Unknown, err.Error())
