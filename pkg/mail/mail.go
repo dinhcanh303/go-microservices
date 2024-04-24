@@ -39,7 +39,7 @@ func (sender *emailSender) SendEmail(subject string, content string, to []string
 		InsecureSkipVerify: true,
 		ServerName:         emailHost,
 	}
-	if sender.cfg.Encryption == "tls1" {
+	if sender.cfg.Encryption == "tls" {
 		return e.SendWithStartTLS(smtpServerAddress, smtpAuth, tlsConfig)
 	}
 	return e.Send(smtpServerAddress, smtpAuth)
