@@ -47,21 +47,8 @@ func (a *authGRPCClient) GetProfile(ctx context.Context, id uuid.UUID) (*v1.GetP
 
 // GetAllUserIdByUserId implements domain.AuthDomainService.
 func (a *authGRPCClient) GetUserIdsByUserId(ctx context.Context, userId uuid.UUID) ([]uuid.UUID, error) {
-	client := v1.NewAuthServiceClient(a.conn)
+	// client := v1.NewAuthServiceClient(a.conn)
 
-	res, err := client.GetUserIdsOfCompanyByUserId(ctx, &v1.GetUserIdsOfCompanyByUserIdRequest{
-		UserId: userId.String(),
-	})
 	results := make([]uuid.UUID, 0)
-	if err != nil {
-		slog.Warn("authGRPCClient.GetUserIdsOfCompanyByUserId failed", err)
-		return results, nil
-	}
-	for _, item := range res.UserIds {
-		uuid, err := uuid.Parse(item)
-		if err == nil {
-			results = append(results, uuid)
-		}
-	}
 	return results, nil
 }
