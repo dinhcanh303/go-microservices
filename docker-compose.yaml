@@ -16,23 +16,23 @@ services:
       PG_URL: postgres://postgres:123456@postgres-master/postgres?sslmode=disable
       PG_REP_URL: postgres://postgres:123456@postgres-slave:5432/postgres?sslmode=disable
       GRPC_GROUP_HOST: 'group'
-      GRPC_GROUP_PORT: 5001
+      GRPC_GROUP_PORT: 5002
       GRPC_POST_HOST: 'post'
-      GRPC_POST_PORT: 5002
+      GRPC_POST_PORT: 5003
       GRPC_COMMENT_HOST: 'comment'
-      GRPC_COMMENT_PORT: 5003
+      GRPC_COMMENT_PORT: 5004
       GRPC_LIKE_HOST: 'like'
-      GRPC_LIKE_PORT: 5004
+      GRPC_LIKE_PORT: 5005
       GRPC_UPLOAD_HOST: 'upload'
-      GRPC_UPLOAD_PORT: 5006
+      GRPC_UPLOAD_PORT: 5007
       GRPC_AUTH_HOST: 'auth'
-      GRPC_AUTH_PORT: 5007
+      GRPC_AUTH_PORT: 5008
       GRPC_SEARCH_HOST: 'search'
-      GRPC_SEARCH_PORT: 5009
+      GRPC_SEARCH_PORT: 50010
       GRPC_NOTI_HOST: 'notification'
-      GRPC_NOTI_PORT: 5010
+      GRPC_NOTI_PORT: 5011
     ports:
-      - 5000:5000
+      - 5001:5001
     depends_on:
       - group
       - post
@@ -56,9 +56,9 @@ services:
       PG_URL: postgres://postgres:123456@postgres-master:5432/postgres?sslmode=disable
       PG_REP_URL: postgres://postgres:123456@postgres-slave:5432/postgres?sslmode=disable
       RABBITMQ_URL: amqp://guest:guest@rabbitmq:5672/
-      AUTH_CLIENT_URL: auth:5007
+      AUTH_CLIENT_URL: auth:5008
     ports:
-      - 5001:5001
+      - 5002:5002
     depends_on:
       - post
     networks:
@@ -76,13 +76,13 @@ services:
       PG_URL: postgres://postgres:123456@postgres-master:5432/postgres?sslmode=disable
       PG_REP_URL: postgres://postgres:123456@postgres-slave:5432/postgres?sslmode=disable
       RABBITMQ_URL: amqp://guest:guest@rabbitmq:5672/
-      GROUP_CLIENT_URL: group:5001
-      LIKE_CLIENT_URL: like:5004
-      COMMENT_CLIENT_URL: comment:5003
-      UPLOAD_CLIENT_URL: upload:5006
-      AUTH_CLIENT_URL: auth:5007
+      GROUP_CLIENT_URL: group:5002
+      LIKE_CLIENT_URL: like:5005
+      COMMENT_CLIENT_URL: comment:5004
+      UPLOAD_CLIENT_URL: upload:5007
+      AUTH_CLIENT_URL: auth:5008
     ports:
-      - 5002:5002
+      - 5003:5003
     depends_on:
       - comment
     networks:
@@ -100,12 +100,12 @@ services:
       PG_URL: postgres://postgres:123456@postgres-master:5432/postgres?sslmode=disable
       PG_REP_URL: postgres://postgres:123456@postgres-slave:5432/postgres?sslmode=disable
       RABBITMQ_URL: amqp://guest:guest@rabbitmq:5672/
-      LIKE_CLIENT_URL: like:5004
-      UPLOAD_CLIENT_URL: upload:5006
-      AUTH_CLIENT_URL: auth:5007
-      POST_CLIENT_URL: post:5002
+      LIKE_CLIENT_URL: like:5005
+      UPLOAD_CLIENT_URL: upload:5007
+      AUTH_CLIENT_URL: auth:5008
+      POST_CLIENT_URL: post:5003
     ports:
-      - 5003:5003
+      - 5004:5004
     depends_on:
       - like
     networks:
@@ -123,10 +123,10 @@ services:
       PG_URL: postgres://postgres:123456@postgres-master:5432/postgres?sslmode=disable
       PG_REP_URL: postgres://postgres:123456@postgres-slave:5432/postgres?sslmode=disable
       RABBITMQ_URL: amqp://guest:guest@rabbitmq:5672/
-      POST_CLIENT_URL: post:5002
-      COMMENT_CLIENT_URL: comment:5003
+      POST_CLIENT_URL: post:5003
+      COMMENT_CLIENT_URL: comment:5004
     ports:
-      - 5004:5004
+      - 5005:5005
     depends_on:
       - upload
     networks:
@@ -146,8 +146,8 @@ services:
       PG_URL: postgres://postgres:123456@postgres-master:5432/postgres?sslmode=disable
       PG_REP_URL: postgres://postgres:123456@postgres-slave:5432/postgres?sslmode=disable
     ports:
-      - 5005:5005
       - 5006:5006
+      - 5007:5007
     depends_on:
       - auth
     networks:
@@ -166,13 +166,13 @@ services:
       IN_DOCKER: "true"
       PG_URL: postgres://postgres:123456@postgres-master:5432/postgres?sslmode=disable
       PG_REP_URL: postgres://postgres:123456@postgres-slave:5432/postgres?sslmode=disable
-      UPLOAD_CLIENT_URL: upload:5006
-      GROUP_CLIENT_URL: group:5001
+      UPLOAD_CLIENT_URL: upload:5007
+      GROUP_CLIENT_URL: group:5002
     depends_on:
       - search
     ports:
-      - 5007:5007
       - 5008:5008
+      - 5009:5009
     networks:
       - mcs-network
   search:
@@ -188,12 +188,12 @@ services:
       APP_NAME: 'search-service in docker'
       IN_DOCKER: "true"
       RABBITMQ_URL: amqp://guest:guest@rabbitmq:5672/
-      GROUP_CLIENT_URL: group:5001
-      AUTH_CLIENT_URL: auth:5007
+      GROUP_CLIENT_URL: group:5002
+      AUTH_CLIENT_URL: auth:5008
     depends_on:
       - notification
     ports:
-      - 5009:5009
+      - 5010:5010
     networks:
       - mcs-network
   notification:
@@ -211,9 +211,9 @@ services:
       PG_URL: postgres://postgres:123456@postgres-master:5432/postgres?sslmode=disable
       PG_REP_URL: postgres://postgres:123456@postgres-slave:5432/postgres?sslmode=disable
       RABBITMQ_URL: amqp://guest:guest@rabbitmq:5672/
-      AUTH_CLIENT_URL: auth:5007
+      AUTH_CLIENT_URL: auth:5008
     ports:
-      - 5010:5010
+      - 5011:5011
     networks:
       - mcs-network
   # fontend:
