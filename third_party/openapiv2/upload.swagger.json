@@ -16,7 +16,7 @@
     "application/json"
   ],
   "paths": {
-    "/v1/api/attachments": {
+    "/api/v1/attachments": {
       "post": {
         "summary": "GetAttachmentsByType",
         "operationId": "UploadService_GetAttachmentsByType",

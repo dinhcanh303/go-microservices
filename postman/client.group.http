@@ -1,7 +1,7 @@
 @host = http://localhost:5000
 
 ###Create Group
-POST {{host}}/v1/api/groups HTTP/1.1
+POST {{host}}/api/v1/groups HTTP/1.1
 content-type: application/json
 
 {
@@ -16,7 +16,7 @@ content-type: application/json
 }
 
 ###Update Group
-PUT {{host}}/v1/api/groups/64bd1996-856d-43a7-bdf8-420052d34b50 HTTP/1.1
+PUT {{host}}/api/v1/groups/64bd1996-856d-43a7-bdf8-420052d34b50 HTTP/1.1
 content-type: application/json
 
 {
@@ -30,13 +30,13 @@ content-type: application/json
 }
 
 ###Get Group
-GET {{host}}/v1/api/groups/64bd1996-856d-43a7-bdf8-420052d34b50 HTTP/1.1
+GET {{host}}/api/v1/groups/64bd1996-856d-43a7-bdf8-420052d34b50 HTTP/1.1
 content-type: application/json
 
 {}
 
 ###Delete Group
-DELETE  {{host}}/v1/api/groups/64bd1996-856d-43a7-bdf8-420052d34b50 HTTP/1.1
+DELETE  {{host}}/api/v1/groups/64bd1996-856d-43a7-bdf8-420052d34b50 HTTP/1.1
 content-type: application/json
 
 {}

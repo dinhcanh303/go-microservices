@@ -1,7 +1,7 @@
 @host = http://localhost:5000
 
 ###Create Post
-POST {{host}}/v1/api/posts HTTP/1.1
+POST {{host}}/api/v1/posts HTTP/1.1
 content-type: application/json
 
 {
@@ -16,7 +16,7 @@ content-type: application/json
 }
 
 ###Create Post Group
-POST {{host}}/v1/api/posts HTTP/1.1
+POST {{host}}/api/v1/posts HTTP/1.1
 content-type: application/json
 
 {
@@ -32,7 +32,7 @@ content-type: application/json
 }
 
 ###Update Post
-PUT {{host}}/v1/api/posts/51bd5a4f-c1b2-4163-bb90-d80b9d24a369 HTTP/1.1
+PUT {{host}}/api/v1/posts/51bd5a4f-c1b2-4163-bb90-d80b9d24a369 HTTP/1.1
 content-type: application/json
 
 {
@@ -45,25 +45,25 @@ content-type: application/json
 }
 
 ###Get Post
-GET {{host}}/v1/api/posts/7bd3cafa-9d93-44dd-8b24-fd623abce12b HTTP/1.1
+GET {{host}}/api/v1/posts/7bd3cafa-9d93-44dd-8b24-fd623abce12b HTTP/1.1
 content-type: application/json
 
 {}
 
 ###Get Posts By UserId
-GET {{host}}/v1/api/users/526c0b00-677d-11ee-8390-0242ac150004/posts?limit=10&offset=0 HTTP/1.1
+GET {{host}}/api/v1/users/526c0b00-677d-11ee-8390-0242ac150004/posts?limit=10&offset=0 HTTP/1.1
 content-type: application/json
 
 {}
 
 ###Get Posts Of Feed
-GET {{host}}/v1/api/posts?user_ids=526c0b00-677d-11ee-8390-0242ac150004&group_ids=9f9b24d9-cd0a-4e73-9b99-bc02a8681982&limit=10&offset=0 HTTP/1.1
+GET {{host}}/api/v1/posts?user_ids=526c0b00-677d-11ee-8390-0242ac150004&group_ids=9f9b24d9-cd0a-4e73-9b99-bc02a8681982&limit=10&offset=0 HTTP/1.1
 content-type: application/json
 
 {}
 
 ###Delete Post
-DELETE  {{host}}/v1/api/posts/51bd5a4f-c1b2-4163-bb90-d80b9d24a369 HTTP/1.1
+DELETE  {{host}}/api/v1/posts/51bd5a4f-c1b2-4163-bb90-d80b9d24a369 HTTP/1.1
 content-type: application/json
 
 {}

@@ -1,7 +1,7 @@
 @host = http://localhost:5000
 
 ###Create Like
-POST {{host}}/v1/api/likes HTTP/1.1
+POST {{host}}/api/v1/likes HTTP/1.1
 content-type: application/json
 
 {
@@ -15,7 +15,7 @@ content-type: application/json
 }
 
 ###Update Like
-PUT {{host}}/v1/api/likes/07e314e7-bee1-411f-bb94-820c74f124b2 HTTP/1.1
+PUT {{host}}/api/v1/likes/07e314e7-bee1-411f-bb94-820c74f124b2 HTTP/1.1
 content-type: application/json
 
 {
@@ -31,13 +31,13 @@ content-type: application/json
 }
 
 ###Get Like
-GET {{host}}/v1/api/likes/07e314e7-bee1-411f-bb94-820c74f124b2 HTTP/1.1
+GET {{host}}/api/v1/likes/07e314e7-bee1-411f-bb94-820c74f124b2 HTTP/1.1
 content-type: application/json
 
 {}
 
 ###Delete Like
-DELETE  {{host}}/v1/api/likes/a5ffee90-879b-4b30-b9b8-d732605a658b HTTP/1.1
+DELETE  {{host}}/api/v1/likes/a5ffee90-879b-4b30-b9b8-d732605a658b HTTP/1.1
 content-type: application/json
 
 {}

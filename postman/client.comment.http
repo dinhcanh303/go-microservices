@@ -1,7 +1,7 @@
 @host = http://localhost:5000
 
 ###Create Comment
-POST {{host}}/v1/api/comments HTTP/1.1
+POST {{host}}/api/v1/comments HTTP/1.1
 content-type: application/json
 
 {
@@ -15,7 +15,7 @@ content-type: application/json
 }
 
 ###Create Comment Has Parent
-POST {{host}}/v1/api/comments HTTP/1.1
+POST {{host}}/api/v1/comments HTTP/1.1
 content-type: application/json
 
 {
@@ -30,7 +30,7 @@ content-type: application/json
 }
 
 ###Update Comment
-PUT {{host}}/v1/api/comments/3de6407d-d10b-4cf7-a4ae-267253a47335 HTTP/1.1
+PUT {{host}}/api/v1/comments/3de6407d-d10b-4cf7-a4ae-267253a47335 HTTP/1.1
 content-type: application/json
 
 {
@@ -42,19 +42,19 @@ content-type: application/json
 }
 
 ###Get Comment By PostID
-GET {{host}}/v1/api/posts/3b68c889-c24c-4e53-90e4-807fcdb1a6b1/comments HTTP/1.1
+GET {{host}}/api/v1/posts/3b68c889-c24c-4e53-90e4-807fcdb1a6b1/comments HTTP/1.1
 content-type: application/json
 
 {}
 
 ###Get Comment
-GET {{host}}/v1/api/comments/852daf12-7676-46aa-aa14-053dc9ee84aa HTTP/1.1
+GET {{host}}/api/v1/comments/852daf12-7676-46aa-aa14-053dc9ee84aa HTTP/1.1
 content-type: application/json
 
 {}
 
 ###Delete Comment
-DELETE  {{host}}/v1/api/comments/852daf12-7676-46aa-aa14-053dc9ee84aa HTTP/1.1
+DELETE  {{host}}/api/v1/comments/852daf12-7676-46aa-aa14-053dc9ee84aa HTTP/1.1
 content-type: application/json
 
 {}

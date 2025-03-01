@@ -16,7 +16,7 @@
     "application/json"
   ],
   "paths": {
-    "/v1/api/posts": {
+    "/api/v1/posts": {
       "get": {
         "summary": "Delete Post",
         "operationId": "PostService_ListPost",
@@ -92,7 +92,7 @@
         ]
       }
     },
-    "/v1/api/posts/{id}": {
+    "/api/v1/posts/{id}": {
       "get": {
         "summary": "Get Post",
         "operationId": "PostService_GetPost",
@@ -152,7 +152,7 @@
         ]
       }
     },
-    "/v1/api/posts/{post.id}": {
+    "/api/v1/posts/{post.id}": {
       "put": {
         "summary": "Update Post",
         "operationId": "PostService_UpdatePost",

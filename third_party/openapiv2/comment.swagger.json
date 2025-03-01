@@ -16,7 +16,7 @@
     "application/json"
   ],
   "paths": {
-    "/v1/api/comments": {
+    "/api/v1/comments": {
       "post": {
         "summary": "Create Comment",
         "operationId": "CommentService_CreateComment",
@@ -49,7 +49,7 @@
         ]
       }
     },
-    "/v1/api/comments/{comment.id}": {
+    "/api/v1/comments/{comment.id}": {
       "put": {
         "summary": "Update Comment",
         "operationId": "CommentService_UpdateComment",
@@ -118,7 +118,7 @@
         ]
       }
     },
-    "/v1/api/comments/{id}": {
+    "/api/v1/comments/{id}": {
       "get": {
         "summary": "Get Comment",
         "operationId": "CommentService_GetComment",
@@ -178,7 +178,7 @@
         ]
       }
     },
-    "/v1/api/comments/{id}/count": {
+    "/api/v1/comments/{id}/count": {
       "get": {
         "summary": "Count Comment By Comment ID",
         "operationId": "CommentService_CountCommentByCommentID",
@@ -209,7 +209,7 @@
         ]
       }
     },
-    "/v1/api/posts/{postId}/comments": {
+    "/api/v1/posts/{postId}/comments": {
       "get": {
         "summary": "Get Comment By Post ID",
         "operationId": "CommentService_GetCommentsByPostID",

@@ -16,7 +16,7 @@
     "application/json"
   ],
   "paths": {
-    "/v1/api/comments/{commentId}/likes": {
+    "/api/v1/comments/{commentId}/likes": {
       "get": {
         "summary": "Get Like by Comment ID",
         "operationId": "LikeService_GetLikesByCommentID",
@@ -47,7 +47,7 @@
         ]
       }
     },
-    "/v1/api/likes": {
+    "/api/v1/likes": {
       "post": {
         "summary": "Create Like",
         "operationId": "LikeService_CreateLike",
@@ -80,7 +80,7 @@
         ]
       }
     },
-    "/v1/api/likes/{id}": {
+    "/api/v1/likes/{id}": {
       "delete": {
         "summary": "Delete Like",
         "operationId": "LikeService_DeleteLike",
@@ -111,7 +111,7 @@
         ]
       }
     },
-    "/v1/api/likes/{like.id}": {
+    "/api/v1/likes/{like.id}": {
       "put": {
         "summary": "Update Like",
         "operationId": "LikeService_UpdateLike",
@@ -160,7 +160,7 @@
         ]
       }
     },
-    "/v1/api/posts/{postId}/likes": {
+    "/api/v1/posts/{postId}/likes": {
       "get": {
         "summary": "Get Like by Post ID",
         "operationId": "LikeService_GetLikesByPostID",

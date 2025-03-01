@@ -16,7 +16,7 @@
     "application/json"
   ],
   "paths": {
-    "/v1/api/group-ids/{userId}": {
+    "/api/v1/group-ids/{userId}": {
       "get": {
         "summary": "Get all group id by user id",
         "operationId": "GroupService_GetAllGroupIdByUserId",
@@ -47,7 +47,7 @@
         ]
       }
     },
-    "/v1/api/group-members": {
+    "/api/v1/group-members": {
       "post": {
         "summary": "Create group member",
         "operationId": "GroupService_CreateGroupMember",
@@ -80,7 +80,7 @@
         ]
       }
     },
-    "/v1/api/group-members/{groupId}": {
+    "/api/v1/group-members/{groupId}": {
       "get": {
         "summary": "Get all group member",
         "operationId": "GroupService_GetAllGroupMembers",
@@ -111,7 +111,7 @@
         ]
       }
     },
-    "/v1/api/group-members/{groupMember.id}": {
+    "/api/v1/group-members/{groupMember.id}": {
       "put": {
         "summary": "Update group member",
         "operationId": "GroupService_UpdateGroupMember",
@@ -175,7 +175,7 @@
         ]
       }
     },
-    "/v1/api/group-members/{id}": {
+    "/api/v1/group-members/{id}": {
       "delete": {
         "summary": "Delete group member",
         "operationId": "GroupService_DeleteGroupMember",
@@ -206,7 +206,7 @@
         ]
       }
     },
-    "/v1/api/groups": {
+    "/api/v1/groups": {
       "post": {
         "summary": "Create group",
         "operationId": "GroupService_CreateGroup",
@@ -239,7 +239,7 @@
         ]
       }
     },
-    "/v1/api/groups/{group.id}": {
+    "/api/v1/groups/{group.id}": {
       "put": {
         "summary": "Update group",
         "operationId": "GroupService_UpdateGroup",
@@ -306,7 +306,7 @@
         ]
       }
     },
-    "/v1/api/groups/{id}": {
+    "/api/v1/groups/{id}": {
       "get": {
         "summary": "Get group",
         "operationId": "GroupService_GetGroup",
@@ -366,7 +366,7 @@
         ]
       }
     },
-    "/v1/api/groups/{userId}": {
+    "/api/v1/groups/{userId}": {
       "get": {
         "summary": "Get all group member",
         "operationId": "GroupService_GetAllGroupByUserId",
