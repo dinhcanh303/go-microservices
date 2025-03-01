@@ -76,13 +76,15 @@ services:
     networks:
       - mcs-network
   redisinsight:
-    image: redislabs/redisinsight:latest
+    image: redislabs/redisinsight:2.66
     container_name: mcs-redisinsight
     restart: unless-stopped
     volumes:
-      - redis_data:/var/lib/redis
+      - ./data/redis-insight:/data
+    depends_on:
+      - redis
     ports:
-      - 8002:8001
+      - 5540:5540
     networks:
       - mcs-network
   meilisearch:
@@ -97,40 +99,87 @@ services:
       - "7700:7700" # Change ports if needed
     networks:
       - mcs-network
-  # mongodb:
-  #   image: mongo:latest
-  #   container_name: mcs-mongodb
-  #   restart: unless-stopped
-  #   ports:
-  #     - 27017:27017
-  #   environment:
-  #     - MONGO_INITDB_DATABASE=mongodb
-  #     - MONGO_INITDB_ROOT_USERNAME=admin
-  #     - MONGO_INITDB_ROOT_PASSWORD=admin
-  #   volumes:
-  #     - mongodb_data:/data/db
-    
-  #   networks:
-  #     - mcs-network
-
   zookeeper:
+    image: confluentinc/cp-zookeeper:7.9.0
     container_name: mcs-zookeeper
-    image: debezium/zookeeper
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_SERVER_ID: 1
+      ZOOKEEPER_SERVERS: zookeeper:2888:3888
     ports:
-      - 2181:2181
-      - 2888:2888
-      - 3888:3888
+      - "2181:2181"
     networks:
       - mcs-network
-  kafka:
-    container_name: mcs-kafka
-    image: debezium/kafka
-    ports:
-      - 9092:9092
+  kafka1:
+    image: confluentinc/cp-kafka:7.9.0
+    container_name: mcs-kafka1
     depends_on:
       - zookeeper
+    ports:
+      - "29092:29092"
+      - "9092:9092"
     environment:
-      - ZOOKEEPER_CONNECT=zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: INTERNAL://kafka1:19092,EXTERNAL://${DOCKER_HOST_IP:-127.0.0.1}:9092,DOCKER://host.docker.internal:29092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INTERNAL:PLAINTEXT,EXTERNAL:PLAINTEXT,DOCKER:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: INTERNAL
+      KAFKA_ZOOKEEPER_CONNECT: "zookeeper:2181"
+      KAFKA_BROKER_ID: 1
+      KAFKA_LOG4J_LOGGERS: "kafka.controller=INFO,kafka.producer.async.DefaultEventHandler=INFO,state.change.logger=INFO"
+      KAFKA_AUTHORIZER_CLASS_NAME: kafka.security.authorizer.AclAuthorizer
+      KAFKA_ALLOW_EVERYONE_IF_NO_ACL_FOUND: "true"
+    networks:
+      - mcs-network
+  # debezium:
+  #   image: debezium/connect:2.7.3.Final
+  #   container_name: mcs-debezium
+  #   depends_on:
+  #     - kafka
+  #   ports:
+  #     - "8083:8083"
+  #   environment:
+  #     BOOTSTRAP_SERVERS: kafka:29092
+  #     GROUP_ID: 1
+  #     CONFIG_STORAGE_TOPIC: connect_configs
+  #     STATUS_STORAGE_TOPIC: connect_statuses
+  #     OFFSET_STORAGE_TOPIC: connect_offsets
+  #     KEY_CONVERTER: org.apache.kafka.connect.json.JsonConverter
+  #     VALUE_CONVERTER: org.apache.kafka.connect.json.JsonConverter
+  #     ENABLE_DEBEZIUM_SCRIPTING: "true"
+  #   networks:
+  #     - mcs-network
+  # debezium-ui:
+  #   image: debezium/debezium-ui:latest
+  #   container_name: debezium-ui
+  #   depends_on:
+  #     - debezium
+  #   ports:
+  #     - "8080:8080"
+  #   environment:
+  #     KAFKA_CONNECT_URIS: http://debezium:8083
+  #   networks:
+  #     - mcs-network
+  # schema-registry:
+  #   image: confluentinc/cp-schema-registry:7.9.0
+  #   container_name: mcs-schema-registry
+  #   depends_on:
+  #     - kafka
+  #   ports:
+  #     - "8081:8081"
+  #   environment:
+  #     SCHEMA_REGISTRY_HOST_NAME: schema-registry
+  #     SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS: kafka:29092
+  #     SCHEMA_REGISTRY_LISTENERS: http://0.0.0.0:8081
+  kafdrop:
+    image: obsidiandynamics/kafdrop:latest
+    container_name: mcs-kafdrop
+    depends_on:
+      - kafka1
+    ports:
+      - "9123:9123"
+    environment:
+      SERVER_PORT: 9123
+      MANAGEMENT_SERVER_PORT: 9123
+      KAFKA_BROKERCONNECT: kafka-broker-1:29092 
     networks:
       - mcs-network
   elasticsearch:
@@ -150,42 +199,6 @@ services:
       - http.cors.allow-origin="http://localhost:8080"
     networks:
       - mcs-network
-  schema_registry:
-    image: confluentinc/cp-schema-registry
-    container_name: mcs-schema-registry
-    hostname: schema-registry
-    restart: always
-    depends_on:
-      - zookeeper
-      - kafka
-    ports:
-      - 8181:8181
-      - 8081:8081
-    environment:
-      - SCHEMA_REGISTRY_KAFKASTORE_CONNECTION_URL=zookeeper:2181
-      - SCHEMA_REGISTRY_HOST_NAME=schema-registry
-      - SCHEMA_REGISTRY_LISTENERS=http://schema-registry:8081
-      - SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS=//kafka:9092
-    networks:
-      - mcs-network
-  connect:
-    image: debezium/connect:2.5
-    ports:
-      - "8083:8083"
-    environment:
-      - BOOTSTRAP_SERVERS=kafka:9092
-      - GROUP_ID=1
-      - CONFIG_STORAGE_TOPIC=my_connect_configs
-      - OFFSET_STORAGE_TOPIC=my_connect_offsets
-      - STATUS_STORAGE_TOPIC=my_connect_statuses
-      - KEY_CONVERTER=io.confluent.connect.avro.AvroConverter
-      - VALUE_CONVERTER=io.confluent.connect.avro.AvroConverter
-      - CONNECT_KEY_CONVERTER_SCHEMA_REGISTRY_URL=http://schema-registry:8081
-      - CONNECT_VALUE_CONVERTER_SCHEMA_REGISTRY_URL=http://schema-registry:8081
-      - INTERNAL_KEY_CONVERTER=org.apache.kafka.connect.json.JsonConverter
-      - INTERNAL_VALUE_CONVERTER=org.apache.kafka.connect.json.JsonConverter
-    networks:
-      - mcs-network
   kibana:
     container_name: kibana
     image: docker.elastic.co/kibana/kibana:8.13.1
@@ -198,32 +211,19 @@ services:
       - ELASTICSEARCH_PASSWORD=123456
     networks:
       - mcs-network
-  control-center:
-    container_name: control-center
-    image: confluentinc/cp-enterprise-control-center
-    depends_on:
-      - connect
-    ports:
-      - 9021:9021
-    environment:
-      - CONTROL_CENTER_BOOTSTRAP_SERVERS='kafka:9092'
-      - CONTROL_CENTER_CONNECT_CONNECT-DEFAULT_CLUSTER='connect:8083'
-      - CONTROL_CENTER_REPLICATION_FACTOR=1
-      - CONTROL_CENTER_INTERNAL_TOPICS_PARTITIONS=1
-      - CONTROL_CENTER_MONITORING_INTERCEPTOR_TOPIC_PARTITIONS=1
-      - CONFLUENT_METRICS_TOPIC_REPLICATION=1
-      - PORT=9021
-    networks:
-      - mcs-network
-
 volumes:
   pgm-data: {}
   pgs-data: {}
   redis_data: {}
   mls_data: {}
-  # mongodb_data: {}
 
 networks:
     mcs-network:
       driver: bridge
       name: mcs-network
+
+
+
+  
+
+
