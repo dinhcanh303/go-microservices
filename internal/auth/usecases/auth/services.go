@@ -2,7 +2,6 @@ package auth
 
 import (
 	"context"
-	"fmt"
 	"log/slog"
 	"strings"
 	"time"
@@ -10,7 +9,6 @@ import (
 	"github.com/dinhcanh303/go-microservices/internal/auth/domain"
 	"github.com/dinhcanh303/go-microservices/internal/auth/usecases/keys"
 	"github.com/dinhcanh303/go-microservices/pkg/constant"
-	"github.com/dinhcanh303/go-microservices/pkg/ldap"
 	"github.com/dinhcanh303/go-microservices/pkg/redis"
 	"github.com/dinhcanh303/go-microservices/pkg/token"
 	"github.com/dinhcanh303/go-microservices/pkg/utils"
@@ -22,11 +20,10 @@ import (
 )
 
 type service struct {
-	repo       UserRepo
-	ucKeys     keys.UseCase
-	ldapClient ldap.LdapClient
-	jwt        token.JWT
-	redis      redis.RedisEngine
+	repo   UserRepo
+	ucKeys keys.UseCase
+	jwt    token.JWT
+	redis  redis.RedisEngine
 }
 
 var _ UseCase = (*service)(nil)
@@ -34,16 +31,14 @@ var _ UseCase = (*service)(nil)
 func NewUseCase(
 	repo UserRepo,
 	ucKeys keys.UseCase,
-	ldapClient ldap.LdapClient,
 	jwt token.JWT,
 	redis redis.RedisEngine,
 ) UseCase {
 	return &service{
-		repo:       repo,
-		ucKeys:     ucKeys,
-		ldapClient: ldapClient,
-		jwt:        jwt,
-		redis:      redis,
+		repo:   repo,
+		ucKeys: ucKeys,
+		jwt:    jwt,
+		redis:  redis,
 	}
 }
 
@@ -164,42 +159,6 @@ func (s *service) Logout(ctx context.Context, key *domain.Key) error {
 
 // SignIn implements UseCase.
 func (s *service) SignIn(ctx context.Context, email string, password string) (*domain.UserAuth, error) {
-	isEmailCompany := checkEmailCompany(email)
-	if isEmailCompany {
-		auth, _, err := s.ldapClient.Authenticate(email, password)
-		if err != nil {
-			return nil, status.Error(codes.Unauthenticated, err.Error())
-		}
-		if auth {
-			foundUser, _ := findUserByEmail(s.repo, ctx, email)
-			if foundUser == nil {
-				hashPassword, err := utils.HashPassword(password)
-				if err != nil {
-					return nil, errors.New("create account using ldap failed because hash password failed")
-				}
-				name := strings.Split(email, "@")[0]
-				foundUser, err = s.repo.CreateUser(ctx, &domain.User{
-					ID:        uuid.New(),
-					Email:     email,
-					Password:  hashPassword,
-					FirstName: name,
-					LastName:  name,
-					FullName:  name,
-					NickName:  name,
-				})
-				if err != nil {
-					return nil, errors.Wrap(err, "create account using ldap failed")
-				}
-				//Del cache
-				err = s.redis.Invalidate(constant.CacheUsers)
-				if err != nil {
-					slog.Error("Invalidate cache list users failed")
-				}
-			}
-			return createTokenPairAndResponse(ctx, s, foundUser, false)
-		}
-		return nil, status.Error(codes.Unauthenticated, err.Error())
-	}
 	foundUser, err := findUserByEmail(s.repo, ctx, email)
 	if err != nil {
 		return nil, err
@@ -216,10 +175,6 @@ func (s *service) SignIn(ctx context.Context, email string, password string) (*d
 
 // SignUp implements UseCase.
 func (s *service) SignUp(ctx context.Context, email, password, fistName, lastName string) (*domain.UserAuth, error) {
-	isEmailCompany := checkEmailCompany(email)
-	if isEmailCompany {
-		return nil, status.Error(codes.AlreadyExists, fmt.Sprintf("Email has suffix is %s does't created. Please use the login function for this type of email!", constant.SuffixEmailCompany))
-	}
 	foundUser, _ := s.repo.GetUserByEmail(ctx, email)
 	if foundUser != nil {
 		return nil, status.Error(codes.AlreadyExists, "User already exists")
@@ -239,10 +194,6 @@ func (s *service) SignUp(ctx context.Context, email, password, fistName, lastNam
 		slog.Error("Invalidate cache list users failed")
 	}
 	return createTokenPairAndResponse(ctx, s, newUser, true)
-}
-
-func checkEmailCompany(email string) bool {
-	return strings.Contains(email, constant.SuffixEmailCompany)
 }
 func findUserByEmail(repo UserRepo, ctx context.Context, email string) (*domain.User, error) {
 	foundUser, err := repo.GetUserByEmail(ctx, email)

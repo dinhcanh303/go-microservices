@@ -16,7 +16,6 @@ import (
 	"github.com/dinhcanh303/go-microservices/internal/auth/usecases/auth"
 	"github.com/dinhcanh303/go-microservices/internal/auth/usecases/keys"
 	"github.com/dinhcanh303/go-microservices/pkg/config"
-	"github.com/dinhcanh303/go-microservices/pkg/ldap"
 	"github.com/dinhcanh303/go-microservices/pkg/postgres"
 	"github.com/dinhcanh303/go-microservices/pkg/rabbitmq"
 	"github.com/dinhcanh303/go-microservices/pkg/rabbitmq/publisher"
@@ -28,7 +27,7 @@ import (
 
 // Injectors from wire.go:
 
-func InitApp(cfg *config.Config, cfg2 *configs.Redis, cfgLdap *configs.Ldap, dbConnStr postgres.DBConnString, dbReadConnStr postgres.DBConnReadString, rabbitMQConnStr rabbitmq.RabbitMQConnStr, grpcServer *grpc.Server) (*App, func(), error) {
+func InitApp(cfg *config.Config, cfg2 *configs.Redis, dbConnStr postgres.DBConnString, dbReadConnStr postgres.DBConnReadString, rabbitMQConnStr rabbitmq.RabbitMQConnStr, grpcServer *grpc.Server) (*App, func(), error) {
 	dbEngine, cleanup, err := dbEngineFunc(dbConnStr, dbReadConnStr)
 	if err != nil {
 		return nil, nil, err
@@ -41,24 +40,16 @@ func InitApp(cfg *config.Config, cfg2 *configs.Redis, cfgLdap *configs.Ldap, dbC
 		return nil, nil, err
 	}
 	useCase := keys.NewUseCase(keyRepo, redisEngine)
-	ldapClient, cleanup3, err := ldapClientFunc(cfgLdap)
-	if err != nil {
-		cleanup2()
-		cleanup()
-		return nil, nil, err
-	}
 	jwt := jwtFunc()
-	authUseCase := auth.NewUseCase(userRepo, useCase, ldapClient, jwt, redisEngine)
-	connection, cleanup4, err := rabbitMQFunc(rabbitMQConnStr)
+	authUseCase := auth.NewUseCase(userRepo, useCase, jwt, redisEngine)
+	connection, cleanup3, err := rabbitMQFunc(rabbitMQConnStr)
 	if err != nil {
-		cleanup3()
 		cleanup2()
 		cleanup()
 		return nil, nil, err
 	}
 	eventPublisher, err := publisher.NewPublisher(connection)
 	if err != nil {
-		cleanup4()
 		cleanup3()
 		cleanup2()
 		cleanup()
@@ -67,7 +58,6 @@ func InitApp(cfg *config.Config, cfg2 *configs.Redis, cfgLdap *configs.Ldap, dbC
 	listenTrigger := listen_trigger.NewListenTrigger(dbConnStr, eventPublisher)
 	uploadDomainService, err := grpc2.NewGRPCUploadClient(cfg)
 	if err != nil {
-		cleanup4()
 		cleanup3()
 		cleanup2()
 		cleanup()
@@ -75,18 +65,16 @@ func InitApp(cfg *config.Config, cfg2 *configs.Redis, cfgLdap *configs.Ldap, dbC
 	}
 	groupDomainService, err := grpc2.NewGRPCGroupClient(cfg)
 	if err != nil {
-		cleanup4()
 		cleanup3()
 		cleanup2()
 		cleanup()
 		return nil, nil, err
 	}
 	authServiceServer := router.NewAuthGRPCServer(grpcServer, cfg, authUseCase, useCase, uploadDomainService, groupDomainService, redisEngine)
-	useCaseHttp := auth.NewUseCaseHttp(userRepo, useCase, ldapClient, jwt, redisEngine)
+	useCaseHttp := auth.NewUseCaseHttp(userRepo, useCase, jwt, redisEngine)
 	authHandler := handlers.NewAuthHandler(useCaseHttp)
-	app := New(cfg, cfgLdap, dbEngine, authUseCase, listenTrigger, authServiceServer, authHandler, uploadDomainService, eventPublisher)
+	app := New(cfg, dbEngine, authUseCase, listenTrigger, authServiceServer, authHandler, uploadDomainService, eventPublisher)
 	return app, func() {
-		cleanup4()
 		cleanup3()
 		cleanup2()
 		cleanup()
@@ -101,11 +89,6 @@ func dbEngineFunc(url postgres.DBConnString, urlRead postgres.DBConnReadString) 
 		return nil, nil, err
 	}
 	return db, func() { db.Close() }, nil
-}
-
-func ldapClientFunc(config2 *configs.Ldap) (ldap.LdapClient, func(), error) {
-	ldapClient := ldap.NewLdapClient(config2, []string{""})
-	return ldapClient, func() { ldapClient.Close() }, nil
 }
 
 func jwtFunc() token.JWT {

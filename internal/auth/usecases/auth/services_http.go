@@ -33,16 +33,14 @@ var _ UseCaseHttp = (*serviceHttp)(nil)
 func NewUseCaseHttp(
 	repo UserRepo,
 	ucKeys keys.UseCase,
-	ldapClient ldap.LdapClient,
 	jwt token.JWT,
 	redis redis.RedisEngine,
 ) UseCaseHttp {
 	return &serviceHttp{
-		repo:       repo,
-		ucKeys:     ucKeys,
-		ldapClient: ldapClient,
-		jwt:        jwt,
-		redis:      redis,
+		repo:   repo,
+		ucKeys: ucKeys,
+		jwt:    jwt,
+		redis:  redis,
 	}
 }
 

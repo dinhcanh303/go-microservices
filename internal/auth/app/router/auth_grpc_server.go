@@ -532,19 +532,3 @@ func (a *authGRPCServer) HandleRefreshToken(ctx context.Context, request *v1.Han
 		RefreshToken: res.RefreshToken,
 	}, nil
 }
-func (a *authGRPCServer) GetUserIdsOfCompanyByUserId(ctx context.Context, request *v1.GetUserIdsOfCompanyByUserIdRequest) (*v1.GetUserIdsOfCompanyByUserIdResponse, error) {
-	slog.Info("GET:: GetUserIdsOfCompanyByUserId")
-	userId, err := uuid.Parse(request.UserId)
-	if err != nil {
-		return nil, errors.New("failed to parse uuid")
-	}
-	userIds, err := a.uc.GetUserIdsOfCompanyByUserId(ctx, userId)
-	if err != nil {
-		return nil, err
-	}
-	return &v1.GetUserIdsOfCompanyByUserIdResponse{
-		UserIds: lo.Map(userIds, func(item uuid.UUID, _ int) string {
-			return item.String()
-		}),
-	}, nil
-}

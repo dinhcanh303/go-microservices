@@ -13,7 +13,6 @@ import (
 	"github.com/dinhcanh303/go-microservices/internal/auth/usecases/auth"
 	"github.com/dinhcanh303/go-microservices/internal/auth/usecases/keys"
 	configs "github.com/dinhcanh303/go-microservices/pkg/config"
-	"github.com/dinhcanh303/go-microservices/pkg/ldap"
 	"github.com/dinhcanh303/go-microservices/pkg/postgres"
 	"github.com/dinhcanh303/go-microservices/pkg/rabbitmq"
 	"github.com/dinhcanh303/go-microservices/pkg/rabbitmq/publisher"
@@ -27,7 +26,6 @@ import (
 func InitApp(
 	cfg *config.Config,
 	cfg2 *configs.Redis,
-	cfgLdap *configs.Ldap,
 	dbConnStr postgres.DBConnString,
 	dbReadConnStr postgres.DBConnReadString,
 	rabbitMQConnStr rabbitmq.RabbitMQConnStr,
@@ -36,7 +34,6 @@ func InitApp(
 	panic(wire.Build(
 		New,
 		dbEngineFunc,
-		ldapClientFunc,
 		jwtFunc,
 		rabbitMQFunc,
 		redisEngineFunc,
@@ -59,10 +56,6 @@ func dbEngineFunc(url postgres.DBConnString, urlRead postgres.DBConnReadString) 
 		return nil, nil, err
 	}
 	return db, func() { db.Close() }, nil
-}
-func ldapClientFunc(config *configs.Ldap) (ldap.LdapClient, func(), error) {
-	ldapClient := ldap.NewLdapClient(config, []string{""})
-	return ldapClient, func() { ldapClient.Close() }, nil
 }
 func jwtFunc() token.JWT {
 	jwt := token.NewJWTMaker()
