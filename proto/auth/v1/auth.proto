@@ -57,15 +57,6 @@ service AuthService {
             description: ""
         };
     }
-    rpc GetUserIdsOfCompanyByUserId(GetUserIdsOfCompanyByUserIdRequest) returns (GetUserIdsOfCompanyByUserIdResponse){
-        option (google.api.http) = {
-            get: "/api/v1/users/{user_id}/user-ids",
-        };
-        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
-            summary: "Get All User Id By User Id"
-            description: ""
-        };
-    }
     rpc GetProfile(GetProfileRequest) returns (GetProfileResponse){
         option (google.api.http) = {
             get: "/api/v1/profile",
@@ -174,12 +165,6 @@ message GetProfileRequest{
 }
 message GetProfileResponse{
     User user= 1;
-}
-message GetUserIdsOfCompanyByUserIdRequest{
-    string user_id = 1;
-}
-message GetUserIdsOfCompanyByUserIdResponse{
-    repeated string user_ids = 1;
 }
 message LogoutRequest{}
 
