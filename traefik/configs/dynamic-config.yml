@@ -34,23 +34,23 @@ http:
     auth:
       loadBalancer:
         servers:
-          - url: http://{{env "HOST_PROXY"}}:5000
+          - url: http://{{env "HOST_PROXY"}}:5001
     proxy:
       loadBalancer:
         servers:
-          - url: http://{{env "HOST_PROXY"}}:5000
+          - url: http://{{env "HOST_PROXY"}}:5001
     upload:
       loadBalancer:
         servers:
-          - url: http://{{env "HOST_UPLOAD"}}:5005
+          - url: http://{{env "HOST_UPLOAD"}}:5006
     auth2:
       loadBalancer:
         servers:
-          - url: http://{{env "HOST_AUTH"}}:5008
+          - url: http://{{env "HOST_AUTH"}}:5009
   middlewares:
     auth:
       forwardAuth:
-        address: "http://{{env "HOST_PROXY"}}:5000/api/v1/auth/verify"
+        address: "http://{{env "HOST_PROXY"}}:5001/api/v1/auth/verify"
         authResponseHeaders:
           - "Grpc-Metadata-X-Auth-User"
           - "Grpc-Metadata-X-Auth-Keystore"
