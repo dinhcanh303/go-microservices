@@ -41,7 +41,6 @@ func main() {
 	if err != nil {
 		slog.Error("Failed get config", err)
 	}
-	cfgLdap, err := configs.NewLdapConfig()
 	if err != nil {
 		slog.Error("Failed get config Ldap", err)
 	}
@@ -71,7 +70,7 @@ func main() {
 		defer server.GracefulStop()
 		<-ctx.Done()
 	}()
-	a, cleanup := prepareApp(ctx, cancel, cfg, cfgRedis, cfgLdap, server)
+	a, cleanup := prepareApp(ctx, cancel, cfg, cfgRedis, server)
 	//
 	//Start Http2 server
 	httpMux := http.NewServeMux()
@@ -127,8 +126,8 @@ func main() {
 
 }
 
-func prepareApp(ctx context.Context, cancel context.CancelFunc, cfg *config.Config, cfgRedis *configs.Redis, cfgLdap *configs.Ldap, server *grpc.Server) (*app.App, func()) {
-	a, cleanup, err := app.InitApp(cfg, cfgRedis, cfgLdap, postgres.DBConnString(cfg.PG.DbURL), postgres.DBConnReadString(cfg.PG.DbRepURL),
+func prepareApp(ctx context.Context, cancel context.CancelFunc, cfg *config.Config, cfgRedis *configs.Redis, server *grpc.Server) (*app.App, func()) {
+	a, cleanup, err := app.InitApp(cfg, cfgRedis, postgres.DBConnString(cfg.PG.DbURL), postgres.DBConnReadString(cfg.PG.DbRepURL),
 		rabbitmq.RabbitMQConnStr(cfg.RabbitMQ.URL), server)
 	if err != nil {
 		slog.Error("Failed init app", err)

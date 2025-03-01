@@ -24,7 +24,6 @@ const (
 	AuthService_Verify_FullMethodName                         = "/auth.v1.AuthService/Verify"
 	AuthService_Logout_FullMethodName                         = "/auth.v1.AuthService/Logout"
 	AuthService_HandleRefreshToken_FullMethodName             = "/auth.v1.AuthService/HandleRefreshToken"
-	AuthService_GetUserIdsOfCompanyByUserId_FullMethodName    = "/auth.v1.AuthService/GetUserIdsOfCompanyByUserId"
 	AuthService_GetProfile_FullMethodName                     = "/auth.v1.AuthService/GetProfile"
 	AuthService_GetUsers_FullMethodName                       = "/auth.v1.AuthService/GetUsers"
 	AuthService_GetUsersInviteByGroupId_FullMethodName        = "/auth.v1.AuthService/GetUsersInviteByGroupId"
@@ -43,7 +42,6 @@ type AuthServiceClient interface {
 	Verify(ctx context.Context, in *VerifyRequest, opts ...grpc.CallOption) (*VerifyResponse, error)
 	Logout(ctx context.Context, in *LogoutRequest, opts ...grpc.CallOption) (*LogoutResponse, error)
 	HandleRefreshToken(ctx context.Context, in *HandleRefreshTokenRequest, opts ...grpc.CallOption) (*HandleRefreshTokenResponse, error)
-	GetUserIdsOfCompanyByUserId(ctx context.Context, in *GetUserIdsOfCompanyByUserIdRequest, opts ...grpc.CallOption) (*GetUserIdsOfCompanyByUserIdResponse, error)
 	GetProfile(ctx context.Context, in *GetProfileRequest, opts ...grpc.CallOption) (*GetProfileResponse, error)
 	GetUsers(ctx context.Context, in *GetUsersRequest, opts ...grpc.CallOption) (*GetUsersResponse, error)
 	GetUsersInviteByGroupId(ctx context.Context, in *GetUsersInviteGroupIdRequest, opts ...grpc.CallOption) (*GetUsersInviteGroupIdResponse, error)
@@ -100,15 +98,6 @@ func (c *authServiceClient) Logout(ctx context.Context, in *LogoutRequest, opts 
 func (c *authServiceClient) HandleRefreshToken(ctx context.Context, in *HandleRefreshTokenRequest, opts ...grpc.CallOption) (*HandleRefreshTokenResponse, error) {
 	out := new(HandleRefreshTokenResponse)
 	err := c.cc.Invoke(ctx, AuthService_HandleRefreshToken_FullMethodName, in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *authServiceClient) GetUserIdsOfCompanyByUserId(ctx context.Context, in *GetUserIdsOfCompanyByUserIdRequest, opts ...grpc.CallOption) (*GetUserIdsOfCompanyByUserIdResponse, error) {
-	out := new(GetUserIdsOfCompanyByUserIdResponse)
-	err := c.cc.Invoke(ctx, AuthService_GetUserIdsOfCompanyByUserId_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -187,7 +176,6 @@ type AuthServiceServer interface {
 	Verify(context.Context, *VerifyRequest) (*VerifyResponse, error)
 	Logout(context.Context, *LogoutRequest) (*LogoutResponse, error)
 	HandleRefreshToken(context.Context, *HandleRefreshTokenRequest) (*HandleRefreshTokenResponse, error)
-	GetUserIdsOfCompanyByUserId(context.Context, *GetUserIdsOfCompanyByUserIdRequest) (*GetUserIdsOfCompanyByUserIdResponse, error)
 	GetProfile(context.Context, *GetProfileRequest) (*GetProfileResponse, error)
 	GetUsers(context.Context, *GetUsersRequest) (*GetUsersResponse, error)
 	GetUsersInviteByGroupId(context.Context, *GetUsersInviteGroupIdRequest) (*GetUsersInviteGroupIdResponse, error)
@@ -216,9 +204,6 @@ func (UnimplementedAuthServiceServer) Logout(context.Context, *LogoutRequest) (*
 }
 func (UnimplementedAuthServiceServer) HandleRefreshToken(context.Context, *HandleRefreshTokenRequest) (*HandleRefreshTokenResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method HandleRefreshToken not implemented")
-}
-func (UnimplementedAuthServiceServer) GetUserIdsOfCompanyByUserId(context.Context, *GetUserIdsOfCompanyByUserIdRequest) (*GetUserIdsOfCompanyByUserIdResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetUserIdsOfCompanyByUserId not implemented")
 }
 func (UnimplementedAuthServiceServer) GetProfile(context.Context, *GetProfileRequest) (*GetProfileResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetProfile not implemented")
@@ -340,24 +325,6 @@ func _AuthService_HandleRefreshToken_Handler(srv interface{}, ctx context.Contex
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(AuthServiceServer).HandleRefreshToken(ctx, req.(*HandleRefreshTokenRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _AuthService_GetUserIdsOfCompanyByUserId_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetUserIdsOfCompanyByUserIdRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(AuthServiceServer).GetUserIdsOfCompanyByUserId(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: AuthService_GetUserIdsOfCompanyByUserId_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AuthServiceServer).GetUserIdsOfCompanyByUserId(ctx, req.(*GetUserIdsOfCompanyByUserIdRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -514,10 +481,6 @@ var AuthService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "HandleRefreshToken",
 			Handler:    _AuthService_HandleRefreshToken_Handler,
-		},
-		{
-			MethodName: "GetUserIdsOfCompanyByUserId",
-			Handler:    _AuthService_GetUserIdsOfCompanyByUserId_Handler,
 		},
 		{
 			MethodName: "GetProfile",
