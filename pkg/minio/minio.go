@@ -5,7 +5,6 @@ import (
 	"crypto/tls"
 	"fmt"
 	"io"
-	"log"
 	"log/slog"
 	"math/rand"
 	"mime/multipart"
@@ -69,9 +68,6 @@ func (m *minio) UploadFile(ctx context.Context, file *multipart.FileHeader, buff
 		suffix := generateUniqueSuffix()
 		objectName = addSuffixToObject(objectName, suffix) // Add your desired suffix logic
 	}
-	info, err := client.PutObject(ctx, config.BucketName, objectName, buffer, fileSize, minioV7.PutObjectOptions{
-		ContentType: contentType,
-	})
 	urlFile := getUrlFile(config.BucketName, objectName)
 	fileInfo := &FileInfo{
 		FileName:     file.Filename,
@@ -81,8 +77,13 @@ func (m *minio) UploadFile(ctx context.Context, file *multipart.FileHeader, buff
 		Url:          urlFile,
 		UrlThumbnail: urlFile,
 	}
+	info, err := client.PutObject(ctx, config.BucketName, objectName, buffer, fileSize, minioV7.PutObjectOptions{
+		ContentType: contentType,
+	})
+
 	if err != nil {
-		log.Fatalln(err)
+		slog.Error("Failed to put object: %v", err)
+		return nil, nil, err
 	}
 	slog.Info("Successfully uploaded %s of size %d\n", objectName, info.Size)
 	return &info, fileInfo, nil
@@ -114,6 +115,7 @@ func minioClient(config *configs.Minio) (*minioV7.Client, error) {
 	minioClient, err := minioV7.New(endpoint, &minioV7.Options{
 		Creds:  credentials.NewStaticV4(accessKeyID, secretAccessKey, ""),
 		Secure: useSSL,
+		Region: config.Region,
 		Transport: &http.Transport{
 			TLSClientConfig: &tls.Config{
 				InsecureSkipVerify: true,
