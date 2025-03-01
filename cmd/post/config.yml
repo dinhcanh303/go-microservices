@@ -4,7 +4,7 @@ app:
 
 http:
   host: '0.0.0.0'
-  port: 5002
+  port: 5003
 
 rabbitmq:
   url: amqp://guest:guest@127.0.0.1:5672/
@@ -15,15 +15,15 @@ postgres:
   db_rep_url: postgres://postgres:123456@127.0.0.1:5433/postgres?sslmode=disable
 
 group_client:
-  group_url: 0.0.0.0:5001
+  group_url: 0.0.0.0:5002
 comment_client:
-  comment_url: 0.0.0.0:5003
+  comment_url: 0.0.0.0:5004
 like_client:
-  like_url: 0.0.0.0:5004
+  like_url: 0.0.0.0:5005
 upload_client:
-  upload_url: 0.0.0.0:5006
+  upload_url: 0.0.0.0:5007
 auth_client:
-  auth_url: 0.0.0.0:5007
+  auth_url: 0.0.0.0:5008
 
 logger:
   log_level: 'debug'

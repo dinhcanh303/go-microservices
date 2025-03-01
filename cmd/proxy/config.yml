@@ -4,25 +4,25 @@ app:
 
 http:
   host: '0.0.0.0'
-  port: 5000
+  port: 5001
 
 grpc:
   group_host: '0.0.0.0'
-  group_port: 5001
+  group_port: 5002
   post_host: '0.0.0.0'
-  post_port: 5002
+  post_port: 5003
   comment_host: '0.0.0.0'
-  comment_port: 5003
+  comment_port: 5004
   like_host: '0.0.0.0'
-  like_port: 5004
+  like_port: 5005
   upload_host: '0.0.0.0'
-  upload_port: 5006
+  upload_port: 5007
   auth_host: '0.0.0.0'
-  auth_port: 5007
+  auth_port: 5008
   search_host: '0.0.0.0'
-  search_port: 5008
+  search_port: 5010
   noti_host: '0.0.0.0'
-  noti_port: 5009
+  noti_port: 5011
 
 request:
   request_per_second: 50
