@@ -17,9 +17,6 @@ SELECT * FROM auth.users WHERE id = $1 AND resigned = FALSE;
 -- name: GetUserByEmail :one
 SELECT * FROM auth.users WHERE email = $1 AND resigned = FALSE;
 
--- name: GetUserIdsOfCompany :many
-SELECT u.id FROM auth.users AS u WHERE email LIKE '%' || $1 || '%'; 
-
 -- name: GetUsers :many
 SELECT * FROM auth.users 
 WHERE resigned = FALSE AND full_name LIKE COALESCE('%'||$1||'%','%%')

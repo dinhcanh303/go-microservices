@@ -76,12 +76,6 @@ func TestGetUserByEmail(t *testing.T) {
 	require.Equal(t, userFullName, user.FullName)
 	require.NotZero(t, user.CreatedAt)
 }
-func TestGetAllUserIdOfCompany(t *testing.T) {
-	repo := newUserRepo()
-	users, err := repo.GetUserIdsOfCompany(context.Background(), Company)
-	require.NoError(t, err)
-	require.NotEmpty(t, users)
-}
 func TestNewPostgresDB(t *testing.T) {
 	cfg, err := config.NewConfig()
 	require.NoError(t, err)

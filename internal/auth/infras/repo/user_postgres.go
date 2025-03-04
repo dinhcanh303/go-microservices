@@ -188,20 +188,6 @@ func (rp *userRepo) UpdateUser(ctx context.Context, user *domain.User) (*domain.
 	}, tx.Commit()
 }
 
-// GetUserIdsOfCompany implements auth.UserRepo.
-func (rp *userRepo) GetUserIdsOfCompany(ctx context.Context, company string) ([]uuid.UUID, error) {
-	db := rp.pg.GetDBRead()
-	querier := postgresql.New(db)
-	userIds, err := querier.GetUserIdsOfCompany(ctx, sql.NullString{
-		String: company,
-		Valid:  company != "",
-	})
-	if err != nil {
-		return nil, errors.Wrap(err, "userRepo.GetUserIdsOfCompany failed")
-	}
-	return userIds, nil
-}
-
 // CreateUser implements auth.AuthRepo.
 func (rp *userRepo) CreateUser(ctx context.Context, user *domain.User) (*domain.User, error) {
 	db := rp.pg.GetDB()

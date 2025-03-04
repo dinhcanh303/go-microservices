@@ -3,7 +3,6 @@ package auth
 import (
 	"context"
 	"log/slog"
-	"strings"
 	"time"
 
 	"github.com/dinhcanh303/go-microservices/internal/auth/domain"
@@ -131,23 +130,6 @@ func (s *service) HandleRefreshToken(ctx context.Context, email, refreshToken st
 		RefreshToken: results.RefreshToken,
 		// RefreshTokensUsed: refreshToken,
 	})
-	return nil, nil
-}
-
-// GetAllUserIdByUserId implements UseCase.
-func (s *service) GetUserIdsOfCompanyByUserId(ctx context.Context, userId uuid.UUID) ([]uuid.UUID, error) {
-	user, err := s.repo.GetUser(ctx, userId)
-	if err != nil {
-		return nil, err
-	}
-	suffixEmailCompany := constant.SuffixEmailCompany
-	if strings.Contains(user.Email, suffixEmailCompany) {
-		userIds, err := s.repo.GetUserIdsOfCompany(ctx, suffixEmailCompany)
-		if err != nil {
-			return nil, err
-		}
-		return userIds, nil
-	}
 	return nil, nil
 }
 
