@@ -14,6 +14,30 @@ import (
 	"github.com/sqlc-dev/pqtype"
 )
 
+const createFollow = `-- name: CreateFollow :one
+INSERT INTO auth.follows(
+    follower_id,
+    following_id
+) VALUES ($1,$2) RETURNING follower_id, following_id, created_at, updated_at
+`
+
+type CreateFollowParams struct {
+	FollowerID  uuid.UUID `json:"follower_id"`
+	FollowingID uuid.UUID `json:"following_id"`
+}
+
+func (q *Queries) CreateFollow(ctx context.Context, arg CreateFollowParams) (AuthFollow, error) {
+	row := q.db.QueryRowContext(ctx, createFollow, arg.FollowerID, arg.FollowingID)
+	var i AuthFollow
+	err := row.Scan(
+		&i.FollowerID,
+		&i.FollowingID,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}
+
 const createKey = `-- name: CreateKey :one
 INSERT INTO auth.keys
     (
@@ -105,6 +129,20 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (AuthUse
 	return i, err
 }
 
+const deleteFollow = `-- name: DeleteFollow :exec
+DELETE FROM auth.follows WHERE follower_id = $1 AND following_id = $2
+`
+
+type DeleteFollowParams struct {
+	FollowerID  uuid.UUID `json:"follower_id"`
+	FollowingID uuid.UUID `json:"following_id"`
+}
+
+func (q *Queries) DeleteFollow(ctx context.Context, arg DeleteFollowParams) error {
+	_, err := q.db.ExecContext(ctx, deleteFollow, arg.FollowerID, arg.FollowingID)
+	return err
+}
+
 const deleteKeyByID = `-- name: DeleteKeyByID :exec
 DELETE FROM auth.keys WHERE id = $1
 `
@@ -181,6 +219,90 @@ func (q *Queries) FindKeyByUserID(ctx context.Context, userID uuid.UUID) (AuthKe
 		&i.UpdatedAt,
 	)
 	return i, err
+}
+
+const getFollowers = `-- name: GetFollowers :many
+SELECT u.id , u.full_name, u.nick_name, u.avatar_url 
+FROM auth.follows f
+JOIN auth.users u ON f.follower_id = u.id
+WHERE f.following_id = $1
+`
+
+type GetFollowersRow struct {
+	ID        uuid.UUID      `json:"id"`
+	FullName  sql.NullString `json:"full_name"`
+	NickName  sql.NullString `json:"nick_name"`
+	AvatarUrl sql.NullString `json:"avatar_url"`
+}
+
+func (q *Queries) GetFollowers(ctx context.Context, followingID uuid.UUID) ([]GetFollowersRow, error) {
+	rows, err := q.db.QueryContext(ctx, getFollowers, followingID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []GetFollowersRow
+	for rows.Next() {
+		var i GetFollowersRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.FullName,
+			&i.NickName,
+			&i.AvatarUrl,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getFollowing = `-- name: GetFollowing :many
+SELECT u.id , u.full_name, u.nick_name, u.avatar_url 
+FROM auth.follows f
+JOIN auth.users u ON f.following_id = u.id
+WHERE f.follower_id = $1
+`
+
+type GetFollowingRow struct {
+	ID        uuid.UUID      `json:"id"`
+	FullName  sql.NullString `json:"full_name"`
+	NickName  sql.NullString `json:"nick_name"`
+	AvatarUrl sql.NullString `json:"avatar_url"`
+}
+
+func (q *Queries) GetFollowing(ctx context.Context, followerID uuid.UUID) ([]GetFollowingRow, error) {
+	rows, err := q.db.QueryContext(ctx, getFollowing, followerID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []GetFollowingRow
+	for rows.Next() {
+		var i GetFollowingRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.FullName,
+			&i.NickName,
+			&i.AvatarUrl,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
 }
 
 const getUser = `-- name: GetUser :one

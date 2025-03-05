@@ -30,7 +30,12 @@ type User struct {
 	CreatedAt   time.Time       `json:"created_at"`
 	UpdatedAt   time.Time       `json:"updated_at"`
 }
-
+type UserFollow struct {
+	Id        uuid.UUID `json:"id"`
+	FullName  string    `json:"full_name"`
+	NickName  string    `json:"nick_name"`
+	AvatarUrl string    `json:"avatar_url"`
+}
 type Settings struct {
 	Social Social `json:"social"`
 }

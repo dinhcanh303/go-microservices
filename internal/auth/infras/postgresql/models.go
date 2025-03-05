@@ -21,6 +21,13 @@ type AuthApiKey struct {
 	UpdatedAt   time.Time `json:"updated_at"`
 }
 
+type AuthFollow struct {
+	FollowerID  uuid.UUID `json:"follower_id"`
+	FollowingID uuid.UUID `json:"following_id"`
+	CreatedAt   time.Time `json:"created_at"`
+	UpdatedAt   time.Time `json:"updated_at"`
+}
+
 type AuthKey struct {
 	ID                int64          `json:"id"`
 	UserID            uuid.UUID      `json:"user_id"`
@@ -30,15 +37,6 @@ type AuthKey struct {
 	RefreshTokensUsed []string       `json:"refresh_tokens_used"`
 	CreatedAt         time.Time      `json:"created_at"`
 	UpdatedAt         time.Time      `json:"updated_at"`
-}
-
-type AuthRelationship struct {
-	ID         int64     `json:"id"`
-	FollowerID uuid.UUID `json:"follower_id"`
-	FollowedID uuid.UUID `json:"followed_id"`
-	Status     int32     `json:"status"`
-	CreatedAt  time.Time `json:"created_at"`
-	UpdatedAt  time.Time `json:"updated_at"`
 }
 
 type AuthUser struct {

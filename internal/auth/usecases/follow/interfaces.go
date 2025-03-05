@@ -9,15 +9,15 @@ import (
 
 type (
 	FollowRepo interface {
-		CreateFollow(ctx context.Context, followerId uuid.UUID, followingId uuid.UUID) (*domain.Follow, error)
-		DeleteFollow(ctx context.Context, followerId uuid.UUID, followingId uuid.UUID) (*domain.Follow, error)
-		GetFollowers(context.Context, uuid.UUID) ([]*domain.Follow, error)
-		GetFollowing(context.Context, uuid.UUID) ([]*domain.Follow, error)
+		CreateFollow(ctx context.Context, followerId uuid.UUID, followingId uuid.UUID) error
+		DeleteFollow(ctx context.Context, followerId uuid.UUID, followingId uuid.UUID) error
+		GetFollowers(context.Context, uuid.UUID) ([]*domain.UserFollow, error)
+		GetFollowing(context.Context, uuid.UUID) ([]*domain.UserFollow, error)
 	}
 	UseCase interface {
-		Follow(ctx context.Context, followerId uuid.UUID, followingId uuid.UUID) (*domain.Follow, error)
-		UnFollow(ctx context.Context, followerId uuid.UUID, followingId uuid.UUID) (*domain.Follow, error)
-		GetFollowers(context.Context, uuid.UUID) ([]*domain.Follow, error)
-		GetFollowing(context.Context, uuid.UUID) ([]*domain.Follow, error)
+		Follow(ctx context.Context, followerId uuid.UUID, followingId uuid.UUID) error
+		UnFollow(ctx context.Context, followerId uuid.UUID, followingId uuid.UUID) error
+		GetFollowers(context.Context, uuid.UUID) ([]*domain.UserFollow, error)
+		GetFollowing(context.Context, uuid.UUID) ([]*domain.UserFollow, error)
 	}
 )

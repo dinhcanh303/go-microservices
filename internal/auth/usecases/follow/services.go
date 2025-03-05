@@ -14,6 +14,26 @@ type service struct {
 	redis redis.RedisEngine
 }
 
+// Follow implements UseCase.
+func (s *service) Follow(ctx context.Context, followerId uuid.UUID, followingId uuid.UUID) error {
+	panic("unimplemented")
+}
+
+// GetFollowers implements UseCase.
+func (s *service) GetFollowers(context.Context, uuid.UUID) ([]*domain.UserFollow, error) {
+	panic("unimplemented")
+}
+
+// GetFollowing implements UseCase.
+func (s *service) GetFollowing(context.Context, uuid.UUID) ([]*domain.UserFollow, error) {
+	panic("unimplemented")
+}
+
+// UnFollow implements UseCase.
+func (s *service) UnFollow(ctx context.Context, followerId uuid.UUID, followingId uuid.UUID) error {
+	panic("unimplemented")
+}
+
 var _ UseCase = (*service)(nil)
 
 func NewUseCase(repo FollowRepo, redis redis.RedisEngine) UseCase {
@@ -24,23 +44,3 @@ func NewUseCase(repo FollowRepo, redis redis.RedisEngine) UseCase {
 }
 
 var UseCaseSet = wire.NewSet(NewUseCase)
-
-// Follow implements UseCase.
-func (s *service) Follow(ctx context.Context, followerId uuid.UUID, followingId uuid.UUID) (*domain.Follow, error) {
-	panic("unimplemented")
-}
-
-// GetFollowers implements UseCase.
-func (s *service) GetFollowers(context.Context, uuid.UUID) ([]*domain.Follow, error) {
-	panic("unimplemented")
-}
-
-// GetFollowing implements UseCase.
-func (s *service) GetFollowing(context.Context, uuid.UUID) ([]*domain.Follow, error) {
-	panic("unimplemented")
-}
-
-// UnFollow implements UseCase.
-func (s *service) UnFollow(ctx context.Context, followerId uuid.UUID, followingId uuid.UUID) (*domain.Follow, error) {
-	panic("unimplemented")
-}

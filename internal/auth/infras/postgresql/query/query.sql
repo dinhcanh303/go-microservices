@@ -86,3 +86,24 @@ SET
     refresh_token = COALESCE(sqlc.narg(refresh_token),refresh_token),
     refresh_tokens_used = COALESCE(sqlc.narg(refresh_tokens_used),refresh_tokens_used)
 WHERE user_id = sqlc.arg(user_id) RETURNING *;
+
+-- name: CreateFollow :one
+INSERT INTO auth.follows(
+    follower_id,
+    following_id
+) VALUES ($1,$2) RETURNING *;
+
+-- name: DeleteFollow :exec
+DELETE FROM auth.follows WHERE follower_id = $1 AND following_id = $2;
+
+-- name: GetFollowers :many
+SELECT u.id , u.full_name, u.nick_name, u.avatar_url 
+FROM auth.follows f
+JOIN auth.users u ON f.follower_id = u.id
+WHERE f.following_id = $1;
+
+-- name: GetFollowing :many
+SELECT u.id , u.full_name, u.nick_name, u.avatar_url 
+FROM auth.follows f
+JOIN auth.users u ON f.following_id = u.id
+WHERE f.follower_id = $1;
