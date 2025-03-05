@@ -67,32 +67,49 @@ proto-gen:
 	statik -src=./third_party/swagger -dest=./third_party
 .PHONY: proto
 
-docker: docker-stop docker-start
+docker: docker-down docker-up
 .PHONY: docker
 
-docker-start:
+docker-up:
 	docker-compose up --build
-.PHONY: docker-start
+.PHONY: docker-up
 
-docker-stop:
+docker-down:
 	docker-compose down
-.PHONY: docker-stop
+.PHONY: docker-down
 
-docker-core: docker-core-stop docker-core-start
+docker-core: docker-core-down docker-core-up
 
-docker-core-start:
+docker-core-up:
 	docker-compose -f docker-compose-core.yaml up --build -d
-.PHONY: docker-core-start
+.PHONY: docker-core-up
 
-docker-core-stop:
+docker-core-down:
 	docker-compose -f docker-compose-core.yaml down
 # --remove-orphans -v
-.PHONY: docker-core-stop
+.PHONY: docker-core-down
 
 docker-build:
 	docker-compose down --remove-orphans -v
 	docker-compose build
 .PHONY: docker-build
+
+docker-minio:
+	cd ./env/minio && docker-compose up -d
+
+docker-minio-down:
+	cd ./env/minio && docker-compose down
+
+docker-traefik: docker-traefik-down docker-traefik-up
+.PHONY: docker-traefik
+
+docker-traefik-up:
+	cd ./env/traefik && docker-compose up --build -d
+.PHONY: docker-traefik-up
+
+docker-traefik-down:
+	cd ./env/traefik && docker-compose down
+.PHONY: docker-traefik-down
 
 run: run-group run-post run-comment run-like run-upload run-auth run-search run-proxy
 
