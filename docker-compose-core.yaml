@@ -80,7 +80,7 @@ services:
     container_name: mcs-redisinsight
     restart: unless-stopped
     volumes:
-      - ./data/redis-insight:/data
+      - ./env/data/redis-insight:/data
     depends_on:
       - redis
     ports:
@@ -211,6 +211,67 @@ services:
       - ELASTICSEARCH_PASSWORD=123456
     networks:
       - mcs-network
+  prometheus:
+    image: prom/prometheus
+    container_name: mcs-prometheus
+    restart: unless-stopped
+    volumes:
+      - ./env/prometheus/prometheus.yml/:/etc/prometheus/prometheus.yml
+      - ./env/data/prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--web.enable-lifecycle'
+    networks:
+      - mcs-network
+    ports:
+      - "9090:9090"
+  grafana:
+    image: grafana/grafana
+    container_name: mcs-grafana
+    restart: unless-stopped
+    depends_on:
+      - prometheus
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_USERS_ALLOW_SIGN_UP=false
+      - GF_SERVER_DOMAIN=localhost
+      #enable logger
+      - GF_LOG_MODE=console file
+      - GF_LOG_FILTERS=alerting.notifier.slack:debug alermanager:debug ngalert:debug
+    volumes:
+      - ./env/data/grafana_data:/var/lib/grafana
+    ports:
+      - "3000:3000"
+    networks:
+      - mcs-network
+  node-exporter:
+    image: prom/node-exporter
+    container_name: mcs-node-exporter
+    restart: unless-stopped
+    volumes:
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /:/rootfs:ro
+    command:
+      - '--path.procfs=/host/proc'
+      - '--path.rootfs=/rootfs'
+      - '--path.sysfs=/host/sys'
+      - '--collector.filesystem.mount-points-exclude=^/(sys|proc|dev|host|etc)($$|/)'
+    ports:
+      - "9100:9100"
+    networks:
+      - mcs-network
+  postgres-exporter:
+    image: prometheuscommunity/postgres-exporter
+    ports:
+      - "9187:9187"
+    environment:
+      DATA_SOURCE_NAME: "postgres://postgres:123456@127.0.0.1:5432/postgres?sslmode=disable"
+    depends_on:
+      - postgres-master
 volumes:
   pgm-data: {}
   pgs-data: {}

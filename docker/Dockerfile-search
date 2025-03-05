@@ -24,6 +24,6 @@ EXPOSE 5009
 # GOPATH for scratch images is /
 COPY --from=builder /app/cmd/search/config.yml /
 COPY --from=builder /app/db/migrations /db/migrations
-COPY --from=builder /app/debezium/connectors /debezium/connectors 
+COPY --from=builder /app/env/debezium/connectors /debezium/connectors 
 COPY --from=builder /bin/app /app
 CMD ["/app"]
