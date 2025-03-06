@@ -216,20 +216,6 @@ services:
       - 5011:5011
     networks:
       - mcs-network
-  # fontend:
-  #   build:
-  #     context: .
-  #     dockerfile: ./docker/Dockerfile-web
-  #   image: mcs-web
-  #   environment:
-  #     REVERSE_PROXY_URL: http://localhost:5000
-  #     WEB_PORT: 8888
-  #   ports:
-  #     - 8888:8888
-  #   depends_on:
-  #     - proxy
-  #   networks:
-  #     - mcs-network
 networks:
   mcs-network:
     name: mcs-network

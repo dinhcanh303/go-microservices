@@ -129,46 +129,46 @@ services:
       KAFKA_ALLOW_EVERYONE_IF_NO_ACL_FOUND: "true"
     networks:
       - mcs-network
-  # debezium:
-  #   image: debezium/connect:2.7.3.Final
-  #   container_name: mcs-debezium
-  #   depends_on:
-  #     - kafka
-  #   ports:
-  #     - "8083:8083"
-  #   environment:
-  #     BOOTSTRAP_SERVERS: kafka:29092
-  #     GROUP_ID: 1
-  #     CONFIG_STORAGE_TOPIC: connect_configs
-  #     STATUS_STORAGE_TOPIC: connect_statuses
-  #     OFFSET_STORAGE_TOPIC: connect_offsets
-  #     KEY_CONVERTER: org.apache.kafka.connect.json.JsonConverter
-  #     VALUE_CONVERTER: org.apache.kafka.connect.json.JsonConverter
-  #     ENABLE_DEBEZIUM_SCRIPTING: "true"
-  #   networks:
-  #     - mcs-network
-  # debezium-ui:
-  #   image: debezium/debezium-ui:latest
-  #   container_name: debezium-ui
-  #   depends_on:
-  #     - debezium
-  #   ports:
-  #     - "8080:8080"
-  #   environment:
-  #     KAFKA_CONNECT_URIS: http://debezium:8083
-  #   networks:
-  #     - mcs-network
-  # schema-registry:
-  #   image: confluentinc/cp-schema-registry:7.9.0
-  #   container_name: mcs-schema-registry
-  #   depends_on:
-  #     - kafka
-  #   ports:
-  #     - "8081:8081"
-  #   environment:
-  #     SCHEMA_REGISTRY_HOST_NAME: schema-registry
-  #     SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS: kafka:29092
-  #     SCHEMA_REGISTRY_LISTENERS: http://0.0.0.0:8081
+  debezium:
+    image: debezium/connect:2.7.3.Final
+    container_name: mcs-debezium
+    depends_on:
+      - kafka
+    ports:
+      - "8083:8083"
+    environment:
+      BOOTSTRAP_SERVERS: kafka:29092
+      GROUP_ID: 1
+      CONFIG_STORAGE_TOPIC: connect_configs
+      STATUS_STORAGE_TOPIC: connect_statuses
+      OFFSET_STORAGE_TOPIC: connect_offsets
+      KEY_CONVERTER: org.apache.kafka.connect.json.JsonConverter
+      VALUE_CONVERTER: org.apache.kafka.connect.json.JsonConverter
+      ENABLE_DEBEZIUM_SCRIPTING: "true"
+    networks:
+      - mcs-network
+  debezium-ui:
+    image: debezium/debezium-ui:latest
+    container_name: debezium-ui
+    depends_on:
+      - debezium
+    ports:
+      - "8080:8080"
+    environment:
+      KAFKA_CONNECT_URIS: http://debezium:8083
+    networks:
+      - mcs-network
+  schema-registry:
+    image: confluentinc/cp-schema-registry:7.9.0
+    container_name: mcs-schema-registry
+    depends_on:
+      - kafka
+    ports:
+      - "8081:8081"
+    environment:
+      SCHEMA_REGISTRY_HOST_NAME: schema-registry
+      SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS: kafka:29092
+      SCHEMA_REGISTRY_LISTENERS: http://0.0.0.0:8081
   kafdrop:
     image: obsidiandynamics/kafdrop:latest
     container_name: mcs-kafdrop
@@ -184,31 +184,54 @@ services:
       - mcs-network
   elasticsearch:
     container_name: mcs-elasticsearch
-    image: docker.elastic.co/elasticsearch/elasticsearch:8.13.1
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.17.25
     restart: always
     ports:
       - "9200:9200"
     environment:
-      - http.host=0.0.0.0
-      - ELASTIC_PASSWORD=123456
-      - transport.host=127.0.0.1
-      - xpack.security.enabled=false
-      - "discovery.type=single-node"
-      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
-      - http.cors.enabled=true
-      - http.cors.allow-origin="http://localhost:8080"
+      - discovery.type=single-node
+      - ES_JAVA_OPTS=-Xmx256m -Xms256m
+    volumes:
+      - ./env/elk/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
     networks:
       - mcs-network
   kibana:
-    container_name: kibana
-    image: docker.elastic.co/kibana/kibana:8.13.1
+    container_name: mcs-kibana
+    image: docker.elastic.co/kibana/kibana:7.17.25
     ports:
       - 5601:5601
     depends_on:
       - elasticsearch
+    volumes:
+      - ./env/elk/kibana.yml:/usr/share/kibana/config/kibana.yml
+    networks:
+      - mcs-network
+  logstash:
+    image: logstash:7.17.25
+    container_name: mcs-logstash
+    volumes:
+      - ./env/elk/logstash.yml:/usr/share/logstash/config/logstash.yml
+      - ./env/elk/pipeline:/usr/share/logstash/pipeline
+    ports:
+      - "5044:5044"
+      - "5033:5000/tcp"
+      - "5022:5000/udp"
+      - "9600:9600"
     environment:
-      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
-      - ELASTICSEARCH_PASSWORD=123456
+      - LS_JAVA_OPTS=-Xmx256m -Xms256m
+    depends_on:
+      - elasticsearch
+    networks:
+      - mcs-network
+  filebeat:
+    image: docker.elastic.co/beats/filebeat:7.17.25
+    container_name: mcs-filebeat
+    user: root
+    volumes:
+      - ./env/elk/filebeat.yml:/usr/share/filebeat/filebeat.yml
+      - /var/lib/docker/containers:/var/lib/docker/containers:ro
+    depends_on:
+      - elasticsearch
     networks:
       - mcs-network
   prometheus:
@@ -266,12 +289,37 @@ services:
       - mcs-network
   postgres-exporter:
     image: prometheuscommunity/postgres-exporter
+    container_name: mcs-postgres-exporter
     ports:
       - "9187:9187"
     environment:
-      DATA_SOURCE_NAME: "postgres://postgres:123456@127.0.0.1:5432/postgres?sslmode=disable"
+      DATA_SOURCE_NAME: "postgres://postgres:123456@postgres-master:5432/postgres?sslmode=disable"
     depends_on:
       - postgres-master
+    networks:
+      - mcs-network
+  redis-exporter:
+    image: oliver006/redis_exporter
+    container_name: mcs-redis-exporter
+    command: -redis.addr redis://redis:6379
+    ports:
+      - "9121:9121"
+    depends_on:
+      - redis
+    networks:
+      - mcs-network
+  elasticsearch_exporter:
+    image: prometheuscommunity/elasticsearch-exporter
+    container_name: mcs-elasticsearch-exporter
+    command:
+     - '--es.uri=http://elasticsearch:9200'
+    restart: always
+    depends_on:
+      - elasticsearch
+    ports:
+      - "9114:9114"
+    networks:
+      - mcs-network
 volumes:
   pgm-data: {}
   pgs-data: {}
