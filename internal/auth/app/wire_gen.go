@@ -14,6 +14,7 @@ import (
 	"github.com/dinhcanh303/go-microservices/internal/auth/infras/listen_trigger"
 	"github.com/dinhcanh303/go-microservices/internal/auth/infras/repo"
 	"github.com/dinhcanh303/go-microservices/internal/auth/usecases/auth"
+	"github.com/dinhcanh303/go-microservices/internal/auth/usecases/follow"
 	"github.com/dinhcanh303/go-microservices/internal/auth/usecases/keys"
 	"github.com/dinhcanh303/go-microservices/pkg/config"
 	"github.com/dinhcanh303/go-microservices/pkg/postgres"
@@ -56,6 +57,8 @@ func InitApp(cfg *config.Config, cfg2 *configs.Redis, dbConnStr postgres.DBConnS
 		return nil, nil, err
 	}
 	listenTrigger := listen_trigger.NewListenTrigger(dbConnStr, eventPublisher)
+	followRepo := repo.NewFollowRepo(dbEngine)
+	followUseCase := follow.NewUseCase(followRepo, redisEngine)
 	uploadDomainService, err := grpc2.NewGRPCUploadClient(cfg)
 	if err != nil {
 		cleanup3()
@@ -70,7 +73,7 @@ func InitApp(cfg *config.Config, cfg2 *configs.Redis, dbConnStr postgres.DBConnS
 		cleanup()
 		return nil, nil, err
 	}
-	authServiceServer := router.NewAuthGRPCServer(grpcServer, cfg, authUseCase, useCase, uploadDomainService, groupDomainService, redisEngine)
+	authServiceServer := router.NewAuthGRPCServer(grpcServer, cfg, authUseCase, useCase, followUseCase, uploadDomainService, groupDomainService, redisEngine)
 	useCaseHttp := auth.NewUseCaseHttp(userRepo, useCase, jwt, redisEngine)
 	authHandler := handlers.NewAuthHandler(useCaseHttp)
 	app := New(cfg, dbEngine, authUseCase, listenTrigger, authServiceServer, authHandler, uploadDomainService, eventPublisher)

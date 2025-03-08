@@ -121,7 +121,7 @@ func (p *postGRPCServer) NewFeed(ctx context.Context, request *v1.NewFeedRequest
 	if err != nil {
 		return nil, err
 	}
-	userIds, err := p.authDomainService.GetUserIdsByUserId(ctx, user.ID)
+	userIds, err := p.authDomainService.GetFollowingIds(ctx, user.ID)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed get user id service auth")
 	}

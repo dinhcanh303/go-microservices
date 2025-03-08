@@ -107,3 +107,9 @@ SELECT u.id , u.full_name, u.nick_name, u.avatar_url
 FROM auth.follows f
 JOIN auth.users u ON f.following_id = u.id
 WHERE f.follower_id = $1;
+
+-- name: GetFollowingIds :many
+SELECT u.id
+FROM auth.follows f
+JOIN auth.users u ON f.following_id = u.id
+WHERE f.follower_id = $1;

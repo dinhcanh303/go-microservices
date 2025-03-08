@@ -11,6 +11,7 @@ import (
 	"github.com/dinhcanh303/go-microservices/internal/auth/infras/listen_trigger"
 	"github.com/dinhcanh303/go-microservices/internal/auth/infras/repo"
 	"github.com/dinhcanh303/go-microservices/internal/auth/usecases/auth"
+	"github.com/dinhcanh303/go-microservices/internal/auth/usecases/follow"
 	"github.com/dinhcanh303/go-microservices/internal/auth/usecases/keys"
 	configs "github.com/dinhcanh303/go-microservices/pkg/config"
 	"github.com/dinhcanh303/go-microservices/pkg/postgres"
@@ -40,9 +41,11 @@ func InitApp(
 		router.AuthGRPCServerSet,
 		auth.UseCaseSet,
 		keys.UseCaseSet,
+		follow.UseCaseSet,
 		auth.UseCaseHttpSet,
 		repo.KeyRepoSet,
 		repo.UserRepoSet,
+		repo.FollowRepoSet,
 		handlers.AuthHandlerSet,
 		infrasGRPC.UploadGRPCClientSet,
 		infrasGRPC.GroupGRPCClientSet,

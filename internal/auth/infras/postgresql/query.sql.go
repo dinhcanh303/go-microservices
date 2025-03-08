@@ -305,6 +305,36 @@ func (q *Queries) GetFollowing(ctx context.Context, followerID uuid.UUID) ([]Get
 	return items, nil
 }
 
+const getFollowingIds = `-- name: GetFollowingIds :many
+SELECT u.id
+FROM auth.follows f
+JOIN auth.users u ON f.following_id = u.id
+WHERE f.follower_id = $1
+`
+
+func (q *Queries) GetFollowingIds(ctx context.Context, followerID uuid.UUID) ([]uuid.UUID, error) {
+	rows, err := q.db.QueryContext(ctx, getFollowingIds, followerID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []uuid.UUID
+	for rows.Next() {
+		var id uuid.UUID
+		if err := rows.Scan(&id); err != nil {
+			return nil, err
+		}
+		items = append(items, id)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const getUser = `-- name: GetUser :one
 SELECT id, email, first_name, last_name, full_name, nick_name, avatar_url, profile_url, role, resigned, gender, phone, address, position, date_of_birth, password, settings, created_at, updated_at FROM auth.users WHERE id = $1 AND resigned = FALSE
 `

@@ -8,12 +8,24 @@ import (
 	"github.com/dinhcanh303/go-microservices/internal/auth/usecases/follow"
 	"github.com/dinhcanh303/go-microservices/pkg/postgres"
 	"github.com/google/uuid"
+	"github.com/google/wire"
 	"github.com/pkg/errors"
 	"github.com/samber/lo"
 )
 
 type followRepo struct {
 	pg postgres.DBEngine
+}
+
+// GetFollowingIds implements follow.FollowRepo.
+func (rp *followRepo) GetFollowingIds(ctx context.Context, followerId uuid.UUID) ([]uuid.UUID, error) {
+	db := rp.pg.GetDB()
+	querier := postgresql.New(db)
+	res, err := querier.GetFollowingIds(ctx, followerId)
+	if err != nil {
+		return nil, errors.Wrap(err, "followRepo.GetFollowingIds failed")
+	}
+	return res, nil
 }
 
 // CreateFollow implements follow.FollowRepo.
@@ -97,3 +109,5 @@ func NewFollowRepo(pg postgres.DBEngine) follow.FollowRepo {
 		pg: pg,
 	}
 }
+
+var FollowRepoSet = wire.NewSet(NewFollowRepo)

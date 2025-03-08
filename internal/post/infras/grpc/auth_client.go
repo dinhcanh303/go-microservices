@@ -46,9 +46,21 @@ func (a *authGRPCClient) GetProfile(ctx context.Context, id uuid.UUID) (*v1.GetP
 }
 
 // GetAllUserIdByUserId implements domain.AuthDomainService.
-func (a *authGRPCClient) GetUserIdsByUserId(ctx context.Context, userId uuid.UUID) ([]uuid.UUID, error) {
-	// client := v1.NewAuthServiceClient(a.conn)
-
+func (a *authGRPCClient) GetFollowingIds(ctx context.Context, followerId uuid.UUID) ([]uuid.UUID, error) {
+	client := v1.NewAuthServiceClient(a.conn)
+	res, err := client.GetFollowingIds(ctx, &v1.GetFollowingIdsRequest{
+		Id: followerId.String(),
+	})
+	if err != nil {
+		slog.Warn("authGRPCClient.GetFollowingIds failed", err)
+		return []uuid.UUID{}, err
+	}
 	results := make([]uuid.UUID, 0)
+	for _, item := range res.FollowingIds {
+		uuid, err := uuid.Parse(item)
+		if err == nil {
+			results = append(results, uuid)
+		}
+	}
 	return results, nil
 }

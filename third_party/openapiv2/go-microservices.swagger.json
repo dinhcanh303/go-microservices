@@ -494,6 +494,169 @@
         ]
       }
     },
+    "/api/v1/friendships/follow/{id}": {
+      "post": {
+        "summary": "User Follow",
+        "operationId": "AuthService_Follow",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1FollowResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object"
+            }
+          }
+        ],
+        "tags": [
+          "AuthService"
+        ]
+      }
+    },
+    "/api/v1/friendships/unfollow/{id}": {
+      "delete": {
+        "summary": "User UnFollow",
+        "operationId": "AuthService_UnFollow",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1UnFollowResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "AuthService"
+        ]
+      }
+    },
+    "/api/v1/friendships/{id}/followers": {
+      "get": {
+        "summary": "Get User Followers",
+        "operationId": "AuthService_GetFollowers",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1GetFollowersResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "AuthService"
+        ]
+      }
+    },
+    "/api/v1/friendships/{id}/following": {
+      "get": {
+        "summary": "Get User Following",
+        "operationId": "AuthService_GetFollowing",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1GetFollowingResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "AuthService"
+        ]
+      }
+    },
+    "/api/v1/friendships/{id}/followingIds": {
+      "get": {
+        "summary": "Get User Following IDs",
+        "operationId": "AuthService_GetFollowingIds",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1GetFollowingIdsResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "AuthService"
+        ]
+      }
+    },
     "/api/v1/group-members": {
       "post": {
         "summary": "Create group member",
@@ -2462,6 +2625,9 @@
         }
       }
     },
+    "v1FollowResponse": {
+      "type": "object"
+    },
     "v1GetAttachmentsByOptionalResponse": {
       "type": "object",
       "properties": {
@@ -2522,6 +2688,41 @@
           "items": {
             "type": "object",
             "$ref": "#/definitions/v1CommentHasChildren"
+          }
+        }
+      }
+    },
+    "v1GetFollowersResponse": {
+      "type": "object",
+      "properties": {
+        "users": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/v1UserFollow"
+          }
+        }
+      }
+    },
+    "v1GetFollowingIdsResponse": {
+      "type": "object",
+      "properties": {
+        "followingIds": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "v1GetFollowingResponse": {
+      "type": "object",
+      "properties": {
+        "users": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/v1UserFollow"
           }
         }
       }
@@ -3162,6 +3363,9 @@
         }
       }
     },
+    "v1UnFollowResponse": {
+      "type": "object"
+    },
     "v1UpdateCommentResponse": {
       "type": "object",
       "properties": {
@@ -3289,6 +3493,23 @@
         "updatedAt": {
           "type": "string",
           "format": "date-time"
+        }
+      }
+    },
+    "v1UserFollow": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "fullName": {
+          "type": "string"
+        },
+        "nickName": {
+          "type": "string"
+        },
+        "avatarUrl": {
+          "type": "string"
         }
       }
     },

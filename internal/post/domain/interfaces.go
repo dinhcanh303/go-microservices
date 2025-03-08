@@ -28,7 +28,7 @@ type (
 		GetGroupMembers(ctx context.Context, groupId uuid.NullUUID) (*v1g.GetGroupMembersResponse, error)
 	}
 	AuthDomainService interface {
-		GetUserIdsByUserId(ctx context.Context, userId uuid.UUID) ([]uuid.UUID, error)
+		GetFollowingIds(ctx context.Context, followerId uuid.UUID) ([]uuid.UUID, error)
 		GetProfile(ctx context.Context, id uuid.UUID) (*v1a.GetProfileResponse, error)
 	}
 )

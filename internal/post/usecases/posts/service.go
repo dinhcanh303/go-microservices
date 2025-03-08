@@ -183,7 +183,7 @@ func eventPublish(ctx context.Context, uc *service, post *domain.Post) {
 		}
 		data["groupName"] = resGroup.Group.Name
 	} else {
-		userIds, err := uc.authDomainService.GetUserIdsByUserId(ctx, post.UserID)
+		userIds, err := uc.authDomainService.GetFollowingIds(ctx, post.UserID)
 		if err != nil {
 			errors.Wrap(err, "GetUserIdsByUserId failed")
 		}

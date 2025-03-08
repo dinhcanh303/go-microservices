@@ -13,6 +13,7 @@ import (
 	"github.com/dinhcanh303/go-microservices/internal/auth/app/validation"
 	"github.com/dinhcanh303/go-microservices/internal/auth/domain"
 	"github.com/dinhcanh303/go-microservices/internal/auth/usecases/auth"
+	"github.com/dinhcanh303/go-microservices/internal/auth/usecases/follow"
 	"github.com/dinhcanh303/go-microservices/internal/auth/usecases/keys"
 	"github.com/dinhcanh303/go-microservices/pkg/constant"
 	errorPkg "github.com/dinhcanh303/go-microservices/pkg/error"
@@ -35,6 +36,7 @@ type authGRPCServer struct {
 	cfg                 *config.Config
 	uc                  auth.UseCase
 	ucKey               keys.UseCase
+	ucFollow            follow.UseCase
 	uploadDomainService domain.UploadDomainService
 	groupDomainService  domain.GroupDomainService
 	redis               redis.RedisEngine
@@ -49,6 +51,7 @@ func NewAuthGRPCServer(
 	cfg *config.Config,
 	uc auth.UseCase,
 	ucKey keys.UseCase,
+	ucFollow follow.UseCase,
 	uploadDomainService domain.UploadDomainService,
 	groupDomainService domain.GroupDomainService,
 	redis redis.RedisEngine) v1.AuthServiceServer {
@@ -56,6 +59,7 @@ func NewAuthGRPCServer(
 		cfg:                 cfg,
 		uc:                  uc,
 		ucKey:               ucKey,
+		ucFollow:            ucFollow,
 		uploadDomainService: uploadDomainService,
 		groupDomainService:  groupDomainService,
 		redis:               redis,
@@ -530,5 +534,81 @@ func (a *authGRPCServer) HandleRefreshToken(ctx context.Context, request *v1.Han
 		},
 		AccessToken:  res.AccessToken,
 		RefreshToken: res.RefreshToken,
+	}, nil
+}
+
+func (a *authGRPCServer) Follow(ctx context.Context, request *v1.FollowRequest) (*v1.FollowResponse, error) {
+	slog.Info("POST:: Follow")
+	payloadUser, err := utils.ExtractMetadataUser(ctx)
+	if err != nil {
+		return nil, err
+	}
+	followingId, err := uuid.Parse(request.GetId())
+	if err != nil {
+		return nil, err
+	}
+	err = a.ucFollow.Follow(ctx, payloadUser.ID, followingId)
+	if err != nil {
+		return nil, err
+	}
+	return &v1.FollowResponse{}, nil
+}
+func (a *authGRPCServer) UnFollow(ctx context.Context, request *v1.UnFollowRequest) (*v1.UnFollowResponse, error) {
+	slog.Info("DELETE:: UnFollow")
+	payloadUser, err := utils.ExtractMetadataUser(ctx)
+	if err != nil {
+		return nil, err
+	}
+	followingId, err := uuid.Parse(request.GetId())
+	if err != nil {
+		return nil, err
+	}
+	err = a.ucFollow.UnFollow(ctx, payloadUser.ID, followingId)
+	if err != nil {
+		return nil, err
+	}
+	return &v1.UnFollowResponse{}, nil
+}
+
+func (a *authGRPCServer) GetFollowers(ctx context.Context, request *v1.GetFollowersRequest) (*v1.GetFollowersResponse, error) {
+	slog.Info("GET:: GetFollowers")
+	followingId, err := uuid.Parse(request.GetId())
+	if err != nil {
+		return nil, err
+	}
+	followers, err := a.ucFollow.GetFollowers(ctx, followingId)
+	if err != nil {
+		return nil, err
+	}
+	return &v1.GetFollowersResponse{
+		Users: lo.Map(followers, func(follower *domain.UserFollow, _ int) *v1.UserFollow {
+			return &v1.UserFollow{
+				Id:        follower.Id.String(),
+				NickName:  follower.NickName,
+				FullName:  follower.FullName,
+				AvatarUrl: follower.AvatarUrl,
+			}
+		}),
+	}, nil
+}
+func (a *authGRPCServer) GetFollowing(ctx context.Context, request *v1.GetFollowingRequest) (*v1.GetFollowingResponse, error) {
+	slog.Info("GET:: GetFollowers")
+	followerId, err := uuid.Parse(request.GetId())
+	if err != nil {
+		return nil, err
+	}
+	followings, err := a.ucFollow.GetFollowing(ctx, followerId)
+	if err != nil {
+		return nil, err
+	}
+	return &v1.GetFollowingResponse{
+		Users: lo.Map(followings, func(following *domain.UserFollow, _ int) *v1.UserFollow {
+			return &v1.UserFollow{
+				Id:        following.Id.String(),
+				NickName:  following.NickName,
+				FullName:  following.FullName,
+				AvatarUrl: following.AvatarUrl,
+			}
+		}),
 	}, nil
 }

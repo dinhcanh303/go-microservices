@@ -122,7 +122,87 @@ service AuthService {
             description: ""
         };
     }
+    rpc Follow(FollowRequest) returns (FollowResponse){
+        option (google.api.http) = {
+            post: "/api/v1/friendships/follow/{id}"
+            body: "*"
+        };
+        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+            summary: "User Follow"
+            description: ""
+        };
+    }
+    rpc UnFollow(UnFollowRequest) returns (UnFollowResponse){
+        option (google.api.http) = {
+            delete: "/api/v1/friendships/unfollow/{id}"
+        };
+        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+            summary: "User UnFollow"
+            description: ""
+        };
+    }
+    rpc GetFollowers(GetFollowersRequest) returns (GetFollowersResponse){
+        option (google.api.http) = {
+            get: "/api/v1/friendships/{id}/followers"
+        };
+        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+            summary: "Get User Followers"
+            description: ""
+        };
+    }
+    rpc GetFollowing(GetFollowingRequest) returns (GetFollowingResponse){
+        option (google.api.http) = {
+            get: "/api/v1/friendships/{id}/following"
+        };
+        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+            summary: "Get User Following"
+            description: ""
+        };
+    }
+    rpc GetFollowingIds(GetFollowingIdsRequest) returns (GetFollowingIdsResponse){
+        option (google.api.http) = {
+            get: "/api/v1/friendships/{id}/followingIds"
+        };
+        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+            summary: "Get User Following IDs"
+            description: ""
+        };
+    }
 }
+
+message FollowRequest {
+    string id = 1;
+}
+message FollowResponse{}
+message UnFollowRequest{
+    string id = 1;
+}
+message UnFollowResponse{}
+message GetFollowersRequest{
+    string id = 1;
+}
+message GetFollowersResponse{
+    repeated UserFollow users = 1;
+}
+message GetFollowingRequest{
+    string id = 1;
+}
+message GetFollowingResponse{
+    repeated UserFollow users = 1;
+}
+message GetFollowingIdsRequest{
+    string id = 1;
+}
+message GetFollowingIdsResponse{
+    repeated string following_ids = 1;
+}
+message UserFollow {
+    string id = 1;
+    string full_name = 2;
+    string nick_name = 3;
+    string avatar_url = 4;
+}
+
 message UpdateUserSettingsRequest{
     int32 post_status = 1;
     string system_theme = 2;
