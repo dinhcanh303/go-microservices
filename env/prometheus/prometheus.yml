@@ -1,0 +1,61 @@
+# my global config
+global:
+  scrape_interval:     15s # By default, scrape targets every 15 seconds.
+  evaluation_interval: 15s # By default, scrape targets every 15 seconds.
+  # scrape_timeout is set to the global default (10s).
+
+  # Attach these labels to any time series or alerts when communicating with
+  # external systems (federation, remote storage, Alertmanager).
+  external_labels:
+      monitor: "my-project"
+
+# Load and evaluate rules in this file every "evaluation_interval" seconds.
+rule_files:
+  - "alert.rules"
+  # - "first.rules"
+  # - "second.rules"
+
+# A scrape configuration containing exactly one endpoint to scrape:
+# Here it"s Prometheus itself.
+scrape_configs:
+  # The job name is added as a label `job=<job_name>` to any timeseries scraped from this config.
+  - job_name: "mcs-prometheus"
+    # Override the global default and scrape targets from this job every 5 seconds.
+    scrape_interval: 5s
+    static_configs:
+      - targets: ["host.docker.internal:9090"]
+    metrics_path: "/metrics"
+
+  - job_name: "mcs-node-exporter"
+    scrape_interval: 5s
+    static_configs:
+      - targets: ["host.docker.internal:9100"]
+
+  - job_name: "mcs-postgres-exporter"
+    scrape_interval: 5s
+    static_configs:
+      - targets: ["host.docker.internal:9187"]
+
+  - job_name: "mcs-redis-exporter"
+    scrape_interval: 5s
+    static_configs:
+      - targets: ["host.docker.internal:9121"]
+
+  - job_name: "mcs-elastic-search-exporter"
+    scrape_interval: 5s
+    static_configs:
+      - targets: ["host.docker.internal:9114"]
+  
+  - job_name: minio-job
+    # bearer_token: ACbD7NKK1ngaWA0fjSVQ/J0xL59y5EM7cNCwl66jXcI+Yfy8vCy8GD4+DTgbWttyg2B4LwwQ8Tc1OrZdN6xiHKVbC1ulgS4P6aurthyzw0IRF1msTHDdPJkaWZLtmwai9+dNBdCgVas9GhRyGSn3yCaurcFeyJ7EY1fzIj8Br6JvxaQUBRAMFvBOMtgi7KreFdQdiRD+ypvuBtClLNnahSvVcoarHXyXee5eEWyxFqaamVw0q3XFBrjNJ9c69XXKuPO5xlkakPaWkMjpMGCOMb4fFVbf3V69C5W7EvXJDmZzy2vhNFQr6jVZTOfNnftBseSgrmrVrxvZImF+th4K890wrIqu98dgI6vBLpz8fYFfENmpvGlHHX15nOnA8H4Da+7cdjCLYot3ulUvvIR8Y6q1atyNdRVChS0YbC2W3PMExE32urh4ot/xV5/aBDNBiyYhPcIxp/Q0CFy02pqJyWkozBg1YLxUfFbbRRE727vmmIOIq+SK0+PYQGKSAA6plW23t8jZCSnMyNhs4HrDLN8ZhFDPpc09I2i5HIzZv8b5SPC//czHNJVtGA==
+    metrics_path: /minio/v2/metrics/cluster
+    scheme: http
+    static_configs:
+    - targets: ['host.docker.internal:9000']
+  
+  # - job_name: "mcs-social"
+  #   # Override the global default and scrape targets from this job every 5 seconds.
+  #   scrape_interval: 5s
+  #   static_configs:
+  #     - targets: ["localhost:9090"]
+  #   metrics_path: "/metrics"

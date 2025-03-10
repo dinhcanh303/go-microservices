@@ -5,4 +5,4 @@
 /traefik/certs
 /traefik/.env
 *.log
-/env
+/env/data
